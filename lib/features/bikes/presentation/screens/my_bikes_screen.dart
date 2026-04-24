@@ -18,6 +18,8 @@ class MyBikesScreen extends StatefulWidget {
 }
 
 class _MyBikesScreenState extends State<MyBikesScreen> {
+  LocaleNotifier get l => Provider.of<LocaleNotifier>(context);
+
   @override
   void initState() {
     super.initState();
@@ -88,7 +90,7 @@ class _MyBikesScreenState extends State<MyBikesScreen> {
         },
         backgroundColor: ColorTokens.primary30,
         foregroundColor: Colors.white,
-        icon: const Icon(Icons.add),
+        icon: Icon(Icons.add),
         label: Text(l.t('register_bike')),
       ),
     );
@@ -101,13 +103,13 @@ class _MyBikesScreenState extends State<MyBikesScreen> {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           const Icon(Icons.error_outline, size: 64, color: ColorTokens.error50),
-          const SizedBox(height: 16),
+          SizedBox(height: 16),
           Text(
             errorMessage ?? l.t('error_loading_bikes'),
             style: const TextStyle(fontSize: 16),
             textAlign: TextAlign.center,
           ),
-          const SizedBox(height: 16),
+          SizedBox(height: 16),
           ElevatedButton(
             onPressed: _loadUserBikes,
             style: ElevatedButton.styleFrom(
@@ -128,7 +130,7 @@ class _MyBikesScreenState extends State<MyBikesScreen> {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Icon(Icons.directions_bike, size: 120, color: Colors.grey[300]),
-          const SizedBox(height: 24),
+          SizedBox(height: 24),
           Text(
             l.t('no_bikes_registered'),
             style: TextStyle(
@@ -137,12 +139,12 @@ class _MyBikesScreenState extends State<MyBikesScreen> {
               color: Colors.grey[600],
             ),
           ),
-          const SizedBox(height: 8),
+          SizedBox(height: 8),
           Text(
             l.t('register_first_bike'),
             style: TextStyle(fontSize: 14, color: Colors.grey[500]),
           ),
-          const SizedBox(height: 8),
+          SizedBox(height: 8),
           Text(
             l.t('tap_add_first_bike'),
             style: TextStyle(
@@ -168,7 +170,7 @@ class _MyBikesScreenState extends State<MyBikesScreen> {
           BoxShadow(
             color: Colors.black.withValues(alpha: 0.1),
             blurRadius: 8,
-            offset: const Offset(0, 2),
+            offset: Offset(0, 2),
           ),
         ],
       ),
@@ -270,7 +272,7 @@ class _MyBikesScreenState extends State<MyBikesScreen> {
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                     ),
-                    const SizedBox(height: 4),
+                    SizedBox(height: 4),
                     Text(
                       '${bike.year} • ${bike.color} • ${l.t(bike.type.displayName)}',
                       style: TextStyle(fontSize: 14, color: Colors.grey[600]),
@@ -330,7 +332,7 @@ class _MyBikesScreenState extends State<MyBikesScreen> {
         mainAxisSize: MainAxisSize.min,
         children: [
           Icon(icon, size: 14, color: textColor),
-          const SizedBox(width: 4),
+          SizedBox(width: 4),
           Text(
             l.t(status.displayName),
             style: TextStyle(

@@ -16,6 +16,8 @@ class LocationPickerScreen extends StatefulWidget {
 }
 
 class _LocationPickerScreenState extends State<LocationPickerScreen> {
+  LocaleNotifier get l => Provider.of<LocaleNotifier>(context);
+
   GoogleMapController?
   _mapController; // ignore: unused_field // ignore: unused_field
   LatLng? _selectedLocation;
@@ -82,7 +84,7 @@ class _LocationPickerScreenState extends State<LocationPickerScreen> {
             onPressed: _selectedLocation != null
                 ? () => Navigator.pop(context, _selectedLocation)
                 : null,
-            icon: const Icon(Icons.check, color: Colors.white),
+            icon: Icon(Icons.check, color: Colors.white),
             label: Text(
               l.t('location_confirm'),
               style: const TextStyle(color: Colors.white),
@@ -158,8 +160,8 @@ class _LocationPickerScreenState extends State<LocationPickerScreen> {
                         const SizedBox(height: 12),
                         Row(
                           children: [
-                            const Icon(Icons.pin_drop, color: Colors.red),
-                            const SizedBox(width: 8),
+                            Icon(Icons.pin_drop, color: Colors.red),
+                            SizedBox(width: 8),
                             Expanded(
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -183,7 +185,7 @@ class _LocationPickerScreenState extends State<LocationPickerScreen> {
                             ),
                           ],
                         ),
-                        const SizedBox(height: 12),
+                        SizedBox(height: 12),
                         Text(
                           l.t('location_move_pin'),
                           style: const TextStyle(

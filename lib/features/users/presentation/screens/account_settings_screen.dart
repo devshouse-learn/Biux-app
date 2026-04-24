@@ -8,6 +8,7 @@ import 'package:biux/core/config/router/app_routes.dart';
 import 'package:go_router/go_router.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:intl/intl.dart';
+import 'package:biux/core/design_system/locale_notifier.dart';
 
 class AccountSettingsScreen extends StatefulWidget {
   const AccountSettingsScreen({Key? key}) : super(key: key);
@@ -17,6 +18,8 @@ class AccountSettingsScreen extends StatefulWidget {
 }
 
 class _AccountSettingsScreenState extends State<AccountSettingsScreen> {
+  LocaleNotifier get l => Provider.of<LocaleNotifier>(context);
+
   @override
   void initState() {
     super.initState();
@@ -48,13 +51,13 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen> {
             children: [
               _buildInfoTile(
                 icon: Icons.alternate_email,
-                title: 'Nombre de usuario',
+                title: l.t('username_label'),
                 value: user.username?.isNotEmpty == true
                     ? '@${user.username}'
-                    : user.name ?? 'Sin definir',
+                    : user.name ?? l.t('not_defined'),
                 isDark: isDark,
               ),
-              const SizedBox(height: 8),
+              SizedBox(height: 8),
               _buildInfoTile(
                 icon: Icons.email_outlined,
                 title: l.t('email_label'),
@@ -63,7 +66,7 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen> {
                     : l.t('not_linked'),
                 isDark: isDark,
               ),
-              const SizedBox(height: 8),
+              SizedBox(height: 8),
               _buildInfoTile(
                 icon: Icons.phone_android_outlined,
                 title: l.t('phone_number'),
@@ -72,7 +75,7 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen> {
                     : l.t('not_linked'),
                 isDark: isDark,
               ),
-              const SizedBox(height: 8),
+              SizedBox(height: 8),
               SettingsWidgets.buildOptionCard(
                 context: context,
                 icon: Icons.history,
@@ -313,7 +316,7 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen> {
             mainAxisSize: MainAxisSize.min,
             children: [
               Text(l.t('no_email_linked')),
-              const SizedBox(height: 16),
+              SizedBox(height: 16),
               TextField(
                 controller: emailController,
                 keyboardType: TextInputType.emailAddress,
@@ -322,7 +325,7 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen> {
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(8),
                   ),
-                  prefixIcon: const Icon(Icons.email_outlined),
+                  prefixIcon: Icon(Icons.email_outlined),
                 ),
               ),
             ],
@@ -415,7 +418,7 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen> {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
-      shape: const RoundedRectangleBorder(
+      shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
       backgroundColor: isDark ? ColorTokens.primary40 : Colors.white,
@@ -436,7 +439,7 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen> {
                 ),
               ),
             ),
-            const SizedBox(height: 20),
+            SizedBox(height: 20),
             Text(
               l.t('activity_history'),
               style: TextStyle(
@@ -445,7 +448,7 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen> {
                 color: isDark ? Colors.white : Colors.black87,
               ),
             ),
-            const SizedBox(height: 20),
+            SizedBox(height: 20),
 
             // Fecha de creación
             _buildActivityRow(
@@ -456,7 +459,7 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen> {
                   : '—',
               isDark: isDark,
             ),
-            const SizedBox(height: 12),
+            SizedBox(height: 12),
 
             // Último inicio de sesión
             _buildActivityRow(
@@ -467,7 +470,7 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen> {
                   : '—',
               isDark: isDark,
             ),
-            const SizedBox(height: 20),
+            SizedBox(height: 20),
 
             // Proveedores de login
             Text(
@@ -630,7 +633,7 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen> {
                 ),
               ),
             ),
-            const SizedBox(height: 20),
+            SizedBox(height: 20),
 
             // Icono principal
             Icon(
@@ -642,7 +645,7 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen> {
                   ? Colors.green.shade400
                   : Colors.orange.shade400,
             ),
-            const SizedBox(height: 16),
+            SizedBox(height: 16),
 
             Text(
               isPhoneVerified || isEmailVerified
@@ -654,7 +657,7 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen> {
                 color: isDark ? Colors.white : Colors.black87,
               ),
             ),
-            const SizedBox(height: 20),
+            SizedBox(height: 20),
 
             // Estado de verificación por teléfono
             if (isPhoneVerified)
@@ -668,7 +671,7 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen> {
 
             // Estado de verificación por email
             if (hasEmail) ...[
-              const SizedBox(height: 12),
+              SizedBox(height: 12),
               _buildVerificationRow(
                 icon: Icons.email_outlined,
                 label: l.t('email_auth'),
@@ -707,7 +710,7 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen> {
                       }
                     }
                   },
-                  icon: const Icon(Icons.send),
+                  icon: Icon(Icons.send),
                   label: Text(l.t('send_verification_email')),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: ColorTokens.primary30,

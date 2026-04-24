@@ -5,6 +5,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:go_router/go_router.dart';
 import 'package:biux/core/design_system/color_tokens.dart';
+import 'package:biux/core/design_system/locale_notifier.dart';
+import 'package:provider/provider.dart';
 
 class IdentityVerificationScreen extends StatefulWidget {
   final String userId;
@@ -17,6 +19,8 @@ class IdentityVerificationScreen extends StatefulWidget {
 
 class _IdentityVerificationScreenState
     extends State<IdentityVerificationScreen> {
+  LocaleNotifier get l => Provider.of<LocaleNotifier>(context);
+
   File? _docFront;
   File? _docBack;
   bool _uploading = false;
@@ -221,11 +225,11 @@ class _IdentityVerificationScreenState
           'Parte frontal del documento *',
           style: TextStyle(fontSize: 13, fontWeight: FontWeight.w700),
         ),
-        const SizedBox(height: 8),
+        SizedBox(height: 8),
         _docTile(
           isFront: true,
           file: _docFront,
-          label: 'Toca para agregar la parte frontal',
+          label: l.t('tap_add_front'),
           icon: Icons.credit_card_rounded,
         ),
         const SizedBox(height: 16),
@@ -233,11 +237,11 @@ class _IdentityVerificationScreenState
           'Parte trasera (opcional)',
           style: TextStyle(fontSize: 13, fontWeight: FontWeight.w700),
         ),
-        const SizedBox(height: 8),
+        SizedBox(height: 8),
         _docTile(
           isFront: false,
           file: _docBack,
-          label: 'Toca para agregar la parte trasera',
+          label: l.t('tap_add_back'),
           icon: Icons.flip_rounded,
         ),
         const SizedBox(height: 28),

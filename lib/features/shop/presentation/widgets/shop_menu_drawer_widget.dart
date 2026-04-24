@@ -48,7 +48,7 @@ class ShopMenuDrawer extends StatelessWidget {
                   Row(
                     children: [
                       const Icon(Icons.store, color: Colors.white, size: 32),
-                      const SizedBox(width: 12),
+                      SizedBox(width: 12),
                       Text(
                         l.t('biux_shop'),
                         style: const TextStyle(
@@ -59,12 +59,12 @@ class ShopMenuDrawer extends StatelessWidget {
                       ),
                     ],
                   ),
-                  const SizedBox(height: 8),
+                  SizedBox(height: 8),
                   Text(
                     user?.name ?? l.t('visitor'),
-                    style: const TextStyle(fontSize: 14, color: Colors.white70),
+                    style: TextStyle(fontSize: 14, color: Colors.white70),
                   ),
-                  const SizedBox(height: 4),
+                  SizedBox(height: 4),
                   Row(
                     children: [
                       if (isAdmin) _buildRoleBadge(l.t('admin'), Colors.amber),
@@ -110,7 +110,7 @@ class ShopMenuDrawer extends StatelessWidget {
                   },
                 ),
 
-                const Divider(height: 1, indent: 16, endIndent: 16),
+                Divider(height: 1, indent: 16, endIndent: 16),
 
                 // --- Seguridad ---
                 _buildSectionTitle(l.t('security_section')),
@@ -128,7 +128,7 @@ class ShopMenuDrawer extends StatelessWidget {
                   },
                 ),
 
-                const Divider(height: 1, indent: 16, endIndent: 16),
+                Divider(height: 1, indent: 16, endIndent: 16),
 
                 // --- Informes ---
                 _buildSectionTitle(l.t('reports')),
@@ -161,7 +161,7 @@ class ShopMenuDrawer extends StatelessWidget {
 
                 // --- Administración (solo admin/seller) ---
                 if (isAdmin || isSeller) ...[
-                  const Divider(height: 1, indent: 16, endIndent: 16),
+                  Divider(height: 1, indent: 16, endIndent: 16),
                   _buildSectionTitle(l.t('administration')),
                   if (isAdmin)
                     _buildMenuItem(
@@ -204,7 +204,7 @@ class ShopMenuDrawer extends StatelessWidget {
                     ),
                 ],
 
-                const Divider(height: 1, indent: 16, endIndent: 16),
+                Divider(height: 1, indent: 16, endIndent: 16),
 
                 // --- Información ---
                 _buildSectionTitle(l.t('information')),
@@ -344,19 +344,19 @@ class ShopMenuDrawer extends StatelessWidget {
             children: [
               Text(
                 '📦 ${l.t('shipping_title')}',
-                style: const TextStyle(fontWeight: FontWeight.bold),
+                style: TextStyle(fontWeight: FontWeight.bold),
               ),
               Text(l.t('shipping_content')),
-              const SizedBox(height: 12),
+              SizedBox(height: 12),
               Text(
                 '🔄 ${l.t('returns_title')}',
-                style: const TextStyle(fontWeight: FontWeight.bold),
+                style: TextStyle(fontWeight: FontWeight.bold),
               ),
               Text(l.t('returns_content')),
-              const SizedBox(height: 12),
+              SizedBox(height: 12),
               Text(
                 '🔒 ${l.t('privacy_title')}',
-                style: const TextStyle(fontWeight: FontWeight.bold),
+                style: TextStyle(fontWeight: FontWeight.bold),
               ),
               Text(l.t('privacy_content')),
             ],
@@ -385,27 +385,27 @@ class ShopMenuDrawer extends StatelessWidget {
             children: [
               Text(
                 '❓ ${l.t('how_to_buy')}',
-                style: const TextStyle(fontWeight: FontWeight.bold),
+                style: TextStyle(fontWeight: FontWeight.bold),
               ),
               Text(l.t('how_to_buy_content')),
-              const SizedBox(height: 12),
+              SizedBox(height: 12),
               Text(
                 '🏪 ${l.t('how_to_sell')}',
-                style: const TextStyle(fontWeight: FontWeight.bold),
+                style: TextStyle(fontWeight: FontWeight.bold),
               ),
               Text(l.t('how_to_sell_content')),
-              const SizedBox(height: 12),
+              SizedBox(height: 12),
               Text(
                 '🔐 ${l.t('bike_registration')}',
-                style: const TextStyle(fontWeight: FontWeight.bold),
+                style: TextStyle(fontWeight: FontWeight.bold),
               ),
               Text(l.t('bike_registration_content')),
-              const SizedBox(height: 12),
+              SizedBox(height: 12),
               Text(
                 '📧 ${l.t('contact')}',
                 style: const TextStyle(fontWeight: FontWeight.bold),
               ),
-              const Text('soporte@biux.app'),
+              Text('soporte@biux.app'),
             ],
           ),
         ),

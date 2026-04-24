@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:biux/features/rides/presentation/providers/ride_provider.dart';
 import 'package:biux/features/rides/data/models/ride_model.dart';
+import 'package:biux/core/design_system/locale_notifier.dart';
 
 /// Botón único e inteligente para manejar asistencia a rodadas
 /// Muestra el estado actual y permite cambiar entre:
@@ -15,6 +16,7 @@ class RideAttendanceButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l = Provider.of<LocaleNotifier>(context);
     final rideProvider = Provider.of<RideProvider>(context);
     final currentUserId = rideProvider.currentUserId;
 
@@ -144,6 +146,7 @@ class RideAttendanceButton extends StatelessWidget {
 
   // Popup para cuando NO está participando
   void _showOptionsForJoin(BuildContext context, RideProvider provider) {
+    final l = Provider.of<LocaleNotifier>(context, listen: false);
     showModalBottomSheet(
       context: context,
       shape: const RoundedRectangleBorder(
@@ -159,15 +162,15 @@ class RideAttendanceButton extends StatelessWidget {
                 '¿Vas a ir a esta rodada?',
                 style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
               ),
-              const SizedBox(height: 16),
+              SizedBox(height: 16),
               ListTile(
-                leading: const Icon(
+                leading: Icon(
                   Icons.check_circle,
                   color: Colors.green,
                   size: 32,
                 ),
-                title: const Text('Sí, voy confirmado'),
-                subtitle: const Text('Definitivamente asistiré'),
+                title: Text(l.t('yes_confirmed')),
+                subtitle: Text(l.t('definitely_attending')),
                 onTap: () {
                   Navigator.pop(context);
                   _confirmAttendance(context, provider);
@@ -179,8 +182,8 @@ class RideAttendanceButton extends StatelessWidget {
                   color: Colors.orange,
                   size: 32,
                 ),
-                title: const Text('Tal vez voy'),
-                subtitle: const Text('No estoy seguro/a todavía'),
+                title: Text('Tal vez voy'),
+                subtitle: Text(l.t('not_sure_yet')),
                 onTap: () {
                   Navigator.pop(context);
                   _changeToMaybe(context, provider);
@@ -196,6 +199,7 @@ class RideAttendanceButton extends StatelessWidget {
 
   // Popup para cuando YA está participando
   void _showOptions(BuildContext context, RideProvider provider) {
+    final l = Provider.of<LocaleNotifier>(context, listen: false);
     final currentUserId = provider.currentUserId;
     if (currentUserId == null) return;
 
@@ -223,12 +227,12 @@ class RideAttendanceButton extends StatelessWidget {
               // Solo mostrar "Confirmar" si NO está confirmado
               if (!isConfirmed)
                 ListTile(
-                  leading: const Icon(
+                  leading: Icon(
                     Icons.check_circle,
                     color: Colors.green,
                     size: 32,
                   ),
-                  title: const Text('Confirmar asistencia'),
+                  title: Text(l.t('confirm_attendance')),
                   subtitle: const Text('Definitivamente voy'),
                   onTap: () {
                     Navigator.pop(context);
@@ -256,8 +260,8 @@ class RideAttendanceButton extends StatelessWidget {
 
               // Siempre mostrar cancelar
               ListTile(
-                leading: const Icon(Icons.cancel, color: Colors.red, size: 32),
-                title: const Text('Cancelar asistencia'),
+                leading: Icon(Icons.cancel, color: Colors.red, size: 32),
+                title: Text(l.t('cancel_attendance')),
                 subtitle: const Text('Ya no voy a ir'),
                 onTap: () {
                   Navigator.pop(context);
@@ -316,22 +320,23 @@ class RideAttendanceButton extends StatelessWidget {
     BuildContext context,
     RideProvider provider,
   ) async {
+    final l = Provider.of<LocaleNotifier>(context, listen: false);
     // Confirmar cancelación
     final confirm = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Cancelar asistencia'),
+        title: Text(l.t('cancel_attendance')),
         content: const Text(
           '¿Estás seguro de que ya no vas a asistir a esta rodada?',
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
-            child: const Text('No'),
+            child: Text('No'),
           ),
           TextButton(
             onPressed: () => Navigator.pop(context, true),
-            child: const Text('Sí, cancelar'),
+            child: Text(l.t('yes_cancel')),
           ),
         ],
       ),

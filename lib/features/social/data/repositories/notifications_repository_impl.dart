@@ -116,6 +116,8 @@ class NotificationsRepositoryImpl implements NotificationsRepository {
         return '$fromUserName te mencionó';
       case NotificationType.follow:
         return '$fromUserName comenzó a seguirte';
+      case NotificationType.followRequest:
+        return '$fromUserName quiere seguirte';
     }
   }
 }

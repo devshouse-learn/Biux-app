@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:biux/core/design_system/locale_notifier.dart';
+import 'package:provider/provider.dart';
 
 /// Pantalla de selección de ubicación en mapa.
 /// Retorna un LatLng al hacer pop, o null si se cancela.
@@ -12,6 +14,8 @@ class LocationPickerScreen extends StatefulWidget {
 }
 
 class _LocationPickerScreenState extends State<LocationPickerScreen> {
+  LocaleNotifier get l => Provider.of<LocaleNotifier>(context);
+
   GoogleMapController? _mapController;
   LatLng _selectedPosition = const LatLng(19.4326, -99.1332); // Default CDMX
   bool _loading = true;
@@ -45,7 +49,7 @@ class _LocationPickerScreenState extends State<LocationPickerScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Seleccionar ubicación'),
+        title: Text(l.t('select_location')),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, _selectedPosition),

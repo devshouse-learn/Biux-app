@@ -14,6 +14,7 @@ import 'package:biux/features/accidents/domain/entities/accident_entity.dart';
 import 'package:biux/features/accidents/presentation/screens/accidents_list_screen.dart';
 import 'package:biux/features/accidents/presentation/screens/accident_report_screen.dart';
 import 'package:biux/features/accidents/presentation/screens/accident_detail_screen.dart';
+import 'package:biux/core/design_system/locale_notifier.dart';
 
 class EmergencyScreen extends StatefulWidget {
   const EmergencyScreen({Key? key}) : super(key: key);
@@ -22,6 +23,8 @@ class EmergencyScreen extends StatefulWidget {
 }
 
 class _EmergencyScreenState extends State<EmergencyScreen> {
+  LocaleNotifier get l => Provider.of<LocaleNotifier>(context);
+
   @override
   void initState() {
     super.initState();
@@ -137,11 +140,11 @@ class _EmergencyScreenState extends State<EmergencyScreen> {
             ),
           ),
           if (p.sosActive) ...[
-            const SizedBox(height: 12),
+            SizedBox(height: 12),
             TextButton(
               onPressed: () => p.cancelSOS(),
-              child: const Text(
-                'Cancelar alerta',
+              child: Text(
+                l.t('cancel_alert'),
                 style: TextStyle(
                   color: Colors.white,
                   decoration: TextDecoration.underline,
@@ -163,7 +166,7 @@ class _EmergencyScreenState extends State<EmergencyScreen> {
         ),
       );
       final uid = FirebaseAuth.instance.currentUser?.uid ?? '';
-      final name = context.read<UserProvider>().user?.name ?? 'Ciclista';
+      final name = context.read<UserProvider>().user?.name ?? l.t('cyclist_label');
       await p.sendSOS(
         userId: uid,
         userName: name,
@@ -238,8 +241,8 @@ class _EmergencyScreenState extends State<EmergencyScreen> {
                     builder: (_) => const AccidentReportScreen(),
                   ),
                 ),
-                icon: const Icon(Icons.add, size: 16),
-                label: const Text('Reportar'),
+                icon: Icon(Icons.add, size: 16),
+                label: Text(l.t('report_action')),
                 style: TextButton.styleFrom(
                   foregroundColor: Colors.red[700],
                   padding: const EdgeInsets.symmetric(horizontal: 8),
@@ -706,7 +709,7 @@ class _EmergencyScreenState extends State<EmergencyScreen> {
             children: [
               Expanded(
                 child: Text(
-                  'Mis Contactos de Emergencia',
+                  l.t('my_emergency_contacts'),
                   style: TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.bold,
@@ -727,13 +730,13 @@ class _EmergencyScreenState extends State<EmergencyScreen> {
                     color: Colors.black87,
                     borderRadius: BorderRadius.circular(20),
                   ),
-                  child: const Row(
+                  child: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       Icon(Icons.add, color: Colors.white, size: 16),
                       SizedBox(width: 4),
                       Text(
-                        'Agregar',
+                        l.t('add_label'),
                         style: TextStyle(
                           color: Colors.white,
                           fontSize: 12,
@@ -964,7 +967,7 @@ class _EmergencyScreenState extends State<EmergencyScreen> {
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(16),
           ),
-          title: const Row(
+          title: Row(
             children: [
               Icon(Icons.person_add, color: ColorTokens.primary30),
               SizedBox(width: 8),
@@ -978,7 +981,7 @@ class _EmergencyScreenState extends State<EmergencyScreen> {
                 TextField(
                   controller: nameC,
                   decoration: InputDecoration(
-                    labelText: 'Nombre',
+                    labelText: l.t('name_label'),
                     prefixIcon: const Icon(Icons.person),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(10),
@@ -991,11 +994,11 @@ class _EmergencyScreenState extends State<EmergencyScreen> {
                   controller: phoneC,
                   decoration: InputDecoration(
                     labelText: 'Teléfono',
-                    prefixIcon: const Icon(Icons.phone),
+                    prefixIcon: Icon(Icons.phone),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(10),
                     ),
-                    hintText: 'Ej: 3001234567',
+                    hintText: l.t('phone_example'),
                   ),
                   keyboardType: TextInputType.phone,
                 ),
@@ -1004,7 +1007,7 @@ class _EmergencyScreenState extends State<EmergencyScreen> {
                   initialValue: selRel,
                   decoration: InputDecoration(
                     labelText: 'Relación',
-                    prefixIcon: const Icon(Icons.family_restroom),
+                    prefixIcon: Icon(Icons.family_restroom),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(10),
                     ),
@@ -1021,14 +1024,14 @@ class _EmergencyScreenState extends State<EmergencyScreen> {
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(ctx),
-              child: const Text('Cancelar'),
+              child: Text(l.t('cancel')),
             ),
             ElevatedButton.icon(
               onPressed: () {
                 if (nameC.text.trim().isEmpty || phoneC.text.trim().isEmpty) {
                   ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Text('Nombre y teléfono son requeridos'),
+                    SnackBar(
+                      content: Text(l.t('name_phone_required')),
                       backgroundColor: Colors.orange,
                     ),
                   );
@@ -1052,8 +1055,8 @@ class _EmergencyScreenState extends State<EmergencyScreen> {
                   ),
                 );
               },
-              icon: const Icon(Icons.save),
-              label: const Text('Guardar'),
+              icon: Icon(Icons.save),
+              label: Text(l.t('save')),
               style: ElevatedButton.styleFrom(
                 backgroundColor: ColorTokens.primary30,
                 foregroundColor: Colors.white,

@@ -18,6 +18,8 @@ class ImageCropEditorScreen extends StatefulWidget {
 }
 
 class _ImageCropEditorScreenState extends State<ImageCropEditorScreen> {
+  LocaleNotifier get l => Provider.of<LocaleNotifier>(context);
+
   // Transformaciones de la imagen
   Offset _offset = Offset.zero;
   double _scale = 1.0;
@@ -209,9 +211,9 @@ class _ImageCropEditorScreenState extends State<ImageCropEditorScreen> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               const Icon(Icons.error, color: Colors.red, size: 64),
-              const SizedBox(height: 16),
+              SizedBox(height: 16),
               Text(l.t(_error!)),
-              const SizedBox(height: 32),
+              SizedBox(height: 32),
               ElevatedButton(
                 onPressed: () => Navigator.pop(context),
                 child: Text(l.t('go_back')),
@@ -431,7 +433,7 @@ class _ImageCropEditorScreenState extends State<ImageCropEditorScreen> {
                       onPressed: _isCropping
                           ? null
                           : () => Navigator.pop(context),
-                      icon: const Icon(Icons.close),
+                      icon: Icon(Icons.close),
                       label: Text(l.t('cancel')),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.red,
@@ -449,7 +451,7 @@ class _ImageCropEditorScreenState extends State<ImageCropEditorScreen> {
                                 color: Colors.white,
                               ),
                             )
-                          : const Icon(Icons.check),
+                          : Icon(Icons.check),
                       label: Text(
                         _isCropping ? l.t('processing_label') : l.t('accept'),
                       ),

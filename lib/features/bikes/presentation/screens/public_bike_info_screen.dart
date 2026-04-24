@@ -21,6 +21,8 @@ class PublicBikeInfoScreen extends StatefulWidget {
 }
 
 class _PublicBikeInfoScreenState extends State<PublicBikeInfoScreen> {
+  LocaleNotifier get l => Provider.of<LocaleNotifier>(context);
+
   bool _isLoading = true;
   BikeEntity? _bike;
   String? _error;
@@ -74,13 +76,13 @@ class _PublicBikeInfoScreenState extends State<PublicBikeInfoScreen> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Icon(Icons.error_outline, size: 64, color: Colors.red[300]),
-            const SizedBox(height: 16),
+            SizedBox(height: 16),
             Text(
               l.t(_error!),
               textAlign: TextAlign.center,
               style: const TextStyle(fontSize: 16, color: Colors.black87),
             ),
-            const SizedBox(height: 24),
+            SizedBox(height: 24),
             ElevatedButton(
               onPressed: () => Navigator.pop(context),
               style: ElevatedButton.styleFrom(
@@ -103,7 +105,7 @@ class _PublicBikeInfoScreenState extends State<PublicBikeInfoScreen> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Icon(Icons.search_off, size: 64, color: ColorTokens.neutral70),
-            const SizedBox(height: 16),
+            SizedBox(height: 16),
             Text(
               l.t('bike_not_found'),
               textAlign: TextAlign.center,
@@ -113,7 +115,7 @@ class _PublicBikeInfoScreenState extends State<PublicBikeInfoScreen> {
                 color: Colors.black87,
               ),
             ),
-            const SizedBox(height: 8),
+            SizedBox(height: 8),
             Text(
               l.t('qr_not_registered'),
               textAlign: TextAlign.center,
@@ -122,7 +124,7 @@ class _PublicBikeInfoScreenState extends State<PublicBikeInfoScreen> {
                 color: ColorTokens.neutral70,
               ),
             ),
-            const SizedBox(height: 24),
+            SizedBox(height: 24),
             ElevatedButton(
               onPressed: () => Navigator.pop(context),
               style: ElevatedButton.styleFrom(
@@ -260,7 +262,7 @@ class _PublicBikeInfoScreenState extends State<PublicBikeInfoScreen> {
       child: Row(
         children: [
           Icon(statusIcon, color: statusColor, size: 28),
-          const SizedBox(width: 12),
+          SizedBox(width: 12),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -297,7 +299,7 @@ class _PublicBikeInfoScreenState extends State<PublicBikeInfoScreen> {
           BoxShadow(
             color: Colors.black.withValues(alpha: 0.05),
             blurRadius: 8,
-            offset: const Offset(0, 2),
+            offset: Offset(0, 2),
           ),
         ],
       ),
@@ -306,13 +308,13 @@ class _PublicBikeInfoScreenState extends State<PublicBikeInfoScreen> {
         children: [
           Text(
             l.t('bike_info'),
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 18,
               fontWeight: FontWeight.w600,
               color: ColorTokens.primary30,
             ),
           ),
-          const SizedBox(height: 16),
+          SizedBox(height: 16),
           _buildInfoRow(l.t('brand_label'), bike.brand),
           _buildInfoRow(l.t('model_label'), bike.model),
           _buildInfoRow(l.t('year_label'), bike.year.toString()),
@@ -324,7 +326,7 @@ class _PublicBikeInfoScreenState extends State<PublicBikeInfoScreen> {
           Row(
             children: [
               Icon(Icons.info_outline, size: 16, color: ColorTokens.neutral70),
-              const SizedBox(width: 8),
+              SizedBox(width: 8),
               Expanded(
                 child: Text(
                   l.t('public_info_note'),
@@ -394,7 +396,7 @@ class _PublicBikeInfoScreenState extends State<PublicBikeInfoScreen> {
                 Row(
                   children: [
                     Icon(Icons.visibility, color: Colors.red[600], size: 24),
-                    const SizedBox(width: 12),
+                    SizedBox(width: 12),
                     Expanded(
                       child: Text(
                         l.t('have_you_seen_bike'),
@@ -407,7 +409,7 @@ class _PublicBikeInfoScreenState extends State<PublicBikeInfoScreen> {
                     ),
                   ],
                 ),
-                const SizedBox(height: 12),
+                SizedBox(height: 12),
                 Text(
                   l.t('report_sighting_help'),
                   style: TextStyle(fontSize: 14, color: Colors.red[600]),
@@ -425,7 +427,7 @@ class _PublicBikeInfoScreenState extends State<PublicBikeInfoScreen> {
                         borderRadius: BorderRadius.circular(12),
                       ),
                     ),
-                    icon: const Icon(Icons.add_location),
+                    icon: Icon(Icons.add_location),
                     label: Text(
                       l.t('report_sighting'),
                       style: const TextStyle(
@@ -457,25 +459,25 @@ class _PublicBikeInfoScreenState extends State<PublicBikeInfoScreen> {
           children: [
             Text(
               l.t('where_did_you_see'),
-              style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+              style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
             ),
-            const SizedBox(height: 16),
+            SizedBox(height: 16),
             TextFormField(
               controller: locationController,
               decoration: InputDecoration(
                 labelText: l.t('location_label'),
                 hintText: l.t('location_hint'),
-                border: const OutlineInputBorder(),
+                border: OutlineInputBorder(),
               ),
               maxLines: 2,
             ),
-            const SizedBox(height: 16),
+            SizedBox(height: 16),
             TextFormField(
               controller: descriptionController,
               decoration: InputDecoration(
                 labelText: l.t('description_optional'),
                 hintText: l.t('additional_details_hint'),
-                border: const OutlineInputBorder(),
+                border: OutlineInputBorder(),
               ),
               maxLines: 3,
             ),

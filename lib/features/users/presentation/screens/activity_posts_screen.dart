@@ -7,6 +7,9 @@ import 'package:biux/features/experiences/data/models/experience_model.dart';
 import 'package:biux/features/experiences/domain/entities/experience_entity.dart';
 import 'package:biux/shared/widgets/post_card.dart';
 import 'package:biux/features/social/presentation/widgets/post_social_actions.dart';
+import 'package:biux/core/design_system/locale_notifier.dart';
+import 'package:provider/provider.dart';
+import 'package:biux/core/design_system/locale_notifier.dart';
 
 /// Pantalla que muestra todas las publicaciones (posts) del usuario.
 /// Usa la misma estructura visual que el feed.
@@ -18,6 +21,8 @@ class ActivityPostsScreen extends StatefulWidget {
 }
 
 class _ActivityPostsScreenState extends State<ActivityPostsScreen> {
+  LocaleNotifier get l => Provider.of<LocaleNotifier>(context);
+
   final _firestore = FirebaseFirestore.instance;
   final String? _currentUserId = FirebaseAuth.instance.currentUser?.uid;
 
@@ -74,7 +79,7 @@ class _ActivityPostsScreenState extends State<ActivityPostsScreen> {
         backgroundColor: ColorTokens.primary30,
         foregroundColor: ColorTokens.neutral100,
         title: Text(
-          'Mis Publicaciones',
+          l.t('my_posts'),
           style: TextStyle(
             color: ColorTokens.neutral100,
             fontSize: 20,
@@ -103,7 +108,7 @@ class _ActivityPostsScreenState extends State<ActivityPostsScreen> {
                   Icon(Icons.grid_on, color: ColorTokens.neutral60, size: 64),
                   SizedBox(height: 16),
                   Text(
-                    'No has compartido publicaciones aún',
+                    l.t('no_shared_posts'),
                     style: TextStyle(
                       color: ColorTokens.neutral80,
                       fontSize: 16,

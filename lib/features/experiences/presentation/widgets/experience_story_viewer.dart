@@ -16,6 +16,7 @@ import 'package:biux/features/social/presentation/providers/likes_provider.dart'
 import 'package:biux/features/social/domain/entities/like_entity.dart';
 import 'package:biux/features/social/domain/repositories/likes_repository.dart';
 import 'package:share_plus/share_plus.dart';
+import 'package:biux/core/design_system/locale_notifier.dart';
 
 /// Widget para mostrar una experiencia individual tipo Instagram Story
 /// Soporta reproducción automática de videos e imágenes con duración
@@ -45,6 +46,8 @@ class ExperienceStoryViewer extends StatefulWidget {
 
 class _ExperienceStoryViewerState extends State<ExperienceStoryViewer>
     with SingleTickerProviderStateMixin {
+  LocaleNotifier get l => Provider.of<LocaleNotifier>(context);
+
   late AnimationController _progressController;
 
   int currentMediaIndex = 0;
@@ -599,7 +602,7 @@ class _ExperienceStoryViewerState extends State<ExperienceStoryViewer>
               Navigator.pop(dialogContext);
               _deleteStory(context);
             },
-            child: const Text('Eliminar historia'),
+            child: Text(l.t('delete_story')),
           ),
         ],
       ),
@@ -776,10 +779,10 @@ class _ExperienceStoryViewerState extends State<ExperienceStoryViewer>
                     color: ColorTokens.primary50.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(10),
                   ),
-                  child: const Icon(Icons.share, color: ColorTokens.primary50),
+                  child: Icon(Icons.share, color: ColorTokens.primary50),
                 ),
-                title: const Text(
-                  'Compartir',
+                title: Text(
+                  l.t('share'),
                   style: TextStyle(fontWeight: FontWeight.w600),
                 ),
                 subtitle: const Text('Comparte esta historia'),
@@ -834,11 +837,11 @@ class _ExperienceStoryViewerState extends State<ExperienceStoryViewer>
                       color: Colors.red.withValues(alpha: 0.1),
                       borderRadius: BorderRadius.circular(10),
                     ),
-                    child: const Icon(Icons.delete_outline, color: Colors.red),
+                    child: Icon(Icons.delete_outline, color: Colors.red),
                   ),
                   title: Text(
                     l.t('delete_story'),
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontWeight: FontWeight.w600,
                       color: Colors.red,
                     ),
@@ -854,12 +857,12 @@ class _ExperienceStoryViewerState extends State<ExperienceStoryViewer>
                 ),
               ],
 
-              const SizedBox(height: 12),
+              SizedBox(height: 12),
 
               // Cancelar
               TextButton(
                 onPressed: () => Navigator.pop(modalContext),
-                child: const Text('Cancelar'),
+                child: Text(l.t('cancel')),
               ),
             ],
           ),
@@ -933,7 +936,7 @@ class _ExperienceStoryViewerState extends State<ExperienceStoryViewer>
                   ),
                 ],
               ),
-              const SizedBox(height: 6),
+              SizedBox(height: 6),
               Text(
                 'Historia de @${widget.experience.user.userName}',
                 style: theme.textTheme.bodySmall?.copyWith(
@@ -942,13 +945,13 @@ class _ExperienceStoryViewerState extends State<ExperienceStoryViewer>
                   ),
                 ),
               ),
-              const SizedBox(height: 16),
+              SizedBox(height: 16),
               TextField(
                 controller: captionController,
                 maxLength: 200,
                 maxLines: 3,
                 decoration: InputDecoration(
-                  hintText: 'Añade un mensaje (opcional)',
+                  hintText: l.t('add_message_optional'),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
                   ),
@@ -1097,17 +1100,17 @@ class _ExperienceStoryViewerState extends State<ExperienceStoryViewer>
                     ),
                   ),
                 ),
-                const SizedBox(height: 16),
+                SizedBox(height: 16),
 
                 // Encabezado
                 Row(
                   children: [
-                    const Icon(
+                    Icon(
                       Icons.visibility,
                       color: ColorTokens.primary50,
                       size: 28,
                     ),
-                    const SizedBox(width: 12),
+                    SizedBox(width: 12),
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -1117,7 +1120,7 @@ class _ExperienceStoryViewerState extends State<ExperienceStoryViewer>
                             fontWeight: FontWeight.bold,
                           ),
                         ),
-                        const SizedBox(height: 4),
+                        SizedBox(height: 4),
                         Text(
                           '$viewsCount ${viewsCount == 1 ? l.t('views_count_singular') : l.t('views_count_plural')}',
                           style: theme.textTheme.bodyMedium?.copyWith(
@@ -1203,7 +1206,7 @@ class _ExperienceStoryViewerState extends State<ExperienceStoryViewer>
                                                 color: theme.cardColor,
                                                 shape: BoxShape.circle,
                                               ),
-                                              child: const Icon(
+                                              child: Icon(
                                                 Icons.favorite,
                                                 color: Colors.red,
                                                 size: 16,
@@ -1212,7 +1215,7 @@ class _ExperienceStoryViewerState extends State<ExperienceStoryViewer>
                                           ),
                                       ],
                                     ),
-                                    const SizedBox(width: 12),
+                                    SizedBox(width: 12),
                                     // Información del usuario
                                     Expanded(
                                       child: Column(
@@ -1224,7 +1227,7 @@ class _ExperienceStoryViewerState extends State<ExperienceStoryViewer>
                                                 ? viewer.fullName
                                                 : (viewer.userName.isNotEmpty
                                                       ? viewer.userName
-                                                      : 'Usuario'),
+                                                      : l.t('user_default')),
                                             style: theme.textTheme.bodyLarge
                                                 ?.copyWith(
                                                   fontWeight: FontWeight.w600,

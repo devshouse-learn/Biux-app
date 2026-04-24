@@ -4,6 +4,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:go_router/go_router.dart';
 import 'package:biux/core/design_system/color_tokens.dart';
 import 'package:biux/core/config/router/app_routes.dart';
+import 'package:biux/core/design_system/locale_notifier.dart';
+import 'package:provider/provider.dart';
 
 class ParentalConsentScreen extends StatefulWidget {
   final String userId;
@@ -19,6 +21,8 @@ class ParentalConsentScreen extends StatefulWidget {
 }
 
 class _ParentalConsentScreenState extends State<ParentalConsentScreen> {
+  LocaleNotifier get l => Provider.of<LocaleNotifier>(context);
+
   final _emailCtrl = TextEditingController();
   final _formKey = GlobalKey<FormState>();
   bool _sending = false;
@@ -177,12 +181,12 @@ class _ParentalConsentScreenState extends State<ParentalConsentScreen> {
             'Correo del padre, madre o tutor *',
             style: TextStyle(fontSize: 13, fontWeight: FontWeight.w700),
           ),
-          const SizedBox(height: 8),
+          SizedBox(height: 8),
           TextFormField(
             controller: _emailCtrl,
             keyboardType: TextInputType.emailAddress,
             decoration: InputDecoration(
-              hintText: 'correo@ejemplo.com',
+              hintText: l.t('email_example'),
               prefixIcon: const Icon(Icons.email_outlined),
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(12),
@@ -240,8 +244,8 @@ class _ParentalConsentScreenState extends State<ParentalConsentScreen> {
                 await FirebaseAuth.instance.signOut();
                 if (context.mounted) context.go(AppRoutes.login);
               },
-              child: const Text(
-                'Cancelar y salir',
+              child: Text(
+                l.t('cancel_and_exit'),
                 style: TextStyle(color: Colors.grey),
               ),
             ),

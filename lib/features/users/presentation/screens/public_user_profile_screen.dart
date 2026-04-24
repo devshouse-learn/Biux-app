@@ -15,6 +15,7 @@ import 'package:biux/features/users/data/models/user.dart';
 import 'package:biux/features/users/presentation/providers/user_provider.dart';
 import 'package:biux/features/users/presentation/providers/user_profile_provider.dart';
 import 'package:biux/features/experiences/domain/entities/experience_entity.dart';
+import 'package:biux/core/design_system/locale_notifier.dart';
 
 /// Pantalla de perfil p├║blico de usuario
 /// Muestra informaci├│n b├ísica, posts y bot├│n de seguir/dejar de seguir
@@ -85,9 +86,9 @@ class _PublicUserProfileScreenState extends State<PublicUserProfileScreen> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Icon(Icons.error_outline, size: 64, color: ColorTokens.error50),
-                const SizedBox(height: 16),
+                SizedBox(height: 16),
                 Text(
-                  'Error al cargar el perfil',
+                  l.t('error_loading_profile_msg'),
                   style: TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.w600,
@@ -118,7 +119,7 @@ class _PublicUserProfileScreenState extends State<PublicUserProfileScreen> {
         if (user == null) {
           return Center(
             child: Text(
-              'Usuario no encontrado',
+              l.t('user_not_found'),
               style: TextStyle(fontSize: 18, color: ColorTokens.neutral70),
             ),
           );
@@ -201,48 +202,51 @@ class _PublicUserProfileScreenState extends State<PublicUserProfileScreen> {
                                     }
                                   },
                                   itemBuilder: (_) => [
-                                    const PopupMenuItem(
+                                    PopupMenuItem(
                                       value: 'block',
                                       child: ListTile(
                                         dense: true,
                                         leading: Icon(Icons.block),
-                                        title: Text('Bloquear'),
+                                        title: Text(l.t('block')),
                                       ),
                                     ),
                                     PopupMenuItem(
                                       value: 'report',
                                       child: ListTile(
                                         dense: true,
-                                        leading: Icon(Icons.flag, color: Colors.red),
+                                        leading: Icon(
+                                          Icons.flag,
+                                          color: Colors.red,
+                                        ),
                                         title: Text(
-                                          'Reportar',
+                                          l.t('report_action'),
                                           style: TextStyle(color: Colors.red),
                                         ),
                                       ),
                                     ),
-                                    const PopupMenuDivider(),
-                                    const PopupMenuItem(
+                                    PopupMenuDivider(),
+                                    PopupMenuItem(
                                       value: 'copy_url',
                                       child: ListTile(
                                         dense: true,
                                         leading: Icon(Icons.link),
-                                        title: Text('Copiar URL del perfil'),
+                                        title: Text(l.t('copy_profile_url')),
                                       ),
                                     ),
-                                    const PopupMenuItem(
+                                    PopupMenuItem(
                                       value: 'share',
                                       child: ListTile(
                                         dense: true,
                                         leading: Icon(Icons.share),
-                                        title: Text('Compartir este perfil'),
+                                        title: Text(l.t('share_this_profile')),
                                       ),
                                     ),
-                                    const PopupMenuItem(
+                                    PopupMenuItem(
                                       value: 'qr',
                                       child: ListTile(
                                         dense: true,
                                         leading: Icon(Icons.qr_code),
-                                        title: Text('Código QR'),
+                                        title: Text(l.t('qr_code')),
                                       ),
                                     ),
                                   ],
@@ -364,7 +368,7 @@ class _PublicUserProfileScreenState extends State<PublicUserProfileScreen> {
                                       ),
                                     ),
                                     Text(
-                                      'Seguidores',
+                                      l.t('followers'),
                                       style: TextStyle(
                                         fontSize: 10,
                                         color: ColorTokens.neutral100
@@ -390,7 +394,7 @@ class _PublicUserProfileScreenState extends State<PublicUserProfileScreen> {
                                       ),
                                     ),
                                     Text(
-                                      'Siguiendo',
+                                      l.t('following'),
                                       style: TextStyle(
                                         fontSize: 10,
                                         color: ColorTokens.neutral100
@@ -457,7 +461,7 @@ class _PublicUserProfileScreenState extends State<PublicUserProfileScreen> {
                         Row(
                           children: [
                             Text(
-                              'Publicaciones',
+                              l.t('publications'),
                               style: TextStyle(
                                 fontSize: 16,
                                 fontWeight: FontWeight.bold,
@@ -536,7 +540,7 @@ class _PublicUserProfileScreenState extends State<PublicUserProfileScreen> {
             ),
             SizedBox(height: 12),
             Text(
-              'Sin publicaciones aún',
+              l.t('no_posts_yet'),
               style: TextStyle(
                 fontSize: 14,
                 color: ColorTokens.neutral70,
@@ -1338,7 +1342,7 @@ class _PublicUserProfileScreenState extends State<PublicUserProfileScreen> {
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: const Text('Bloquear usuario'),
+        title: Text(l.t('block_user')),
         content: Text(
           '¿Deseas bloquear a ${user.fullName.isNotEmpty ? user.fullName : user.userName}? '
           'No podrá enviarte mensajes ni ver tu perfil. '
@@ -1347,20 +1351,23 @@ class _PublicUserProfileScreenState extends State<PublicUserProfileScreen> {
         actions: [
           TextButton(
             onPressed: () => Navigator.of(ctx).pop(),
-            child: const Text('Cancelar'),
+            child: Text(l.t('cancel')),
           ),
           TextButton(
             onPressed: () async {
               Navigator.of(ctx).pop();
-              await context.read<SafetyProvider>().blockUser(currentUid, widget.userId);
+              await context.read<SafetyProvider>().blockUser(
+                currentUid,
+                widget.userId,
+              );
               if (mounted) {
                 ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('Usuario bloqueado')),
+                  SnackBar(content: Text(l.t('user_blocked'))),
                 );
                 context.pop();
               }
             },
-            child: const Text('Bloquear', style: TextStyle(color: Colors.red)),
+            child: Text(l.t('block'), style: TextStyle(color: Colors.red)),
           ),
         ],
       ),
@@ -1372,14 +1379,17 @@ class _PublicUserProfileScreenState extends State<PublicUserProfileScreen> {
       MaterialPageRoute(
         builder: (_) => ReportFlowScreen(
           reportedUserId: widget.userId,
-          reportedUserName: user.fullName.isNotEmpty ? user.fullName : user.userName,
+          reportedUserName: user.fullName.isNotEmpty
+              ? user.fullName
+              : user.userName,
         ),
       ),
     );
   }
 
   void _copyProfileUrl(BiuxUser user) {
-    final url = 'https://biux.app/u/${user.userName.isNotEmpty ? user.userName : widget.userId}';
+    final url =
+        'https://biux.app/u/${user.userName.isNotEmpty ? user.userName : widget.userId}';
     Clipboard.setData(ClipboardData(text: url));
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(content: Text('URL copiada al portapapeles')),
@@ -1387,7 +1397,8 @@ class _PublicUserProfileScreenState extends State<PublicUserProfileScreen> {
   }
 
   void _showQrCode(BiuxUser user) {
-    final url = 'https://biux.app/u/${user.userName.isNotEmpty ? user.userName : widget.userId}';
+    final url =
+        'https://biux.app/u/${user.userName.isNotEmpty ? user.userName : widget.userId}';
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
@@ -1413,7 +1424,7 @@ class _PublicUserProfileScreenState extends State<PublicUserProfileScreen> {
             const SizedBox(height: 12),
             Text(
               url,
-              style: const TextStyle(fontSize: 12, color: Colors.grey),
+              style: TextStyle(fontSize: 12, color: Colors.grey),
               textAlign: TextAlign.center,
             ),
           ],
@@ -1421,7 +1432,7 @@ class _PublicUserProfileScreenState extends State<PublicUserProfileScreen> {
         actions: [
           TextButton(
             onPressed: () => Navigator.of(ctx).pop(),
-            child: const Text('Cerrar'),
+            child: Text(l.t('close')),
           ),
         ],
       ),

@@ -5,6 +5,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:go_router/go_router.dart';
 import 'package:biux/core/design_system/color_tokens.dart';
 import 'dart:developer' as developer;
+import 'package:biux/core/design_system/locale_notifier.dart';
+import 'package:provider/provider.dart';
 
 /// Pantalla que muestra todos los comentarios realizados por el usuario.
 /// Al seleccionar uno lleva al post/contenido donde se hizo el comentario.
@@ -16,6 +18,8 @@ class ActivityCommentsScreen extends StatefulWidget {
 }
 
 class _ActivityCommentsScreenState extends State<ActivityCommentsScreen> {
+  LocaleNotifier get l => Provider.of<LocaleNotifier>(context);
+
   final _database = FirebaseDatabase.instance;
   final _firestore = FirebaseFirestore.instance;
   final String? _currentUserId = FirebaseAuth.instance.currentUser?.uid;
@@ -98,7 +102,7 @@ class _ActivityCommentsScreenState extends State<ActivityCommentsScreen> {
                     ),
                     parentCommentId: commentData['parentCommentId']?.toString(),
                     postDescription:
-                        expData['description']?.toString() ?? 'Publicación',
+                        expData['description']?.toString() ?? l.t('publication'),
                     postImageUrl: postImage,
                     postAuthorName:
                         user?['fullName']?.toString() ??
@@ -143,7 +147,7 @@ class _ActivityCommentsScreenState extends State<ActivityCommentsScreen> {
         backgroundColor: ColorTokens.primary30,
         foregroundColor: ColorTokens.neutral100,
         title: Text(
-          'Comentarios',
+          l.t('comments_label'),
           style: TextStyle(
             color: ColorTokens.neutral100,
             fontSize: 20,
@@ -176,7 +180,7 @@ class _ActivityCommentsScreenState extends State<ActivityCommentsScreen> {
                   ),
                   SizedBox(height: 16),
                   Text(
-                    'No has hecho comentarios aún',
+                    l.t('no_comments_yet'),
                     style: TextStyle(
                       color: ColorTokens.neutral80,
                       fontSize: 16,

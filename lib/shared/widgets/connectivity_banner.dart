@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:biux/core/services/connectivity_service.dart';
+import 'package:biux/core/design_system/locale_notifier.dart';
+import 'package:provider/provider.dart';
 
 class ConnectivityBanner extends StatelessWidget {
   final Widget child;
@@ -7,6 +9,8 @@ class ConnectivityBanner extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l = Provider.of<LocaleNotifier>(context);
+
     return StreamBuilder<ConnectivityStatus>(
       stream: ConnectivityService().statusStream,
       initialData: ConnectivityService().status,
@@ -23,11 +27,11 @@ class ConnectivityBanner extends StatelessWidget {
                     horizontal: 16,
                   ),
                   child: Row(
-                    children: const [
+                    children: [
                       Icon(Icons.wifi_off, color: Colors.white, size: 16),
                       SizedBox(width: 8),
                       Text(
-                        'Sin conexión — modo offline',
+                        l.t('no_connection_offline'),
                         style: TextStyle(color: Colors.white, fontSize: 12),
                       ),
                     ],

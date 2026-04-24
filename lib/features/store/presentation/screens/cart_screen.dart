@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:biux/features/store/presentation/providers/cart_provider.dart';
+import 'package:biux/core/design_system/locale_notifier.dart';
 
 /// Pantalla del carrito de compras con checkout
 class CartScreen extends StatefulWidget {
@@ -11,6 +12,8 @@ class CartScreen extends StatefulWidget {
 }
 
 class _CartScreenState extends State<CartScreen> {
+  LocaleNotifier get l => Provider.of<LocaleNotifier>(context);
+
   String? _selectedPayment;
 
   @override
@@ -624,12 +627,12 @@ class _CartScreenState extends State<CartScreen> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Eliminar producto'),
+        title: Text('Eliminar producto'),
         content: Text('¿Deseas eliminar "$productName" del carrito?'),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('Cancelar'),
+            child: Text(l.t('cancel')),
           ),
           ElevatedButton(
             onPressed: () {
@@ -643,7 +646,7 @@ class _CartScreenState extends State<CartScreen> {
               );
             },
             style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
-            child: const Text('Eliminar'),
+            child: Text(l.t('delete')),
           ),
         ],
       ),

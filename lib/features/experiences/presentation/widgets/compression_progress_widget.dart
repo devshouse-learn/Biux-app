@@ -165,7 +165,7 @@ class MultiCompressionProgressWidget extends StatelessWidget {
                   color: Colors.black87,
                 ),
               ),
-              const Spacer(),
+              Spacer(),
               if (activeItems.isNotEmpty && onCancelAll != null)
                 TextButton(
                   onPressed: onCancelAll,
@@ -189,7 +189,7 @@ class MultiCompressionProgressWidget extends StatelessWidget {
 
           // Lista de completados (colapsada)
           if (completedItems.isNotEmpty) ...[
-            const SizedBox(height: 8),
+            SizedBox(height: 8),
             ExpansionTile(
               title: Text(
                 '${l.t('completed_label')} (${completedItems.length})',

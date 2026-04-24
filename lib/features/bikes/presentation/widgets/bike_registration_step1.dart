@@ -15,6 +15,8 @@ class BikeRegistrationStep1 extends StatefulWidget {
 }
 
 class _BikeRegistrationStep1State extends State<BikeRegistrationStep1> {
+  LocaleNotifier get l => Provider.of<LocaleNotifier>(context);
+
   final _formKey = GlobalKey<FormState>();
   final _brandController = TextEditingController();
   final _modelController = TextEditingController();
@@ -71,7 +73,7 @@ class _BikeRegistrationStep1State extends State<BikeRegistrationStep1> {
         key: _formKey,
         child: ListView(
           children: [
-            const SizedBox(height: 8),
+            SizedBox(height: 8),
 
             // Marca
             TextFormFieldBiuxWidget(
@@ -102,7 +104,7 @@ class _BikeRegistrationStep1State extends State<BikeRegistrationStep1> {
               },
             ),
 
-            const SizedBox(height: 16),
+            SizedBox(height: 16),
 
             // Modelo
             TextFormFieldBiuxWidget(
@@ -138,7 +140,7 @@ class _BikeRegistrationStep1State extends State<BikeRegistrationStep1> {
             // Año (Selector)
             _buildYearSelector(),
 
-            const SizedBox(height: 16),
+            SizedBox(height: 16),
 
             // Color
             TextFormFieldBiuxWidget(
@@ -169,7 +171,7 @@ class _BikeRegistrationStep1State extends State<BikeRegistrationStep1> {
               },
             ),
 
-            const SizedBox(height: 16),
+            SizedBox(height: 16),
 
             // Talla
             TextFormFieldBiuxWidget(
@@ -205,7 +207,7 @@ class _BikeRegistrationStep1State extends State<BikeRegistrationStep1> {
             // Tipo de bicicleta
             _buildBikeTypeSelector(),
 
-            const SizedBox(height: 16),
+            SizedBox(height: 16),
 
             // Número de serie del marco
             TextFormFieldBiuxWidget(
@@ -243,7 +245,7 @@ class _BikeRegistrationStep1State extends State<BikeRegistrationStep1> {
               ),
             ),
 
-            const SizedBox(height: 16),
+            SizedBox(height: 16),
 
             // Ciudad * - Campo de texto libre con validación
             TextFormFieldBiuxWidget(
@@ -315,7 +317,7 @@ class _BikeRegistrationStep1State extends State<BikeRegistrationStep1> {
             color: ColorTokens.primary30,
           ),
         ),
-        const SizedBox(height: 8),
+        SizedBox(height: 8),
         GestureDetector(
           onTap: () => _showBikeTypePicker(),
           child: Container(
@@ -339,7 +341,7 @@ class _BikeRegistrationStep1State extends State<BikeRegistrationStep1> {
                       : ColorTokens.primary30,
                   size: 20,
                 ),
-                const SizedBox(width: 12),
+                SizedBox(width: 12),
                 Text(
                   _selectedType?.displayName != null
                       ? l.t(_selectedType!.displayName)
@@ -351,7 +353,7 @@ class _BikeRegistrationStep1State extends State<BikeRegistrationStep1> {
                         : ColorTokens.neutral70,
                   ),
                 ),
-                const Spacer(),
+                Spacer(),
                 Icon(Icons.arrow_drop_down, color: ColorTokens.neutral70),
               ],
             ),
@@ -380,7 +382,7 @@ class _BikeRegistrationStep1State extends State<BikeRegistrationStep1> {
       builder: (BuildContext context) {
         return Container(
           padding: const EdgeInsets.all(16),
-          decoration: const BoxDecoration(
+          decoration: BoxDecoration(
             color: ColorTokens.primary30,
             borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
           ),
@@ -482,7 +484,7 @@ class _BikeRegistrationStep1State extends State<BikeRegistrationStep1> {
                       : ColorTokens.primary30,
                   size: 20,
                 ),
-                const SizedBox(width: 12),
+                SizedBox(width: 12),
                 Text(
                   _selectedYear?.toString() ?? l.t('select_bike_year'),
                   style: TextStyle(
@@ -492,7 +494,7 @@ class _BikeRegistrationStep1State extends State<BikeRegistrationStep1> {
                         : ColorTokens.neutral70,
                   ),
                 ),
-                const Spacer(),
+                Spacer(),
                 Icon(Icons.arrow_drop_down, color: ColorTokens.neutral70),
               ],
             ),
@@ -522,7 +524,7 @@ class _BikeRegistrationStep1State extends State<BikeRegistrationStep1> {
         return Container(
           height: 400,
           padding: const EdgeInsets.all(16),
-          decoration: const BoxDecoration(
+          decoration: BoxDecoration(
             color: ColorTokens.primary30,
             borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
           ),
@@ -535,7 +537,7 @@ class _BikeRegistrationStep1State extends State<BikeRegistrationStep1> {
                     onPressed: () => Navigator.pop(context),
                     child: Text(
                       l.t('cancel'),
-                      style: const TextStyle(color: ColorTokens.neutral100),
+                      style: TextStyle(color: ColorTokens.neutral100),
                     ),
                   ),
                   Text(

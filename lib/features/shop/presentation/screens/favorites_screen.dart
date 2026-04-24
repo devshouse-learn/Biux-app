@@ -38,7 +38,7 @@ class FavoritesScreen extends StatelessWidget {
                     size: 120,
                     color: Colors.grey[300],
                   ),
-                  const SizedBox(height: 24),
+                  SizedBox(height: 24),
                   Text(
                     l.t('no_favorites_yet'),
                     style: const TextStyle(
@@ -47,7 +47,7 @@ class FavoritesScreen extends StatelessWidget {
                       color: Colors.black87,
                     ),
                   ),
-                  const SizedBox(height: 12),
+                  SizedBox(height: 12),
                   Text(
                     l.t('no_favorites_subtitle'),
                     textAlign: TextAlign.center,
@@ -60,7 +60,7 @@ class FavoritesScreen extends StatelessWidget {
                   const SizedBox(height: 32),
                   ElevatedButton.icon(
                     onPressed: () => context.go('/shop'),
-                    icon: const Icon(Icons.store, size: 20),
+                    icon: Icon(Icons.store, size: 20),
                     label: Text(l.t('go_to_store')),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: ColorTokens.secondary50,
@@ -112,7 +112,7 @@ class FavoritesScreen extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       const Icon(Icons.favorite, color: Colors.red, size: 20),
-                      const SizedBox(width: 8),
+                      SizedBox(width: 8),
                       Text(
                         '${favs.length} ${l.t('favorite_products')}',
                         style: const TextStyle(
@@ -215,7 +215,7 @@ class _FavCard extends StatelessWidget {
                             ),
                           ],
                         ),
-                        child: const Icon(
+                        child: Icon(
                           Icons.favorite,
                           color: Colors.red,
                           size: 20,
@@ -273,7 +273,7 @@ class _FavCard extends StatelessWidget {
                         size: 12,
                         color: Colors.grey[600],
                       ),
-                      const SizedBox(width: 4),
+                      SizedBox(width: 4),
                       Text(
                         '${l.t('stock_label')}: ${product.stock}',
                         style: TextStyle(fontSize: 11, color: Colors.grey[600]),

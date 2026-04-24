@@ -22,6 +22,8 @@ class ProductDetailScreen extends StatefulWidget {
 }
 
 class _ProductDetailScreenState extends State<ProductDetailScreen> {
+  LocaleNotifier get l => Provider.of<LocaleNotifier>(context);
+
   ProductEntity? _product;
   String? _selectedSize;
   int _quantity = 1;
@@ -266,7 +268,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
               ),
               const SizedBox(height: 8),
               LargePriceTag(price: _product!.price * _quantity),
-              const SizedBox(height: 16),
+              SizedBox(height: 16),
               TextField(
                 controller: addressController,
                 decoration: InputDecoration(
@@ -275,21 +277,21 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                 ),
                 maxLines: 2,
               ),
-              const SizedBox(height: 16),
+              SizedBox(height: 16),
               TextField(
                 controller: phoneController,
                 decoration: InputDecoration(
                   labelText: l.t('contact_phone'),
-                  border: const OutlineInputBorder(),
+                  border: OutlineInputBorder(),
                 ),
                 keyboardType: TextInputType.phone,
               ),
-              const SizedBox(height: 16),
+              SizedBox(height: 16),
               TextField(
                 controller: notesController,
                 decoration: InputDecoration(
                   labelText: l.t('additional_notes'),
-                  border: const OutlineInputBorder(),
+                  border: OutlineInputBorder(),
                 ),
                 maxLines: 2,
               ),
@@ -490,7 +492,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 const Icon(Icons.error_outline, size: 78, color: Colors.red),
-                const SizedBox(height: 16),
+                SizedBox(height: 16),
                 Text(
                   l.t('could_not_load_product'),
                   style: const TextStyle(
@@ -498,7 +500,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                     fontWeight: FontWeight.bold,
                   ),
                 ),
-                const SizedBox(height: 12),
+                SizedBox(height: 12),
                 ElevatedButton(
                   onPressed: () => _goBack(),
                   child: Text(l.t('back_to_store')),
@@ -599,7 +601,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                                 Icons.check_circle,
                                 color: Colors.green,
                               ),
-                              const SizedBox(width: 8),
+                              SizedBox(width: 8),
                               Text(l.t('mark_as_sold')),
                             ],
                           ),
@@ -610,7 +612,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                           child: Row(
                             children: [
                               const Icon(Icons.delete, color: Colors.red),
-                              const SizedBox(width: 8),
+                              SizedBox(width: 8),
                               Text(l.t('delete_post')),
                             ],
                           ),
@@ -646,7 +648,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
 
                   // Precio
                   LargePriceTag(price: _product!.price),
-                  const SizedBox(height: 8),
+                  SizedBox(height: 8),
 
                   // Badge VENDIDO
                   if (_product!.isSold)
@@ -683,7 +685,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                           size: 20,
                           color: Colors.grey[600],
                         ),
-                        const SizedBox(width: 8),
+                        SizedBox(width: 8),
                         Text(
                           '${l.t('location_prefix')} ${_product!.sellerCity}',
                           style: TextStyle(
@@ -700,14 +702,14 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                   Row(
                     children: [
                       Icon(Icons.person, size: 20, color: Colors.grey[600]),
-                      const SizedBox(width: 8),
+                      SizedBox(width: 8),
                       Text(
                         '${l.t('seller_prefix')} ${_product!.sellerName}',
                         style: TextStyle(color: Colors.grey[700], fontSize: 14),
                       ),
                     ],
                   ),
-                  const SizedBox(height: 24),
+                  SizedBox(height: 24),
 
                   // Tallas
                   if (_product!.sizes.isNotEmpty) ...[
@@ -748,7 +750,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                         );
                       }).toList(),
                     ),
-                    const SizedBox(height: 24),
+                    SizedBox(height: 24),
                   ],
 
                   // Descripción detallada
@@ -918,7 +920,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
               mainAxisSize: MainAxisSize.min,
               children: [
                 const Icon(Icons.videocam, color: Colors.white, size: 16),
-                const SizedBox(width: 4),
+                SizedBox(width: 4),
                 Text(
                   l.t('admin_video_label'),
                   style: const TextStyle(color: Colors.white, fontSize: 12),
@@ -963,7 +965,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
           color: _product!.isAvailable ? Colors.green : Colors.red,
           size: 20,
         ),
-        const SizedBox(width: 8),
+        SizedBox(width: 8),
         Text(
           _product!.isAvailable
               ? l.t('in_stock_count').replaceAll('{n}', '${_product!.stock}')
@@ -1043,7 +1045,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                 Expanded(
                   child: OutlinedButton.icon(
                     onPressed: _product!.isAvailable ? _addToCart : null,
-                    icon: const Icon(Icons.shopping_cart_outlined),
+                    icon: Icon(Icons.shopping_cart_outlined),
                     label: Text(l.t('add_to_cart')),
                     style: OutlinedButton.styleFrom(
                       foregroundColor: ColorTokens.secondary50,
@@ -1061,7 +1063,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                 Expanded(
                   child: ElevatedButton.icon(
                     onPressed: _product!.isAvailable ? _buyNow : null,
-                    icon: const Icon(Icons.flash_on),
+                    icon: Icon(Icons.flash_on),
                     label: Text(l.t('buy_now_btn')),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: ColorTokens.secondary50,
@@ -1095,7 +1097,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                           color: ColorTokens.success40,
                           size: 24,
                         ),
-                        const SizedBox(width: 12),
+                        SizedBox(width: 12),
                         Expanded(
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
@@ -1137,7 +1139,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                           },
                         );
                       },
-                      icon: const Icon(Icons.qr_code_2),
+                      icon: Icon(Icons.qr_code_2),
                       label: Text(l.t('view_qr_verification')),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: ColorTokens.success40,

@@ -21,6 +21,7 @@ import 'package:biux/core/design_system/locale_notifier.dart';
 import 'package:biux/features/chat/data/datasources/chat_datasource.dart';
 import 'package:biux/features/chat/presentation/providers/chat_provider.dart';
 import 'package:biux/features/chat/presentation/screens/chat_screen.dart';
+import 'package:biux/core/design_system/locale_notifier.dart';
 
 class RideDetailScreen extends StatefulWidget {
   final String rideId;
@@ -38,6 +39,8 @@ class RideDetailScreen extends StatefulWidget {
 
 class _RideDetailScreenState extends State<RideDetailScreen>
     with TickerProviderStateMixin {
+  LocaleNotifier get l => Provider.of<LocaleNotifier>(context);
+
   TabController? _tabController;
   String? _rideChatId;
   bool _loadingChat = false;
@@ -261,13 +264,13 @@ class _RideDetailScreenState extends State<RideDetailScreen>
               child: Row(
                 children: [
                   const Icon(Icons.cancel, color: Colors.white, size: 32),
-                  const SizedBox(width: 12),
-                  const Expanded(
+                  SizedBox(width: 12),
+                  Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          'Rodada cancelada',
+                          l.t('ride_cancelled'),
                           style: TextStyle(
                             color: Colors.white,
                             fontSize: 18,
@@ -405,7 +408,7 @@ class _RideDetailScreenState extends State<RideDetailScreen>
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Icon(Icons.lock_outline, size: 64, color: Colors.grey[400]),
-            const SizedBox(height: 16),
+            SizedBox(height: 16),
             Text(
               l.t('join_to_chat'),
               style: TextStyle(color: Colors.grey[600], fontSize: 16),
@@ -438,12 +441,12 @@ class _RideDetailScreenState extends State<RideDetailScreen>
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Icon(Icons.error_outline, size: 48, color: Colors.grey[400]),
-                const SizedBox(height: 12),
+                SizedBox(height: 12),
                 Text(
                   l.t('chat_error'),
                   style: TextStyle(color: Colors.grey[600]),
                 ),
-                const SizedBox(height: 12),
+                SizedBox(height: 12),
                 ElevatedButton(
                   onPressed: () => setState(() => _rideChatId = null),
                   child: Text(l.t('retry')),
@@ -795,7 +798,7 @@ class BasicInfoWidget extends StatelessWidget {
                     overflow: TextOverflow.ellipsis,
                   ),
                 ),
-                const SizedBox(width: 4),
+                SizedBox(width: 4),
                 Container(
                   padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                   decoration: BoxDecoration(

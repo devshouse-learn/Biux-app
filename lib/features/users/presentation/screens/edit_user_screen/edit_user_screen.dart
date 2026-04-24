@@ -135,7 +135,7 @@ class _FormGroupWidget extends StatelessWidget {
                             color: ColorTokens.primary50,
                             size: 20,
                           ),
-                          const SizedBox(width: 12),
+                          SizedBox(width: 12),
                           Expanded(
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
@@ -362,7 +362,7 @@ class _LogoBiuxWidget extends StatelessWidget {
             ),
           ),
         ),
-        const SizedBox(height: 20),
+        SizedBox(height: 20),
         // Widget para foto de portada
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 20.0),

@@ -41,7 +41,7 @@ class CartScreen extends StatelessWidget {
                     });
                   },
                 ),
-                const SizedBox(height: 16),
+                SizedBox(height: 16),
                 TextField(
                   controller: addressController,
                   decoration: InputDecoration(
@@ -51,7 +51,7 @@ class CartScreen extends StatelessWidget {
                   ),
                   maxLines: 2,
                 ),
-                const SizedBox(height: 16),
+                SizedBox(height: 16),
                 TextField(
                   controller: phoneController,
                   decoration: InputDecoration(
@@ -61,7 +61,7 @@ class CartScreen extends StatelessWidget {
                   ),
                   keyboardType: TextInputType.phone,
                 ),
-                const SizedBox(height: 16),
+                SizedBox(height: 16),
                 TextField(
                   controller: notesController,
                   decoration: InputDecoration(
@@ -206,7 +206,7 @@ class CartScreen extends StatelessWidget {
                                 color: ColorTokens.primary30,
                               ),
                             ),
-                            const SizedBox(height: 24),
+                            SizedBox(height: 24),
                             Text(
                               l.t('cart_empty'),
                               style: TextStyle(
@@ -215,7 +215,7 @@ class CartScreen extends StatelessWidget {
                                 color: Colors.grey[800],
                               ),
                             ),
-                            const SizedBox(height: 12),
+                            SizedBox(height: 12),
                             Text(
                               l.t('cart_empty_subtitle'),
                               textAlign: TextAlign.center,
@@ -230,7 +230,7 @@ class CartScreen extends StatelessWidget {
                               onPressed: () {
                                 context.go('/shop');
                               },
-                              icon: const Icon(Icons.pedal_bike, size: 22),
+                              icon: Icon(Icons.pedal_bike, size: 22),
                               label: Text(l.t('explore_products')),
                               style: ElevatedButton.styleFrom(
                                 backgroundColor: ColorTokens.primary30,
@@ -310,7 +310,7 @@ class CartScreen extends StatelessWidget {
                                               fontWeight: FontWeight.bold,
                                             ),
                                           ),
-                                          const SizedBox(height: 4),
+                                          SizedBox(height: 4),
                                           if (item.selectedSize != null)
                                             Text(
                                               '${l.t('size_label')}: ${item.selectedSize}',
@@ -451,7 +451,7 @@ class CartScreen extends StatelessWidget {
                                 color: Colors.green[700],
                                 size: 20,
                               ),
-                              const SizedBox(width: 8),
+                              SizedBox(width: 8),
                               Expanded(
                                 child: Text(
                                   l.t('payment_methods_info'),
@@ -469,7 +469,7 @@ class CartScreen extends StatelessWidget {
 
                         // Campo de cupón
                         const _CouponField(),
-                        const SizedBox(height: 16),
+                        SizedBox(height: 16),
 
                         // Total de items
                         Row(
@@ -491,7 +491,7 @@ class CartScreen extends StatelessWidget {
                             ),
                           ],
                         ),
-                        const SizedBox(height: 8),
+                        SizedBox(height: 8),
 
                         // Subtotal
                         Row(
@@ -580,7 +580,7 @@ class CartScreen extends StatelessWidget {
                             ),
                           ],
                         ),
-                        const Divider(height: 24),
+                        Divider(height: 24),
 
                         // Total a pagar
                         Row(
@@ -610,7 +610,7 @@ class CartScreen extends StatelessWidget {
                           width: double.infinity,
                           child: ElevatedButton.icon(
                             onPressed: () => _showCheckoutDialog(context),
-                            icon: const Icon(Icons.shopping_cart_checkout),
+                            icon: Icon(Icons.shopping_cart_checkout),
                             label: Text(l.t('checkout')),
                             style: ElevatedButton.styleFrom(
                               backgroundColor: ColorTokens.primary30,
@@ -644,6 +644,8 @@ class _CouponField extends StatefulWidget {
 }
 
 class _CouponFieldState extends State<_CouponField> {
+  LocaleNotifier get l => Provider.of<LocaleNotifier>(context);
+
   final TextEditingController _couponController = TextEditingController();
 
   @override
@@ -654,7 +656,6 @@ class _CouponFieldState extends State<_CouponField> {
 
   @override
   Widget build(BuildContext context) {
-    final l = Provider.of<LocaleNotifier>(context);
     return Consumer<ShopProvider>(
       builder: (context, shopProvider, _) {
         // Si ya hay un cupón aplicado, mostrar badge con opción de remover
@@ -702,7 +703,7 @@ class _CouponFieldState extends State<_CouponField> {
                           letterSpacing: 1.2,
                         ),
                       ),
-                      const SizedBox(height: 2),
+                      SizedBox(height: 2),
                       Text(
                         '${l.t('savings')}: \$${shopProvider.couponDiscount.toStringAsFixed(0)} COP',
                         style: TextStyle(
@@ -718,7 +719,7 @@ class _CouponFieldState extends State<_CouponField> {
                     shopProvider.removeCoupon();
                     _couponController.clear();
                   },
-                  icon: const Icon(Icons.close, color: Colors.white),
+                  icon: Icon(Icons.close, color: Colors.white),
                   tooltip: l.t('remove_coupon'),
                 ),
               ],
@@ -762,7 +763,7 @@ class _CouponFieldState extends State<_CouponField> {
                     onSubmitted: (_) => _applyCoupon(shopProvider, context),
                   ),
                 ),
-                const SizedBox(width: 12),
+                SizedBox(width: 12),
                 ElevatedButton(
                   onPressed: () => _applyCoupon(shopProvider, context),
                   style: ElevatedButton.styleFrom(
@@ -803,7 +804,7 @@ class _CouponFieldState extends State<_CouponField> {
                 child: Row(
                   children: [
                     Icon(Icons.local_offer, color: Colors.blue[700], size: 20),
-                    const SizedBox(width: 8),
+                    SizedBox(width: 8),
                     Expanded(
                       child: Text(
                         l.t('view_available_coupons'),
@@ -840,7 +841,7 @@ class _CouponFieldState extends State<_CouponField> {
             content: Row(
               children: [
                 const Icon(Icons.check_circle, color: Colors.white),
-                const SizedBox(width: 12),
+                SizedBox(width: 12),
                 Expanded(
                   child: Text(
                     '🎉 ${l.t('coupon_applied')} ${l.t('savings')}: \$${shopProvider.couponDiscount.toStringAsFixed(0)} COP',
@@ -896,7 +897,7 @@ class _CouponFieldState extends State<_CouponField> {
               child: Row(
                 children: [
                   const Icon(Icons.local_offer, color: Colors.white, size: 28),
-                  const SizedBox(width: 12),
+                  SizedBox(width: 12),
                   Expanded(
                     child: Text(
                       l.t('available_coupons'),
@@ -927,7 +928,7 @@ class _CouponFieldState extends State<_CouponField> {
               child: Row(
                 children: [
                   Icon(Icons.info_outline, color: Colors.orange[800], size: 20),
-                  const SizedBox(width: 8),
+                  SizedBox(width: 8),
                   Expanded(
                     child: Text(
                       '${l.t('min_purchase')}: \$50.000 COP',

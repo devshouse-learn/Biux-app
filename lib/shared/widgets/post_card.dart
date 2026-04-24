@@ -228,7 +228,7 @@ class _PostCardHeader extends StatelessWidget {
                 ),
               ),
               if (timestamp.isNotEmpty) ...[
-                const SizedBox(width: 8),
+                SizedBox(width: 8),
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   mainAxisSize: MainAxisSize.min,
@@ -286,6 +286,8 @@ class _PostCardGallery extends StatefulWidget {
 
 class _PostCardGalleryState extends State<_PostCardGallery>
     with SingleTickerProviderStateMixin {
+  LocaleNotifier get l => Provider.of<LocaleNotifier>(context);
+
   late PageController _pageController;
   int _currentIndex = 0;
   bool _showArrows = false;

@@ -36,14 +36,14 @@ class RideAttendeesList extends StatelessWidget {
 
     return ListView(
       shrinkWrap: true,
-      physics: const NeverScrollableScrollPhysics(),
+      physics: NeverScrollableScrollPhysics(),
       children: [
         if (confirmedIds.isNotEmpty) ...[
           Padding(
             padding: const EdgeInsets.all(16.0),
             child: Text(
               l.t('confirmed_count'),
-              style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
           ),
           ...confirmedIds.map(
@@ -94,7 +94,7 @@ class _AttendeeCard extends StatelessWidget {
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return ListTile(
-            leading: const CircleAvatar(
+            leading: CircleAvatar(
               child: CircularProgressIndicator(strokeWidth: 2),
             ),
             title: Text(l.t('loading')),

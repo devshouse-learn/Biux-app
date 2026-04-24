@@ -18,6 +18,8 @@ class MyOrdersScreen extends StatefulWidget {
 }
 
 class _MyOrdersScreenState extends State<MyOrdersScreen> {
+  LocaleNotifier get l => Provider.of<LocaleNotifier>(context);
+
   @override
   void initState() {
     super.initState();
@@ -80,7 +82,7 @@ class _MyOrdersScreenState extends State<MyOrdersScreen> {
                                   color: ColorTokens.primary30,
                                 ),
                               ),
-                              const SizedBox(height: 24),
+                              SizedBox(height: 24),
                               Text(
                                 l.t('no_orders_yet'),
                                 style: const TextStyle(
@@ -89,7 +91,7 @@ class _MyOrdersScreenState extends State<MyOrdersScreen> {
                                   color: Colors.black87,
                                 ),
                               ),
-                              const SizedBox(height: 12),
+                              SizedBox(height: 12),
                               Text(
                                 l.t('time_to_find_products'),
                                 textAlign: TextAlign.center,
@@ -99,7 +101,7 @@ class _MyOrdersScreenState extends State<MyOrdersScreen> {
                                   color: Colors.black54,
                                 ),
                               ),
-                              const SizedBox(height: 8),
+                              SizedBox(height: 8),
                               Text(
                                 l.t('explore_store_cycling'),
                                 textAlign: TextAlign.center,
@@ -114,7 +116,7 @@ class _MyOrdersScreenState extends State<MyOrdersScreen> {
                                 onPressed: () {
                                   context.go('/shop');
                                 },
-                                icon: const Icon(Icons.store, size: 22),
+                                icon: Icon(Icons.store, size: 22),
                                 label: Text(l.t('explore_products')),
                                 style: ElevatedButton.styleFrom(
                                   backgroundColor: ColorTokens.primary30,
@@ -134,7 +136,7 @@ class _MyOrdersScreenState extends State<MyOrdersScreen> {
                                 onPressed: () {
                                   context.go('/shop');
                                 },
-                                icon: const Icon(Icons.pedal_bike, size: 20),
+                                icon: Icon(Icons.pedal_bike, size: 20),
                                 label: Text(l.t('view_offers')),
                                 style: OutlinedButton.styleFrom(
                                   foregroundColor: ColorTokens.primary30,
@@ -174,7 +176,7 @@ class _MyOrdersScreenState extends State<MyOrdersScreen> {
                       BoxShadow(
                         color: Colors.black.withValues(alpha: 0.1),
                         blurRadius: 10,
-                        offset: const Offset(0, -5),
+                        offset: Offset(0, -5),
                       ),
                     ],
                   ),
@@ -200,7 +202,7 @@ class _MyOrdersScreenState extends State<MyOrdersScreen> {
                             ),
                           ],
                         ),
-                        const SizedBox(height: 8),
+                        SizedBox(height: 8),
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
@@ -295,7 +297,7 @@ class _OrderCard extends StatelessWidget {
                           Expanded(
                             child: Text(
                               '${item.quantity}x ${item.product.name}',
-                              style: const TextStyle(fontSize: 14),
+                              style: TextStyle(fontSize: 14),
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
                             ),
@@ -320,7 +322,7 @@ class _OrderCard extends StatelessWidget {
                   ),
                 ),
 
-              const Divider(height: 16),
+              Divider(height: 16),
 
               // Total
               Row(

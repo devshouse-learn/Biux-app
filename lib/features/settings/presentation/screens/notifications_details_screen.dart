@@ -119,13 +119,13 @@ class _NotificationsDetailsScreenState
                     },
                   ),
 
-                  const SizedBox(height: 24),
+                  SizedBox(height: 24),
 
                   SettingsWidgets.buildSectionTitle(
                     l.t('social_interactions'),
                     isDark,
                   ),
-                  const SizedBox(height: 12),
+                  SizedBox(height: 12),
                   SettingsWidgets.buildToggleCard(
                     context: context,
                     icon: Icons.favorite,
@@ -136,7 +136,7 @@ class _NotificationsDetailsScreenState
                     onChanged: provider.toggleLikes,
                     enabled: enablePushNotifications,
                   ),
-                  const SizedBox(height: 8),
+                  SizedBox(height: 8),
                   SettingsWidgets.buildToggleCard(
                     context: context,
                     icon: Icons.comment,
@@ -147,7 +147,7 @@ class _NotificationsDetailsScreenState
                     onChanged: provider.toggleComments,
                     enabled: enablePushNotifications,
                   ),
-                  const SizedBox(height: 8),
+                  SizedBox(height: 8),
                   SettingsWidgets.buildToggleCard(
                     context: context,
                     icon: Icons.person_add,
@@ -158,7 +158,7 @@ class _NotificationsDetailsScreenState
                     onChanged: provider.toggleFollows,
                     enabled: enablePushNotifications,
                   ),
-                  const SizedBox(height: 8),
+                  SizedBox(height: 8),
                   SettingsWidgets.buildToggleCard(
                     context: context,
                     icon: Icons.auto_stories,
@@ -170,13 +170,13 @@ class _NotificationsDetailsScreenState
                     enabled: enablePushNotifications,
                   ),
 
-                  const SizedBox(height: 24),
+                  SizedBox(height: 24),
 
                   SettingsWidgets.buildSectionTitle(
                     l.t('rides_and_groups'),
                     isDark,
                   ),
-                  const SizedBox(height: 12),
+                  SizedBox(height: 12),
                   SettingsWidgets.buildToggleCard(
                     context: context,
                     icon: Icons.pedal_bike,
@@ -187,7 +187,7 @@ class _NotificationsDetailsScreenState
                     onChanged: provider.toggleRideInvitations,
                     enabled: enablePushNotifications,
                   ),
-                  const SizedBox(height: 8),
+                  SizedBox(height: 8),
                   SettingsWidgets.buildToggleCard(
                     context: context,
                     icon: Icons.group,
@@ -198,7 +198,7 @@ class _NotificationsDetailsScreenState
                     onChanged: provider.toggleGroupInvitations,
                     enabled: enablePushNotifications,
                   ),
-                  const SizedBox(height: 8),
+                  SizedBox(height: 8),
                   SettingsWidgets.buildToggleCard(
                     context: context,
                     icon: Icons.notifications_active,
@@ -209,7 +209,7 @@ class _NotificationsDetailsScreenState
                     onChanged: provider.toggleRideReminders,
                     enabled: enablePushNotifications,
                   ),
-                  const SizedBox(height: 8),
+                  SizedBox(height: 8),
                   SettingsWidgets.buildToggleCard(
                     context: context,
                     icon: Icons.update,
@@ -221,10 +221,10 @@ class _NotificationsDetailsScreenState
                     enabled: enablePushNotifications,
                   ),
 
-                  const SizedBox(height: 24),
+                  SizedBox(height: 24),
 
                   SettingsWidgets.buildSectionTitle(l.t('system'), isDark),
-                  const SizedBox(height: 12),
+                  SizedBox(height: 12),
                   SettingsWidgets.buildToggleCard(
                     context: context,
                     icon: Icons.info_outline,

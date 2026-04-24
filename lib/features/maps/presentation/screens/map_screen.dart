@@ -17,6 +17,8 @@ class MapScreen extends StatefulWidget {
 }
 
 class _MapScreenState extends State<MapScreen> {
+  LocaleNotifier get l => Provider.of<LocaleNotifier>(context);
+
   static const CameraPosition _defaultLocation = CameraPosition(
     target: LatLng(4.4389, -75.2322),
     zoom: 13,

@@ -4,6 +4,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:biux/core/design_system/color_tokens.dart';
+import 'package:biux/core/design_system/locale_notifier.dart';
+import 'package:provider/provider.dart';
 
 /// Pantalla de reporte multi-paso con flujo completo.
 /// Paso 0: Introducción ("¿Qué quieres reportar?")
@@ -26,6 +28,8 @@ class ReportFlowScreen extends StatefulWidget {
 enum _ReportStep { intro, selectPost, postReason, accountReason, sending, done }
 
 class _ReportFlowScreenState extends State<ReportFlowScreen> {
+  LocaleNotifier get l => Provider.of<LocaleNotifier>(context);
+
   _ReportStep _step = _ReportStep.intro;
 
   // Publicaciones del usuario
@@ -529,7 +533,7 @@ class _ReportFlowScreenState extends State<ReportFlowScreen> {
       appBar: AppBar(
         backgroundColor: ColorTokens.primary30,
         foregroundColor: Colors.white,
-        title: const Text('Reportar'),
+        title: Text(l.t('report_action')),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
           onPressed: _onBack,
@@ -543,7 +547,7 @@ class _ReportFlowScreenState extends State<ReportFlowScreen> {
           ? SafeArea(
               child: Padding(
                 padding:
-                    const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                    EdgeInsets.symmetric(horizontal: 20, vertical: 12),
                 child: SizedBox(
                   width: double.infinity,
                   height: 52,
@@ -562,7 +566,7 @@ class _ReportFlowScreenState extends State<ReportFlowScreen> {
                             child: CircularProgressIndicator(
                                 color: Colors.white, strokeWidth: 2),
                           )
-                        : const Text('Reportar',
+                        : Text(l.t('report_action'),
                             style: TextStyle(
                                 fontSize: 15, fontWeight: FontWeight.w700)),
                   ),

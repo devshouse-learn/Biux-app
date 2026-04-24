@@ -21,6 +21,8 @@ class ExperiencesStoriesWidget extends StatefulWidget {
 }
 
 class _ExperiencesStoriesWidgetState extends State<ExperiencesStoriesWidget> {
+  LocaleNotifier get l => Provider.of<LocaleNotifier>(context);
+
   ExperienceProvider? _experienceProvider;
 
   @override

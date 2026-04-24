@@ -18,6 +18,8 @@ class AccidentsListScreen extends StatefulWidget {
 
 class _AccidentsListScreenState extends State<AccidentsListScreen>
     with SingleTickerProviderStateMixin {
+  LocaleNotifier get l => Provider.of<LocaleNotifier>(context);
+
   late TabController _tabController;
   Position? _myPosition;
 
@@ -106,7 +108,6 @@ class _AccidentsListScreenState extends State<AccidentsListScreen>
 
   @override
   Widget build(BuildContext context) {
-    final l = Provider.of<LocaleNotifier>(context);
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.red[700],
@@ -118,8 +119,8 @@ class _AccidentsListScreenState extends State<AccidentsListScreen>
           labelColor: Colors.white,
           unselectedLabelColor: Colors.white70,
           tabs: [
-            Tab(icon: const Icon(Icons.list), text: l.t('list_tab')),
-            Tab(icon: const Icon(Icons.map), text: l.t('map_tab')),
+            Tab(icon: Icon(Icons.list), text: l.t('list_tab')),
+            Tab(icon: Icon(Icons.map), text: l.t('map_tab')),
           ],
         ),
       ),
@@ -134,7 +135,7 @@ class _AccidentsListScreenState extends State<AccidentsListScreen>
         ),
         backgroundColor: Colors.red[700],
         foregroundColor: Colors.white,
-        icon: const Icon(Icons.add),
+        icon: Icon(Icons.add),
         label: Text(l.t('report_button')),
       ),
     );
@@ -160,12 +161,12 @@ class _AccidentsListScreenState extends State<AccidentsListScreen>
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 const Icon(Icons.error_outline, size: 48, color: Colors.red),
-                const SizedBox(height: 8),
+                SizedBox(height: 8),
                 Text(
                   '${l.t('error_generic')}: ${snapshot.error}',
                   style: const TextStyle(color: Colors.red),
                 ),
-                const SizedBox(height: 16),
+                SizedBox(height: 16),
                 ElevatedButton(
                   onPressed: () => setState(() {}),
                   child: Text(l.t('retry')),
@@ -191,7 +192,7 @@ class _AccidentsListScreenState extends State<AccidentsListScreen>
                       size: 64,
                       color: Colors.green[300],
                     ),
-                    const SizedBox(height: 16),
+                    SizedBox(height: 16),
                     Text(
                       l.t('no_accidents_reported'),
                       style: const TextStyle(
@@ -199,7 +200,7 @@ class _AccidentsListScreenState extends State<AccidentsListScreen>
                         fontWeight: FontWeight.bold,
                       ),
                     ),
-                    const SizedBox(height: 8),
+                    SizedBox(height: 8),
                     Text(
                       l.t('no_active_accidents_zone'),
                       style: TextStyle(color: Colors.grey[600]),
@@ -314,7 +315,7 @@ class _AccidentsListScreenState extends State<AccidentsListScreen>
                           size: 14,
                           color: Colors.grey[500],
                         ),
-                        const SizedBox(width: 4),
+                        SizedBox(width: 4),
                         Flexible(
                           child: Text(
                             a.userName.isNotEmpty

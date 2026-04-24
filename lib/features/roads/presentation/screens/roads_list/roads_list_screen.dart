@@ -14,6 +14,8 @@ class RoadsListScreen extends StatefulWidget {
 }
 
 class _RoadsListScreenState extends State<RoadsListScreen> {
+  LocaleNotifier get l => Provider.of<LocaleNotifier>(context);
+
   @override
   void initState() {
     super.initState();
@@ -52,7 +54,7 @@ class _RoadsListScreenState extends State<RoadsListScreen> {
                     style: const TextStyle(color: ColorTokens.error50),
                     textAlign: TextAlign.center,
                   ),
-                  const SizedBox(height: 16),
+                  SizedBox(height: 16),
                   ElevatedButton(
                     onPressed: () => rideProvider.loadAllRides(),
                     style: ElevatedButton.styleFrom(
@@ -78,7 +80,7 @@ class _RoadsListScreenState extends State<RoadsListScreen> {
                     size: 80,
                     color: ColorTokens.neutral60,
                   ),
-                  const SizedBox(height: 16),
+                  SizedBox(height: 16),
                   Text(
                     l.t('no_rides_available'),
                     style: TextStyle(
@@ -86,7 +88,7 @@ class _RoadsListScreenState extends State<RoadsListScreen> {
                       color: ColorTokens.neutral60,
                     ),
                   ),
-                  const SizedBox(height: 8),
+                  SizedBox(height: 8),
                   Text(
                     l.t('join_group_for_rides'),
                     style: TextStyle(color: ColorTokens.neutral60),
@@ -94,7 +96,7 @@ class _RoadsListScreenState extends State<RoadsListScreen> {
                   const SizedBox(height: 24),
                   ElevatedButton.icon(
                     onPressed: () => context.push('/groups'),
-                    icon: const Icon(Icons.group),
+                    icon: Icon(Icons.group),
                     label: Text(l.t('view_groups')),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: ColorTokens.primary30,
@@ -221,7 +223,7 @@ class _RideCard extends StatelessWidget {
                           size: 14,
                           color: ColorTokens.neutral60,
                         ),
-                        const SizedBox(width: 4),
+                        SizedBox(width: 4),
                         Text(
                           '${l.t('difficulty')}: ${_getDifficultyText(ride.difficulty, l)}',
                           style: const TextStyle(
@@ -240,10 +242,10 @@ class _RideCard extends StatelessWidget {
                           size: 14,
                           color: ColorTokens.neutral60,
                         ),
-                        const SizedBox(width: 4),
+                        SizedBox(width: 4),
                         Text(
                           '${ride.participants.length} ${l.t('n_participants')}',
-                          style: const TextStyle(
+                          style: TextStyle(
                             color: ColorTokens.neutral60,
                             fontSize: 14,
                           ),

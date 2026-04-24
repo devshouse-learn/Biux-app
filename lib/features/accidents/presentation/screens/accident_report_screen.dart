@@ -24,6 +24,8 @@ class AccidentReportScreen extends StatefulWidget {
 
 class _AccidentReportScreenState extends State<AccidentReportScreen>
     with SingleTickerProviderStateMixin {
+  LocaleNotifier get l => Provider.of<LocaleNotifier>(context);
+
   late TabController _tabController;
 
   // ── Form state ──────────────────────────────────────
@@ -192,7 +194,7 @@ class _AccidentReportScreenState extends State<AccidentReportScreen>
             mainAxisSize: MainAxisSize.min,
             children: [
               ListTile(
-                leading: const Icon(Icons.camera_alt, color: Colors.red),
+                leading: Icon(Icons.camera_alt, color: Colors.red),
                 title: Text(l.t('take_photo')),
                 onTap: () {
                   Navigator.pop(ctx);
@@ -200,7 +202,7 @@ class _AccidentReportScreenState extends State<AccidentReportScreen>
                 },
               ),
               ListTile(
-                leading: const Icon(Icons.photo_library, color: Colors.blue),
+                leading: Icon(Icons.photo_library, color: Colors.blue),
                 title: Text(l.t('select_from_gallery')),
                 onTap: () {
                   Navigator.pop(ctx);
@@ -329,7 +331,6 @@ class _AccidentReportScreenState extends State<AccidentReportScreen>
   // ═══════════════════════════════════════════════════════
   @override
   Widget build(BuildContext context) {
-    final l = Provider.of<LocaleNotifier>(context);
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.red[700],
@@ -342,12 +343,12 @@ class _AccidentReportScreenState extends State<AccidentReportScreen>
           unselectedLabelColor: Colors.white70,
           tabs: [
             Tab(
-              icon: const Icon(Icons.list_alt, size: 20),
+              icon: Icon(Icons.list_alt, size: 20),
               text: l.t('reports_tab'),
             ),
-            Tab(icon: const Icon(Icons.map, size: 20), text: l.t('map_tab')),
+            Tab(icon: Icon(Icons.map, size: 20), text: l.t('map_tab')),
             Tab(
-              icon: const Icon(Icons.add_circle_outline, size: 20),
+              icon: Icon(Icons.add_circle_outline, size: 20),
               text: l.t('report_tab'),
             ),
           ],
@@ -381,7 +382,7 @@ class _AccidentReportScreenState extends State<AccidentReportScreen>
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 const Icon(Icons.error_outline, size: 48, color: Colors.red),
-                const SizedBox(height: 8),
+                SizedBox(height: 8),
                 Text(
                   l.t('error_loading_reports'),
                   style: TextStyle(color: Colors.grey[600]),
@@ -389,7 +390,7 @@ class _AccidentReportScreenState extends State<AccidentReportScreen>
                 const SizedBox(height: 16),
                 ElevatedButton.icon(
                   onPressed: () => setState(() {}),
-                  icon: const Icon(Icons.refresh),
+                  icon: Icon(Icons.refresh),
                   label: Text(l.t('retry')),
                 ),
               ],
@@ -416,7 +417,7 @@ class _AccidentReportScreenState extends State<AccidentReportScreen>
                       size: 64,
                       color: Colors.green[300],
                     ),
-                    const SizedBox(height: 16),
+                    SizedBox(height: 16),
                     Text(
                       l.t('no_accidents_reported'),
                       style: const TextStyle(
@@ -424,7 +425,7 @@ class _AccidentReportScreenState extends State<AccidentReportScreen>
                         fontWeight: FontWeight.bold,
                       ),
                     ),
-                    const SizedBox(height: 8),
+                    SizedBox(height: 8),
                     Text(
                       l.t('no_active_accidents'),
                       style: TextStyle(color: Colors.grey[600]),
@@ -432,7 +433,7 @@ class _AccidentReportScreenState extends State<AccidentReportScreen>
                     const SizedBox(height: 24),
                     ElevatedButton.icon(
                       onPressed: () => _tabController.animateTo(2),
-                      icon: const Icon(Icons.add),
+                      icon: Icon(Icons.add),
                       label: Text(l.t('report_accident')),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.red[700],
@@ -535,7 +536,7 @@ class _AccidentReportScreenState extends State<AccidentReportScreen>
                         ),
                       ),
                     ],
-                    const Spacer(),
+                    Spacer(),
                     Flexible(
                       child: Text(
                         l.t('visible_for_all'),
@@ -543,7 +544,7 @@ class _AccidentReportScreenState extends State<AccidentReportScreen>
                         overflow: TextOverflow.ellipsis,
                       ),
                     ),
-                    const SizedBox(width: 4),
+                    SizedBox(width: 4),
                     Icon(Icons.public, size: 14, color: Colors.grey[400]),
                   ],
                 ),
@@ -558,7 +559,7 @@ class _AccidentReportScreenState extends State<AccidentReportScreen>
                   ),
                   child: Text(
                     l.t('active_label'),
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 11,
                       fontWeight: FontWeight.bold,
                       color: Colors.red,
@@ -636,7 +637,7 @@ class _AccidentReportScreenState extends State<AccidentReportScreen>
                     size: 24,
                   ),
                 ),
-                const SizedBox(width: 10),
+                SizedBox(width: 10),
                 // Info
                 Expanded(
                   child: Column(
@@ -665,7 +666,7 @@ class _AccidentReportScreenState extends State<AccidentReportScreen>
                             ),
                           ),
                           if (isMine) ...[
-                            const SizedBox(width: 4),
+                            SizedBox(width: 4),
                             Container(
                               padding: const EdgeInsets.symmetric(
                                 horizontal: 6,
@@ -710,7 +711,7 @@ class _AccidentReportScreenState extends State<AccidentReportScreen>
                             size: 13,
                             color: Colors.grey[400],
                           ),
-                          const SizedBox(width: 3),
+                          SizedBox(width: 3),
                           Text(
                             a.userName.isNotEmpty
                                 ? a.userName
@@ -857,12 +858,12 @@ class _AccidentReportScreenState extends State<AccidentReportScreen>
                       l
                           .t('active_count')
                           .replaceAll('{n}', '${accidents.length}'),
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontWeight: FontWeight.bold,
                         fontSize: 12,
                       ),
                     ),
-                    const SizedBox(height: 6),
+                    SizedBox(height: 6),
                     _legendItem(Colors.red, l.t('severity_severe')),
                     _legendItem(Colors.orange, l.t('severity_moderate')),
                     _legendItem(Colors.yellow[700]!, l.t('severity_minor')),
@@ -920,7 +921,7 @@ class _AccidentReportScreenState extends State<AccidentReportScreen>
             child: Row(
               children: [
                 Icon(Icons.public, color: Colors.red[700], size: 20),
-                const SizedBox(width: 8),
+                SizedBox(width: 8),
                 Expanded(
                   child: Text(
                     l.t('report_visible_disclaimer'),
@@ -935,7 +936,7 @@ class _AccidentReportScreenState extends State<AccidentReportScreen>
             ),
           ),
 
-          const SizedBox(height: 20),
+          SizedBox(height: 20),
 
           // ── Ubicación ─────────────────────────────
           Text(
@@ -1005,7 +1006,7 @@ class _AccidentReportScreenState extends State<AccidentReportScreen>
                                     color: Colors.white,
                                     size: 16,
                                   ),
-                                  const SizedBox(width: 4),
+                                  SizedBox(width: 4),
                                   Text(
                                     l.t('change_location'),
                                     style: const TextStyle(
@@ -1024,7 +1025,7 @@ class _AccidentReportScreenState extends State<AccidentReportScreen>
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         const Icon(Icons.map, size: 48, color: Colors.grey),
-                        const SizedBox(height: 8),
+                        SizedBox(height: 8),
                         Text(
                           l.t('tap_to_select_location'),
                           style: const TextStyle(color: Colors.grey),
@@ -1042,14 +1043,14 @@ class _AccidentReportScreenState extends State<AccidentReportScreen>
               ),
             ),
 
-          const SizedBox(height: 20),
+          SizedBox(height: 20),
 
           // ── Gravedad ──────────────────────────────
           Text(
             l.t('severity_section'),
             style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
           ),
-          const SizedBox(height: 8),
+          SizedBox(height: 8),
           Row(
             children: [
               _severityChip(
@@ -1058,14 +1059,14 @@ class _AccidentReportScreenState extends State<AccidentReportScreen>
                 Colors.yellow[700]!,
                 Icons.warning_amber,
               ),
-              const SizedBox(width: 8),
+              SizedBox(width: 8),
               _severityChip(
                 'moderate',
                 l.t('severity_moderate'),
                 Colors.orange,
                 Icons.warning,
               ),
-              const SizedBox(width: 8),
+              SizedBox(width: 8),
               _severityChip(
                 'severe',
                 l.t('severity_severe'),
@@ -1075,14 +1076,14 @@ class _AccidentReportScreenState extends State<AccidentReportScreen>
             ],
           ),
 
-          const SizedBox(height: 20),
+          SizedBox(height: 20),
 
           // ── Descripción ───────────────────────────
           Text(
             l.t('description_section'),
             style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
           ),
-          const SizedBox(height: 8),
+          SizedBox(height: 8),
           TextField(
             controller: _descCtrl,
             maxLines: 4,
@@ -1096,7 +1097,7 @@ class _AccidentReportScreenState extends State<AccidentReportScreen>
             ),
           ),
 
-          const SizedBox(height: 20),
+          SizedBox(height: 20),
 
           // ── Fotos ─────────────────────────────────
           Text(
@@ -1204,7 +1205,7 @@ class _AccidentReportScreenState extends State<AccidentReportScreen>
                         color: Colors.white,
                       ),
                     )
-                  : const Icon(Icons.send),
+                  : Icon(Icons.send),
               label: Text(_submitting ? l.t('sending') : l.t('send_report')),
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.red[700],
@@ -1231,7 +1232,7 @@ class _AccidentReportScreenState extends State<AccidentReportScreen>
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Icon(Icons.info_outline, size: 18, color: Colors.blue[700]),
-                const SizedBox(width: 8),
+                SizedBox(width: 8),
                 Expanded(
                   child: Text(
                     l.t('call_911_disclaimer'),

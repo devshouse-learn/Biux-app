@@ -18,6 +18,7 @@ import 'package:biux/core/design_system/locale_notifier.dart';
 import 'package:biux/shared/widgets/post_card.dart';
 import 'package:biux/features/social/presentation/widgets/report_content_dialog.dart';
 import 'package:biux/shared/widgets/shimmer_loading.dart';
+import 'package:biux/core/design_system/locale_notifier.dart';
 
 /// Pantalla principal para mostrar la lista de experiencias
 class ExperiencesListScreen extends StatefulWidget {
@@ -29,6 +30,8 @@ class ExperiencesListScreen extends StatefulWidget {
 
 class _ExperiencesListScreenState extends State<ExperiencesListScreen>
     with WidgetsBindingObserver {
+  LocaleNotifier get l => Provider.of<LocaleNotifier>(context);
+
   Timer? _autoRefreshTimer;
   Timer? _fabTimer;
   late ExperienceProvider _experienceProvider;
@@ -203,7 +206,7 @@ class _ExperiencesListScreenState extends State<ExperiencesListScreen>
             size: 64,
             color: theme.iconTheme.color?.withValues(alpha: 0.5),
           ),
-          const SizedBox(height: 16),
+          SizedBox(height: 16),
           Text(
             l.t('experiences_error_loading'),
             style: TextStyle(
@@ -242,10 +245,10 @@ class _ExperiencesListScreenState extends State<ExperiencesListScreen>
     final l = Provider.of<LocaleNotifier>(context, listen: false);
 
     return SingleChildScrollView(
-      physics: const AlwaysScrollableScrollPhysics(),
+      physics: AlwaysScrollableScrollPhysics(),
       child: Column(
         children: [
-          const ExperiencesStoriesWidget(),
+          ExperiencesStoriesWidget(),
           SizedBox(
             height: MediaQuery.of(context).size.height * 0.5,
             child: Center(
@@ -257,7 +260,7 @@ class _ExperiencesListScreenState extends State<ExperiencesListScreen>
                     size: 64,
                     color: theme.iconTheme.color?.withValues(alpha: 0.5),
                   ),
-                  const SizedBox(height: 16),
+                  SizedBox(height: 16),
                   Text(
                     l.t('experiences_share_first_post'),
                     style: TextStyle(
@@ -266,7 +269,7 @@ class _ExperiencesListScreenState extends State<ExperiencesListScreen>
                       color: theme.textTheme.bodyLarge?.color,
                     ),
                   ),
-                  const SizedBox(height: 8),
+                  SizedBox(height: 8),
                   Text(
                     l.t('empty_no_posts_desc'),
                     style: TextStyle(
@@ -444,7 +447,7 @@ class _ExperiencesListScreenState extends State<ExperiencesListScreen>
       context: context,
       backgroundColor:
           theme.bottomSheetTheme.backgroundColor ?? theme.cardColor,
-      shape: const RoundedRectangleBorder(
+      shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
       builder: (context) => Container(
@@ -471,7 +474,7 @@ class _ExperiencesListScreenState extends State<ExperiencesListScreen>
                 color: theme.textTheme.headlineMedium?.color,
               ),
             ),
-            const SizedBox(height: 8),
+            SizedBox(height: 8),
             Text(
               l.t('experiences_choose_post_type'),
               style: TextStyle(
@@ -558,6 +561,7 @@ class _ExperienceCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l = Provider.of<LocaleNotifier>(context);
     final imageUrls = experience.media.map((m) => m.url).toList();
     final currentUserId = FirebaseAuth.instance.currentUser?.uid;
     // ignore: unused_local_variable
@@ -711,7 +715,7 @@ class _ExperienceCard extends StatelessWidget {
           children: [
             if (isOwner) ...[
               ListTile(
-                leading: const Icon(Icons.delete, color: Colors.red),
+                leading: Icon(Icons.delete, color: Colors.red),
                 title: Text(
                   l.t('delete_post'),
                   style: const TextStyle(color: Colors.red),
@@ -771,13 +775,14 @@ class _ExperienceCard extends StatelessWidget {
   }
 
   void _repostPost(BuildContext context) async {
+    final l = Provider.of<LocaleNotifier>(context, listen: false);
     final theme = Theme.of(context);
     final captionController = TextEditingController();
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
         backgroundColor: theme.dialogTheme.backgroundColor ?? theme.cardColor,
-        title: const Text('Repostear publicación'),
+        title: Text(l.t('repost_publication')),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -789,12 +794,12 @@ class _ExperienceCard extends StatelessWidget {
                 color: theme.textTheme.bodySmall?.color,
               ),
             ),
-            const SizedBox(height: 12),
+            SizedBox(height: 12),
             TextField(
               controller: captionController,
               maxLines: 3,
               decoration: InputDecoration(
-                hintText: 'Añade un comentario (opcional)',
+                hintText: l.t('add_comment_optional'),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(10),
                 ),
@@ -810,7 +815,7 @@ class _ExperienceCard extends StatelessWidget {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx, false),
-            child: const Text('Cancelar'),
+            child: Text(l.t('cancel')),
           ),
           ElevatedButton(
             onPressed: () => Navigator.pop(ctx, true),
@@ -834,8 +839,8 @@ class _ExperienceCard extends StatelessWidget {
       }
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('¡Publicación reposteada!'),
+          SnackBar(
+            content: Text(l.t('post_reposted')),
             behavior: SnackBarBehavior.floating,
           ),
         );
@@ -952,6 +957,7 @@ class _PostOptionTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l = Provider.of<LocaleNotifier>(context);
     return InkWell(
       onTap: onTap,
       borderRadius: BorderRadius.circular(12),
@@ -1051,6 +1057,7 @@ class _RepostBanner extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l = Provider.of<LocaleNotifier>(context);
     final primaryColor = Theme.of(context).colorScheme.primary;
     return GestureDetector(
       onTap: () => _navigate(context),
@@ -1088,8 +1095,8 @@ class _AdvertisementCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l = Provider.of<LocaleNotifier>(context);
     final theme = Theme.of(context);
-    final l = Provider.of<LocaleNotifier>(context, listen: false);
 
     return Container(
       margin: const EdgeInsets.only(bottom: 16),
@@ -1132,7 +1139,7 @@ class _AdvertisementCard extends StatelessWidget {
                     size: 14,
                     color: ColorTokens.secondary50,
                   ),
-                  const SizedBox(width: 6),
+                  SizedBox(width: 6),
                   Text(
                     l.t('ad_label'),
                     style: TextStyle(
@@ -1392,7 +1399,7 @@ class _AdvertisementCard extends StatelessWidget {
                             ),
                           ),
 
-                          const SizedBox(height: 16),
+                          SizedBox(height: 16),
 
                           // Botón de cerrar
                           SizedBox(

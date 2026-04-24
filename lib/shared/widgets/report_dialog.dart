@@ -45,6 +45,8 @@ class ReportDialog extends StatefulWidget {
 }
 
 class _ReportDialogState extends State<ReportDialog> {
+  LocaleNotifier get l => Provider.of<LocaleNotifier>(context);
+
   String? _selectedReason;
   final _detailsCtrl = TextEditingController();
   bool _submitting = false;
@@ -133,7 +135,7 @@ class _ReportDialogState extends State<ReportDialog> {
           Row(
             children: [
               const Icon(Icons.flag_rounded, color: Colors.red, size: 24),
-              const SizedBox(width: 8),
+              SizedBox(width: 8),
               Text(
                 l.t('report_content_title'),
                 style: const TextStyle(
@@ -143,7 +145,7 @@ class _ReportDialogState extends State<ReportDialog> {
               ),
             ],
           ),
-          const SizedBox(height: 8),
+          SizedBox(height: 8),
           Text(
             l.t('report_reason_question'),
             style: TextStyle(color: Colors.grey[600], fontSize: 14),
@@ -181,7 +183,7 @@ class _ReportDialogState extends State<ReportDialog> {
                   .toList(),
             ),
           ),
-          const SizedBox(height: 8),
+          SizedBox(height: 8),
           TextField(
             controller: _detailsCtrl,
             maxLines: 3,
@@ -194,7 +196,7 @@ class _ReportDialogState extends State<ReportDialog> {
               fillColor: Colors.grey[50],
             ),
           ),
-          const SizedBox(height: 16),
+          SizedBox(height: 16),
           SizedBox(
             width: double.infinity,
             height: 50,

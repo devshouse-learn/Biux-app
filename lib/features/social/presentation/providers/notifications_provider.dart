@@ -26,15 +26,26 @@ class NotificationsProvider extends ChangeNotifier {
   bool get hasUnread => _unreadCount > 0;
 
   void _init() {
+    debugPrint('🔔 NotificationsProvider._init() para userId: $userId');
+
     // Escuchar notificaciones
     _repository
         .watchUserNotifications(userId)
         .listen(
           (notifications) {
+            debugPrint(
+              '🔔 Notificaciones recibidas: ${notifications.length} para userId: $userId',
+            );
+            for (final n in notifications) {
+              debugPrint(
+                '   → tipo=${n.type.value}, de=${n.fromUserName}, msg=${n.message}',
+              );
+            }
             _notifications = notifications;
             notifyListeners();
           },
           onError: (e) {
+            debugPrint('❌ Error en stream de notificaciones: $e');
             _error = e.toString();
             notifyListeners();
           },

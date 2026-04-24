@@ -164,7 +164,7 @@ class AdvertisementWidget extends StatelessWidget {
                               advertisement.userFullName,
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
-                              style: const TextStyle(
+                              style: TextStyle(
                                 color: Colors.white,
                                 fontWeight: FontWeight.bold,
                                 fontSize: 13,

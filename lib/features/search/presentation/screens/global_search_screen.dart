@@ -14,6 +14,8 @@ class GlobalSearchScreen extends StatefulWidget {
 
 class _GlobalSearchScreenState extends State<GlobalSearchScreen>
     with SingleTickerProviderStateMixin {
+  LocaleNotifier get l => Provider.of<LocaleNotifier>(context);
+
   final _searchCtrl = TextEditingController();
   late TabController _tabCtrl;
   String _query = '';
@@ -102,7 +104,7 @@ class _GlobalSearchScreenState extends State<GlobalSearchScreen>
         title: TextField(
           controller: _searchCtrl,
           autofocus: true,
-          style: const TextStyle(color: Colors.white, fontSize: 16),
+          style: TextStyle(color: Colors.white, fontSize: 16),
           decoration: InputDecoration(
             hintText: l.t('search_users_groups_rides'),
             hintStyle: TextStyle(color: Colors.white.withValues(alpha: 0.6)),
@@ -171,7 +173,7 @@ class _GlobalSearchScreenState extends State<GlobalSearchScreen>
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Icon(Icons.search_rounded, size: 80, color: Colors.grey[300]),
-          const SizedBox(height: 16),
+          SizedBox(height: 16),
           Text(
             l.t('search_in_biux'),
             style: TextStyle(
@@ -180,12 +182,12 @@ class _GlobalSearchScreenState extends State<GlobalSearchScreen>
               color: Colors.grey[600],
             ),
           ),
-          const SizedBox(height: 8),
+          SizedBox(height: 8),
           Text(
             l.t('search_min_chars'),
             style: TextStyle(color: Colors.grey[400]),
           ),
-          const SizedBox(height: 32),
+          SizedBox(height: 32),
           // Sugerencias rápidas
           Wrap(
             spacing: 8,
@@ -290,7 +292,7 @@ class _GlobalSearchScreenState extends State<GlobalSearchScreen>
             ),
             title: Text(
               name,
-              style: const TextStyle(fontWeight: FontWeight.w600),
+              style: TextStyle(fontWeight: FontWeight.w600),
             ),
             subtitle: Text(
               '${city.isNotEmpty ? "$city • " : ""}$memberCount ${l.t('members')}',
@@ -348,7 +350,7 @@ class _GlobalSearchScreenState extends State<GlobalSearchScreen>
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Icon(Icons.search_off, size: 48, color: Colors.grey[300]),
-          const SizedBox(height: 12),
+          SizedBox(height: 12),
           Text(
             l.t('no_results_found').replaceAll('{type}', type),
             style: TextStyle(color: Colors.grey[500], fontSize: 16),

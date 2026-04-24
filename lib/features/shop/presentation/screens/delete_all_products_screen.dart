@@ -16,6 +16,8 @@ class DeleteAllProductsScreen extends StatefulWidget {
 }
 
 class _DeleteAllProductsScreenState extends State<DeleteAllProductsScreen> {
+  LocaleNotifier get l => Provider.of<LocaleNotifier>(context);
+
   bool _isDeleting = false;
   int _totalProducts = 0;
   int _deletedProducts = 0;
@@ -154,7 +156,7 @@ class _DeleteAllProductsScreenState extends State<DeleteAllProductsScreen> {
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
+          icon: Icon(Icons.arrow_back),
           onPressed: () => context.go('/shop'),
           tooltip: l.t('back_to_store'),
         ),
@@ -172,7 +174,7 @@ class _DeleteAllProductsScreenState extends State<DeleteAllProductsScreen> {
               size: 80,
               color: Colors.orange,
             ),
-            const SizedBox(height: 24),
+            SizedBox(height: 24),
 
             // Título
             Text(
@@ -184,7 +186,7 @@ class _DeleteAllProductsScreenState extends State<DeleteAllProductsScreen> {
               ),
               textAlign: TextAlign.center,
             ),
-            const SizedBox(height: 16),
+            SizedBox(height: 16),
 
             // Descripción
             Text(
@@ -231,20 +233,20 @@ class _DeleteAllProductsScreenState extends State<DeleteAllProductsScreen> {
             // Botón de actualizar conteo
             OutlinedButton.icon(
               onPressed: _isDeleting ? null : _countProducts,
-              icon: const Icon(Icons.refresh),
+              icon: Icon(Icons.refresh),
               label: Text(l.t('refresh_count')),
               style: OutlinedButton.styleFrom(
                 padding: const EdgeInsets.symmetric(vertical: 16),
               ),
             ),
-            const SizedBox(height: 16),
+            SizedBox(height: 16),
 
             // Botón de eliminar
             ElevatedButton.icon(
               onPressed: (_isDeleting || _totalProducts == 0)
                   ? null
                   : _deleteAllProducts,
-              icon: const Icon(Icons.delete_forever),
+              icon: Icon(Icons.delete_forever),
               label: Text(
                 _totalProducts > 0
                     ? '${l.t('delete')} $_totalProducts ${l.t('products_label')}'
@@ -273,7 +275,7 @@ class _DeleteAllProductsScreenState extends State<DeleteAllProductsScreen> {
               child: Row(
                 children: [
                   const Icon(Icons.info_outline, color: Colors.red),
-                  const SizedBox(width: 12),
+                  SizedBox(width: 12),
                   Expanded(
                     child: Text(
                       '⚠️ ${l.t('action_irreversible')}',

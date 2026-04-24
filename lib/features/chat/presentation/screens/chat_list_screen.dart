@@ -8,6 +8,8 @@ import 'package:biux/features/chat/presentation/providers/chat_provider.dart';
 
 import 'package:timeago/timeago.dart' as timeago;
 import 'package:biux/shared/widgets/shimmer_loading.dart';
+import 'package:biux/core/design_system/locale_notifier.dart';
+import 'package:biux/core/design_system/locale_notifier.dart';
 
 class ChatListScreen extends StatefulWidget {
   const ChatListScreen({Key? key}) : super(key: key);
@@ -17,6 +19,8 @@ class ChatListScreen extends StatefulWidget {
 
 class _ChatListScreenState extends State<ChatListScreen>
     with SingleTickerProviderStateMixin {
+  LocaleNotifier get l => Provider.of<LocaleNotifier>(context);
+
   final _searchCtrl = TextEditingController();
   String _searchQuery = '';
   final _userCache = <String, Map<String, dynamic>>{};
@@ -201,7 +205,7 @@ class _ChatListScreenState extends State<ChatListScreen>
               color: isDark ? Colors.white : ColorTokens.neutral10,
             ),
             decoration: InputDecoration(
-              hintText: 'Buscar conversación...',
+              hintText: l.t('search_conversation'),
               hintStyle: TextStyle(
                 color: isDark ? Colors.white54 : Colors.grey[500],
               ),
@@ -263,7 +267,7 @@ class _ChatListScreenState extends State<ChatListScreen>
                                       .getChatsStream(_uid);
                                 });
                               },
-                              child: const Text('Reintentar'),
+                              child: Text(l.t('retry')),
                             ),
                           ],
                         ),
@@ -441,7 +445,7 @@ class _ChatListScreenState extends State<ChatListScreen>
                                 ? 'Chat grupal'
                                 : (userData['fullName'] as String? ??
                                       userData['name'] as String? ??
-                                      'Ciclista');
+                                      l.t('cyclist_label'));
                             final photo =
                                 userData['photoUrl'] as String? ??
                                 userData['photo'] as String? ??
@@ -621,7 +625,7 @@ class _ChatListScreenState extends State<ChatListScreen>
 
   /// Obtiene el nombre de un mapa de datos de usuario con fallback
   String _getUserName(Map<String, dynamic> data) {
-    return data['fullName'] as String? ?? data['name'] as String? ?? 'Ciclista';
+    return data['fullName'] as String? ?? data['name'] as String? ?? l.t('cyclist_label');
   }
 
   /// Obtiene la foto de un mapa de datos de usuario con fallback
@@ -819,7 +823,7 @@ class _ChatListScreenState extends State<ChatListScreen>
                     'Nuevo mensaje',
                     style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                   ),
-                  const SizedBox(height: 4),
+                  SizedBox(height: 4),
                   Text(
                     'Elige un ciclista que sigues',
                     style: TextStyle(
@@ -827,11 +831,11 @@ class _ChatListScreenState extends State<ChatListScreen>
                       fontSize: 13,
                     ),
                   ),
-                  const SizedBox(height: 16),
+                  SizedBox(height: 16),
                   TextField(
                     controller: searchCtrl,
                     decoration: InputDecoration(
-                      hintText: 'Filtrar por nombre...',
+                      hintText: l.t('filter_by_name'),
                       prefixIcon: const Icon(Icons.search),
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(12),
@@ -956,7 +960,7 @@ class _ChatListScreenState extends State<ChatListScreen>
       final myName =
           myData['fullName'] as String? ??
           myData['name'] as String? ??
-          'Ciclista';
+          l.t('cyclist_label');
       final myPhoto =
           myData['photoUrl'] as String? ?? myData['photo'] as String? ?? '';
 

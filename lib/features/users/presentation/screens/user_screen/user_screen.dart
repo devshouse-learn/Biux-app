@@ -246,6 +246,8 @@ class _TabBarViewUser extends StatefulWidget {
 
 class _TabBarViewUserState extends State<_TabBarViewUser>
     with TickerProviderStateMixin {
+  LocaleNotifier get l => Provider.of<LocaleNotifier>(context);
+
   late TabController tabController;
   int _selectedIndex = 0;
 

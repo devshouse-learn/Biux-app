@@ -143,6 +143,8 @@ class _ManageProductsSheet extends StatefulWidget {
 }
 
 class _ManageProductsSheetState extends State<_ManageProductsSheet> {
+  LocaleNotifier get l => Provider.of<LocaleNotifier>(context);
+
   final _searchController = TextEditingController();
   final _priceController = TextEditingController();
   String? _selectedProductId;
@@ -172,7 +174,7 @@ class _ManageProductsSheetState extends State<_ManageProductsSheet> {
 
         return Container(
           height: MediaQuery.of(context).size.height * 0.85,
-          decoration: const BoxDecoration(
+          decoration: BoxDecoration(
             color: Colors.white,
             borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
           ),
@@ -185,7 +187,7 @@ class _ManageProductsSheetState extends State<_ManageProductsSheet> {
                 Colors.blue,
                 context,
               ),
-              const Divider(),
+              Divider(),
               Expanded(
                 child: SingleChildScrollView(
                   padding: const EdgeInsets.all(16),
@@ -213,7 +215,7 @@ class _ManageProductsSheetState extends State<_ManageProductsSheet> {
                           Colors.orange,
                         ),
                       ]),
-                      const SizedBox(height: 16),
+                      SizedBox(height: 16),
 
                       // Buscador funcional
                       TextField(
@@ -236,7 +238,7 @@ class _ManageProductsSheetState extends State<_ManageProductsSheet> {
                         ),
                         onChanged: (_) => setState(() {}),
                       ),
-                      const SizedBox(height: 16),
+                      SizedBox(height: 16),
 
                       // Lista de productos reales
                       Text(
@@ -246,7 +248,7 @@ class _ManageProductsSheetState extends State<_ManageProductsSheet> {
                           fontWeight: FontWeight.bold,
                         ),
                       ),
-                      const SizedBox(height: 8),
+                      SizedBox(height: 8),
 
                       if (filtered.isEmpty)
                         _buildEmptyCard(l.t('admin_no_products_found'))
@@ -289,7 +291,7 @@ class _ManageProductsSheetState extends State<_ManageProductsSheet> {
         ),
         title: Text(
           product.name,
-          style: const TextStyle(fontWeight: FontWeight.w600),
+          style: TextStyle(fontWeight: FontWeight.w600),
         ),
         subtitle: Text(
           '\$${product.price.toStringAsFixed(2)} · Stock: ${product.stock}',
@@ -311,7 +313,7 @@ class _ManageProductsSheetState extends State<_ManageProductsSheet> {
                             : Icons.visibility,
                         size: 18,
                       ),
-                      const SizedBox(width: 8),
+                      SizedBox(width: 8),
                       Text(
                         product.isActive
                             ? l.t('admin_deactivate')
@@ -408,7 +410,7 @@ class _ManageProductsSheetState extends State<_ManageProductsSheet> {
               l.t('admin_quick_price_update'),
               style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
             ),
-            const SizedBox(height: 12),
+            SizedBox(height: 12),
             DropdownButtonFormField<String>(
               initialValue: _selectedProductId,
               decoration: InputDecoration(
@@ -436,7 +438,7 @@ class _ManageProductsSheetState extends State<_ManageProductsSheet> {
                 });
               },
             ),
-            const SizedBox(height: 8),
+            SizedBox(height: 8),
             TextField(
               controller: _priceController,
               keyboardType: TextInputType.number,
@@ -448,7 +450,7 @@ class _ManageProductsSheetState extends State<_ManageProductsSheet> {
                 ),
               ),
             ),
-            const SizedBox(height: 12),
+            SizedBox(height: 12),
             SizedBox(
               width: double.infinity,
               child: ElevatedButton.icon(
@@ -519,7 +521,7 @@ class _ManageProductsSheetState extends State<_ManageProductsSheet> {
                           color: Colors.white,
                         ),
                       )
-                    : const Icon(Icons.update),
+                    : Icon(Icons.update),
                 label: Text(
                   _isUpdating
                       ? l.t('admin_updating')
@@ -577,7 +579,7 @@ class _ManageSellersSheetState extends State<_ManageSellersSheet> {
     final l = Provider.of<LocaleNotifier>(context);
     return Container(
       height: MediaQuery.of(context).size.height * 0.85,
-      decoration: const BoxDecoration(
+      decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
@@ -590,7 +592,7 @@ class _ManageSellersSheetState extends State<_ManageSellersSheet> {
             Colors.green,
             context,
           ),
-          const Divider(),
+          Divider(),
           Expanded(
             child: SingleChildScrollView(
               padding: const EdgeInsets.all(16),
@@ -615,7 +617,7 @@ class _ManageSellersSheetState extends State<_ManageSellersSheet> {
                               fontWeight: FontWeight.bold,
                             ),
                           ),
-                          const SizedBox(height: 12),
+                          SizedBox(height: 12),
                           TextField(
                             controller: _nameController,
                             decoration: InputDecoration(
@@ -626,7 +628,7 @@ class _ManageSellersSheetState extends State<_ManageSellersSheet> {
                               ),
                             ),
                           ),
-                          const SizedBox(height: 8),
+                          SizedBox(height: 8),
                           TextField(
                             controller: _emailController,
                             keyboardType: TextInputType.emailAddress,
@@ -638,24 +640,24 @@ class _ManageSellersSheetState extends State<_ManageSellersSheet> {
                               ),
                             ),
                           ),
-                          const SizedBox(height: 8),
+                          SizedBox(height: 8),
                           TextField(
                             controller: _phoneController,
                             keyboardType: TextInputType.phone,
                             decoration: InputDecoration(
                               labelText: l.t('admin_phone'),
-                              prefixIcon: const Icon(Icons.phone),
+                              prefixIcon: Icon(Icons.phone),
                               border: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(10),
                               ),
                             ),
                           ),
-                          const SizedBox(height: 8),
+                          SizedBox(height: 8),
                           DropdownButtonFormField<String>(
                             initialValue: _selectedRole,
                             decoration: InputDecoration(
                               labelText: l.t('admin_role'),
-                              prefixIcon: const Icon(Icons.badge),
+                              prefixIcon: Icon(Icons.badge),
                               border: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(10),
                               ),
@@ -677,7 +679,7 @@ class _ManageSellersSheetState extends State<_ManageSellersSheet> {
                             onChanged: (v) =>
                                 setState(() => _selectedRole = v ?? 'vendedor'),
                           ),
-                          const SizedBox(height: 12),
+                          SizedBox(height: 12),
                           SizedBox(
                             width: double.infinity,
                             child: ElevatedButton.icon(
@@ -691,7 +693,7 @@ class _ManageSellersSheetState extends State<_ManageSellersSheet> {
                                         color: Colors.white,
                                       ),
                                     )
-                                  : const Icon(Icons.person_add),
+                                  : Icon(Icons.person_add),
                               label: Text(
                                 _isSubmitting
                                     ? l.t('admin_adding')
@@ -713,7 +715,7 @@ class _ManageSellersSheetState extends State<_ManageSellersSheet> {
                       ),
                     ),
                   ),
-                  const SizedBox(height: 16),
+                  SizedBox(height: 16),
 
                   // Vendedores registrados
                   Text(
@@ -723,7 +725,7 @@ class _ManageSellersSheetState extends State<_ManageSellersSheet> {
                       fontWeight: FontWeight.bold,
                     ),
                   ),
-                  const SizedBox(height: 8),
+                  SizedBox(height: 8),
                   if (_sellers.isEmpty)
                     _buildEmptyCard(l.t('admin_no_sellers_registered'))
                   else
@@ -752,7 +754,7 @@ class _ManageSellersSheetState extends State<_ManageSellersSheet> {
                       ),
                     ),
 
-                  const SizedBox(height: 16),
+                  SizedBox(height: 16),
 
                   // Permisos funcionales
                   Card(
@@ -772,7 +774,7 @@ class _ManageSellersSheetState extends State<_ManageSellersSheet> {
                               fontWeight: FontWeight.bold,
                             ),
                           ),
-                          const SizedBox(height: 8),
+                          SizedBox(height: 8),
                           SwitchListTile(
                             title: Text(l.t('admin_can_modify_prices')),
                             value: _canModifyPrices,
@@ -783,7 +785,7 @@ class _ManageSellersSheetState extends State<_ManageSellersSheet> {
                                 v,
                               );
                             },
-                            secondary: const Icon(Icons.attach_money),
+                            secondary: Icon(Icons.attach_money),
                           ),
                           SwitchListTile(
                             title: Text(l.t('admin_can_add_products')),
@@ -795,7 +797,7 @@ class _ManageSellersSheetState extends State<_ManageSellersSheet> {
                                 v,
                               );
                             },
-                            secondary: const Icon(Icons.add_box),
+                            secondary: Icon(Icons.add_box),
                           ),
                           SwitchListTile(
                             title: Text(l.t('admin_can_delete_products')),
@@ -807,7 +809,7 @@ class _ManageSellersSheetState extends State<_ManageSellersSheet> {
                                 v,
                               );
                             },
-                            secondary: const Icon(Icons.delete),
+                            secondary: Icon(Icons.delete),
                           ),
                           SwitchListTile(
                             title: Text(l.t('admin_can_view_reports')),
@@ -852,7 +854,7 @@ class _ManageSellersSheetState extends State<_ManageSellersSheet> {
     }
     setState(() => _isSubmitting = true);
     // Simular delay de API
-    Future.delayed(const Duration(milliseconds: 800), () {
+    Future.delayed(Duration(milliseconds: 800), () {
       if (!mounted) return;
       setState(() {
         _sellers.add({
@@ -957,7 +959,7 @@ class _ReportsSheetState extends State<_ReportsSheet> {
 
     return Container(
       height: MediaQuery.of(context).size.height * 0.85,
-      decoration: const BoxDecoration(
+      decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
@@ -970,7 +972,7 @@ class _ReportsSheetState extends State<_ReportsSheet> {
             Colors.orange,
             context,
           ),
-          const Divider(),
+          Divider(),
           Expanded(
             child: SingleChildScrollView(
               padding: const EdgeInsets.all(16),
@@ -998,7 +1000,7 @@ class _ReportsSheetState extends State<_ReportsSheet> {
                       Colors.purple,
                     ),
                   ]),
-                  const SizedBox(height: 16),
+                  SizedBox(height: 16),
 
                   // Generador de reporte funcional
                   Card(
@@ -1013,17 +1015,17 @@ class _ReportsSheetState extends State<_ReportsSheet> {
                         children: [
                           Text(
                             l.t('admin_generate_report'),
-                            style: const TextStyle(
+                            style: TextStyle(
                               fontSize: 16,
                               fontWeight: FontWeight.bold,
                             ),
                           ),
-                          const SizedBox(height: 12),
+                          SizedBox(height: 12),
                           DropdownButtonFormField<String>(
                             initialValue: _reportType,
                             decoration: InputDecoration(
                               labelText: l.t('admin_report_type'),
-                              prefixIcon: const Icon(Icons.description),
+                              prefixIcon: Icon(Icons.description),
                               border: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(10),
                               ),
@@ -1048,12 +1050,12 @@ class _ReportsSheetState extends State<_ReportsSheet> {
                             ],
                             onChanged: (v) => setState(() => _reportType = v),
                           ),
-                          const SizedBox(height: 8),
+                          SizedBox(height: 8),
                           DropdownButtonFormField<String>(
                             initialValue: _period,
                             decoration: InputDecoration(
                               labelText: l.t('admin_period'),
-                              prefixIcon: const Icon(Icons.schedule),
+                              prefixIcon: Icon(Icons.schedule),
                               border: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(10),
                               ),
@@ -1078,7 +1080,7 @@ class _ReportsSheetState extends State<_ReportsSheet> {
                             ],
                             onChanged: (v) => setState(() => _period = v),
                           ),
-                          const SizedBox(height: 12),
+                          SizedBox(height: 12),
                           SizedBox(
                             width: double.infinity,
                             child: ElevatedButton.icon(
@@ -1092,7 +1094,7 @@ class _ReportsSheetState extends State<_ReportsSheet> {
                                         color: Colors.white,
                                       ),
                                     )
-                                  : const Icon(Icons.download),
+                                  : Icon(Icons.download),
                               label: Text(
                                 _isGenerating
                                     ? l.t('admin_generating')
@@ -1135,7 +1137,7 @@ class _ReportsSheetState extends State<_ReportsSheet> {
                                   Icons.check_circle,
                                   color: Colors.green[700],
                                 ),
-                                const SizedBox(width: 8),
+                                SizedBox(width: 8),
                                 Text(
                                   l.t('admin_report_generated'),
                                   style: const TextStyle(
@@ -1153,7 +1155,7 @@ class _ReportsSheetState extends State<_ReportsSheet> {
                     ),
                   ],
 
-                  const SizedBox(height: 16),
+                  SizedBox(height: 16),
                   // Top productos por precio
                   Text(
                     l.t('admin_top5_by_price'),
@@ -1162,7 +1164,7 @@ class _ReportsSheetState extends State<_ReportsSheet> {
                       fontWeight: FontWeight.bold,
                     ),
                   ),
-                  const SizedBox(height: 8),
+                  SizedBox(height: 8),
                   if (products.isEmpty)
                     _buildEmptyCard(l.t('admin_no_product_data'))
                   else
@@ -1212,7 +1214,7 @@ class _ReportsSheetState extends State<_ReportsSheet> {
     setState(() => _isGenerating = true);
 
     final products = widget.shopProvider.products;
-    Future.delayed(const Duration(seconds: 1), () {
+    Future.delayed(Duration(seconds: 1), () {
       if (!mounted) return;
       String report;
       switch (_reportType) {
@@ -1314,7 +1316,7 @@ class _RequestsSheetState extends State<_RequestsSheet> {
 
     return Container(
       height: MediaQuery.of(context).size.height * 0.85,
-      decoration: const BoxDecoration(
+      decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
@@ -1327,7 +1329,7 @@ class _RequestsSheetState extends State<_RequestsSheet> {
             Colors.indigo,
             context,
           ),
-          const Divider(),
+          Divider(),
           Expanded(
             child: SingleChildScrollView(
               padding: const EdgeInsets.all(16),
@@ -1354,7 +1356,7 @@ class _RequestsSheetState extends State<_RequestsSheet> {
                       Colors.green,
                     ),
                   ]),
-                  const SizedBox(height: 16),
+                  SizedBox(height: 16),
 
                   // Filtros funcionales
                   Card(
@@ -1369,17 +1371,17 @@ class _RequestsSheetState extends State<_RequestsSheet> {
                         children: [
                           Text(
                             l.t('admin_filter'),
-                            style: const TextStyle(
+                            style: TextStyle(
                               fontSize: 16,
                               fontWeight: FontWeight.bold,
                             ),
                           ),
-                          const SizedBox(height: 12),
+                          SizedBox(height: 12),
                           DropdownButtonFormField<String>(
                             initialValue: _statusFilter,
                             decoration: InputDecoration(
                               labelText: l.t('admin_status'),
-                              prefixIcon: const Icon(Icons.filter_list),
+                              prefixIcon: Icon(Icons.filter_list),
                               border: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(10),
                               ),
@@ -1405,12 +1407,12 @@ class _RequestsSheetState extends State<_RequestsSheet> {
                             onChanged: (v) =>
                                 setState(() => _statusFilter = v ?? 'todas'),
                           ),
-                          const SizedBox(height: 8),
+                          SizedBox(height: 8),
                           DropdownButtonFormField<String>(
                             initialValue: _typeFilter,
                             decoration: InputDecoration(
                               labelText: l.t('admin_type'),
-                              prefixIcon: const Icon(Icons.category),
+                              prefixIcon: Icon(Icons.category),
                               border: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(10),
                               ),
@@ -1444,7 +1446,7 @@ class _RequestsSheetState extends State<_RequestsSheet> {
                       ),
                     ),
                   ),
-                  const SizedBox(height: 16),
+                  SizedBox(height: 16),
 
                   // Crear solicitud
                   Card(
@@ -1459,12 +1461,12 @@ class _RequestsSheetState extends State<_RequestsSheet> {
                         children: [
                           Text(
                             l.t('admin_new_request'),
-                            style: const TextStyle(
+                            style: TextStyle(
                               fontSize: 16,
                               fontWeight: FontWeight.bold,
                             ),
                           ),
-                          const SizedBox(height: 12),
+                          SizedBox(height: 12),
                           DropdownButtonFormField<String>(
                             initialValue: _newRequestType,
                             decoration: InputDecoration(
@@ -1495,7 +1497,7 @@ class _RequestsSheetState extends State<_RequestsSheet> {
                               () => _newRequestType = v ?? 'reclamo',
                             ),
                           ),
-                          const SizedBox(height: 8),
+                          SizedBox(height: 8),
                           TextField(
                             controller: _requestDescController,
                             maxLines: 3,
@@ -1511,7 +1513,7 @@ class _RequestsSheetState extends State<_RequestsSheet> {
                             width: double.infinity,
                             child: ElevatedButton.icon(
                               onPressed: _isAdding ? null : _createRequest,
-                              icon: const Icon(Icons.add),
+                              icon: Icon(Icons.add),
                               label: Text(l.t('admin_create_request')),
                               style: ElevatedButton.styleFrom(
                                 backgroundColor: Colors.indigo,
@@ -1529,7 +1531,7 @@ class _RequestsSheetState extends State<_RequestsSheet> {
                       ),
                     ),
                   ),
-                  const SizedBox(height: 16),
+                  SizedBox(height: 16),
 
                   Text(
                     '${l.t('admin_requests')} (${filtered.length})',
@@ -1538,7 +1540,7 @@ class _RequestsSheetState extends State<_RequestsSheet> {
                       fontWeight: FontWeight.bold,
                     ),
                   ),
-                  const SizedBox(height: 8),
+                  SizedBox(height: 8),
                   if (filtered.isEmpty)
                     _buildEmptyCard(l.t('admin_no_requests'))
                   else
@@ -1559,7 +1561,7 @@ class _RequestsSheetState extends State<_RequestsSheet> {
                           ),
                           title: Text(
                             r['type'].toString().toUpperCase(),
-                            style: const TextStyle(fontWeight: FontWeight.w600),
+                            style: TextStyle(fontWeight: FontWeight.w600),
                           ),
                           subtitle: Text(r['description']),
                           trailing: PopupMenuButton<String>(
@@ -1701,7 +1703,7 @@ class _StatsSheetState extends State<_StatsSheet> {
 
     return Container(
       height: MediaQuery.of(context).size.height * 0.85,
-      decoration: const BoxDecoration(
+      decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
@@ -1714,7 +1716,7 @@ class _StatsSheetState extends State<_StatsSheet> {
             Colors.purple,
             context,
           ),
-          const Divider(),
+          Divider(),
           Expanded(
             child: SingleChildScrollView(
               padding: const EdgeInsets.all(16),
@@ -1741,7 +1743,7 @@ class _StatsSheetState extends State<_StatsSheet> {
                       Colors.purple,
                     ),
                   ]),
-                  const SizedBox(height: 16),
+                  SizedBox(height: 16),
                   _buildSummaryCard([
                     _StatData(
                       l.t('admin_inventory_value'),
@@ -1762,7 +1764,7 @@ class _StatsSheetState extends State<_StatsSheet> {
                       Colors.red,
                     ),
                   ]),
-                  const SizedBox(height: 16),
+                  SizedBox(height: 16),
 
                   // Selector de rango funcional
                   Card(
@@ -1807,7 +1809,7 @@ class _StatsSheetState extends State<_StatsSheet> {
                                     Icons.calendar_today,
                                     color: Colors.purple,
                                   ),
-                                  const SizedBox(width: 8),
+                                  SizedBox(width: 8),
                                   Text(
                                     _dateRange == null
                                         ? l.t('admin_select_date_range')
@@ -1858,7 +1860,7 @@ class _StatsSheetState extends State<_StatsSheet> {
                       ),
                     ),
                   ),
-                  const SizedBox(height: 16),
+                  SizedBox(height: 16),
 
                   // Distribución por categoría
                   Text(
@@ -1953,7 +1955,7 @@ class _SecuritySheetState extends State<_SecuritySheet> {
     final l = Provider.of<LocaleNotifier>(context);
     return Container(
       height: MediaQuery.of(context).size.height * 0.85,
-      decoration: const BoxDecoration(
+      decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
@@ -1995,7 +1997,7 @@ class _SecuritySheetState extends State<_SecuritySheet> {
                                 : Colors.orange[700],
                             size: 40,
                           ),
-                          const SizedBox(width: 12),
+                          SizedBox(width: 12),
                           Expanded(
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
@@ -2024,17 +2026,17 @@ class _SecuritySheetState extends State<_SecuritySheet> {
                       ),
                     ),
                   ),
-                  const SizedBox(height: 16),
+                  SizedBox(height: 16),
 
                   // Configuraciones funcionales
                   Text(
                     l.t('admin_configuration'),
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
-                  const SizedBox(height: 8),
+                  SizedBox(height: 8),
                   Card(
                     elevation: 2,
                     shape: RoundedRectangleBorder(
@@ -2056,9 +2058,9 @@ class _SecuritySheetState extends State<_SecuritySheet> {
                               ),
                             );
                           },
-                          secondary: const Icon(Icons.lock),
+                          secondary: Icon(Icons.lock),
                         ),
-                        const Divider(height: 1),
+                        Divider(height: 1),
                         SwitchListTile(
                           title: Text(l.t('admin_login_notifications')),
                           subtitle: Text(l.t('admin_access_alerts')),
@@ -2073,9 +2075,9 @@ class _SecuritySheetState extends State<_SecuritySheet> {
                               ),
                             );
                           },
-                          secondary: const Icon(Icons.notifications_active),
+                          secondary: Icon(Icons.notifications_active),
                         ),
-                        const Divider(height: 1),
+                        Divider(height: 1),
                         SwitchListTile(
                           title: Text(l.t('admin_activity_log')),
                           subtitle: Text(l.t('admin_action_log')),
@@ -2090,9 +2092,9 @@ class _SecuritySheetState extends State<_SecuritySheet> {
                               ),
                             );
                           },
-                          secondary: const Icon(Icons.history),
+                          secondary: Icon(Icons.history),
                         ),
-                        const Divider(height: 1),
+                        Divider(height: 1),
                         SwitchListTile(
                           title: Text(l.t('admin_failed_attempt_lock')),
                           subtitle: Text(l.t('admin_lock_after_5_attempts')),
@@ -2112,7 +2114,7 @@ class _SecuritySheetState extends State<_SecuritySheet> {
                       ],
                     ),
                   ),
-                  const SizedBox(height: 16),
+                  SizedBox(height: 16),
 
                   // Cambiar contraseña funcional
                   Card(
@@ -2132,7 +2134,7 @@ class _SecuritySheetState extends State<_SecuritySheet> {
                               fontWeight: FontWeight.bold,
                             ),
                           ),
-                          const SizedBox(height: 12),
+                          SizedBox(height: 12),
                           TextField(
                             controller: _currentPasswordController,
                             obscureText: _obscureCurrent,
@@ -2154,7 +2156,7 @@ class _SecuritySheetState extends State<_SecuritySheet> {
                               ),
                             ),
                           ),
-                          const SizedBox(height: 8),
+                          SizedBox(height: 8),
                           TextField(
                             controller: _newPasswordController,
                             obscureText: _obscureNew,
@@ -2175,7 +2177,7 @@ class _SecuritySheetState extends State<_SecuritySheet> {
                               ),
                             ),
                           ),
-                          const SizedBox(height: 8),
+                          SizedBox(height: 8),
                           TextField(
                             controller: _confirmPasswordController,
                             obscureText: _obscureConfirm,
@@ -2197,7 +2199,7 @@ class _SecuritySheetState extends State<_SecuritySheet> {
                               ),
                             ),
                           ),
-                          const SizedBox(height: 12),
+                          SizedBox(height: 12),
                           SizedBox(
                             width: double.infinity,
                             child: ElevatedButton.icon(
@@ -2213,7 +2215,7 @@ class _SecuritySheetState extends State<_SecuritySheet> {
                                         color: Colors.white,
                                       ),
                                     )
-                                  : const Icon(Icons.vpn_key),
+                                  : Icon(Icons.vpn_key),
                               label: Text(
                                 _isChangingPassword
                                     ? l.t('admin_changing')
@@ -2235,24 +2237,24 @@ class _SecuritySheetState extends State<_SecuritySheet> {
                       ),
                     ),
                   ),
-                  const SizedBox(height: 16),
+                  SizedBox(height: 16),
 
                   // Sesión activa
                   Text(
                     l.t('admin_active_sessions'),
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
-                  const SizedBox(height: 8),
+                  SizedBox(height: 8),
                   Card(
                     elevation: 1,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(12),
                     ),
                     child: ListTile(
-                      leading: const Icon(
+                      leading: Icon(
                         Icons.phone_iphone,
                         color: Colors.blue,
                       ),
@@ -2277,7 +2279,7 @@ class _SecuritySheetState extends State<_SecuritySheet> {
                       ),
                     ),
                   ),
-                  const SizedBox(height: 12),
+                  SizedBox(height: 12),
                   SizedBox(
                     width: double.infinity,
                     child: OutlinedButton.icon(
@@ -2290,7 +2292,7 @@ class _SecuritySheetState extends State<_SecuritySheet> {
                           ),
                         );
                       },
-                      icon: const Icon(Icons.logout, color: Colors.red),
+                      icon: Icon(Icons.logout, color: Colors.red),
                       label: Text(
                         l.t('admin_close_all_sessions'),
                         style: const TextStyle(color: Colors.red),
@@ -2339,7 +2341,7 @@ class _SecuritySheetState extends State<_SecuritySheet> {
     }
 
     setState(() => _isChangingPassword = true);
-    Future.delayed(const Duration(seconds: 1), () {
+    Future.delayed(Duration(seconds: 1), () {
       if (!mounted) return;
       setState(() => _isChangingPassword = false);
       _currentPasswordController.clear();

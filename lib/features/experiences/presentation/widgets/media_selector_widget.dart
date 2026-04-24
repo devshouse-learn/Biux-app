@@ -40,7 +40,7 @@ class MediaSelectorWidget extends StatelessWidget {
               color: Colors.grey[700],
             ),
           ),
-          const SizedBox(height: 12),
+          SizedBox(height: 12),
 
           // Botones para imágenes
           Row(
@@ -52,7 +52,7 @@ class MediaSelectorWidget extends StatelessWidget {
                   onTap: onImageFromGallery,
                 ),
               ),
-              const SizedBox(width: 8),
+              SizedBox(width: 8),
               Expanded(
                 child: _MediaButton(
                   icon: Icons.camera_alt,

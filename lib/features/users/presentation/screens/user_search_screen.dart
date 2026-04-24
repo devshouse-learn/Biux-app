@@ -16,6 +16,8 @@ class UserSearchScreen extends StatefulWidget {
 }
 
 class _UserSearchScreenState extends State<UserSearchScreen> {
+  LocaleNotifier get l => Provider.of<LocaleNotifier>(context);
+
   final TextEditingController _searchController = TextEditingController();
   final FocusNode _searchFocus = FocusNode();
   List<BiuxUser> _filteredResults = [];

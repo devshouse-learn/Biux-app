@@ -26,6 +26,8 @@ class ProfileImagePicker extends StatefulWidget {
 }
 
 class _ProfileImagePickerState extends State<ProfileImagePicker> {
+  LocaleNotifier get l => Provider.of<LocaleNotifier>(context);
+
   File? _selectedImage;
   bool _isProcessing = false;
 
@@ -172,7 +174,7 @@ class _ProfileImagePickerState extends State<ProfileImagePicker> {
                     borderRadius: BorderRadius.circular(2),
                   ),
                 ),
-                const SizedBox(height: 20),
+                SizedBox(height: 20),
 
                 Text(
                   l.t('change_profile_photo'),
@@ -182,7 +184,7 @@ class _ProfileImagePickerState extends State<ProfileImagePicker> {
                     color: ColorTokens.neutral90,
                   ),
                 ),
-                const SizedBox(height: 20),
+                SizedBox(height: 20),
 
                 // Opciones
                 ListTile(
@@ -192,7 +194,7 @@ class _ProfileImagePickerState extends State<ProfileImagePicker> {
                       color: ColorTokens.primary50.withValues(alpha: 0.1),
                       shape: BoxShape.circle,
                     ),
-                    child: const Icon(
+                    child: Icon(
                       Icons.camera_alt,
                       color: ColorTokens.primary50,
                     ),
@@ -212,7 +214,7 @@ class _ProfileImagePickerState extends State<ProfileImagePicker> {
                       color: ColorTokens.secondary50.withValues(alpha: 0.1),
                       shape: BoxShape.circle,
                     ),
-                    child: const Icon(
+                    child: Icon(
                       Icons.photo_library,
                       color: ColorTokens.secondary50,
                     ),
@@ -235,7 +237,7 @@ class _ProfileImagePickerState extends State<ProfileImagePicker> {
                         color: ColorTokens.error50.withValues(alpha: 0.1),
                         shape: BoxShape.circle,
                       ),
-                      child: const Icon(
+                      child: Icon(
                         Icons.delete,
                         color: ColorTokens.error50,
                       ),

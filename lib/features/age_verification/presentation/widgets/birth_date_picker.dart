@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:biux/core/design_system/color_tokens.dart';
+import 'package:biux/core/design_system/locale_notifier.dart';
+import 'package:provider/provider.dart';
 
 class BirthDatePicker extends StatelessWidget {
   final DateTime? selectedDate;
@@ -14,6 +16,7 @@ class BirthDatePicker extends StatelessWidget {
   });
 
   Future<void> _pickDate(BuildContext context) async {
+    final l = Provider.of<LocaleNotifier>(context, listen: false);
     final now = DateTime.now();
     final initial = selectedDate ?? DateTime(now.year - 18, now.month, now.day);
     final picked = await showDatePicker(
@@ -22,8 +25,8 @@ class BirthDatePicker extends StatelessWidget {
       firstDate: DateTime(now.year - 100),
       lastDate: DateTime(now.year - 5),
       helpText: 'Selecciona tu fecha de nacimiento',
-      cancelText: 'Cancelar',
-      confirmText: 'Confirmar',
+      cancelText: l.t('cancel'),
+      confirmText: l.t('confirm'),
       builder: (context, child) {
         return Theme(
           data: Theme.of(context).copyWith(
@@ -47,6 +50,8 @@ class BirthDatePicker extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l = Provider.of<LocaleNotifier>(context);
+
     return GestureDetector(
       onTap: () => _pickDate(context),
       child: Container(

@@ -5,6 +5,7 @@ import 'package:biux/core/design_system/color_tokens.dart';
 import 'package:biux/features/shop/data/datasources/bike_qr_datasource.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:intl/intl.dart';
+import 'package:biux/core/design_system/locale_notifier.dart';
 
 /// Pantalla que muestra el código QR de una bicicleta verificada
 class BikeQRScreen extends StatefulWidget {
@@ -32,6 +33,8 @@ class BikeQRScreen extends StatefulWidget {
 }
 
 class _BikeQRScreenState extends State<BikeQRScreen> {
+  LocaleNotifier get l => Provider.of<LocaleNotifier>(context);
+
   late String _qrData;
 
   @override
@@ -55,7 +58,7 @@ class _BikeQRScreenState extends State<BikeQRScreen> {
       appBar: AppBar(
         backgroundColor: ColorTokens.success40,
         foregroundColor: ColorTokens.neutral100,
-        title: const Text('Código QR de Verificación'),
+        title: Text(l.t('qr_verification_code')),
         actions: [
           IconButton(
             icon: const Icon(Icons.share),
@@ -244,8 +247,8 @@ class _BikeQRScreenState extends State<BikeQRScreen> {
                 const SizedBox(width: 16),
                 Expanded(
                   child: ElevatedButton.icon(
-                    icon: const Icon(Icons.share),
-                    label: const Text('Compartir'),
+                    icon: Icon(Icons.share),
+                    label: Text(l.t('share')),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: ColorTokens.primary40,
                       foregroundColor: ColorTokens.neutral100,

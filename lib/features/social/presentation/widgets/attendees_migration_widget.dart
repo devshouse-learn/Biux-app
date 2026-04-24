@@ -18,6 +18,8 @@ class AttendeesMigrationWidget extends StatefulWidget {
 }
 
 class _AttendeesMigrationWidgetState extends State<AttendeesMigrationWidget> {
+  LocaleNotifier get l => Provider.of<LocaleNotifier>(context);
+
   final _adapter = AttendeesFirestoreAdapter();
   bool _isMigrating = false;
   String _statusKey = 'ready_to_migrate';
@@ -64,7 +66,7 @@ class _AttendeesMigrationWidgetState extends State<AttendeesMigrationWidget> {
               l.t('migration_title'),
               style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
-            const SizedBox(height: 8),
+            SizedBox(height: 8),
             Text(
               l.t('migration_description'),
               style: const TextStyle(color: Colors.grey),
@@ -90,19 +92,19 @@ class _AttendeesMigrationWidgetState extends State<AttendeesMigrationWidget> {
                     ? Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          const SizedBox(
+                          SizedBox(
                             width: 20,
                             height: 20,
                             child: CircularProgressIndicator(strokeWidth: 2),
                           ),
-                          const SizedBox(width: 8),
+                          SizedBox(width: 8),
                           Text(l.t('migrating')),
                         ],
                       )
                     : Text(l.t('start_migration')),
               ),
             ),
-            const SizedBox(height: 8),
+            SizedBox(height: 8),
             Text(
               l.t('run_once_warning'),
               style: const TextStyle(

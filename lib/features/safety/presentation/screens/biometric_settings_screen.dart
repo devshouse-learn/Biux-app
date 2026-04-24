@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:local_auth/local_auth.dart';
 import 'package:biux/core/design_system/color_tokens.dart';
 import 'package:biux/core/services/biometric_service.dart';
+import 'package:biux/core/design_system/locale_notifier.dart';
+import 'package:provider/provider.dart';
+import 'package:biux/core/design_system/locale_notifier.dart';
 
 class BiometricSettingsScreen extends StatefulWidget {
   const BiometricSettingsScreen({super.key});
@@ -11,6 +14,8 @@ class BiometricSettingsScreen extends StatefulWidget {
 }
 
 class _BiometricSettingsScreenState extends State<BiometricSettingsScreen> {
+  LocaleNotifier get l => Provider.of<LocaleNotifier>(context);
+
   bool _isAvailable = false;
   bool _isEnabled = false;
   List<BiometricType> _biometrics = [];
@@ -40,7 +45,7 @@ class _BiometricSettingsScreenState extends State<BiometricSettingsScreen> {
       if (!auth) {
         if (mounted)
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Autenticacion fallida')),
+            SnackBar(content: Text(l.t('auth_failed'))),
           );
         return;
       }
@@ -75,7 +80,7 @@ class _BiometricSettingsScreenState extends State<BiometricSettingsScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Seguridad biometrica'),
+        title: Text(l.t('biometric_security')),
         backgroundColor: ColorTokens.primary30,
         foregroundColor: Colors.white,
       ),
@@ -168,7 +173,7 @@ class _BiometricSettingsScreenState extends State<BiometricSettingsScreen> {
                         activeThumbColor: ColorTokens.primary30,
                       ),
                     ),
-                    const SizedBox(height: 16),
+                    SizedBox(height: 16),
                     Container(
                       padding: const EdgeInsets.all(16),
                       decoration: BoxDecoration(
@@ -178,22 +183,22 @@ class _BiometricSettingsScreenState extends State<BiometricSettingsScreen> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          const Text(
+                          Text(
                             'Como funciona?',
                             style: TextStyle(fontWeight: FontWeight.w700),
                           ),
-                          const SizedBox(height: 8),
+                          SizedBox(height: 8),
                           _infoRow(
                             Icons.lock_outline_rounded,
-                            'Cuenta protegida con biometria',
+                            l.t('account_protected_biometric'),
                           ),
                           _infoRow(
                             Icons.no_photography_outlined,
-                            'Nadie mas puede acceder sin tu biometria',
+                            l.t('no_access_without_biometric'),
                           ),
                           _infoRow(
                             Icons.speed_rounded,
-                            'Acceso rapido sin contrasena',
+                            l.t('quick_access_no_password'),
                           ),
                         ],
                       ),

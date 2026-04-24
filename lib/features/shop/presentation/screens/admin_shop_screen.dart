@@ -14,6 +14,7 @@ import 'package:biux/features/users/presentation/providers/user_provider.dart';
 import 'package:biux/core/design_system/color_tokens.dart';
 import 'package:biux/features/shop/data/datasources/stolen_bike_verification_datasource.dart';
 import 'package:biux/features/bikes/data/repositories/bike_repository_impl.dart';
+import 'package:biux/core/design_system/locale_notifier.dart';
 
 /// Pantalla de administración de productos (solo para admins)
 class AdminShopScreen extends StatefulWidget {
@@ -24,6 +25,8 @@ class AdminShopScreen extends StatefulWidget {
 }
 
 class _AdminShopScreenState extends State<AdminShopScreen> {
+  LocaleNotifier get l => Provider.of<LocaleNotifier>(context);
+
   final TextEditingController _searchController = TextEditingController();
   String _searchQuery = '';
 
@@ -106,7 +109,7 @@ class _AdminShopScreenState extends State<AdminShopScreen> {
             const Text('Limpiar Base de Datos'),
           ],
         ),
-        content: const Column(
+        content: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -129,7 +132,7 @@ class _AdminShopScreenState extends State<AdminShopScreen> {
         actions: [
           TextButton(
             onPressed: () => Navigator.of(dialogContext).pop(),
-            child: const Text('Cancelar'),
+            child: Text(l.t('cancel')),
           ),
           ElevatedButton(
             onPressed: () async {
@@ -213,12 +216,12 @@ class _AdminShopScreenState extends State<AdminShopScreen> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Eliminar Producto'),
+        title: Text('Eliminar Producto'),
         content: Text('¿Estás seguro de eliminar "${product.name}"?'),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(),
-            child: const Text('Cancelar'),
+            child: Text(l.t('cancel')),
           ),
           ElevatedButton(
             onPressed: () async {
@@ -247,7 +250,7 @@ class _AdminShopScreenState extends State<AdminShopScreen> {
               }
             },
             style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
-            child: const Text('Eliminar'),
+            child: Text(l.t('delete')),
           ),
         ],
       ),
@@ -523,6 +526,7 @@ class ProductFormModal extends StatefulWidget {
 }
 
 class _ProductFormModalState extends State<ProductFormModal> {
+  LocaleNotifier get l => Provider.of<LocaleNotifier>(context);
   final _formKey = GlobalKey<FormState>();
   final _mediaService = MediaUploadService();
 
@@ -2132,7 +2136,7 @@ class _ProductFormModalState extends State<ProductFormModal> {
                 const SizedBox(height: 16),
               ],
 
-              const SizedBox(height: 24),
+              SizedBox(height: 24),
 
               // Botones
               Row(
@@ -2149,7 +2153,7 @@ class _ProductFormModalState extends State<ProductFormModal> {
                         ),
                       ),
                       child: Text(
-                        'Cancelar',
+                        l.t('cancel'),
                         style: TextStyle(
                           fontWeight: FontWeight.w600,
                           color: ColorTokens.neutral50,
@@ -2157,7 +2161,7 @@ class _ProductFormModalState extends State<ProductFormModal> {
                       ),
                     ),
                   ),
-                  const SizedBox(width: 16),
+                  SizedBox(width: 16),
                   Expanded(
                     child: ElevatedButton(
                       onPressed: _isUploading ? null : _saveProduct,
@@ -2174,7 +2178,7 @@ class _ProductFormModalState extends State<ProductFormModal> {
                       child: Text(
                         widget.product == null
                             ? 'Crear Producto'
-                            : 'Actualizar',
+                            : l.t('update'),
                         style: const TextStyle(
                           fontWeight: FontWeight.w600,
                           fontSize: 15,

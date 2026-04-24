@@ -218,7 +218,7 @@ class _AddStoryItem extends StatelessWidget {
                 ],
               ),
             ),
-            const SizedBox(height: 4),
+            SizedBox(height: 4),
             SizedBox(
               width: 70,
               child: Text(
@@ -307,7 +307,7 @@ class StoryViewerScreen extends StatelessWidget {
               '${l.t('story_viewer_of')} ${storyGroup.userName}',
               style: const TextStyle(color: Colors.white, fontSize: 18),
             ),
-            const SizedBox(height: 20),
+            SizedBox(height: 20),
             Text(
               '${storyGroup.totalStories} ${l.t('n_stories')}',
               style: const TextStyle(color: Colors.white70),

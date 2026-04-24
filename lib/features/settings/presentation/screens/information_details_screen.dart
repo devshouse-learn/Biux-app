@@ -18,7 +18,7 @@ class InformationDetailsScreen extends StatelessWidget {
         padding: const EdgeInsets.all(16),
         children: [
           SettingsWidgets.buildSectionTitle(l.t('about_app'), isDark),
-          const SizedBox(height: 12),
+          SizedBox(height: 12),
           SettingsWidgets.buildOptionCard(
             context: context,
             icon: Icons.info_outline,
@@ -27,9 +27,9 @@ class InformationDetailsScreen extends StatelessWidget {
             isDark: isDark,
             onTap: () {},
           ),
-          const SizedBox(height: 24),
+          SizedBox(height: 24),
           SettingsWidgets.buildSectionTitle(l.t('legal_policies'), isDark),
-          const SizedBox(height: 12),
+          SizedBox(height: 12),
           SettingsWidgets.buildOptionCard(
             context: context,
             icon: Icons.description,
@@ -38,9 +38,9 @@ class InformationDetailsScreen extends StatelessWidget {
             isDark: isDark,
             onTap: () => _showTermsDialog(context, isDark, l),
           ),
-          const SizedBox(height: 24),
+          SizedBox(height: 24),
           SettingsWidgets.buildSectionTitle(l.t('support'), isDark),
-          const SizedBox(height: 12),
+          SizedBox(height: 12),
           SettingsWidgets.buildOptionCard(
             context: context,
             icon: Icons.support_agent,
@@ -106,7 +106,7 @@ class InformationDetailsScreen extends StatelessWidget {
                   fontWeight: FontWeight.w600,
                 ),
               ),
-              const SizedBox(height: 12),
+              SizedBox(height: 12),
               TextField(
                 controller: emailController,
                 decoration: InputDecoration(
@@ -126,7 +126,7 @@ class InformationDetailsScreen extends StatelessWidget {
                 ),
                 style: TextStyle(color: isDark ? Colors.white : Colors.black87),
               ),
-              const SizedBox(height: 12),
+              SizedBox(height: 12),
               TextField(
                 controller: messageController,
                 maxLines: 4,

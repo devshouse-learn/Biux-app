@@ -8,6 +8,7 @@ import 'package:biux/features/groups/presentation/providers/group_provider.dart'
 import 'package:biux/shared/widgets/optimized_image_picker.dart';
 import 'package:biux/core/services/optimized_cache_manager.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:biux/core/design_system/locale_notifier.dart';
 
 class MyGroupsScreen extends StatefulWidget {
   @override
@@ -16,6 +17,8 @@ class MyGroupsScreen extends StatefulWidget {
 
 class _MyGroupsScreenState extends State<MyGroupsScreen>
     with SingleTickerProviderStateMixin {
+  LocaleNotifier get l => Provider.of<LocaleNotifier>(context);
+
   late TabController _tabController;
 
   @override
@@ -33,7 +36,6 @@ class _MyGroupsScreenState extends State<MyGroupsScreen>
 
   @override
   Widget build(BuildContext context) {
-    final l = Provider.of<LocaleNotifier>(context);
     return Scaffold(
       appBar: AppBar(
         title: Text(l.t('my_groups')),
@@ -101,7 +103,6 @@ class _MyGroupsScreenState extends State<MyGroupsScreen>
   }
 
   Widget _buildAdminGroupsTab(GroupProvider provider) {
-    final l = Provider.of<LocaleNotifier>(context);
     if (provider.isLoading) {
       return Center(child: CircularProgressIndicator());
     }
@@ -248,7 +249,6 @@ class _MyGroupsScreenState extends State<MyGroupsScreen>
 
   // ignore: unused_element
   Widget _buildGroupCardFull(GroupModel group, GroupProvider provider) {
-    final l = Provider.of<LocaleNotifier>(context);
     return Card(
       margin: EdgeInsets.only(bottom: 16),
       elevation: 4,
@@ -431,9 +431,9 @@ class _MyGroupsScreenState extends State<MyGroupsScreen>
                     child: Row(
                       children: [
                         Icon(Icons.delete_forever, color: ColorTokens.error50),
-                        const SizedBox(width: 8),
+                        SizedBox(width: 8),
                         Text(
-                          'Eliminar grupo',
+                          l.t('delete_group'),
                           style: TextStyle(color: ColorTokens.error50),
                         ),
                       ],
@@ -454,14 +454,14 @@ class _MyGroupsScreenState extends State<MyGroupsScreen>
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: const Text('¿Eliminar grupo?'),
+        title: Text(l.t('delete_group_question')),
         content: Text(
           'Esta acción es permanente y eliminará "${group.name}" para todos los miembros. ¿Estás seguro?',
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx),
-            child: const Text('Cancelar'),
+            child: Text(l.t('cancel')),
           ),
           TextButton(
             onPressed: () async {
@@ -472,7 +472,7 @@ class _MyGroupsScreenState extends State<MyGroupsScreen>
               }
             },
             style: TextButton.styleFrom(foregroundColor: ColorTokens.error50),
-            child: const Text('Eliminar'),
+            child: Text(l.t('delete')),
           ),
         ],
       ),
@@ -481,7 +481,6 @@ class _MyGroupsScreenState extends State<MyGroupsScreen>
 
   // ignore: unused_element
   Widget _buildAdminGroupCardFull(GroupModel group, GroupProvider provider) {
-    final l = Provider.of<LocaleNotifier>(context);
     return Card(
       margin: EdgeInsets.only(bottom: 16),
       elevation: 4,

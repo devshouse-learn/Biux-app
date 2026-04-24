@@ -29,6 +29,8 @@ class CommentsList extends StatefulWidget {
 }
 
 class _CommentsListState extends State<CommentsList> {
+  LocaleNotifier get l => Provider.of<LocaleNotifier>(context);
+
   late Stream<List<CommentEntity>> _commentsStream;
 
   @override

@@ -16,6 +16,8 @@ class AdminDashboardScreen extends StatefulWidget {
 
 class _AdminDashboardScreenState extends State<AdminDashboardScreen>
     with SingleTickerProviderStateMixin {
+  LocaleNotifier get l => Provider.of<LocaleNotifier>(context);
+
   late TabController _tabController;
 
   @override
@@ -48,9 +50,9 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen>
         bottom: TabBar(
           controller: _tabController,
           tabs: [
-            Tab(icon: const Icon(Icons.people), text: l.t('users')),
-            Tab(icon: const Icon(Icons.store), text: l.t('sellers_tab')),
-            Tab(icon: const Icon(Icons.inventory), text: l.t('products_tab')),
+            Tab(icon: Icon(Icons.people), text: l.t('users')),
+            Tab(icon: Icon(Icons.store), text: l.t('sellers_tab')),
+            Tab(icon: Icon(Icons.inventory), text: l.t('products_tab')),
           ],
         ),
       ),
@@ -80,19 +82,19 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen>
                     fontWeight: FontWeight.bold,
                   ),
                 ),
-                const SizedBox(height: 16),
+                SizedBox(height: 16),
                 Text(l.t('user_management_desc')),
                 const SizedBox(height: 16),
                 ElevatedButton.icon(
                   onPressed: () => _showUsersList(),
-                  icon: const Icon(Icons.people),
+                  icon: Icon(Icons.people),
                   label: Text(l.t('view_all_users')),
                 ),
               ],
             ),
           ),
         ),
-        const SizedBox(height: 16),
+        SizedBox(height: 16),
         _buildStatsCard(l.t('total_users'), '0', Icons.people, Colors.blue),
       ],
     );
@@ -117,7 +119,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen>
                     fontWeight: FontWeight.bold,
                   ),
                 ),
-                const SizedBox(height: 16),
+                SizedBox(height: 16),
                 Text(l.t('seller_management_desc')),
                 const SizedBox(height: 16),
                 Row(
@@ -125,7 +127,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen>
                     Expanded(
                       child: ElevatedButton.icon(
                         onPressed: () => _showAuthorizeSellerDialog(),
-                        icon: const Icon(Icons.person_add),
+                        icon: Icon(Icons.person_add),
                         label: Text(l.t('authorize_seller')),
                         style: ElevatedButton.styleFrom(
                           backgroundColor: Colors.green,
@@ -136,7 +138,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen>
                     Expanded(
                       child: ElevatedButton.icon(
                         onPressed: () => _showRevokeSellerDialog(),
-                        icon: const Icon(Icons.person_remove),
+                        icon: Icon(Icons.person_remove),
                         label: Text(l.t('revoke_permissions')),
                         style: ElevatedButton.styleFrom(
                           backgroundColor: Colors.red,
@@ -149,7 +151,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen>
             ),
           ),
         ),
-        const SizedBox(height: 16),
+        SizedBox(height: 16),
         _buildStatsCard(l.t('active_sellers'), '0', Icons.store, Colors.green),
       ],
     );
@@ -177,14 +179,14 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen>
                           fontWeight: FontWeight.bold,
                         ),
                       ),
-                      const SizedBox(height: 16),
+                      SizedBox(height: 16),
                       Text(l.t('product_management_desc')),
                       const SizedBox(height: 16),
                       ElevatedButton.icon(
                         onPressed: () {
                           context.read<ProductProvider>().loadAllProducts();
                         },
-                        icon: const Icon(Icons.refresh),
+                        icon: Icon(Icons.refresh),
                         label: Text(l.t('reload_products')),
                       ),
                     ],
@@ -204,7 +206,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen>
                       Colors.blue,
                     ),
                   ),
-                  const SizedBox(width: 16),
+                  SizedBox(width: 16),
                   Expanded(
                     child: _buildStatsCard(
                       l.t('featured'),
@@ -216,7 +218,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen>
                 ],
               ),
             ),
-            const SizedBox(height: 16),
+            SizedBox(height: 16),
             Expanded(
               child: provider.isLoading
                   ? const Center(child: CircularProgressIndicator())
@@ -260,7 +262,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen>
                             ),
                             title: Text(
                               product.nombre,
-                              style: const TextStyle(
+                              style: TextStyle(
                                 fontWeight: FontWeight.bold,
                               ),
                             ),
@@ -349,7 +351,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen>
         content: SingleChildScrollView(
           child: Text(
             l.t('users_list_demo_content'),
-            style: const TextStyle(fontSize: 14),
+            style: TextStyle(fontSize: 14),
           ),
         ),
         actions: [
@@ -374,10 +376,10 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen>
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(l.t('select_user_to_authorize')),
-              const SizedBox(height: 16),
+              SizedBox(height: 16),
               Text(
                 l.t('authorize_seller_demo_list'),
-                style: const TextStyle(fontSize: 14),
+                style: TextStyle(fontSize: 14),
               ),
             ],
           ),
@@ -417,10 +419,10 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen>
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(l.t('select_seller_to_revoke')),
-              const SizedBox(height: 16),
+              SizedBox(height: 16),
               Text(
                 l.t('revoke_seller_demo_list'),
-                style: const TextStyle(fontSize: 14),
+                style: TextStyle(fontSize: 14),
               ),
             ],
           ),

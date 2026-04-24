@@ -5,6 +5,7 @@ import 'package:biux/core/design_system/color_tokens.dart';
 import 'package:biux/core/design_system/locale_notifier.dart';
 import 'package:biux/shared/services/permission_service.dart';
 import 'package:biux/features/settings/presentation/widgets/settings_shared_widgets.dart';
+import 'package:biux/core/design_system/locale_notifier.dart';
 
 class PermissionsScreen extends StatefulWidget {
   const PermissionsScreen({super.key});
@@ -15,6 +16,8 @@ class PermissionsScreen extends StatefulWidget {
 
 class _PermissionsScreenState extends State<PermissionsScreen>
     with WidgetsBindingObserver {
+  LocaleNotifier get l => Provider.of<LocaleNotifier>(context);
+
   bool _cameraGranted = false;
   bool _locationGranted = false;
   bool _microphoneGranted = false;
@@ -73,16 +76,15 @@ class _PermissionsScreenState extends State<PermissionsScreen>
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    final l = Provider.of<LocaleNotifier>(context);
 
     return Scaffold(
       backgroundColor: SettingsWidgets.scaffoldBackground(isDark),
-      appBar: SettingsWidgets.buildAppBar(context, 'Permisos'),
+      appBar: SettingsWidgets.buildAppBar(context, l.t('permissions')),
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [
-          SettingsWidgets.buildSectionTitle('Permisos', isDark),
-          const SizedBox(height: 12),
+          SettingsWidgets.buildSectionTitle(l.t('permissions'), isDark),
+          SizedBox(height: 12),
           SettingsWidgets.buildToggleCard(
             context: context,
             icon: Icons.camera_alt,
@@ -93,18 +95,18 @@ class _PermissionsScreenState extends State<PermissionsScreen>
             onChanged: (_) =>
                 _togglePermission(Permission.camera, _cameraGranted),
           ),
-          const SizedBox(height: 8),
+          SizedBox(height: 8),
           SettingsWidgets.buildToggleCard(
             context: context,
             icon: Icons.photo_library,
-            title: 'Galería',
+            title: l.t('gallery_label'),
             subtitle: 'Enviar fotos y videos desde galería',
             isDark: isDark,
             value: _photosGranted,
             onChanged: (_) =>
                 _togglePermission(Permission.photos, _photosGranted),
           ),
-          const SizedBox(height: 8),
+          SizedBox(height: 8),
           SettingsWidgets.buildToggleCard(
             context: context,
             icon: Icons.location_on,
@@ -115,7 +117,7 @@ class _PermissionsScreenState extends State<PermissionsScreen>
             onChanged: (_) =>
                 _togglePermission(Permission.location, _locationGranted),
           ),
-          const SizedBox(height: 8),
+          SizedBox(height: 8),
           SettingsWidgets.buildToggleCard(
             context: context,
             icon: Icons.mic,
@@ -126,11 +128,11 @@ class _PermissionsScreenState extends State<PermissionsScreen>
             onChanged: (_) =>
                 _togglePermission(Permission.microphone, _microphoneGranted),
           ),
-          const SizedBox(height: 8),
+          SizedBox(height: 8),
           SettingsWidgets.buildToggleCard(
             context: context,
             icon: Icons.notifications,
-            title: 'Notificaciones',
+            title: l.t('notifications_label'),
             subtitle: 'Mensajes, rodadas y alertas',
             isDark: isDark,
             value: _notificationsGranted,
@@ -139,11 +141,11 @@ class _PermissionsScreenState extends State<PermissionsScreen>
               _notificationsGranted,
             ),
           ),
-          const SizedBox(height: 8),
+          SizedBox(height: 8),
           SettingsWidgets.buildToggleCard(
             context: context,
             icon: Icons.contacts,
-            title: 'Contactos',
+            title: l.t('contacts'),
             subtitle: 'Encontrar amigos e invitar ciclistas',
             isDark: isDark,
             value: _contactsGranted,

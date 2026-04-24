@@ -144,7 +144,7 @@ class AttendeesList extends StatelessWidget {
                   height: 16,
                   child: CircularProgressIndicator(strokeWidth: 2),
                 )
-              : const Icon(Icons.check_circle_outline),
+              : Icon(Icons.check_circle_outline),
           label: Text(l.t('join_ride')),
         );
       },
@@ -193,7 +193,7 @@ class AttendeesList extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         children: [
           ListTile(
-            leading: const Icon(Icons.check_circle, color: Colors.green),
+            leading: Icon(Icons.check_circle, color: Colors.green),
             title: Text(l.t('confirm_attendance')),
             onTap: () async {
               await provider.updateStatus(
@@ -204,7 +204,7 @@ class AttendeesList extends StatelessWidget {
             },
           ),
           ListTile(
-            leading: const Icon(Icons.help_outline, color: Colors.orange),
+            leading: Icon(Icons.help_outline, color: Colors.orange),
             title: Text(l.t('mark_as_maybe')),
             onTap: () async {
               await provider.updateStatus(
@@ -215,7 +215,7 @@ class AttendeesList extends StatelessWidget {
             },
           ),
           ListTile(
-            leading: const Icon(Icons.cancel, color: Colors.red),
+            leading: Icon(Icons.cancel, color: Colors.red),
             title: Text(l.t('leave_ride')),
             onTap: () async {
               await provider.leaveRide(rideId);
@@ -249,9 +249,9 @@ class AttendeeCard extends StatelessWidget {
           Text(attendee.fullName ?? attendee.userName),
           const SizedBox(width: 8),
           if (attendee.status == AttendeeStatus.confirmed)
-            const Icon(Icons.check_circle, color: Colors.green, size: 16)
+            Icon(Icons.check_circle, color: Colors.green, size: 16)
           else if (attendee.status == AttendeeStatus.maybe)
-            const Icon(Icons.help_outline, color: Colors.orange, size: 16),
+            Icon(Icons.help_outline, color: Colors.orange, size: 16),
         ],
       ),
       subtitle: Column(

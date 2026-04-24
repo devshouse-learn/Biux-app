@@ -16,6 +16,8 @@ class BiuxNotificationListener extends StatefulWidget {
 }
 
 class _BiuxNotificationListenerState extends State<BiuxNotificationListener> {
+  LocaleNotifier get l => Provider.of<LocaleNotifier>(context);
+
   final _notificationService = NotificationService();
 
   @override
@@ -81,7 +83,7 @@ class _BiuxNotificationListenerState extends State<BiuxNotificationListener> {
             ],
           ],
         ),
-        duration: const Duration(seconds: 4),
+        duration: Duration(seconds: 4),
         behavior: SnackBarBehavior.floating,
         action: SnackBarAction(
           label: l.t('view_action'),

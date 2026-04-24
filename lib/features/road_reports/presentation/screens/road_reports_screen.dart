@@ -9,6 +9,7 @@ import 'package:biux/core/design_system/color_tokens.dart';
 import 'package:biux/core/design_system/locale_notifier.dart';
 import 'package:biux/features/road_reports/presentation/providers/road_reports_provider.dart';
 import 'package:biux/features/users/presentation/providers/user_provider.dart';
+import 'package:biux/core/design_system/locale_notifier.dart';
 
 class RoadReportsScreen extends StatefulWidget {
   const RoadReportsScreen({Key? key}) : super(key: key);
@@ -17,6 +18,8 @@ class RoadReportsScreen extends StatefulWidget {
 }
 
 class _RoadReportsScreenState extends State<RoadReportsScreen> {
+  LocaleNotifier get l => Provider.of<LocaleNotifier>(context);
+
   String get _currentUid => FirebaseAuth.instance.currentUser?.uid ?? '';
 
   // Caché de reverse geocoding para evitar llamadas repetidas
@@ -63,7 +66,7 @@ class _RoadReportsScreenState extends State<RoadReportsScreen> {
         if (state.isNotEmpty && state != city) parts.add(state);
         final result = parts.isNotEmpty
             ? parts.join(', ')
-            : 'Ubicación desconocida';
+            : l.t('unknown_location');
         _addressCache[key] = result;
         return result;
       }
@@ -77,8 +80,8 @@ class _RoadReportsScreenState extends State<RoadReportsScreen> {
       if (!serviceEnabled) {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('Activa el servicio de ubicación'),
+            SnackBar(
+              content: Text(l.t('enable_location_service')),
               backgroundColor: Colors.orange,
             ),
           );
@@ -91,8 +94,8 @@ class _RoadReportsScreenState extends State<RoadReportsScreen> {
         if (permission == LocationPermission.denied) {
           if (mounted) {
             ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(
-                content: Text('Se necesitan permisos de ubicación'),
+              SnackBar(
+                content: Text(l.t('location_permissions_needed')),
                 backgroundColor: Colors.orange,
               ),
             );
@@ -103,8 +106,8 @@ class _RoadReportsScreenState extends State<RoadReportsScreen> {
       if (permission == LocationPermission.deniedForever) {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('Permisos denegados. Ve a Configuración.'),
+            SnackBar(
+              content: Text(l.t('permissions_denied_settings')),
               backgroundColor: Colors.red,
             ),
           );
@@ -138,7 +141,7 @@ class _RoadReportsScreenState extends State<RoadReportsScreen> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(
-              success ? '¡Reporte confirmado!' : 'Ya confirmaste este reporte',
+              success ? l.t('report_confirmed') : 'Ya confirmaste este reporte',
             ),
             backgroundColor: success ? Colors.green[700] : Colors.orange,
             duration: const Duration(seconds: 2),
@@ -162,20 +165,20 @@ class _RoadReportsScreenState extends State<RoadReportsScreen> {
       context: context,
       builder: (dc) => AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        title: const Row(
+        title: Row(
           children: [
             Icon(Icons.delete_outline, color: Colors.red),
             SizedBox(width: 8),
-            Text('Eliminar reporte'),
+            Text(l.t('delete_report')),
           ],
         ),
-        content: const Text(
+        content: Text(
           '¿Estás seguro de que quieres eliminar este reporte?',
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(dc).pop(),
-            child: const Text('Cancelar'),
+            child: Text(l.t('cancel')),
           ),
           ElevatedButton(
             onPressed: () async {
@@ -184,11 +187,11 @@ class _RoadReportsScreenState extends State<RoadReportsScreen> {
               if (mounted) {
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
-                    content: const Row(
+                    content: Row(
                       children: [
                         Icon(Icons.check_circle, color: Colors.white, size: 20),
                         SizedBox(width: 8),
-                        Text('Reporte eliminado'),
+                        Text(l.t('report_deleted')),
                       ],
                     ),
                     backgroundColor: Colors.green[700],
@@ -203,7 +206,7 @@ class _RoadReportsScreenState extends State<RoadReportsScreen> {
                 borderRadius: BorderRadius.circular(10),
               ),
             ),
-            child: const Text('Eliminar'),
+            child: Text(l.t('delete')),
           ),
         ],
       ),
@@ -214,15 +217,15 @@ class _RoadReportsScreenState extends State<RoadReportsScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Reportes de Vía'),
+        title: Text(l.t('road_reports_title')),
         backgroundColor: ColorTokens.primary30,
         foregroundColor: Colors.white,
       ),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () => _showCreate(context),
         backgroundColor: ColorTokens.primary30,
-        icon: const Icon(Icons.add_location_alt, color: Colors.white),
-        label: const Text('Reportar', style: TextStyle(color: Colors.white)),
+        icon: Icon(Icons.add_location_alt, color: Colors.white),
+        label: Text(l.t('report_action'), style: TextStyle(color: Colors.white)),
       ),
       body: Consumer<RoadReportsProvider>(
         builder: (ctx, provider, _) {
@@ -238,9 +241,9 @@ class _RoadReportsScreenState extends State<RoadReportsScreen> {
                     size: 64,
                     color: Colors.green[300],
                   ),
-                  const SizedBox(height: 16),
+                  SizedBox(height: 16),
                   Text(
-                    'No hay reportes activos',
+                    l.t('no_active_reports'),
                     style: TextStyle(color: Colors.grey[600], fontSize: 16),
                   ),
                   const SizedBox(height: 8),
@@ -315,7 +318,7 @@ class _RoadReportsScreenState extends State<RoadReportsScreen> {
                       if (v == 'delete') _confirmDelete(provider, r.id);
                     },
                     itemBuilder: (_) => [
-                      const PopupMenuItem(
+                      PopupMenuItem(
                         value: 'delete',
                         child: Row(
                           children: [
@@ -326,7 +329,7 @@ class _RoadReportsScreenState extends State<RoadReportsScreen> {
                             ),
                             SizedBox(width: 8),
                             Text(
-                              'Eliminar reporte',
+                              l.t('delete_report'),
                               style: TextStyle(color: Colors.red),
                             ),
                           ],
@@ -490,7 +493,7 @@ class _RoadReportsScreenState extends State<RoadReportsScreen> {
                     size: 16,
                   ),
                   label: Text(
-                    alreadyConfirmed ? 'Confirmado' : 'Confirmar',
+                    alreadyConfirmed ? 'Confirmado' : l.t('confirm'),
                     style: const TextStyle(
                       fontSize: 12,
                       fontWeight: FontWeight.w600,
@@ -546,17 +549,17 @@ class _RoadReportsScreenState extends State<RoadReportsScreen> {
                   ),
                 ),
               ),
-              const SizedBox(height: 16),
-              const Text(
-                'Nuevo Reporte',
+              SizedBox(height: 16),
+              Text(
+                l.t('new_report'),
                 style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
               ),
-              const SizedBox(height: 4),
+              SizedBox(height: 4),
               Text(
                 'Selecciona el tipo y describe el problema',
                 style: TextStyle(color: Colors.grey[600], fontSize: 13),
               ),
-              const SizedBox(height: 16),
+              SizedBox(height: 16),
               Wrap(
                 spacing: 8,
                 runSpacing: 8,
@@ -573,30 +576,30 @@ class _RoadReportsScreenState extends State<RoadReportsScreen> {
                     )
                     .toList(),
               ),
-              const SizedBox(height: 16),
+              SizedBox(height: 16),
               TextField(
                 controller: descCtrl,
                 decoration: InputDecoration(
-                  labelText: 'Descripción',
-                  hintText: 'Ej: Hueco grande en el carril...',
+                  labelText: l.t('description'),
+                  hintText: l.t('report_description_hint'),
                   border: const OutlineInputBorder(),
                   hintStyle: TextStyle(color: Colors.grey[400]),
                 ),
                 maxLines: 2,
                 textCapitalization: TextCapitalization.sentences,
               ),
-              const SizedBox(height: 8),
+              SizedBox(height: 8),
               Row(
                 children: [
                   Icon(Icons.gps_fixed, size: 14, color: Colors.grey[500]),
-                  const SizedBox(width: 4),
+                  SizedBox(width: 4),
                   Text(
-                    'Se usará tu ubicación actual',
+                    l.t('current_location_used'),
                     style: TextStyle(fontSize: 11, color: Colors.grey[500]),
                   ),
                 ],
               ),
-              const SizedBox(height: 16),
+              SizedBox(height: 16),
               SizedBox(
                 width: double.infinity,
                 child: ElevatedButton.icon(
@@ -617,15 +620,15 @@ class _RoadReportsScreenState extends State<RoadReportsScreen> {
                             color: Colors.white,
                           ),
                         )
-                      : const Icon(Icons.send),
-                  label: Text(isSending ? 'Enviando...' : 'Enviar Reporte'),
+                      : Icon(Icons.send),
+                  label: Text(isSending ? 'Enviando...' : l.t('send_report_label')),
                   onPressed: isSending
                       ? null
                       : () async {
                           if (descCtrl.text.trim().isEmpty) {
                             ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                content: Text('Escribe una descripción'),
+                              SnackBar(
+                                content: Text(l.t('write_description')),
                                 backgroundColor: Colors.orange,
                               ),
                             );
@@ -642,8 +645,8 @@ class _RoadReportsScreenState extends State<RoadReportsScreen> {
                             if (uid.isEmpty) {
                               if (mounted)
                                 ScaffoldMessenger.of(context).showSnackBar(
-                                  const SnackBar(
-                                    content: Text('Debes iniciar sesión'),
+                                  SnackBar(
+                                    content: Text(l.t('must_login')),
                                     backgroundColor: Colors.red,
                                   ),
                                 );
@@ -652,7 +655,7 @@ class _RoadReportsScreenState extends State<RoadReportsScreen> {
                             }
                             final name =
                                 context.read<UserProvider>().user?.name ??
-                                'Ciclista';
+                                l.t('cyclist_label');
                             await context
                                 .read<RoadReportsProvider>()
                                 .createReport(
@@ -667,7 +670,7 @@ class _RoadReportsScreenState extends State<RoadReportsScreen> {
                             if (mounted) {
                               ScaffoldMessenger.of(context).showSnackBar(
                                 SnackBar(
-                                  content: const Row(
+                                  content: Row(
                                     children: [
                                       Icon(
                                         Icons.check_circle,
@@ -675,7 +678,7 @@ class _RoadReportsScreenState extends State<RoadReportsScreen> {
                                         size: 20,
                                       ),
                                       SizedBox(width: 8),
-                                      Text('¡Reporte enviado!'),
+                                      Text(l.t('report_sent_success')),
                                     ],
                                   ),
                                   backgroundColor: Colors.green[700],

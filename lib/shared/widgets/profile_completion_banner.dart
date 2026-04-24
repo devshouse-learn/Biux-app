@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:go_router/go_router.dart';
 import 'package:biux/core/design_system/color_tokens.dart';
 import 'package:biux/features/users/presentation/providers/user_provider.dart';
+import 'package:biux/core/design_system/locale_notifier.dart';
 
 /// Banner que muestra el porcentaje de completitud del perfil
 class ProfileCompletionBanner extends StatelessWidget {
@@ -10,6 +11,8 @@ class ProfileCompletionBanner extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l = Provider.of<LocaleNotifier>(context);
+
     return Consumer<UserProvider>(
       builder: (context, provider, _) {
         final percent = provider.profileCompletionPercent;
@@ -34,14 +37,14 @@ class ProfileCompletionBanner extends StatelessWidget {
                 children: [
                   Text(
                     'Perfil completado al \$percent%',
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontWeight: FontWeight.bold,
                       fontSize: 14,
                     ),
                   ),
                   TextButton(
                     onPressed: () => context.push('/edit-user'),
-                    child: const Text('Completar'),
+                    child: Text(l.t('complete')),
                   ),
                 ],
               ),

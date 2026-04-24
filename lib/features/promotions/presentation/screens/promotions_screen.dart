@@ -7,6 +7,7 @@ import 'package:biux/features/users/presentation/providers/user_provider.dart';
 import 'package:biux/features/promotions/data/models/promotion_request_model.dart';
 import 'package:biux/features/promotions/presentation/providers/promotions_provider.dart';
 import 'package:intl/intl.dart';
+import 'package:biux/core/design_system/locale_notifier.dart';
 
 class PromotionsScreen extends StatefulWidget {
   const PromotionsScreen({Key? key}) : super(key: key);
@@ -17,6 +18,8 @@ class PromotionsScreen extends StatefulWidget {
 
 class _PromotionsScreenState extends State<PromotionsScreen>
     with SingleTickerProviderStateMixin {
+  LocaleNotifier get l => Provider.of<LocaleNotifier>(context);
+
   late TabController _tabController;
 
   @override
@@ -56,13 +59,13 @@ class _PromotionsScreenState extends State<PromotionsScreen>
           indicatorWeight: 3,
           labelColor: Colors.white,
           unselectedLabelColor: Colors.white60,
-          labelStyle: const TextStyle(fontWeight: FontWeight.w600),
+          labelStyle: TextStyle(fontWeight: FontWeight.w600),
           tabs: [
             Tab(
-              icon: const Icon(Icons.storefront),
+              icon: Icon(Icons.storefront),
               text: l.t('promotions_businesses'),
             ),
-            Tab(icon: const Icon(Icons.event), text: l.t('promotions_events')),
+            Tab(icon: Icon(Icons.event), text: l.t('promotions_events')),
           ],
         ),
         actions: [
@@ -70,7 +73,7 @@ class _PromotionsScreenState extends State<PromotionsScreen>
             builder: (context, up, _) {
               if (!(up.user?.isAdmin ?? false)) return const SizedBox.shrink();
               return IconButton(
-                icon: const Icon(Icons.admin_panel_settings),
+                icon: Icon(Icons.admin_panel_settings),
                 tooltip: l.t('promotions_admin_panel'),
                 onPressed: () => Navigator.of(context).push(
                   MaterialPageRoute(builder: (_) => const _AdminPanelScreen()),
@@ -95,7 +98,7 @@ class _PromotionsScreenState extends State<PromotionsScreen>
                 MaterialPageRoute(builder: (_) => const _PromoterRequestForm()),
               ),
               backgroundColor: const Color(0xFF6A1B9A),
-              icon: const Icon(Icons.verified_user, color: Colors.white),
+              icon: Icon(Icons.verified_user, color: Colors.white),
               label: Text(
                 l.t('promotions_become_promoter'),
                 style: const TextStyle(
@@ -207,7 +210,7 @@ class _PromoterRequestFormState extends State<_PromoterRequestForm> {
                       child: ElevatedButton(
                         onPressed: details.onStepContinue,
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color(0xFF6A1B9A),
+                          backgroundColor: Color(0xFF6A1B9A),
                           foregroundColor: Colors.white,
                           padding: const EdgeInsets.symmetric(vertical: 14),
                           shape: RoundedRectangleBorder(
@@ -216,7 +219,7 @@ class _PromoterRequestFormState extends State<_PromoterRequestForm> {
                         ),
                         child: Text(
                           l.t('promotions_next'),
-                          style: const TextStyle(fontWeight: FontWeight.w600),
+                          style: TextStyle(fontWeight: FontWeight.w600),
                         ),
                       ),
                     ),
@@ -235,7 +238,7 @@ class _PromoterRequestFormState extends State<_PromoterRequestForm> {
                                   color: Colors.white,
                                 ),
                               )
-                            : const Icon(
+                            : Icon(
                                 Icons.send,
                                 color: Colors.white,
                                 size: 18,
@@ -250,7 +253,7 @@ class _PromoterRequestFormState extends State<_PromoterRequestForm> {
                           ),
                         ),
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color(0xFF6A1B9A),
+                          backgroundColor: Color(0xFF6A1B9A),
                           disabledBackgroundColor: Colors.grey[400],
                           padding: const EdgeInsets.symmetric(vertical: 14),
                           shape: RoundedRectangleBorder(
@@ -260,7 +263,7 @@ class _PromoterRequestFormState extends State<_PromoterRequestForm> {
                       ),
                     ),
                   if (_currentStep > 0) ...[
-                    const SizedBox(width: 12),
+                    SizedBox(width: 12),
                     TextButton(
                       onPressed: details.onStepCancel,
                       child: Text(l.t('promotions_back')),
@@ -308,7 +311,7 @@ class _PromoterRequestFormState extends State<_PromoterRequestForm> {
             Step(
               title: Text(
                 l.t('promotions_business_data'),
-                style: const TextStyle(fontWeight: FontWeight.bold),
+                style: TextStyle(fontWeight: FontWeight.bold),
               ),
               subtitle: Text(l.t('promotions_basic_info')),
               isActive: _currentStep >= 0,
@@ -320,13 +323,13 @@ class _PromoterRequestFormState extends State<_PromoterRequestForm> {
                     l.t('promotions_business_name_required'),
                     Icons.storefront,
                   ),
-                  const SizedBox(height: 14),
+                  SizedBox(height: 14),
                   DropdownButtonFormField<String>(
                     initialValue: _businessType,
                     isExpanded: true,
                     decoration: InputDecoration(
                       labelText: l.t('promotions_business_type'),
-                      prefixIcon: const Icon(Icons.category),
+                      prefixIcon: Icon(Icons.category),
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(12),
                       ),
@@ -344,7 +347,7 @@ class _PromoterRequestFormState extends State<_PromoterRequestForm> {
                     onChanged: (v) =>
                         setState(() => _businessType = v ?? 'otro'),
                   ),
-                  const SizedBox(height: 14),
+                  SizedBox(height: 14),
                   _field(
                     _businessDescCtrl,
                     l.t('promotions_business_description_required'),
@@ -359,7 +362,7 @@ class _PromoterRequestFormState extends State<_PromoterRequestForm> {
             Step(
               title: Text(
                 l.t('promotions_verification'),
-                style: const TextStyle(fontWeight: FontWeight.bold),
+                style: TextStyle(fontWeight: FontWeight.bold),
               ),
               subtitle: Text(l.t('promotions_verification_data')),
               isActive: _currentStep >= 1,
@@ -378,16 +381,16 @@ class _PromoterRequestFormState extends State<_PromoterRequestForm> {
                     ),
                     child: Row(
                       children: [
-                        const Icon(
+                        Icon(
                           Icons.info_outline,
                           color: Colors.blue,
                           size: 20,
                         ),
-                        const SizedBox(width: 8),
+                        SizedBox(width: 8),
                         Expanded(
                           child: Text(
                             l.t('promotions_verification_info_text'),
-                            style: const TextStyle(
+                            style: TextStyle(
                               fontSize: 12,
                               color: Colors.blue,
                             ),
@@ -396,20 +399,20 @@ class _PromoterRequestFormState extends State<_PromoterRequestForm> {
                       ],
                     ),
                   ),
-                  const SizedBox(height: 14),
+                  SizedBox(height: 14),
                   _field(
                     _nitCtrl,
                     l.t('promotions_nit_optional'),
                     Icons.badge,
                     hint: l.t('promotions_nit_hint'),
                   ),
-                  const SizedBox(height: 14),
+                  SizedBox(height: 14),
                   SwitchListTile(
                     value: _hasPhysicalStore,
                     onChanged: (v) => setState(() => _hasPhysicalStore = v),
                     title: Text(
                       l.t('promotions_has_physical_store'),
-                      style: const TextStyle(fontSize: 14),
+                      style: TextStyle(fontSize: 14),
                     ),
                     secondary: Icon(
                       Icons.store,
@@ -425,28 +428,28 @@ class _PromoterRequestFormState extends State<_PromoterRequestForm> {
                     l.t('promotions_address_required'),
                     Icons.location_on,
                   ),
-                  const SizedBox(height: 14),
+                  SizedBox(height: 14),
                   _field(
                     _cityCtrl,
                     l.t('promotions_city'),
                     Icons.location_city,
                     hint: l.t('promotions_city_hint'),
                   ),
-                  const SizedBox(height: 14),
+                  SizedBox(height: 14),
                   _field(
                     _phoneCtrl,
                     l.t('promotions_phone_required'),
                     Icons.phone,
                     keyboardType: TextInputType.phone,
                   ),
-                  const SizedBox(height: 14),
+                  SizedBox(height: 14),
                   _field(
                     _emailCtrl,
                     l.t('promotions_email_optional'),
                     Icons.email,
                     keyboardType: TextInputType.emailAddress,
                   ),
-                  const SizedBox(height: 14),
+                  SizedBox(height: 14),
                   _field(
                     _webCtrl,
                     l.t('promotions_social_web_optional'),
@@ -460,7 +463,7 @@ class _PromoterRequestFormState extends State<_PromoterRequestForm> {
             Step(
               title: Text(
                 l.t('promotions_confirmation'),
-                style: const TextStyle(fontWeight: FontWeight.bold),
+                style: TextStyle(fontWeight: FontWeight.bold),
               ),
               subtitle: Text(l.t('promotions_review_and_send')),
               isActive: _currentStep >= 2,
@@ -482,12 +485,12 @@ class _PromoterRequestFormState extends State<_PromoterRequestForm> {
                       children: [
                         Text(
                           l.t('promotions_request_summary'),
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontWeight: FontWeight.bold,
                             fontSize: 16,
                           ),
                         ),
-                        const Divider(),
+                        Divider(),
                         _summaryRow(
                           l.t('promotions_business'),
                           _businessNameCtrl.text,
@@ -521,12 +524,12 @@ class _PromoterRequestFormState extends State<_PromoterRequestForm> {
                       ],
                     ),
                   ),
-                  const SizedBox(height: 16),
+                  SizedBox(height: 16),
                   // Beneficios
                   Container(
                     padding: const EdgeInsets.all(12),
                     decoration: BoxDecoration(
-                      color: const Color(0xFF6A1B9A).withValues(alpha: 0.06),
+                      color: Color(0xFF6A1B9A).withValues(alpha: 0.06),
                       borderRadius: BorderRadius.circular(12),
                     ),
                     child: Column(
@@ -534,12 +537,12 @@ class _PromoterRequestFormState extends State<_PromoterRequestForm> {
                       children: [
                         Text(
                           l.t('promotions_once_approved'),
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontWeight: FontWeight.w600,
                             fontSize: 13,
                           ),
                         ),
-                        const SizedBox(height: 8),
+                        SizedBox(height: 8),
                         _BenefitRow(
                           icon: Icons.campaign,
                           text: l.t('promotions_benefit_publish_ads'),
@@ -559,7 +562,7 @@ class _PromoterRequestFormState extends State<_PromoterRequestForm> {
                       ],
                     ),
                   ),
-                  const SizedBox(height: 16),
+                  SizedBox(height: 16),
                   // Terminos
                   CheckboxListTile(
                     value: _acceptTerms,
@@ -633,7 +636,7 @@ class _PromoterRequestFormState extends State<_PromoterRequestForm> {
     final types = _getTypes(l);
     setState(() => _isLoading = true);
     final uid = FirebaseAuth.instance.currentUser?.uid ?? '';
-    final name = context.read<UserProvider>().user?.name ?? 'Usuario';
+    final name = context.read<UserProvider>().user?.name ?? l.t('user_default');
     final provider = context.read<PromotionsProvider>();
 
     final info =
@@ -672,21 +675,21 @@ class _PromoterRequestFormState extends State<_PromoterRequestForm> {
                   color: Colors.green.withValues(alpha: 0.1),
                   shape: BoxShape.circle,
                 ),
-                child: const Icon(
+                child: Icon(
                   Icons.check_circle,
                   color: Colors.green,
                   size: 56,
                 ),
               ),
-              const SizedBox(height: 16),
+              SizedBox(height: 16),
               Text(
                 l.t('promotions_request_sent'),
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 20,
                   fontWeight: FontWeight.bold,
                 ),
               ),
-              const SizedBox(height: 8),
+              SizedBox(height: 8),
               Text(
                 l.t('promotions_admin_will_verify'),
                 textAlign: TextAlign.center,
@@ -703,7 +706,7 @@ class _PromoterRequestFormState extends State<_PromoterRequestForm> {
                   Navigator.pop(context);
                 },
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFF6A1B9A),
+                  backgroundColor: Color(0xFF6A1B9A),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(12),
                   ),
@@ -814,20 +817,20 @@ class _BusinessFormState extends State<_BusinessForm> {
                 ),
                 child: Column(
                   children: [
-                    const Icon(Icons.storefront, color: Colors.white, size: 48),
-                    const SizedBox(height: 8),
+                    Icon(Icons.storefront, color: Colors.white, size: 48),
+                    SizedBox(height: 8),
                     Text(
                       l.t('promotions_new_business'),
-                      style: const TextStyle(
+                      style: TextStyle(
                         color: Colors.white,
                         fontSize: 22,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
-                    const SizedBox(height: 4),
+                    SizedBox(height: 4),
                     Text(
                       l.t('promotions_publish_for_community'),
-                      style: const TextStyle(
+                      style: TextStyle(
                         color: Colors.white70,
                         fontSize: 13,
                       ),
@@ -835,14 +838,14 @@ class _BusinessFormState extends State<_BusinessForm> {
                   ],
                 ),
               ),
-              const SizedBox(height: 24),
+              SizedBox(height: 24),
 
               // Seccion datos
               _sectionTitle(
                 l.t('promotions_business_info'),
                 Icons.info_outline,
               ),
-              const SizedBox(height: 12),
+              SizedBox(height: 12),
               _buildField(
                 _titleCtrl,
                 l.t('promotions_business_name_required'),
@@ -851,7 +854,7 @@ class _BusinessFormState extends State<_BusinessForm> {
                     ? l.t('promotions_name_required_error')
                     : null,
               ),
-              const SizedBox(height: 14),
+              SizedBox(height: 14),
               _buildField(
                 _descCtrl,
                 l.t('promotions_description_required'),
@@ -862,13 +865,13 @@ class _BusinessFormState extends State<_BusinessForm> {
                     ? l.t('promotions_description_required_error')
                     : null,
               ),
-              const SizedBox(height: 24),
+              SizedBox(height: 24),
 
               _sectionTitle(
                 l.t('promotions_location_and_contact'),
                 Icons.contact_phone,
               ),
-              const SizedBox(height: 12),
+              SizedBox(height: 12),
               _buildField(
                 _locationCtrl,
                 l.t('promotions_address_location_required'),
@@ -878,14 +881,14 @@ class _BusinessFormState extends State<_BusinessForm> {
                     ? l.t('promotions_address_required_error')
                     : null,
               ),
-              const SizedBox(height: 14),
+              SizedBox(height: 14),
               _buildField(
                 _contactCtrl,
                 l.t('promotions_contact_phone_email'),
                 Icons.phone,
                 hint: l.t('promotions_phone_hint'),
               ),
-              const SizedBox(height: 32),
+              SizedBox(height: 32),
 
               // Boton
               SizedBox(
@@ -902,7 +905,7 @@ class _BusinessFormState extends State<_BusinessForm> {
                             color: Colors.white,
                           ),
                         )
-                      : const Icon(Icons.publish, color: Colors.white),
+                      : Icon(Icons.publish, color: Colors.white),
                   label: Text(
                     _isLoading
                         ? l.t('promotions_publishing')
@@ -974,7 +977,7 @@ class _BusinessFormState extends State<_BusinessForm> {
     setState(() => _isLoading = true);
 
     final uid = FirebaseAuth.instance.currentUser?.uid ?? '';
-    final name = context.read<UserProvider>().user?.name ?? 'Usuario';
+    final name = context.read<UserProvider>().user?.name ?? l.t('user_default');
     final provider = context.read<PromotionsProvider>();
 
     final req = PromotionRequestModel(
@@ -1072,20 +1075,20 @@ class _EventFormState extends State<_EventForm> {
                 ),
                 child: Column(
                   children: [
-                    const Icon(Icons.event, color: Colors.white, size: 48),
-                    const SizedBox(height: 8),
+                    Icon(Icons.event, color: Colors.white, size: 48),
+                    SizedBox(height: 8),
                     Text(
                       l.t('promotions_new_event'),
-                      style: const TextStyle(
+                      style: TextStyle(
                         color: Colors.white,
                         fontSize: 22,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
-                    const SizedBox(height: 4),
+                    SizedBox(height: 4),
                     Text(
                       l.t('promotions_create_event_subtitle'),
-                      style: const TextStyle(
+                      style: TextStyle(
                         color: Colors.white70,
                         fontSize: 13,
                       ),
@@ -1093,11 +1096,11 @@ class _EventFormState extends State<_EventForm> {
                   ],
                 ),
               ),
-              const SizedBox(height: 24),
+              SizedBox(height: 24),
 
               // Info del evento
               _sectionTitle(l.t('promotions_event_info'), Icons.info_outline),
-              const SizedBox(height: 12),
+              SizedBox(height: 12),
               _field(
                 _titleCtrl,
                 l.t('promotions_event_name_required'),
@@ -1106,7 +1109,7 @@ class _EventFormState extends State<_EventForm> {
                     ? l.t('promotions_required')
                     : null,
               ),
-              const SizedBox(height: 14),
+              SizedBox(height: 14),
               _field(
                 _descCtrl,
                 l.t('promotions_event_description_required'),
@@ -1117,23 +1120,23 @@ class _EventFormState extends State<_EventForm> {
                     ? l.t('promotions_required')
                     : null,
               ),
-              const SizedBox(height: 24),
+              SizedBox(height: 24),
 
               // Fecha y hora
               _sectionTitle(l.t('promotions_date_and_time'), Icons.schedule),
-              const SizedBox(height: 12),
+              SizedBox(height: 12),
               Row(
                 children: [
                   Expanded(child: _datePicker(isDark)),
-                  const SizedBox(width: 12),
+                  SizedBox(width: 12),
                   Expanded(child: _timePicker(isDark)),
                 ],
               ),
-              const SizedBox(height: 24),
+              SizedBox(height: 24),
 
               // Ubicacion y cupos
               _sectionTitle(l.t('promotions_location_and_spots'), Icons.place),
-              const SizedBox(height: 12),
+              SizedBox(height: 12),
               _field(
                 _locationCtrl,
                 l.t('promotions_event_location_required'),
@@ -1143,7 +1146,7 @@ class _EventFormState extends State<_EventForm> {
                     ? l.t('promotions_required')
                     : null,
               ),
-              const SizedBox(height: 14),
+              SizedBox(height: 14),
               _field(
                 _maxCtrl,
                 l.t('promotions_max_spots_optional'),
@@ -1151,9 +1154,9 @@ class _EventFormState extends State<_EventForm> {
                 hint: l.t('promotions_unlimited_spots_hint'),
                 keyboardType: TextInputType.number,
               ),
-              const SizedBox(height: 14),
+              SizedBox(height: 14),
               _field(_contactCtrl, l.t('promotions_contact_info'), Icons.phone),
-              const SizedBox(height: 32),
+              SizedBox(height: 32),
 
               // Boton
               SizedBox(
@@ -1170,7 +1173,7 @@ class _EventFormState extends State<_EventForm> {
                             color: Colors.white,
                           ),
                         )
-                      : const Icon(Icons.event_available, color: Colors.white),
+                      : Icon(Icons.event_available, color: Colors.white),
                   label: Text(
                     _isLoading
                         ? l.t('promotions_creating')
@@ -1270,7 +1273,7 @@ class _EventFormState extends State<_EventForm> {
               size: 20,
               color: _eventDate != null ? const Color(0xFF6A1B9A) : Colors.grey,
             ),
-            const SizedBox(width: 8),
+            SizedBox(width: 8),
             Expanded(
               child: Text(
                 _eventDate != null
@@ -1321,7 +1324,7 @@ class _EventFormState extends State<_EventForm> {
               size: 20,
               color: _eventTime != null ? const Color(0xFF6A1B9A) : Colors.grey,
             ),
-            const SizedBox(width: 8),
+            SizedBox(width: 8),
             Text(
               _eventTime != null
                   ? _eventTime!.format(context)
@@ -1364,7 +1367,7 @@ class _EventFormState extends State<_EventForm> {
 
     setState(() => _isLoading = true);
     final uid = FirebaseAuth.instance.currentUser?.uid ?? '';
-    final name = context.read<UserProvider>().user?.name ?? 'Usuario';
+    final name = context.read<UserProvider>().user?.name ?? l.t('user_default');
     final provider = context.read<PromotionsProvider>();
 
     int? maxAtt;
@@ -1716,14 +1719,14 @@ class _EventCard extends StatelessWidget {
                     color: isDark ? Colors.white70 : Colors.grey[700],
                   ),
                 ),
-                const SizedBox(height: 12),
+                SizedBox(height: 12),
                 if (event.eventTime != null)
                   _infoRow(Icons.access_time, event.eventTime!, Colors.blue),
                 if (event.location != null && event.location!.isNotEmpty)
                   _infoRow(Icons.location_on, event.location!, Colors.red),
                 if (event.contact != null && event.contact!.isNotEmpty)
                   _infoRow(Icons.phone, event.contact!, Colors.green),
-                const SizedBox(height: 12),
+                SizedBox(height: 12),
                 // Asistentes
                 Container(
                   padding: const EdgeInsets.all(12),
@@ -1734,7 +1737,7 @@ class _EventCard extends StatelessWidget {
                   child: Row(
                     children: [
                       Icon(Icons.people, size: 20, color: Colors.grey[600]),
-                      const SizedBox(width: 8),
+                      SizedBox(width: 8),
                       Text(
                         '${event.attendees.length} ${l.t('promotions_registered_count')}',
                         style: TextStyle(
@@ -1751,7 +1754,7 @@ class _EventCard extends StatelessWidget {
                             color: Colors.grey[500],
                           ),
                         ),
-                      const Spacer(),
+                      Spacer(),
                       if (isFull && !isRegistered)
                         Container(
                           padding: const EdgeInsets.symmetric(
@@ -1784,12 +1787,12 @@ class _EventCard extends StatelessWidget {
                           child: Row(
                             mainAxisSize: MainAxisSize.min,
                             children: [
-                              const Icon(
+                              Icon(
                                 Icons.check_circle,
                                 color: Colors.green,
                                 size: 14,
                               ),
-                              const SizedBox(width: 4),
+                              SizedBox(width: 4),
                               Text(
                                 l.t('promotions_enrolled'),
                                 style: TextStyle(
@@ -2018,7 +2021,7 @@ class _AdminPanelScreen extends StatelessWidget {
                     _stat(
                       l.t('promotions_events'),
                       '${provider.approvedEvents.length}',
-                      const Color(0xFF6A1B9A),
+                      Color(0xFF6A1B9A),
                     ),
                   ],
                 ),
@@ -2035,7 +2038,7 @@ class _AdminPanelScreen extends StatelessWidget {
                               size: 64,
                               color: Colors.green[300],
                             ),
-                            const SizedBox(height: 12),
+                            SizedBox(height: 12),
                             Text(
                               l.t('promotions_all_up_to_date'),
                               style: TextStyle(
@@ -2044,7 +2047,7 @@ class _AdminPanelScreen extends StatelessWidget {
                                 fontWeight: FontWeight.w600,
                               ),
                             ),
-                            const SizedBox(height: 4),
+                            SizedBox(height: 4),
                             Text(
                               l.t('promotions_no_pending_requests'),
                               style: TextStyle(
@@ -2148,8 +2151,8 @@ class _AdminCard extends StatelessWidget {
             const SizedBox(height: 6),
             Row(
               children: [
-                const Icon(Icons.person, size: 14, color: Colors.grey),
-                const SizedBox(width: 4),
+                Icon(Icons.person, size: 14, color: Colors.grey),
+                SizedBox(width: 4),
                 Text(
                   '${l.t('promotions_by')}: ${req.ownerName}',
                   style: TextStyle(color: Colors.grey[500], fontSize: 12),
@@ -2188,7 +2191,7 @@ class _AdminCard extends StatelessWidget {
                       );
                     }
                   },
-                  icon: const Icon(Icons.close, size: 18),
+                  icon: Icon(Icons.close, size: 18),
                   label: Text(l.t('promotions_reject')),
                   style: OutlinedButton.styleFrom(
                     foregroundColor: ColorTokens.error50,
@@ -2209,7 +2212,7 @@ class _AdminCard extends StatelessWidget {
                       );
                     }
                   },
-                  icon: const Icon(Icons.check, size: 18, color: Colors.white),
+                  icon: Icon(Icons.check, size: 18, color: Colors.white),
                   label: Text(
                     l.t('promotions_approve'),
                     style: const TextStyle(color: Colors.white),

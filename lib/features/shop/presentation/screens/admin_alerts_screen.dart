@@ -5,6 +5,7 @@ import 'package:biux/core/design_system/color_tokens.dart';
 import 'package:biux/core/design_system/locale_notifier.dart';
 import 'package:intl/intl.dart';
 import 'package:biux/features/shop/data/datasources/alert_pdf_export_datasource.dart';
+import 'package:biux/core/design_system/locale_notifier.dart';
 
 class AdminAlertsScreen extends StatefulWidget {
   const AdminAlertsScreen({super.key});
@@ -15,6 +16,8 @@ class AdminAlertsScreen extends StatefulWidget {
 
 class _AdminAlertsScreenState extends State<AdminAlertsScreen>
     with SingleTickerProviderStateMixin {
+  LocaleNotifier get l => Provider.of<LocaleNotifier>(context);
+
   late TabController _tabController;
   DateTime? _startDate;
   DateTime? _endDate;
@@ -358,13 +361,13 @@ class _AdminAlertsScreenState extends State<AdminAlertsScreen>
         actions: [
           if (_selectMode && _selectedAlerts.isNotEmpty)
             IconButton(
-              icon: const Icon(Icons.delete_sweep, size: 22),
+              icon: Icon(Icons.delete_sweep, size: 22),
               tooltip: 'Eliminar seleccionadas',
               onPressed: _deleteSelectedAlerts,
             ),
           IconButton(
             icon: Icon(_selectMode ? Icons.close : Icons.checklist, size: 22),
-            tooltip: _selectMode ? 'Cancelar' : 'Seleccionar',
+            tooltip: _selectMode ? l.t('cancel') : l.t('select'),
             onPressed: () => setState(() {
               _selectMode = !_selectMode;
               _selectedAlerts.clear();
@@ -912,8 +915,8 @@ class _AdminAlertsScreenState extends State<AdminAlertsScreen>
                     Expanded(
                       child: ElevatedButton.icon(
                         icon: const Icon(Icons.block, size: 16),
-                        label: const Text(
-                          'Bloquear',
+                        label: Text(
+                          l.t('block'),
                           style: TextStyle(fontSize: 12),
                         ),
                         style: ElevatedButton.styleFrom(
@@ -1303,7 +1306,7 @@ class _AdminAlertsScreenState extends State<AdminAlertsScreen>
           itemBuilder: (c, i) {
             final d = blocked[i].data() as Map<String, dynamic>;
             final uid = blocked[i].id;
-            final name = d['name'] ?? d['displayName'] ?? 'Sin nombre';
+            final name = d['name'] ?? d['displayName'] ?? l.t('no_name');
             final reason = d['blockedReason'] ?? 'Sin razon';
             final blockedAt = d['blockedAt'] as Timestamp?;
             final dateStr = blockedAt != null
@@ -1491,7 +1494,7 @@ class _AdminAlertsScreenState extends State<AdminAlertsScreen>
                 ],
               ),
             ),
-            const Divider(height: 1),
+            Divider(height: 1),
             Expanded(
               child: SingleChildScrollView(
                 padding: const EdgeInsets.all(16),
@@ -1509,10 +1512,10 @@ class _AdminAlertsScreenState extends State<AdminAlertsScreen>
                             : '—',
                       ),
                     ]),
-                    const SizedBox(height: 16),
+                    SizedBox(height: 16),
                     _detailSection('Vendedor', [
                       _detailRow(
-                        'Nombre',
+                        l.t('name_label'),
                         data['sellerName']?.toString() ?? '—',
                       ),
                       _detailRow('UID', data['sellerUid']?.toString() ?? '—'),
@@ -1554,7 +1557,7 @@ class _AdminAlertsScreenState extends State<AdminAlertsScreen>
                             },
                           ),
                         ),
-                        const SizedBox(width: 10),
+                        SizedBox(width: 10),
                         Expanded(
                           child: OutlinedButton.icon(
                             icon: Icon(
@@ -1563,7 +1566,7 @@ class _AdminAlertsScreenState extends State<AdminAlertsScreen>
                               color: Colors.grey[600],
                             ),
                             label: Text(
-                              'Eliminar',
+                              l.t('delete'),
                               style: TextStyle(color: Colors.grey[600]),
                             ),
                             style: OutlinedButton.styleFrom(
@@ -1645,14 +1648,14 @@ class _AdminAlertsScreenState extends State<AdminAlertsScreen>
       builder: (c) => AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
         icon: Icon(Icons.block, color: ColorTokens.error50, size: 40),
-        title: const Text('Bloquear Vendedor'),
+        title: Text('Bloquear Vendedor'),
         content: Text(
           'Bloquear a $name?\nNo podra crear productos en la tienda.',
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(c, false),
-            child: const Text('Cancelar'),
+            child: Text(l.t('cancel')),
           ),
           ElevatedButton(
             onPressed: () => Navigator.pop(c, true),
@@ -1663,7 +1666,7 @@ class _AdminAlertsScreenState extends State<AdminAlertsScreen>
                 borderRadius: BorderRadius.circular(10),
               ),
             ),
-            child: const Text('Bloquear'),
+            child: Text(l.t('block')),
           ),
         ],
       ),
@@ -1699,12 +1702,12 @@ class _AdminAlertsScreenState extends State<AdminAlertsScreen>
       builder: (c) => AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
         icon: Icon(Icons.lock_open, color: Colors.green, size: 40),
-        title: const Text('Desbloquear Usuario'),
+        title: Text('Desbloquear Usuario'),
         content: Text('Desbloquear a $name?\nPodra volver a crear productos.'),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(c, false),
-            child: const Text('Cancelar'),
+            child: Text(l.t('cancel')),
           ),
           ElevatedButton(
             onPressed: () => Navigator.pop(c, true),
@@ -1775,14 +1778,14 @@ class _AdminAlertsScreenState extends State<AdminAlertsScreen>
       builder: (c) => AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
         icon: Icon(Icons.delete_sweep, color: ColorTokens.error50, size: 40),
-        title: const Text('Eliminar Seleccionadas'),
+        title: Text('Eliminar Seleccionadas'),
         content: Text(
           'Eliminar ${_selectedAlerts.length} alerta${_selectedAlerts.length != 1 ? 's' : ''}?',
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(c, false),
-            child: const Text('Cancelar'),
+            child: Text(l.t('cancel')),
           ),
           ElevatedButton(
             onPressed: () => Navigator.pop(c, true),
@@ -1793,7 +1796,7 @@ class _AdminAlertsScreenState extends State<AdminAlertsScreen>
                 borderRadius: BorderRadius.circular(10),
               ),
             ),
-            child: const Text('Eliminar'),
+            child: Text(l.t('delete')),
           ),
         ],
       ),

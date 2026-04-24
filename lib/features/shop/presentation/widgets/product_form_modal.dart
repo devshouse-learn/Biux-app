@@ -16,6 +16,8 @@ class ProductFormModal extends StatefulWidget {
 }
 
 class _ProductFormModalState extends State<ProductFormModal> {
+  LocaleNotifier get l => Provider.of<LocaleNotifier>(context);
+
   final _formKey = GlobalKey<FormState>();
 
   late final TextEditingController _nameController;
@@ -150,7 +152,7 @@ class _ProductFormModalState extends State<ProductFormModal> {
                   ),
                 ),
               ),
-              const SizedBox(height: 20),
+              SizedBox(height: 20),
               Text(
                 widget.product == null
                     ? l.t('create_product')
@@ -161,7 +163,7 @@ class _ProductFormModalState extends State<ProductFormModal> {
                   color: ColorTokens.neutral20,
                 ),
               ),
-              const SizedBox(height: 12),
+              SizedBox(height: 12),
               TextFormField(
                 controller: _nameController,
                 decoration: InputDecoration(
@@ -172,7 +174,7 @@ class _ProductFormModalState extends State<ProductFormModal> {
                 validator: (v) =>
                     (v == null || v.isEmpty) ? l.t('enter_name') : null,
               ),
-              const SizedBox(height: 12),
+              SizedBox(height: 12),
               Row(
                 children: [
                   Expanded(
@@ -188,7 +190,7 @@ class _ProductFormModalState extends State<ProductFormModal> {
                           (v == null || v.isEmpty) ? l.t('enter_price') : null,
                     ),
                   ),
-                  const SizedBox(width: 12),
+                  SizedBox(width: 12),
                   Expanded(
                     child: TextFormField(
                       controller: _stockController,
@@ -204,7 +206,7 @@ class _ProductFormModalState extends State<ProductFormModal> {
                   ),
                 ],
               ),
-              const SizedBox(height: 12),
+              SizedBox(height: 12),
               DropdownButtonFormField<String>(
                 initialValue: _selectedCategory,
                 items: ProductCategories.getAll()
@@ -224,7 +226,7 @@ class _ProductFormModalState extends State<ProductFormModal> {
                   fillColor: ColorTokens.neutral100,
                 ),
               ),
-              const SizedBox(height: 12),
+              SizedBox(height: 12),
               CheckboxListTile(
                 value: _isBicycle,
                 onChanged: (v) => setState(() => _isBicycle = v ?? false),
@@ -237,9 +239,9 @@ class _ProductFormModalState extends State<ProductFormModal> {
                     labelText: l.t('serial_number_chassis'),
                   ),
                 ),
-                const SizedBox(height: 12),
+                SizedBox(height: 12),
               ],
-              const SizedBox(height: 16),
+              SizedBox(height: 16),
               Row(
                 children: [
                   Expanded(
@@ -248,7 +250,7 @@ class _ProductFormModalState extends State<ProductFormModal> {
                       child: Text(l.t('cancel')),
                     ),
                   ),
-                  const SizedBox(width: 12),
+                  SizedBox(width: 12),
                   Expanded(
                     child: ElevatedButton(
                       onPressed: _saveProduct,

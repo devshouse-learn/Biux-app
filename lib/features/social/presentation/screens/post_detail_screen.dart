@@ -8,6 +8,7 @@ import 'package:biux/features/social/presentation/widgets/post_social_actions.da
 import 'package:biux/core/design_system/locale_notifier.dart';
 import 'package:biux/shared/widgets/post_card.dart';
 import 'package:firebase_database/firebase_database.dart';
+import 'package:biux/core/design_system/locale_notifier.dart';
 
 /// Pantalla estilo Instagram para ver publicaciones con galería
 /// Permite: ver imágenes en grande, darle like, y comentar
@@ -21,6 +22,8 @@ class PostDetailScreen extends StatefulWidget {
 }
 
 class _PostDetailScreenState extends State<PostDetailScreen> {
+  LocaleNotifier get l => Provider.of<LocaleNotifier>(context);
+
   ExperienceEntity? _experience;
   bool _isLoading = true;
   String? _error;
@@ -50,7 +53,7 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
           _experience = experience;
           _isLoading = false;
           if (experience == null) {
-            _error = 'Publicación no encontrada';
+            _error = l.t('post_not_found');
           }
         });
       }
@@ -110,7 +113,7 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
     final isRepost = _experience?.isRepost == true;
     return Scaffold(
       appBar: AppBar(
-        title: Text(isRepost ? 'Reposteo' : 'Publicación'),
+        title: Text(isRepost ? 'Reposteo' : l.t('publication')),
         elevation: 0,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
@@ -131,10 +134,10 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Icon(Icons.image_not_supported, size: 64),
-            const SizedBox(height: 16),
+            Icon(Icons.image_not_supported, size: 64),
+            SizedBox(height: 16),
             Text(
-              _error ?? 'Publicación no encontrada',
+              _error ?? l.t('post_not_found'),
               style: const TextStyle(fontSize: 16),
               textAlign: TextAlign.center,
             ),
@@ -212,7 +215,7 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
                         final confirmed = await showDialog<bool>(
                           context: ctx,
                           builder: (dialogCtx) => AlertDialog(
-                            title: const Text('Repostear publicación'),
+                            title: Text(l.t('repost_publication')),
                             content: Text(
                               'De @${experience.user.userName.isNotEmpty ? experience.user.userName : experience.user.fullName}',
                             ),
@@ -220,7 +223,7 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
                               TextButton(
                                 onPressed: () =>
                                     Navigator.pop(dialogCtx, false),
-                                child: const Text('Cancelar'),
+                                child: Text(l.t('cancel')),
                               ),
                               ElevatedButton(
                                 onPressed: () => Navigator.pop(dialogCtx, true),
@@ -295,24 +298,24 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
                 ),
               ),
               ListTile(
-                leading: const Icon(Icons.save_alt, color: Colors.blue),
-                title: const Text('Descargar imagen'),
+                leading: Icon(Icons.save_alt, color: Colors.blue),
+                title: Text(l.t('download_image')),
                 onTap: () {
                   Navigator.pop(context);
                   // Implementar descarga
                 },
               ),
               ListTile(
-                leading: const Icon(Icons.share, color: Colors.green),
-                title: const Text('Compartir'),
+                leading: Icon(Icons.share, color: Colors.green),
+                title: Text(l.t('share')),
                 onTap: () {
                   Navigator.pop(context);
                   // Implementar compartir
                 },
               ),
               ListTile(
-                leading: const Icon(Icons.report, color: Colors.red),
-                title: const Text('Reportar'),
+                leading: Icon(Icons.report, color: Colors.red),
+                title: Text(l.t('report_action')),
                 onTap: () {
                   Navigator.pop(context);
                   // Implementar reporte
@@ -338,23 +341,23 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
         }
       },
       itemBuilder: (BuildContext context) => [
-        const PopupMenuItem<String>(
+        PopupMenuItem<String>(
           value: 'edit',
           child: Row(
             children: [
               Icon(Icons.edit, size: 18),
               SizedBox(width: 8),
-              Text('Editar'),
+              Text(l.t('edit')),
             ],
           ),
         ),
-        const PopupMenuItem<String>(
+        PopupMenuItem<String>(
           value: 'delete',
           child: Row(
             children: [
               Icon(Icons.delete, color: Colors.red, size: 18),
               SizedBox(width: 8),
-              Text('Eliminar', style: TextStyle(color: Colors.red)),
+              Text(l.t('delete'), style: TextStyle(color: Colors.red)),
             ],
           ),
         ),
@@ -378,14 +381,14 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
     showDialog(
       context: context,
       builder: (dialogContext) => AlertDialog(
-        title: const Text('Eliminar publicación'),
-        content: const Text(
+        title: Text(l.t('delete_post')),
+        content: Text(
           '¿Estás seguro de que deseas eliminar esta publicación? Esta acción no se puede deshacer.',
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(dialogContext),
-            child: const Text('Cancelar'),
+            child: Text(l.t('cancel')),
           ),
           ElevatedButton(
             onPressed: () async {
@@ -396,7 +399,7 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
               backgroundColor: Colors.red,
               foregroundColor: Colors.white,
             ),
-            child: const Text('Eliminar'),
+            child: Text(l.t('delete')),
           ),
         ],
       ),
@@ -481,6 +484,7 @@ class _RepostBannerDetail extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l = Provider.of<LocaleNotifier>(context);
     final primaryColor = Theme.of(context).colorScheme.primary;
     return GestureDetector(
       onTap: () => _navigate(context),

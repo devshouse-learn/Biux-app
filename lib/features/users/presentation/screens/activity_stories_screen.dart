@@ -6,6 +6,9 @@ import 'package:biux/core/design_system/color_tokens.dart';
 import 'package:biux/features/experiences/data/models/experience_model.dart';
 import 'package:biux/features/experiences/domain/entities/experience_entity.dart';
 import 'dart:developer' as developer;
+import 'package:biux/core/design_system/locale_notifier.dart';
+import 'package:provider/provider.dart';
+import 'package:biux/core/design_system/locale_notifier.dart';
 
 /// Pantalla que muestra todas las historias (stories) subidas por el usuario.
 /// Grid estilo Instagram de thumbnails.
@@ -17,6 +20,8 @@ class ActivityStoriesScreen extends StatefulWidget {
 }
 
 class _ActivityStoriesScreenState extends State<ActivityStoriesScreen> {
+  LocaleNotifier get l => Provider.of<LocaleNotifier>(context);
+
   final _firestore = FirebaseFirestore.instance;
   final String? _currentUserId = FirebaseAuth.instance.currentUser?.uid;
 
@@ -160,7 +165,7 @@ class _ActivityStoriesScreenState extends State<ActivityStoriesScreen> {
         backgroundColor: ColorTokens.primary30,
         foregroundColor: ColorTokens.neutral100,
         title: Text(
-          'Mis Historias',
+          l.t('my_stories'),
           style: TextStyle(
             color: ColorTokens.neutral100,
             fontSize: 20,
@@ -193,7 +198,7 @@ class _ActivityStoriesScreenState extends State<ActivityStoriesScreen> {
                   ),
                   SizedBox(height: 16),
                   Text(
-                    'No has compartido historias aún',
+                    l.t('no_shared_stories'),
                     style: TextStyle(
                       color: ColorTokens.neutral80,
                       fontSize: 16,

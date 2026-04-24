@@ -5,6 +5,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:go_router/go_router.dart';
 import 'package:biux/core/design_system/color_tokens.dart';
 import 'dart:developer' as developer;
+import 'package:biux/core/design_system/locale_notifier.dart';
+import 'package:provider/provider.dart';
 
 /// Pantalla que muestra todo el contenido al que el usuario le ha dado like.
 /// Al quitar el like, desaparece de esta lista.
@@ -16,6 +18,8 @@ class ActivityLikesScreen extends StatefulWidget {
 }
 
 class _ActivityLikesScreenState extends State<ActivityLikesScreen> {
+  LocaleNotifier get l => Provider.of<LocaleNotifier>(context);
+
   final _database = FirebaseDatabase.instance;
   final _firestore = FirebaseFirestore.instance;
   final String? _currentUserId = FirebaseAuth.instance.currentUser?.uid;
@@ -85,7 +89,7 @@ class _ActivityLikesScreenState extends State<ActivityLikesScreen> {
                 timestamp: DateTime.fromMillisecondsSinceEpoch(
                   ts > 0 ? ts : DateTime.now().millisecondsSinceEpoch,
                 ),
-                title: data['description']?.toString() ?? 'Publicación',
+                title: data['description']?.toString() ?? l.t('publication'),
                 imageUrl: _extractFirstImage(data),
                 authorName: _extractAuthorName(data),
                 authorId: user?['id']?.toString(),
@@ -127,7 +131,7 @@ class _ActivityLikesScreenState extends State<ActivityLikesScreen> {
                 timestamp: DateTime.fromMillisecondsSinceEpoch(
                   ts > 0 ? ts : DateTime.now().millisecondsSinceEpoch,
                 ),
-                title: data['description']?.toString() ?? 'Historia',
+                title: data['description']?.toString() ?? l.t('story_label'),
                 imageUrl: files?.isNotEmpty == true
                     ? files!.first.toString()
                     : null,
@@ -191,7 +195,7 @@ class _ActivityLikesScreenState extends State<ActivityLikesScreen> {
         backgroundColor: ColorTokens.primary30,
         foregroundColor: ColorTokens.neutral100,
         title: Text(
-          'Me gusta',
+          l.t('likes_label'),
           style: TextStyle(
             color: ColorTokens.neutral100,
             fontSize: 20,
@@ -316,7 +320,7 @@ class _ActivityLikesScreenState extends State<ActivityLikesScreen> {
                               borderRadius: BorderRadius.circular(4),
                             ),
                             child: Text(
-                              item.type == 'post' ? 'Post' : 'Historia',
+                              item.type == 'post' ? 'Post' : l.t('story_label'),
                               style: TextStyle(
                                 color: item.type == 'post'
                                     ? ColorTokens.secondary50
@@ -399,7 +403,7 @@ class _ActivityLikesScreenState extends State<ActivityLikesScreen> {
       builder: (ctx) => AlertDialog(
         backgroundColor: ColorTokens.primary40,
         title: Text(
-          'Quitar Me gusta',
+          l.t('remove_like'),
           style: TextStyle(color: ColorTokens.neutral100),
         ),
         content: Text(
@@ -410,7 +414,7 @@ class _ActivityLikesScreenState extends State<ActivityLikesScreen> {
           TextButton(
             onPressed: () => Navigator.of(ctx).pop(),
             child: Text(
-              'Cancelar',
+              l.t('cancel'),
               style: TextStyle(color: ColorTokens.neutral80),
             ),
           ),

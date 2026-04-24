@@ -15,6 +15,8 @@ class ProductDetailScreen extends StatefulWidget {
 }
 
 class _ProductDetailScreenState extends State<ProductDetailScreen> {
+  LocaleNotifier get l => Provider.of<LocaleNotifier>(context);
+
   int _cantidad = 1;
   int _currentImageIndex = 0;
 
@@ -89,7 +91,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                     ),
                   ),
 
-                  const SizedBox(height: 8),
+                  SizedBox(height: 8),
 
                   // Categoría
                   Chip(
@@ -109,14 +111,14 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                     Row(
                       children: [
                         const Icon(Icons.store, size: 20),
-                        const SizedBox(width: 8),
+                        SizedBox(width: 8),
                         Text(
                           '${l.t('sold_by')} ${widget.product.vendedorNombre}',
                           style: const TextStyle(fontSize: 14),
                         ),
                       ],
                     ),
-                    const SizedBox(height: 16),
+                    SizedBox(height: 16),
                   ],
 
                   // Stock
@@ -131,7 +133,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                             : Colors.red,
                         size: 20,
                       ),
-                      const SizedBox(width: 8),
+                      SizedBox(width: 8),
                       Text(
                         widget.product.disponible
                             ? '${l.t('stock_label')}: ${widget.product.stock}'
@@ -147,7 +149,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                   ),
 
                   const SizedBox(height: 24),
-                  const Divider(),
+                  Divider(),
 
                   // Descripción
                   Text(
@@ -167,7 +169,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                   if (widget.product.especificaciones != null &&
                       widget.product.especificaciones!.isNotEmpty) ...[
                     const SizedBox(height: 24),
-                    const Divider(),
+                    Divider(),
                     Text(
                       l.t('specifications'),
                       style: const TextStyle(
@@ -201,7 +203,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                   // Tags
                   if (widget.product.tags.isNotEmpty) ...[
                     const SizedBox(height: 24),
-                    const Divider(),
+                    Divider(),
                     Text(
                       l.t('tags_label'),
                       style: const TextStyle(
@@ -487,7 +489,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                     );
                   }
                 },
-                icon: const Icon(Icons.add_shopping_cart),
+                icon: Icon(Icons.add_shopping_cart),
                 label: Text(l.t('add_to_cart')),
                 style: ElevatedButton.styleFrom(
                   padding: const EdgeInsets.symmetric(vertical: 16),

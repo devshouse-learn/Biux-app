@@ -17,6 +17,8 @@ class StoreScreen extends StatefulWidget {
 }
 
 class _StoreScreenState extends State<StoreScreen> {
+  LocaleNotifier get l => Provider.of<LocaleNotifier>(context);
+
   final TextEditingController _searchController = TextEditingController();
   final NumberFormat _currencyFormatter = NumberFormat.currency(
     locale: 'es_CO',
@@ -78,7 +80,7 @@ class _StoreScreenState extends State<StoreScreen> {
                       size: 24,
                     ),
                   ),
-                  const SizedBox(width: 12),
+                  SizedBox(width: 12),
                   // Título
                   Expanded(
                     child: Column(
@@ -87,7 +89,7 @@ class _StoreScreenState extends State<StoreScreen> {
                       children: [
                         Text(
                           l.t('biux_store'),
-                          style: const TextStyle(
+                          style: TextStyle(
                             color: Colors.white,
                             fontSize: 20,
                             fontWeight: FontWeight.bold,
@@ -111,7 +113,7 @@ class _StoreScreenState extends State<StoreScreen> {
                       borderRadius: BorderRadius.circular(12),
                     ),
                     child: IconButton(
-                      icon: const Icon(Icons.receipt_long),
+                      icon: Icon(Icons.receipt_long),
                       color: Colors.white,
                       tooltip: l.t('my_orders'),
                       onPressed: () {
@@ -127,7 +129,7 @@ class _StoreScreenState extends State<StoreScreen> {
                       borderRadius: BorderRadius.circular(12),
                     ),
                     child: IconButton(
-                      icon: const Icon(Icons.favorite_border),
+                      icon: Icon(Icons.favorite_border),
                       color: Colors.white,
                       tooltip: l.t('favorites'),
                       onPressed: () {
@@ -211,7 +213,7 @@ class _StoreScreenState extends State<StoreScreen> {
                 BoxShadow(
                   color: Colors.black.withValues(alpha: 0.05),
                   blurRadius: 4,
-                  offset: const Offset(0, 2),
+                  offset: Offset(0, 2),
                 ),
               ],
             ),
@@ -279,7 +281,7 @@ class _StoreScreenState extends State<StoreScreen> {
                       context.read<ProductProvider>().clearFilters();
                       setState(() {});
                     },
-                    icon: const Icon(
+                    icon: Icon(
                       Icons.filter_list_off,
                       color: Colors.white,
                     ),
@@ -336,7 +338,7 @@ class _StoreScreenState extends State<StoreScreen> {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         const CircularProgressIndicator(),
-                        const SizedBox(height: 16),
+                        SizedBox(height: 16),
                         Text(l.t('loading_products')),
                       ],
                     ),
@@ -353,7 +355,7 @@ class _StoreScreenState extends State<StoreScreen> {
                           size: 64,
                           color: Colors.red[300],
                         ),
-                        const SizedBox(height: 16),
+                        SizedBox(height: 16),
                         Text(
                           l.t('error_loading_products'),
                           style: TextStyle(
@@ -391,7 +393,7 @@ class _StoreScreenState extends State<StoreScreen> {
                           size: 64,
                           color: Colors.grey[400],
                         ),
-                        const SizedBox(height: 16),
+                        SizedBox(height: 16),
                         Text(
                           l.t('no_products_found'),
                           style: TextStyle(
@@ -400,7 +402,7 @@ class _StoreScreenState extends State<StoreScreen> {
                             fontWeight: FontWeight.bold,
                           ),
                         ),
-                        const SizedBox(height: 8),
+                        SizedBox(height: 8),
                         Text(
                           l.t('try_other_filters'),
                           style: TextStyle(color: Colors.grey[600]),
@@ -673,7 +675,7 @@ class _StoreScreenState extends State<StoreScreen> {
             size: 48,
             color: Colors.grey[400],
           ),
-          const SizedBox(height: 8),
+          SizedBox(height: 8),
           Text(
             l.t(product.categoria.displayName),
             style: TextStyle(fontSize: 12, color: Colors.grey[600]),
@@ -723,7 +725,7 @@ class _StoreScreenState extends State<StoreScreen> {
           content: Row(
             children: [
               const Icon(Icons.check_circle, color: Colors.white),
-              const SizedBox(width: 8),
+              SizedBox(width: 8),
               Expanded(
                 child: Text(
                   '${product.nombre} ${l.t('added_to_cart')}',
@@ -735,7 +737,7 @@ class _StoreScreenState extends State<StoreScreen> {
           backgroundColor: const Color(0xFF059669),
           behavior: SnackBarBehavior.floating,
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-          duration: const Duration(seconds: 2),
+          duration: Duration(seconds: 2),
           action: SnackBarAction(
             label: l.t('view_cart'),
             textColor: Colors.white,
@@ -810,14 +812,14 @@ class _StoreScreenState extends State<StoreScreen> {
                       size: 24,
                     ),
                   ),
-                  const SizedBox(width: 12),
+                  SizedBox(width: 12),
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
                           l.t('my_orders'),
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontSize: 22,
                             fontWeight: FontWeight.bold,
                             color: Colors.black87,
@@ -858,7 +860,7 @@ class _StoreScreenState extends State<StoreScreen> {
                         color: Colors.grey[400],
                       ),
                     ),
-                    const SizedBox(height: 24),
+                    SizedBox(height: 24),
                     Text(
                       l.t('no_orders_yet'),
                       style: const TextStyle(
@@ -867,7 +869,7 @@ class _StoreScreenState extends State<StoreScreen> {
                         color: Colors.black87,
                       ),
                     ),
-                    const SizedBox(height: 12),
+                    SizedBox(height: 12),
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 48),
                       child: Text(
@@ -885,7 +887,7 @@ class _StoreScreenState extends State<StoreScreen> {
                       onPressed: () {
                         Navigator.pop(context);
                       },
-                      icon: const Icon(Icons.shopping_cart),
+                      icon: Icon(Icons.shopping_cart),
                       label: Text(l.t('explore_products')),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: const Color(0xFF3B82F6),
@@ -957,14 +959,14 @@ class _StoreScreenState extends State<StoreScreen> {
                       size: 24,
                     ),
                   ),
-                  const SizedBox(width: 12),
+                  SizedBox(width: 12),
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
                           l.t('favorites'),
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontSize: 22,
                             fontWeight: FontWeight.bold,
                             color: Colors.black87,
@@ -1005,7 +1007,7 @@ class _StoreScreenState extends State<StoreScreen> {
                         color: Colors.red[300],
                       ),
                     ),
-                    const SizedBox(height: 24),
+                    SizedBox(height: 24),
                     Text(
                       l.t('no_favorites_yet'),
                       style: const TextStyle(
@@ -1014,7 +1016,7 @@ class _StoreScreenState extends State<StoreScreen> {
                         color: Colors.black87,
                       ),
                     ),
-                    const SizedBox(height: 12),
+                    SizedBox(height: 12),
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 48),
                       child: Text(
@@ -1032,7 +1034,7 @@ class _StoreScreenState extends State<StoreScreen> {
                       onPressed: () {
                         Navigator.pop(context);
                       },
-                      icon: const Icon(Icons.search),
+                      icon: Icon(Icons.search),
                       label: Text(l.t('discover_products')),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.red,

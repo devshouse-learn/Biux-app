@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:biux/core/services/remote_config_service.dart';
 import 'package:biux/core/services/app_logger.dart';
+import 'package:biux/core/design_system/locale_notifier.dart';
+import 'package:provider/provider.dart';
 
 /// Servicio para verificar actualizaciones de la app.
 ///
@@ -98,6 +100,7 @@ class AppUpdateService {
   }
 
   static Future<void> showForceUpdateDialog(BuildContext context) async {
+    final l = Provider.of<LocaleNotifier>(context, listen: false);
     final platform = Theme.of(context).platform;
     await showDialog(
       context: context,
@@ -105,7 +108,7 @@ class AppUpdateService {
       builder: (ctx) => PopScope(
         canPop: false,
         child: AlertDialog(
-          title: const Text('Actualización requerida'),
+          title: Text(l.t('update_required')),
           content: const Text(
             'Hay una nueva versión disponible que es obligatoria para seguir usando Biux. '
             'Por favor actualiza la app.',
@@ -122,18 +125,19 @@ class AppUpdateService {
   }
 
   static Future<void> showOptionalUpdateDialog(BuildContext context) async {
+    final l = Provider.of<LocaleNotifier>(context, listen: false);
     final platform = Theme.of(context).platform;
     await showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: const Text('Nueva versión disponible'),
-        content: const Text(
+        title: Text(l.t('new_version_available')),
+        content: Text(
           'Hay una nueva versión de Biux disponible con mejoras y correcciones.',
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(ctx).pop(),
-            child: const Text('Más tarde'),
+            child: Text(l.t('later')),
           ),
           FilledButton(
             onPressed: () {

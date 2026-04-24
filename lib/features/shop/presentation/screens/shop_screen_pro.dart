@@ -16,6 +16,7 @@ import 'package:biux/features/shop/presentation/screens/shop_admin_sheets.dart';
 import 'package:biux/features/shop/presentation/widgets/shop_admin_dashboard_widget_v2.dart';
 import 'package:biux/features/shop/presentation/widgets/promotions_widget.dart';
 import 'package:biux/features/shop/presentation/widgets/request_seller_permission_dialog.dart';
+import 'package:biux/core/design_system/locale_notifier.dart';
 // import 'package:biux/features/shop/presentation/widgets/recommended_for_rides_widget.dart'; // actualmente no usado
 
 /// Tienda virtual profesional con características de e-commerce avanzadas
@@ -30,6 +31,8 @@ class ShopScreenPro extends StatefulWidget {
 
 class _ShopScreenProState extends State<ShopScreenPro>
     with SingleTickerProviderStateMixin {
+  LocaleNotifier get l => Provider.of<LocaleNotifier>(context);
+
   final TextEditingController _searchController = TextEditingController();
   final ScrollController _scrollController = ScrollController();
   String _sortBy =
@@ -364,7 +367,7 @@ class _ShopScreenProState extends State<ShopScreenPro>
                             color: Colors.blue[700],
                             size: 20,
                           ),
-                          const SizedBox(width: 12),
+                          SizedBox(width: 12),
                           Text(
                             l.t('product_info_menu'),
                             style: TextStyle(color: Colors.blue[800]),
@@ -377,7 +380,7 @@ class _ShopScreenProState extends State<ShopScreenPro>
                       child: Row(
                         children: [
                           Icon(Icons.campaign, size: 20, color: Colors.orange),
-                          const SizedBox(width: 12),
+                          SizedBox(width: 12),
                           Text(l.t('promotions_menu')),
                         ],
                       ),
@@ -391,7 +394,7 @@ class _ShopScreenProState extends State<ShopScreenPro>
                             color: ColorTokens.warning50,
                             size: 22,
                           ),
-                          const SizedBox(width: 12),
+                          SizedBox(width: 12),
                           Text(
                             l.t('offers_benefits'),
                             style: TextStyle(fontWeight: FontWeight.w500),
@@ -409,7 +412,7 @@ class _ShopScreenProState extends State<ShopScreenPro>
                               color: ColorTokens.primary30,
                               size: 22,
                             ),
-                            const SizedBox(width: 12),
+                            SizedBox(width: 12),
                             Text(
                               l.t('admin_panel'),
                               style: TextStyle(fontWeight: FontWeight.w500),
@@ -427,7 +430,7 @@ class _ShopScreenProState extends State<ShopScreenPro>
                               color: ColorTokens.success40,
                               size: 22,
                             ),
-                            const SizedBox(width: 12),
+                            SizedBox(width: 12),
                             Text(
                               l.t('add_product'),
                               style: TextStyle(fontWeight: FontWeight.w500),
@@ -483,14 +486,14 @@ class _ShopScreenProState extends State<ShopScreenPro>
                   children: [
                     IconButton(
                       onPressed: () => Navigator.pop(context),
-                      icon: const Icon(Icons.arrow_back_ios, size: 20),
+                      icon: Icon(Icons.arrow_back_ios, size: 20),
                     ),
                     Icon(
                       Icons.info_outline,
                       color: Theme.of(context).primaryColor,
                       size: 28,
                     ),
-                    const SizedBox(width: 12),
+                    SizedBox(width: 12),
                     Text(
                       l.t('store_info_title'),
                       style: TextStyle(
@@ -800,7 +803,7 @@ class _ShopScreenProState extends State<ShopScreenPro>
                         size: 20,
                       ),
                     ),
-                    const SizedBox(width: 12),
+                    SizedBox(width: 12),
                     Expanded(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -813,7 +816,7 @@ class _ShopScreenProState extends State<ShopScreenPro>
                               color: ColorTokens.neutral20,
                             ),
                           ),
-                          const SizedBox(height: 2),
+                          SizedBox(height: 2),
                           Text(
                             _showOffersExpanded
                                 ? l.t('hide_promotions')
@@ -1006,7 +1009,7 @@ class _ShopScreenProState extends State<ShopScreenPro>
                       color: ColorTokens.warning50,
                       size: 24,
                     ),
-                    const SizedBox(width: 8),
+                    SizedBox(width: 8),
                     Text(
                       l.t('featured_for_you'),
                       style: TextStyle(
@@ -1017,7 +1020,7 @@ class _ShopScreenProState extends State<ShopScreenPro>
                     ),
                   ],
                 ),
-                const SizedBox(height: 4),
+                SizedBox(height: 4),
                 Text(
                   l.t('selected_for_cyclists'),
                   style: TextStyle(fontSize: 13, color: ColorTokens.neutral60),
@@ -1145,7 +1148,7 @@ class _ShopScreenProState extends State<ShopScreenPro>
               );
             },
           ),
-          const Spacer(),
+          Spacer(),
           // Botón de filtros
           TextButton.icon(
             onPressed: () => setState(() => _showFilters = !_showFilters),
@@ -1380,8 +1383,8 @@ class _ShopScreenProState extends State<ShopScreenPro>
                   value: 'orders',
                   child: Row(
                     children: [
-                      const Icon(Icons.receipt_long, size: 20),
-                      const SizedBox(width: 12),
+                      Icon(Icons.receipt_long, size: 20),
+                      SizedBox(width: 12),
                       Text(l.t('my_orders')),
                     ],
                   ),
@@ -1390,8 +1393,8 @@ class _ShopScreenProState extends State<ShopScreenPro>
                   value: 'favorites',
                   child: Row(
                     children: [
-                      const Icon(Icons.favorite_border, size: 20),
-                      const SizedBox(width: 12),
+                      Icon(Icons.favorite_border, size: 20),
+                      SizedBox(width: 12),
                       Text(l.t('favorites')),
                     ],
                   ),
@@ -1402,12 +1405,8 @@ class _ShopScreenProState extends State<ShopScreenPro>
                     value: 'request_seller',
                     child: Row(
                       children: [
-                        const Icon(
-                          Icons.request_page,
-                          size: 20,
-                          color: Colors.blue,
-                        ),
-                        const SizedBox(width: 12),
+                        Icon(Icons.request_page, size: 20, color: Colors.blue),
+                        SizedBox(width: 12),
                         Text(
                           l.t('request_sell_products'),
                           style: const TextStyle(
@@ -1428,13 +1427,13 @@ class _ShopScreenProState extends State<ShopScreenPro>
                         Badge(
                           label: Text('$pendingCount'),
                           isLabelVisible: pendingCount > 0,
-                          child: const Icon(
+                          child: Icon(
                             Icons.pending_actions,
                             size: 20,
                             color: Colors.purple,
                           ),
                         ),
-                        const SizedBox(width: 12),
+                        SizedBox(width: 12),
                         Text(
                           l.t('seller_requests_menu'),
                           style: const TextStyle(
@@ -1449,12 +1448,8 @@ class _ShopScreenProState extends State<ShopScreenPro>
                     value: 'manage_sellers',
                     child: Row(
                       children: [
-                        const Icon(
-                          Icons.people,
-                          size: 20,
-                          color: Colors.orange,
-                        ),
-                        const SizedBox(width: 12),
+                        Icon(Icons.people, size: 20, color: Colors.orange),
+                        SizedBox(width: 12),
                         Text(
                           l.t('manage_sellers_menu'),
                           style: const TextStyle(
@@ -1469,12 +1464,8 @@ class _ShopScreenProState extends State<ShopScreenPro>
                     value: 'delete_all_products',
                     child: Row(
                       children: [
-                        const Icon(
-                          Icons.delete_forever,
-                          size: 20,
-                          color: Colors.red,
-                        ),
-                        const SizedBox(width: 12),
+                        Icon(Icons.delete_forever, size: 20, color: Colors.red),
+                        SizedBox(width: 12),
                         Text(
                           l.t('delete_all_products'),
                           style: const TextStyle(
@@ -1490,8 +1481,8 @@ class _ShopScreenProState extends State<ShopScreenPro>
                   value: 'help',
                   child: Row(
                     children: [
-                      const Icon(Icons.help_outline, size: 20),
-                      const SizedBox(width: 12),
+                      Icon(Icons.help_outline, size: 20),
+                      SizedBox(width: 12),
                       Text(l.t('help_center')),
                     ],
                   ),
@@ -1615,11 +1606,11 @@ class _ShopScreenProState extends State<ShopScreenPro>
               ),
               style: const TextStyle(color: Color(0xFF16242D), fontSize: 14),
             ),
-            const SizedBox(height: 16),
+            SizedBox(height: 16),
 
             // Campo: Descripción
-            const Text(
-              'Descripción',
+            Text(
+              l.t('description'),
               style: TextStyle(
                 fontSize: 13,
                 fontWeight: FontWeight.w600,
@@ -1814,13 +1805,11 @@ class _ShopScreenProState extends State<ShopScreenPro>
                               Icon(
                                 Icons.calendar_today_outlined,
                                 size: 18,
-                                color: const Color(
-                                  0xFF16242D,
-                                ).withValues(alpha: 0.4),
+                                color: Color(0xFF16242D).withValues(alpha: 0.4),
                               ),
-                              const SizedBox(width: 8),
+                              SizedBox(width: 8),
                               Text(
-                                'Seleccionar',
+                                l.t('select'),
                                 style: TextStyle(
                                   color: const Color(
                                     0xFF16242D,
@@ -2081,7 +2070,7 @@ class _ShopScreenProState extends State<ShopScreenPro>
           ),
           // Reemplazado Spacer() por un espacio flexible controlado para evitar
           // overflows en columnas y filas con altura/anchura limitada.
-          const SizedBox(width: 8),
+          SizedBox(width: 8),
 
           // Ordenar
           Container(
@@ -2092,8 +2081,8 @@ class _ShopScreenProState extends State<ShopScreenPro>
             ),
             child: DropdownButton<String>(
               value: _sortBy,
-              underline: const SizedBox(),
-              icon: const Icon(Icons.sort, size: 18),
+              underline: SizedBox(),
+              icon: Icon(Icons.sort, size: 18),
               isDense: true,
               items: [
                 DropdownMenuItem(
@@ -2180,25 +2169,22 @@ class _ShopScreenProState extends State<ShopScreenPro>
         children: [
           Row(
             children: [
-              const Icon(Icons.tune, color: ColorTokens.primary30),
-              const SizedBox(width: 8),
+              Icon(Icons.tune, color: ColorTokens.primary30),
+              SizedBox(width: 8),
               Text(
                 l.t('advanced_filters'),
-                style: const TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                ),
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
               ),
               // Evitar Spacer() que expande indefinidamente dentro de filas
               // anidadas en Slivers; usar un SizedBox flexible en su lugar.
-              const SizedBox(height: 4),
+              SizedBox(height: 4),
               TextButton(
                 onPressed: _clearFilters,
                 child: Text(l.t('clear_filters')),
               ),
             ],
           ),
-          const Divider(),
+          Divider(),
 
           // Rango de precios
           Text(
@@ -2227,7 +2213,7 @@ class _ShopScreenProState extends State<ShopScreenPro>
               Text('\$${_formatPrice(_priceRange.end)}'),
             ],
           ),
-          const SizedBox(height: 16),
+          SizedBox(height: 16),
 
           // Checkboxes
           CheckboxListTile(
@@ -2239,7 +2225,7 @@ class _ShopScreenProState extends State<ShopScreenPro>
             dense: true,
           ),
 
-          const SizedBox(height: 16),
+          SizedBox(height: 16),
 
           // Calificación mínima
           Text(
@@ -2260,7 +2246,7 @@ class _ShopScreenProState extends State<ShopScreenPro>
             }),
           ),
 
-          const SizedBox(height: 16),
+          SizedBox(height: 16),
 
           // Botón aplicar
           SizedBox(
@@ -2300,8 +2286,8 @@ class _ShopScreenProState extends State<ShopScreenPro>
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  const CircularProgressIndicator(),
-                  const SizedBox(height: 16),
+                  CircularProgressIndicator(),
+                  SizedBox(height: 16),
                   Text(l.t('loading_products')),
                 ],
               ),
@@ -2331,7 +2317,7 @@ class _ShopScreenProState extends State<ShopScreenPro>
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Icon(Icons.search_off, size: 80, color: Colors.grey[300]),
-                  const SizedBox(height: 16),
+                  SizedBox(height: 16),
                   Text(
                     l.t('no_products_found'),
                     style: TextStyle(
@@ -2340,7 +2326,7 @@ class _ShopScreenProState extends State<ShopScreenPro>
                       fontWeight: FontWeight.w600,
                     ),
                   ),
-                  const SizedBox(height: 8),
+                  SizedBox(height: 8),
                   TextButton(
                     onPressed: _clearFilters,
                     child: Text(l.t('clear_filters')),
@@ -2600,7 +2586,7 @@ class _ShopScreenProState extends State<ShopScreenPro>
                                       content: Text(
                                         '${product.name} ${l.t('added_to_cart')}',
                                       ),
-                                      duration: const Duration(seconds: 2),
+                                      duration: Duration(seconds: 2),
                                       action: SnackBarAction(
                                         label: l.t('view_cart'),
                                         onPressed: () =>
@@ -3567,14 +3553,14 @@ class _ShopScreenProState extends State<ShopScreenPro>
             ListTile(
               leading: const Icon(Icons.chat),
               title: const Text('Chat en vivo'),
-              subtitle: const Text('Lun-Vie 9am-6pm'),
+              subtitle: Text('Lun-Vie 9am-6pm'),
             ),
           ],
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('Cerrar'),
+            child: Text(l.t('close')),
           ),
         ],
       ),
@@ -4165,6 +4151,7 @@ void _showManageProductsSheet(BuildContext context) {
 /// Bottom sheet para gestionar vendedores
 // ignore: unused_element
 void _showManageSellersSheet(BuildContext context) {
+  final l = Provider.of<LocaleNotifier>(context, listen: false);
   showModalBottomSheet(
     context: context,
     isScrollControlled: true,
@@ -4232,16 +4219,16 @@ void _showManageSellersSheet(BuildContext context) {
                           TextField(
                             decoration: InputDecoration(
                               labelText: 'Nombre completo',
-                              prefixIcon: const Icon(Icons.person),
+                              prefixIcon: Icon(Icons.person),
                               border: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(10),
                               ),
                             ),
                           ),
-                          const SizedBox(height: 8),
+                          SizedBox(height: 8),
                           TextField(
                             decoration: InputDecoration(
-                              labelText: 'Correo electrónico',
+                              labelText: l.t('email_label'),
                               prefixIcon: const Icon(Icons.email),
                               border: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(10),
@@ -4581,7 +4568,7 @@ void _showReportsSheet(BuildContext context) {
                     'Top Productos Vendidos',
                     style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                   ),
-                  const SizedBox(height: 8),
+                  SizedBox(height: 8),
                   Card(
                     elevation: 1,
                     shape: RoundedRectangleBorder(
@@ -4828,9 +4815,9 @@ void _showStatsSheet(BuildContext context) {
                   onPressed: () => Navigator.pop(context),
                 ),
                 const Icon(Icons.analytics, color: Colors.purple),
-                const SizedBox(width: 8),
-                const Text(
-                  'Estadísticas',
+                SizedBox(width: 8),
+                Text(
+                  l.t('statistics'),
                   style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                 ),
               ],
@@ -5019,7 +5006,7 @@ void _showStatsSheet(BuildContext context) {
                     'Productos Más Visitados',
                     style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                   ),
-                  const SizedBox(height: 8),
+                  SizedBox(height: 8),
                   Card(
                     elevation: 1,
                     shape: RoundedRectangleBorder(
@@ -5110,7 +5097,7 @@ void _showSecuritySheet(BuildContext context) {
                             color: Colors.green[700],
                             size: 40,
                           ),
-                          const SizedBox(width: 12),
+                          SizedBox(width: 12),
                           Expanded(
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
@@ -5307,8 +5294,8 @@ void _showSecuritySheet(BuildContext context) {
                     child: OutlinedButton.icon(
                       onPressed: () {},
                       icon: const Icon(Icons.logout, color: Colors.red),
-                      label: const Text(
-                        'Cerrar todas las sesiones',
+                      label: Text(
+                        l.t('close_all_sessions'),
                         style: TextStyle(color: Colors.red),
                       ),
                       style: OutlinedButton.styleFrom(

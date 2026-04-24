@@ -83,7 +83,7 @@ class CommentItem extends StatelessWidget {
                             ),
                           ),
                         ),
-                        const SizedBox(width: 8),
+                        SizedBox(width: 8),
                         Flexible(
                           child: Text(
                             timeago.format(comment.createdAt, locale: 'es'),
@@ -218,7 +218,7 @@ class CommentItem extends StatelessWidget {
                               child: Row(
                                 children: [
                                   const Icon(Icons.reply, size: 16),
-                                  const SizedBox(width: 4),
+                                  SizedBox(width: 4),
                                   Text(
                                     l.t('reply'),
                                     style: const TextStyle(fontSize: 12),
@@ -273,7 +273,7 @@ class CommentItem extends StatelessWidget {
             child: Row(
               children: [
                 const Icon(Icons.edit, size: 18),
-                const SizedBox(width: 8),
+                SizedBox(width: 8),
                 Text(l.t('edit')),
               ],
             ),
@@ -283,7 +283,7 @@ class CommentItem extends StatelessWidget {
             child: Row(
               children: [
                 const Icon(Icons.delete, size: 18),
-                const SizedBox(width: 8),
+                SizedBox(width: 8),
                 Text(l.t('delete')),
               ],
             ),
@@ -341,7 +341,7 @@ class CommentItem extends StatelessWidget {
               l.t('reply_to').replaceAll('{name}', comment.userName),
               style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
             ),
-            const SizedBox(height: 16),
+            SizedBox(height: 16),
             TextField(
               controller: controller,
               autofocus: true,
@@ -352,7 +352,7 @@ class CommentItem extends StatelessWidget {
                 border: const OutlineInputBorder(),
               ),
             ),
-            const SizedBox(height: 16),
+            SizedBox(height: 16),
             Row(
               mainAxisAlignment: MainAxisAlignment.end,
               children: [

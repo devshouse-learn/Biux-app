@@ -12,6 +12,8 @@ class OnboardingScreen extends StatefulWidget {
 }
 
 class _OnboardingScreenState extends State<OnboardingScreen> {
+  LocaleNotifier get l => Provider.of<LocaleNotifier>(context);
+
   final PageController _pageController = PageController();
   int _currentPage = 0;
 

@@ -23,6 +23,8 @@ class RideListScreen extends StatefulWidget {
 
 class _RideListScreenState extends State<RideListScreen>
     with SingleTickerProviderStateMixin {
+  LocaleNotifier get l => Provider.of<LocaleNotifier>(context);
+
   late TabController _tabController;
   final TextEditingController _searchController = TextEditingController();
   bool _showSearch = false;
@@ -60,7 +62,6 @@ class _RideListScreenState extends State<RideListScreen>
 
   @override
   Widget build(BuildContext context) {
-    final l = Provider.of<LocaleNotifier>(context);
 
     // Si viene con groupId, mostrar rodadas de ese grupo
     if (widget.groupId != null) {
@@ -108,7 +109,7 @@ class _RideListScreenState extends State<RideListScreen>
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             const Icon(Icons.groups, size: 16),
-                            const SizedBox(width: 6),
+                            SizedBox(width: 6),
                             Text(l.t('my_groups')),
                           ],
                         ),
@@ -118,7 +119,7 @@ class _RideListScreenState extends State<RideListScreen>
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             const Icon(Icons.explore, size: 16),
-                            const SizedBox(width: 6),
+                            SizedBox(width: 6),
                             Text(l.t('explore_more')),
                           ],
                         ),
@@ -147,9 +148,9 @@ class _RideListScreenState extends State<RideListScreen>
                 heroTag: 'createGroup',
                 onPressed: () => context.push(AppRoutes.groupCreate),
                 backgroundColor: ColorTokens.primary30,
-                icon: const Icon(Icons.group_add, color: Colors.white),
-                label: const Text(
-                  'Crear Grupo',
+                icon: Icon(Icons.group_add, color: Colors.white),
+                label: Text(
+                  l.t('create_group'),
                   style: TextStyle(
                     color: Colors.white,
                     fontWeight: FontWeight.w700,
@@ -236,19 +237,19 @@ class _RideListScreenState extends State<RideListScreen>
                           Icons.upcoming,
                           ColorTokens.primary30,
                         ),
-                        const SizedBox(height: 8),
+                        SizedBox(height: 8),
                         ...upcoming.map(
                           (ride) => _buildRideCard(ride, provider, l),
                         ),
                       ],
                       if (past.isNotEmpty) ...[
-                        const SizedBox(height: 20),
+                        SizedBox(height: 20),
                         _buildSectionHeader(
                           l.t('finished'),
                           Icons.history,
                           ColorTokens.neutral60,
                         ),
-                        const SizedBox(height: 8),
+                        SizedBox(height: 8),
                         ...past.map(
                           (ride) =>
                               _buildRideCard(ride, provider, l, isPast: true),
@@ -499,7 +500,7 @@ class _RideListScreenState extends State<RideListScreen>
                           '0',
                           ColorTokens.neutral60,
                         ),
-                        const SizedBox(width: 16),
+                        SizedBox(width: 16),
                         // Rodadas próximas
                         if (upcomingRides > 0 && !isExplore)
                           _buildGroupStat(
@@ -577,14 +578,14 @@ class _RideListScreenState extends State<RideListScreen>
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
                           ),
-                          const SizedBox(height: 2),
+                          SizedBox(height: 2),
                           Row(
                             children: [
                               _buildMiniChip(
                                 l.t(ride.difficultyDisplayName),
                                 _getDifficultyColor(ride.difficulty),
                               ),
-                              const SizedBox(width: 6),
+                              SizedBox(width: 6),
                               Text(
                                 '${ride.kilometers} km',
                                 style: TextStyle(
@@ -862,7 +863,7 @@ class _RideListScreenState extends State<RideListScreen>
               ColorTokens.success40,
               () => _joinRide(ride.id, provider),
             ),
-            const SizedBox(width: 6),
+            SizedBox(width: 6),
             _buildSmallButton(
               l.t('no_label'),
               Icons.close,
@@ -881,7 +882,7 @@ class _RideListScreenState extends State<RideListScreen>
               ColorTokens.success40,
               () => _joinRide(ride.id, provider),
             ),
-            const SizedBox(width: 6),
+            SizedBox(width: 6),
             _buildSmallButton(
               l.t('maybe'),
               Icons.help_outline,

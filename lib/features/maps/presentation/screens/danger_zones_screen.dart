@@ -3,6 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:biux/features/maps/data/datasources/danger_zones_datasource.dart';
+import 'package:biux/core/design_system/locale_notifier.dart';
+import 'package:provider/provider.dart';
+import 'package:biux/core/design_system/locale_notifier.dart';
 
 class DangerZonesScreen extends StatefulWidget {
   const DangerZonesScreen({super.key});
@@ -13,6 +16,8 @@ class DangerZonesScreen extends StatefulWidget {
 
 // ignore_for_file: unused_field
 class _DangerZonesScreenState extends State<DangerZonesScreen> {
+  LocaleNotifier get l => Provider.of<LocaleNotifier>(context);
+
   Position? _position;
   bool _reportMode = false;
 
@@ -33,8 +38,8 @@ class _DangerZonesScreenState extends State<DangerZonesScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Zonas Peligrosas'),
-        backgroundColor: const Color(0xFF16242D),
+        title: Text(l.t('danger_zones')),
+        backgroundColor: Color(0xFF16242D),
         foregroundColor: Colors.white,
         actions: [
           IconButton(
@@ -42,7 +47,7 @@ class _DangerZonesScreenState extends State<DangerZonesScreen> {
               _reportMode ? Icons.close_rounded : Icons.add_location_rounded,
             ),
             onPressed: () => setState(() => _reportMode = !_reportMode),
-            tooltip: _reportMode ? 'Cancelar' : 'Reportar zona',
+            tooltip: _reportMode ? l.t('cancel') : 'Reportar zona',
           ),
         ],
       ),
@@ -104,14 +109,14 @@ class _DangerZonesScreenState extends State<DangerZonesScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text(
+                  Text(
                     'Leyenda',
                     style: TextStyle(fontWeight: FontWeight.w700, fontSize: 12),
                   ),
-                  const SizedBox(height: 6),
-                  _LegendItem(color: Colors.red, label: 'Accidente'),
-                  _LegendItem(color: Colors.orange, label: 'Robo'),
-                  _LegendItem(color: Colors.yellow.shade700, label: 'Otros'),
+                  SizedBox(height: 6),
+                  _LegendItem(color: Colors.red, label: l.t('accident_label')),
+                  _LegendItem(color: Colors.orange, label: l.t('robbery')),
+                  _LegendItem(color: Colors.yellow.shade700, label: l.t('others')),
                 ],
               ),
             ),
@@ -135,9 +140,9 @@ class _DangerZonesScreenState extends State<DangerZonesScreen> {
                       color: Colors.red,
                       size: 20,
                     ),
-                    const SizedBox(width: 8),
-                    const Text(
-                      'Toca el mapa para reportar una zona peligrosa',
+                    SizedBox(width: 8),
+                    Text(
+                      l.t('tap_map_report'),
                       style: TextStyle(
                         color: Colors.red,
                         fontSize: 12,
@@ -223,8 +228,8 @@ class _DangerZonesScreenState extends State<DangerZonesScreen> {
                   await DangerZonesDatasource.confirmZone(zone.id);
                   if (context.mounted) Navigator.pop(context);
                 },
-                icon: const Icon(Icons.thumb_up_rounded),
-                label: const Text('Confirmar zona peligrosa'),
+                icon: Icon(Icons.thumb_up_rounded),
+                label: Text(l.t('confirm_danger_zone')),
               ),
             ),
           ],
@@ -244,6 +249,8 @@ class _ReportSheet extends StatefulWidget {
 }
 
 class _ReportSheetState extends State<_ReportSheet> {
+  LocaleNotifier get l => Provider.of<LocaleNotifier>(context);
+
   DangerType _type = DangerType.accident;
   final _desc = TextEditingController();
   bool _loading = false;
@@ -263,7 +270,7 @@ class _ReportSheetState extends State<_ReportSheet> {
         top: 20,
         bottom: MediaQuery.of(context).viewInsets.bottom + 20,
       ),
-      decoration: const BoxDecoration(
+      decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
@@ -271,15 +278,15 @@ class _ReportSheetState extends State<_ReportSheet> {
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
-            'Reportar zona peligrosa',
+          Text(
+            l.t('report_danger_zone'),
             style: TextStyle(fontWeight: FontWeight.w700, fontSize: 16),
           ),
-          const SizedBox(height: 16),
+          SizedBox(height: 16),
           DropdownButtonFormField<DangerType>(
             value: _type,
             decoration: InputDecoration(
-              labelText: 'Tipo de peligro',
+              labelText: l.t('danger_type'),
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(12),
               ),
@@ -306,11 +313,11 @@ class _ReportSheetState extends State<_ReportSheet> {
                 .toList(),
             onChanged: (v) => setState(() => _type = v ?? DangerType.accident),
           ),
-          const SizedBox(height: 12),
+          SizedBox(height: 12),
           TextField(
             controller: _desc,
             decoration: InputDecoration(
-              labelText: 'Descripción (opcional)',
+              labelText: l.t('description_optional'),
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(12),
               ),
@@ -322,8 +329,8 @@ class _ReportSheetState extends State<_ReportSheet> {
             width: double.infinity,
             child: ElevatedButton.icon(
               onPressed: _loading ? null : _submit,
-              icon: const Icon(Icons.send_rounded),
-              label: const Text('Enviar reporte'),
+              icon: Icon(Icons.send_rounded),
+              label: Text(l.t('send_report_user')),
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.red,
                 foregroundColor: Colors.white,
@@ -362,6 +369,7 @@ class _LegendItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l = Provider.of<LocaleNotifier>(context);
     return Row(
       children: [
         Container(

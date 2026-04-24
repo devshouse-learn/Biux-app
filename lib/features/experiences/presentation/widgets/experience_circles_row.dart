@@ -76,7 +76,7 @@ class ExperienceCirclesRow extends StatelessWidget {
               size: 30,
             ),
           ),
-          const SizedBox(height: 4),
+          SizedBox(height: 4),
           Text(
             l.t('your_story'),
             style: const TextStyle(fontSize: 11, color: ColorTokens.neutral80),

@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:go_router/go_router.dart';
 import 'package:biux/core/design_system/color_tokens.dart';
 import 'package:biux/features/users/presentation/providers/user_provider.dart';
+import 'package:biux/core/design_system/locale_notifier.dart';
 
 /// Pantalla de privacidad con opciones GDPR
 class PrivacySettingsScreen extends StatelessWidget {
@@ -10,16 +11,18 @@ class PrivacySettingsScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l = Provider.of<LocaleNotifier>(context);
+
     return Scaffold(
       backgroundColor: ColorTokens.neutral99,
       appBar: AppBar(
         backgroundColor: ColorTokens.primary10,
-        title: const Text(
+        title: Text(
           'Privacidad y datos',
           style: TextStyle(color: Colors.white),
         ),
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.white),
+          icon: Icon(Icons.arrow_back, color: Colors.white),
           onPressed: () => context.pop(),
         ),
       ),
@@ -35,15 +38,15 @@ class PrivacySettingsScreen extends StatelessWidget {
           ),
           _PrivacyTile(
             icon: Icons.visibility_off,
-            title: 'Historial de actividad',
+            title: l.t('activity_history'),
             subtitle: 'Gestiona qué actividades quedan registradas',
             onTap: () {},
           ),
-          const SizedBox(height: 16),
-          _SectionTitle('Cuenta'),
+          SizedBox(height: 16),
+          _SectionTitle(l.t('account_label')),
           _PrivacyTile(
             icon: Icons.lock_reset,
-            title: 'Sesiones activas',
+            title: l.t('active_sessions'),
             subtitle: 'Ver y cerrar sesiones en otros dispositivos',
             onTap: () => context.push('/settings/sessions'),
           ),
@@ -71,17 +74,18 @@ class PrivacySettingsScreen extends StatelessWidget {
   }
 
   void _confirmDeleteAccount(BuildContext context) {
+    final l = Provider.of<LocaleNotifier>(context, listen: false);
     showDialog(
       context: context,
       builder: (_) => AlertDialog(
         title: const Text('¿Eliminar cuenta?'),
-        content: const Text(
+        content: Text(
           'Esta acción es irreversible. Todos tus datos, grupos y rodadas serán eliminados permanentemente.',
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('Cancelar'),
+            child: Text(l.t('cancel')),
           ),
           ElevatedButton(
             style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
@@ -89,10 +93,7 @@ class PrivacySettingsScreen extends StatelessWidget {
               Navigator.pop(context);
               context.read<UserProvider>().requestAccountDeletion();
             },
-            child: const Text(
-              'Eliminar',
-              style: TextStyle(color: Colors.white),
-            ),
+            child: Text(l.t('delete'), style: TextStyle(color: Colors.white)),
           ),
         ],
       ),

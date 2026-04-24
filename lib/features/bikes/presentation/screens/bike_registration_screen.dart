@@ -19,6 +19,8 @@ class BikeRegistrationScreen extends StatefulWidget {
 }
 
 class _BikeRegistrationScreenState extends State<BikeRegistrationScreen> {
+  LocaleNotifier get l => Provider.of<LocaleNotifier>(context);
+
   @override
   void initState() {
     super.initState();
@@ -212,7 +214,7 @@ class _BikeRegistrationScreenState extends State<BikeRegistrationScreen> {
               onPressed: () => _showCancelDialog(bikeProvider),
               style: OutlinedButton.styleFrom(
                 foregroundColor: ColorTokens.error50,
-                side: const BorderSide(color: ColorTokens.error50),
+                side: BorderSide(color: ColorTokens.error50),
                 padding: const EdgeInsets.symmetric(vertical: 12),
               ),
               child: Text(

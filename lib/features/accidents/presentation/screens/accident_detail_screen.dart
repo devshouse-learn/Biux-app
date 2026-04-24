@@ -107,7 +107,7 @@ class AccidentDetailScreen extends StatelessWidget {
                   child: Row(
                     children: [
                       const Icon(Icons.check_circle, color: Colors.green),
-                      const SizedBox(width: 8),
+                      SizedBox(width: 8),
                       Text(l.t('mark_resolved')),
                     ],
                   ),
@@ -214,13 +214,13 @@ class AccidentDetailScreen extends StatelessWidget {
                           size: 20,
                         ),
                       ),
-                      const SizedBox(width: 10),
+                      SizedBox(width: 10),
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
                             l.t('reported_by'),
-                            style: const TextStyle(
+                            style: TextStyle(
                               color: Colors.grey,
                               fontSize: 11,
                             ),
@@ -241,7 +241,7 @@ class AccidentDetailScreen extends StatelessWidget {
 
                   const SizedBox(height: 16),
                   const Divider(),
-                  const SizedBox(height: 8),
+                  SizedBox(height: 8),
 
                   // ── Descripción ───────────────────────
                   Text(
@@ -371,7 +371,7 @@ class AccidentDetailScreen extends StatelessWidget {
                           color: Colors.red,
                           size: 32,
                         ),
-                        const SizedBox(height: 8),
+                        SizedBox(height: 8),
                         Text(
                           l.t('call_911'),
                           style: const TextStyle(

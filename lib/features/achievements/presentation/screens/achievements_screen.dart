@@ -10,6 +10,7 @@ import 'package:go_router/go_router.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:biux/features/chat/presentation/providers/chat_provider.dart';
 import 'package:biux/shared/widgets/shimmer_loading.dart';
+import 'package:biux/core/design_system/locale_notifier.dart';
 
 class AchievementsScreen extends StatefulWidget {
   const AchievementsScreen({Key? key}) : super(key: key);
@@ -19,6 +20,8 @@ class AchievementsScreen extends StatefulWidget {
 
 class _AchievementsScreenState extends State<AchievementsScreen>
     with TickerProviderStateMixin {
+  LocaleNotifier get l => Provider.of<LocaleNotifier>(context);
+
   String _selectedCategory = 'all';
   late TabController _tabCtrl;
 
@@ -85,7 +88,7 @@ class _AchievementsScreenState extends State<AchievementsScreen>
                 pinned: true,
                 backgroundColor: Colors.amber[800],
                 foregroundColor: Colors.white,
-                title: const Text('Mis Logros'),
+                title: Text(l.t('my_achievements')),
                 actions: [
                   IconButton(
                     icon: provider.isSyncing
@@ -99,8 +102,8 @@ class _AchievementsScreenState extends State<AchievementsScreen>
                               ),
                             ),
                           )
-                        : const Icon(Icons.sync),
-                    tooltip: 'Sincronizar logros',
+                        : Icon(Icons.sync),
+                    tooltip: l.t('sync_achievements'),
                     onPressed: provider.isSyncing
                         ? null
                         : () {
@@ -200,13 +203,13 @@ class _AchievementsScreenState extends State<AchievementsScreen>
                             const SizedBox(height: 8),
                             Text(
                               '$unlocked / $total Logros desbloqueados',
-                              style: const TextStyle(
+                              style: TextStyle(
                                 color: Colors.white,
                                 fontSize: 14,
                                 fontWeight: FontWeight.w600,
                               ),
                             ),
-                            const SizedBox(height: 8),
+                            SizedBox(height: 8),
                             // Stats rapidos — fila 1
                             Row(
                               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -214,7 +217,7 @@ class _AchievementsScreenState extends State<AchievementsScreen>
                                 _statBadge(
                                   '🚴',
                                   '${_countByCategory(provider, 'distance')}',
-                                  'Distancia',
+                                  l.t('distance'),
                                 ),
                                 _statBadge(
                                   '🏁',
@@ -693,7 +696,7 @@ class _AchievementsScreenState extends State<AchievementsScreen>
                         style: TextStyle(fontSize: 11, color: Colors.grey[500]),
                       ),
                     ],
-                    const SizedBox(height: 4),
+                    SizedBox(height: 4),
                     // Paginas deslizables — una por nivel
                     Expanded(
                       child: PageView.builder(
@@ -931,7 +934,7 @@ class _AchievementsScreenState extends State<AchievementsScreen>
                                       ],
                                     ),
                                   ),
-                                  const SizedBox(height: 12),
+                                  SizedBox(height: 12),
                                   if (a.isUnlocked)
                                     SizedBox(
                                       width: double.infinity,
@@ -1271,11 +1274,11 @@ class _AchievementsScreenState extends State<AchievementsScreen>
       context: context,
       builder: (dc) => AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        title: const Row(
+        title: Row(
           children: [
             Icon(Icons.info_outline, color: Colors.amber),
             SizedBox(width: 8),
-            Text('Cómo funcionan los logros'),
+            Text(l.t('how_achievements_work')),
           ],
         ),
         content: const Column(
@@ -1363,6 +1366,8 @@ class _AchievementsShareInAppSheet extends StatefulWidget {
 
 class _AchievementsShareInAppSheetState
     extends State<_AchievementsShareInAppSheet> {
+  LocaleNotifier get l => Provider.of<LocaleNotifier>(context);
+
   final TextEditingController _searchController = TextEditingController();
   List<Map<String, dynamic>> _contacts = [];
   List<Map<String, dynamic>> _filtered = [];
@@ -1407,7 +1412,7 @@ class _AchievementsShareInAppSheetState
         final data = doc.data();
         contacts.add({
           'userId': otherId,
-          'name': data?['fullName'] ?? data?['userName'] ?? 'Ciclista',
+          'name': data?['fullName'] ?? data?['userName'] ?? l.t('cyclist_label'),
           'photo': data?['photo'] ?? '',
           'chatId': chat.id,
         });
@@ -1439,7 +1444,7 @@ class _AchievementsShareInAppSheetState
       await chatProvider.sendMessage(
         contact['chatId'] as String,
         senderId: currentUser.uid,
-        senderName: currentUser.displayName ?? 'Usuario',
+        senderName: currentUser.displayName ?? l.t('user_default'),
         content: widget.statsText,
         participants: [currentUser.uid, contact['userId'] as String], // legacy
       );
@@ -1486,15 +1491,15 @@ class _AchievementsShareInAppSheetState
               ),
             ),
             const SizedBox(height: 16),
-            const Text(
+            Text(
               'Enviar a amigos en Biux',
               style: TextStyle(fontSize: 17, fontWeight: FontWeight.bold),
             ),
-            const SizedBox(height: 14),
+            SizedBox(height: 14),
             TextField(
               controller: _searchController,
               decoration: InputDecoration(
-                hintText: 'Buscar amigo...',
+                hintText: l.t('search_friend'),
                 prefixIcon: const Icon(Icons.search, size: 20),
                 filled: true,
                 fillColor: Colors.grey[100],

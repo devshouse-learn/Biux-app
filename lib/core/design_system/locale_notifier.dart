@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:biux/core/config/app_translations.dart';
+import 'package:biux/core/design_system/locale_notifier.dart';
 
 /// Notifier para cambiar el idioma de la app de forma reactiva.
 /// Similar a ThemeNotifier pero para Locale.
@@ -34,8 +35,9 @@ class LocaleNotifier extends ChangeNotifier {
   static const Map<String, Locale> supportedLanguages = {
     'Español': Locale('es', 'CO'),
     'English': Locale('en', 'US'),
-    'Português': Locale('pt', 'BR'),
     'Français': Locale('fr', 'FR'),
+    'Italiano': Locale('it', 'IT'),
+    'Português': Locale('pt', 'BR'),
   };
 
   /// Lista de Locale soportados (para MaterialApp.supportedLocales).

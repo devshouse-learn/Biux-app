@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:biux/core/design_system/locale_notifier.dart';
+import 'package:provider/provider.dart';
+import 'package:biux/core/design_system/locale_notifier.dart';
 
 /// Servicio centralizado de permisos.
 /// Verifica si el permiso ya fue concedido en configuración de la app
@@ -123,6 +126,7 @@ class PermissionService {
   }
 
   void _showSettingsDialog(BuildContext context, String permissionName) {
+    final l = Provider.of<LocaleNotifier>(context);
     final isDark = Theme.of(context).brightness == Brightness.dark;
     showDialog(
       context: context,
@@ -140,14 +144,14 @@ class PermissionService {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx),
-            child: const Text('Cancelar'),
+            child: Text(l.t('cancel')),
           ),
           TextButton(
             onPressed: () {
               Navigator.pop(ctx);
               openAppSettings();
             },
-            child: const Text('Abrir configuración'),
+            child: Text(l.t('open_settings')),
           ),
         ],
       ),

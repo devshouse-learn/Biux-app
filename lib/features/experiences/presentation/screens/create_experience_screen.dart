@@ -11,6 +11,7 @@ import 'package:biux/core/design_system/locale_notifier.dart';
 import 'package:biux/features/experiences/presentation/screens/image_crop_editor_screen.dart';
 import 'dart:io';
 import 'package:image_picker/image_picker.dart';
+import 'package:biux/core/design_system/locale_notifier.dart';
 
 /// Pantalla para crear nuevas experiencias
 /// Soporta imágenes y videos con compresión automática
@@ -39,6 +40,8 @@ class CreateExperienceScreen extends StatefulWidget {
 }
 
 class _CreateExperienceScreenState extends State<CreateExperienceScreen> {
+  LocaleNotifier get l => Provider.of<LocaleNotifier>(context);
+
   final _descriptionController = TextEditingController();
   // final _tagsController = TextEditingController(); // Ya no se usa
   final _formKey = GlobalKey<FormState>();
@@ -113,7 +116,7 @@ class _CreateExperienceScreenState extends State<CreateExperienceScreen> {
             appBar: AppBar(
               title: Text(
                 _isEditMode
-                    ? 'Editar Publicación'
+                    ? l.t('edit_publication')
                     : widget.isStoryMode
                     ? 'Nueva Historia'
                     : widget.isPostMode
@@ -153,7 +156,7 @@ class _CreateExperienceScreenState extends State<CreateExperienceScreen> {
               ),
               actions: [
                 if (provider.isUploading)
-                  const Padding(
+                  Padding(
                     padding: EdgeInsets.all(16.0),
                     child: SizedBox(
                       width: 20,
@@ -170,7 +173,7 @@ class _CreateExperienceScreenState extends State<CreateExperienceScreen> {
                         ? _publishExperience
                         : null,
                     child: Text(
-                      _isEditMode ? 'Guardar y publicar cambios' : 'Publicar',
+                      _isEditMode ? l.t('save_publish_changes') : l.t('publish'),
                       style: TextStyle(
                         color: _canPublish(provider)
                             ? Colors.white
@@ -268,7 +271,7 @@ class _CreateExperienceScreenState extends State<CreateExperienceScreen> {
                           ? ColorTokens.primary30
                           : ColorTokens.primary50,
                     ),
-                    const SizedBox(width: 8),
+                    SizedBox(width: 8),
                     Text(
                       _contentType == 'story'
                           ? l.t('exp_create_media_required')
@@ -422,7 +425,7 @@ class _CreateExperienceScreenState extends State<CreateExperienceScreen> {
                 _contentType == 'story' ? Icons.short_text : Icons.description,
                 color: isDark ? ColorTokens.primary30 : ColorTokens.primary50,
               ),
-              const SizedBox(width: 8),
+              SizedBox(width: 8),
               Text(
                 _contentType == 'story'
                     ? l.t('exp_create_story_text')
@@ -500,7 +503,7 @@ class _CreateExperienceScreenState extends State<CreateExperienceScreen> {
               ],
             ),
           ),
-          const SizedBox(height: 12),
+          SizedBox(height: 12),
           TextFormField(
             controller: _descriptionController,
             maxLines: _contentType == 'story' ? 3 : 5,
@@ -581,7 +584,7 @@ class _CreateExperienceScreenState extends State<CreateExperienceScreen> {
               ),
             ],
           ),
-          const SizedBox(height: 12),
+          SizedBox(height: 12),
           TextFormField(
             controller: _tagsController,
             style: TextStyle(color: isDark ? Colors.white : Colors.black87),
@@ -658,7 +661,7 @@ class _CreateExperienceScreenState extends State<CreateExperienceScreen> {
               ),
             ],
           ),
-          const SizedBox(height: 8),
+          SizedBox(height: 8),
           // Información según el tipo de contenido
           if (widget.textOnly) ...[
             _buildInfoItem(
@@ -796,8 +799,8 @@ class _CreateExperienceScreenState extends State<CreateExperienceScreen> {
         provider.reset();
         Navigator.of(context).pop(true);
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('¡Publicación actualizada exitosamente!'),
+          SnackBar(
+            content: Text(l.t('post_updated_success')),
             backgroundColor: Colors.green,
           ),
         );
@@ -853,7 +856,7 @@ class _CreateExperienceScreenState extends State<CreateExperienceScreen> {
         actions: [
           TextButton(
             onPressed: () => Navigator.of(dialogContext).pop(),
-            child: const Text('Cancelar'),
+            child: Text(l.t('cancel')),
           ),
           TextButton(
             onPressed: () {
@@ -863,7 +866,7 @@ class _CreateExperienceScreenState extends State<CreateExperienceScreen> {
               provider.reset();
               Navigator.of(context).pop(false);
             },
-            child: const Text('Descartar'),
+            child: Text(l.t('discard')),
           ),
         ],
       ),
@@ -1012,7 +1015,7 @@ class _CreateExperienceScreenState extends State<CreateExperienceScreen> {
                               : ColorTokens.neutral60,
                           size: 32,
                         ),
-                        const SizedBox(height: 8),
+                        SizedBox(height: 8),
                         Text(
                           l.t('exp_content_story'),
                           style: TextStyle(
@@ -1060,7 +1063,7 @@ class _CreateExperienceScreenState extends State<CreateExperienceScreen> {
                               : ColorTokens.neutral60,
                           size: 32,
                         ),
-                        const SizedBox(height: 8),
+                        SizedBox(height: 8),
                         Text(
                           l.t('exp_content_post'),
                           style: TextStyle(

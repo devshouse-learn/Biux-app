@@ -30,6 +30,8 @@ class CreateUserScreen extends StatefulWidget {
 }
 
 class _CreateUserScreenState extends State<CreateUserScreen> {
+  LocaleNotifier get l => Provider.of<LocaleNotifier>(context);
+
   final TextEditingController nameController = TextEditingController();
   final TextEditingController surnamesController = TextEditingController();
   final TextEditingController cellphoneController = TextEditingController();
@@ -135,7 +137,7 @@ class _CreateUserScreenState extends State<CreateUserScreen> {
                               ),
                               child: Column(
                                 children: [
-                                  const SizedBox(height: 70),
+                                  SizedBox(height: 70),
                                   TexFieldWidget(
                                     obscureText: false,
                                     focusNode: FocusNode(),

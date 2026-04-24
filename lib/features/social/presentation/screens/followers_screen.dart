@@ -21,6 +21,8 @@ class FollowersScreen extends StatefulWidget {
 
 class _FollowersScreenState extends State<FollowersScreen>
     with SingleTickerProviderStateMixin {
+  LocaleNotifier get l => Provider.of<LocaleNotifier>(context);
+
   late TabController _tabCtrl;
 
   @override
@@ -92,7 +94,7 @@ class _FollowersScreenState extends State<FollowersScreen>
                   size: 64,
                   color: Colors.grey[300],
                 ),
-                const SizedBox(height: 16),
+                SizedBox(height: 16),
                 Text(
                   collection == 'followers'
                       ? l.t('no_followers_yet')

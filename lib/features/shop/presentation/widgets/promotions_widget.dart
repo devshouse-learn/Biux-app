@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:intl/intl.dart';
+import 'package:biux/core/design_system/locale_notifier.dart';
+import 'package:provider/provider.dart';
 
 /// Modelo de promoción
 class Promotion {
@@ -105,6 +107,8 @@ class PromotionsWidget extends StatefulWidget {
 
 class _PromotionsWidgetState extends State<PromotionsWidget>
     with SingleTickerProviderStateMixin {
+  LocaleNotifier get l => Provider.of<LocaleNotifier>(context);
+
   late TabController _tabController;
 
   // Form controllers
@@ -379,7 +383,7 @@ class _PromotionsWidgetState extends State<PromotionsWidget>
                         }
                       },
                       itemBuilder: (ctx) => [
-                        const PopupMenuItem(
+                        PopupMenuItem(
                           value: 'delete',
                           child: Row(
                             children: [
@@ -390,7 +394,7 @@ class _PromotionsWidgetState extends State<PromotionsWidget>
                               ),
                               SizedBox(width: 8),
                               Text(
-                                'Eliminar',
+                                l.t('delete'),
                                 style: TextStyle(color: Colors.red),
                               ),
                             ],
@@ -779,14 +783,14 @@ class _PromotionsWidgetState extends State<PromotionsWidget>
                                   0xFF16242D,
                                 ).withValues(alpha: 0.4),
                               ),
-                              const SizedBox(width: 8),
+                              SizedBox(width: 8),
                               Expanded(
                                 child: Text(
                                   _selectedDate != null
                                       ? DateFormat(
                                           'dd/MM/yy',
                                         ).format(_selectedDate!)
-                                      : 'Seleccionar',
+                                      : l.t('select'),
                                   style: TextStyle(
                                     color: _selectedDate != null
                                         ? const Color(0xFF16242D)
@@ -894,14 +898,14 @@ class _PromotionsWidgetState extends State<PromotionsWidget>
                       _tabController.animateTo(0);
                     },
                     style: OutlinedButton.styleFrom(
-                      side: const BorderSide(color: Color(0xFF16242D)),
+                      side: BorderSide(color: Color(0xFF16242D)),
                       padding: const EdgeInsets.symmetric(vertical: 14),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(12),
                       ),
                     ),
-                    child: const Text(
-                      'Cancelar',
+                    child: Text(
+                      l.t('cancel'),
                       style: TextStyle(
                         fontSize: 15,
                         fontWeight: FontWeight.w600,
@@ -1072,7 +1076,7 @@ class _PromotionsWidgetState extends State<PromotionsWidget>
         expiresAt: _selectedDate,
         createdAt: DateTime.now(),
         userId: user.uid,
-        userName: user.displayName ?? 'Ciclista',
+        userName: user.displayName ?? l.t('cyclist_label'),
       );
 
       await _promotionsRef.add(promotion.toMap());
@@ -1112,12 +1116,12 @@ class _PromotionsWidgetState extends State<PromotionsWidget>
         ),
         content: Text(
           '¿Estás seguro de eliminar "${promo.title}"?\nEsta acción no se puede deshacer.',
-          style: const TextStyle(color: Color(0xFF5A7A8A)),
+          style: TextStyle(color: Color(0xFF5A7A8A)),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx),
-            child: const Text('Cancelar'),
+            child: Text(l.t('cancel')),
           ),
           ElevatedButton(
             onPressed: () async {
@@ -1136,7 +1140,7 @@ class _PromotionsWidgetState extends State<PromotionsWidget>
                 borderRadius: BorderRadius.circular(10),
               ),
             ),
-            child: const Text('Eliminar'),
+            child: Text(l.t('delete')),
           ),
         ],
       ),

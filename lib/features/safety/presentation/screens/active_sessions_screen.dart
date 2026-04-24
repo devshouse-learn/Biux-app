@@ -6,6 +6,9 @@ import 'package:go_router/go_router.dart';
 import 'package:biux/core/design_system/color_tokens.dart';
 import 'package:biux/core/config/router/app_routes.dart';
 import 'package:intl/intl.dart';
+import 'package:biux/core/design_system/locale_notifier.dart';
+import 'package:provider/provider.dart';
+import 'package:biux/core/design_system/locale_notifier.dart';
 
 class ActiveSessionsScreen extends StatefulWidget {
   const ActiveSessionsScreen({super.key});
@@ -15,6 +18,8 @@ class ActiveSessionsScreen extends StatefulWidget {
 }
 
 class _ActiveSessionsScreenState extends State<ActiveSessionsScreen> {
+  LocaleNotifier get l => Provider.of<LocaleNotifier>(context);
+
   @override
   void initState() {
     super.initState();
@@ -58,7 +63,7 @@ class _ActiveSessionsScreenState extends State<ActiveSessionsScreen> {
     return Scaffold(
       backgroundColor: bgColor,
       appBar: AppBar(
-        title: const Text('Historial de accesos'),
+        title: Text(l.t('access_history')),
         backgroundColor: ColorTokens.primary30,
         foregroundColor: Colors.white,
         elevation: 0,
@@ -188,7 +193,7 @@ class _ActiveSessionsScreenState extends State<ActiveSessionsScreen> {
                     // Info de Firebase Auth (metadatos del usuario)
                     _FirebaseAuthInfo(isDark: isDark),
 
-                    const SizedBox(height: 16),
+                    SizedBox(height: 16),
                   ],
                 ),
               ),
@@ -204,22 +209,22 @@ class _ActiveSessionsScreenState extends State<ActiveSessionsScreen> {
                       final confirmed = await showDialog<bool>(
                         context: context,
                         builder: (ctx) => AlertDialog(
-                          title: const Text('Cerrar todas las sesiones'),
-                          content: const Text(
+                          title: Text(l.t('close_all_sessions')),
+                          content: Text(
                             '¿Seguro que quieres cerrar sesión en todos los dispositivos?',
                           ),
                           actions: [
                             TextButton(
                               onPressed: () => Navigator.pop(ctx, false),
-                              child: const Text('Cancelar'),
+                              child: Text(l.t('cancel')),
                             ),
                             ElevatedButton(
                               style: ElevatedButton.styleFrom(
                                 backgroundColor: Colors.red,
                               ),
                               onPressed: () => Navigator.pop(ctx, true),
-                              child: const Text(
-                                'Cerrar sesiones',
+                              child: Text(
+                                l.t('close_sessions_btn'),
                                 style: TextStyle(color: Colors.white),
                               ),
                             ),
@@ -236,8 +241,8 @@ class _ActiveSessionsScreenState extends State<ActiveSessionsScreen> {
                       }
                     },
                     icon: const Icon(Icons.logout_rounded, color: Colors.red),
-                    label: const Text(
-                      'Cerrar todas las sesiones',
+                    label: Text(
+                      l.t('close_all_sessions'),
                       style: TextStyle(color: Colors.red),
                     ),
                     style: OutlinedButton.styleFrom(
@@ -263,6 +268,7 @@ class _FirebaseAuthInfo extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l = Provider.of<LocaleNotifier>(context);
     final user = FirebaseAuth.instance.currentUser;
     if (user == null) return const SizedBox.shrink();
     final meta = user.metadata;
@@ -296,7 +302,7 @@ class _FirebaseAuthInfo extends StatelessWidget {
                 size: 16,
                 color: isDark ? Colors.grey[400] : Colors.grey[600],
               ),
-              const SizedBox(width: 6),
+              SizedBox(width: 6),
               Text(
                 'Datos de tu cuenta Firebase',
                 style: TextStyle(
@@ -307,19 +313,19 @@ class _FirebaseAuthInfo extends StatelessWidget {
               ),
             ],
           ),
-          const SizedBox(height: 10),
-          _InfoRow(isDark: isDark, label: 'Cuenta creada', value: creation),
-          const SizedBox(height: 6),
+          SizedBox(height: 10),
+          _InfoRow(isDark: isDark, label: l.t('account_created'), value: creation),
+          SizedBox(height: 6),
           _InfoRow(
             isDark: isDark,
-            label: 'Último acceso registrado',
+            label: l.t('last_access'),
             value: lastSign,
           ),
           if (user.phoneNumber?.isNotEmpty == true) ...[
-            const SizedBox(height: 6),
+            SizedBox(height: 6),
             _InfoRow(
               isDark: isDark,
-              label: 'Número verificado',
+              label: l.t('verified_number'),
               value: user.phoneNumber!,
             ),
           ],
@@ -341,6 +347,7 @@ class _InfoRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l = Provider.of<LocaleNotifier>(context);
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -387,6 +394,7 @@ class _SessionTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l = Provider.of<LocaleNotifier>(context);
     final cardColor = isDark ? const Color(0xFF243040) : Colors.white;
     final isIos = platform.toLowerCase().contains('ios');
 
@@ -455,13 +463,13 @@ class _SessionTile extends StatelessWidget {
                 size: 20,
               )
             : IconButton(
-                icon: const Icon(
+                icon: Icon(
                   Icons.delete_outline_rounded,
                   color: Colors.red,
                   size: 20,
                 ),
                 onPressed: onRevoke,
-                tooltip: 'Eliminar registro',
+                tooltip: l.t('delete_record'),
               ),
       ),
     );

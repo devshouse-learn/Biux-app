@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:biux/core/design_system/locale_notifier.dart';
+import 'package:provider/provider.dart';
 
 class PollResult {
   final String question;
@@ -20,6 +22,8 @@ class PollCreationSheet extends StatefulWidget {
 }
 
 class _PollCreationSheetState extends State<PollCreationSheet> {
+  LocaleNotifier get l => Provider.of<LocaleNotifier>(context);
+
   final _questionController = TextEditingController();
   final List<TextEditingController> _optionControllers = [
     TextEditingController(),
@@ -104,17 +108,17 @@ class _PollCreationSheetState extends State<PollCreationSheet> {
                 ),
               ),
               // Title
-              const Text(
-                'Crear encuesta',
+              Text(
+                l.t('create_poll'),
                 style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700),
               ),
-              const SizedBox(height: 16),
+              SizedBox(height: 16),
 
               // Question
               TextField(
                 controller: _questionController,
                 decoration: InputDecoration(
-                  hintText: 'Escribe tu pregunta...',
+                  hintText: l.t('write_your_question'),
                   prefixIcon: const Icon(Icons.help_outline, size: 20),
                   filled: true,
                   fillColor: isDark
@@ -192,8 +196,8 @@ class _PollCreationSheetState extends State<PollCreationSheet> {
               if (_optionControllers.length < 10)
                 TextButton.icon(
                   onPressed: _addOption,
-                  icon: const Icon(Icons.add_circle_outline, size: 20),
-                  label: const Text('Agregar opción'),
+                  icon: Icon(Icons.add_circle_outline, size: 20),
+                  label: Text(l.t('add_option')),
                   style: TextButton.styleFrom(
                     foregroundColor: const Color(0xFF1E8BC3),
                   ),

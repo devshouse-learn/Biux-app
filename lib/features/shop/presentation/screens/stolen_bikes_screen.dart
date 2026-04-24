@@ -5,6 +5,7 @@ import 'package:biux/core/design_system/locale_notifier.dart';
 import 'package:biux/features/shop/data/datasources/stolen_bike_verification_datasource.dart';
 import 'package:biux/features/bikes/data/repositories/bike_repository_impl.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:biux/core/design_system/locale_notifier.dart';
 
 class StolenBikesScreen extends StatefulWidget {
   const StolenBikesScreen({Key? key}) : super(key: key);
@@ -15,6 +16,8 @@ class StolenBikesScreen extends StatefulWidget {
 
 class _StolenBikesScreenState extends State<StolenBikesScreen>
     with SingleTickerProviderStateMixin {
+  LocaleNotifier get l => Provider.of<LocaleNotifier>(context);
+
   late TabController _tabController;
   late StolenBikeVerificationService _verificationService;
   List<StolenBikeInfo> _stolenBikes = [];
@@ -269,7 +272,7 @@ class _StolenBikesScreenState extends State<StolenBikesScreen>
                       ),
                       const Spacer(),
                       IconButton(
-                        icon: const Icon(Icons.close, size: 20),
+                        icon: Icon(Icons.close, size: 20),
                         onPressed: () => Navigator.pop(ctx),
                       ),
                     ],
@@ -280,7 +283,7 @@ class _StolenBikesScreenState extends State<StolenBikesScreen>
                   child: TextField(
                     autofocus: true,
                     decoration: InputDecoration(
-                      hintText: 'Buscar...',
+                      hintText: l.t('search_hint'),
                       prefixIcon: const Icon(Icons.search, size: 20),
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(12),
@@ -478,14 +481,14 @@ class _StolenBikesScreenState extends State<StolenBikesScreen>
           indicatorWeight: 3,
           labelColor: Colors.white,
           unselectedLabelColor: Colors.white60,
-          labelStyle: const TextStyle(
+          labelStyle: TextStyle(
             fontWeight: FontWeight.w700,
             fontSize: 13,
           ),
-          tabs: const [
+          tabs: [
             Tab(icon: Icon(Icons.list_alt, size: 20), text: 'Listado'),
             Tab(icon: Icon(Icons.search, size: 20), text: 'Verificar'),
-            Tab(icon: Icon(Icons.report, size: 20), text: 'Reportar'),
+            Tab(icon: Icon(Icons.report, size: 20), text: l.t('report_action')),
           ],
         ),
       ),
@@ -511,7 +514,7 @@ class _StolenBikesScreenState extends State<StolenBikesScreen>
                 _countCities().toString(),
                 'Ciudades',
               ),
-              const SizedBox(width: 10),
+              SizedBox(width: 10),
               _statBox(Icons.today, _countThisMonth().toString(), 'Este mes'),
             ],
           ),
@@ -525,7 +528,7 @@ class _StolenBikesScreenState extends State<StolenBikesScreen>
             children: [
               TextField(
                 decoration: InputDecoration(
-                  hintText: 'Buscar marca, modelo, color o serial...',
+                  hintText: l.t('search_brand_model'),
                   prefixIcon: Icon(Icons.search, color: ColorTokens.primary50),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
@@ -574,7 +577,7 @@ class _StolenBikesScreenState extends State<StolenBikesScreen>
                     true,
                     (v) => setState(() => _selectedType = v),
                   ),
-                  const SizedBox(width: 8),
+                  SizedBox(width: 8),
                   _smallDropdown(
                     'Orden',
                     _sortBy,
@@ -593,9 +596,9 @@ class _StolenBikesScreenState extends State<StolenBikesScreen>
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       CircularProgressIndicator(color: ColorTokens.error50),
-                      const SizedBox(height: 12),
+                      SizedBox(height: 12),
                       Text(
-                        'Cargando...',
+                        l.t('loading'),
                         style: TextStyle(color: Colors.grey[600]),
                       ),
                     ],
@@ -1066,8 +1069,8 @@ class _StolenBikesScreenState extends State<StolenBikesScreen>
               height: 50,
               child: ElevatedButton.icon(
                 onPressed: _submitReport,
-                icon: const Icon(Icons.send),
-                label: const Text('Enviar Reporte'),
+                icon: Icon(Icons.send),
+                label: Text(l.t('send_report_label')),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: ColorTokens.error50,
                   foregroundColor: Colors.white,
@@ -1129,7 +1132,7 @@ class _StolenBikesScreenState extends State<StolenBikesScreen>
               _clearForm();
               _tabController.animateTo(0);
             },
-            child: const Text('Aceptar'),
+            child: Text(l.t('accept')),
           ),
         ],
       ),

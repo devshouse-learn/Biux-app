@@ -127,7 +127,7 @@ class BikeCard extends StatelessWidget {
             mainAxisSize: MainAxisSize.min,
             children: [
               Icon(chipIcon, size: 14, color: chipColor),
-              const SizedBox(width: 4),
+              SizedBox(width: 4),
               Text(
                 l.t(bike.status.displayName),
                 style: TextStyle(
@@ -175,7 +175,7 @@ class BikeCard extends StatelessWidget {
                   size: 14,
                   color: ColorTokens.neutral70,
                 ),
-                const SizedBox(width: 4),
+                SizedBox(width: 4),
                 Text(
                   l.t(bike.type.displayName),
                   style: TextStyle(fontSize: 12, color: ColorTokens.neutral70),
@@ -209,7 +209,7 @@ class PublicBikeCard extends StatelessWidget {
             Row(
               children: [
                 Icon(Icons.verified, color: ColorTokens.primary30, size: 24),
-                const SizedBox(width: 8),
+                SizedBox(width: 8),
                 Text(
                   l.t('bike_registered_in_biux'),
                   style: const TextStyle(
@@ -254,7 +254,7 @@ class PublicBikeCard extends StatelessWidget {
                 Expanded(child: _buildInfoItem(l.t('color_label'), bike.color)),
               ],
             ),
-            const SizedBox(height: 12),
+            SizedBox(height: 12),
             Row(
               children: [
                 Expanded(child: _buildInfoItem(l.t('size_label'), bike.size)),
@@ -266,7 +266,7 @@ class PublicBikeCard extends StatelessWidget {
                 ),
               ],
             ),
-            const SizedBox(height: 12),
+            SizedBox(height: 12),
             _buildInfoItem(l.t('city_label'), bike.city, fullWidth: true),
           ],
         );

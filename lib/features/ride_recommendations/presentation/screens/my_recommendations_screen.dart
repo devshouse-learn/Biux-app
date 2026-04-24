@@ -3,6 +3,8 @@ import 'package:provider/provider.dart';
 import 'package:biux/core/design_system/color_tokens.dart';
 import 'package:biux/features/ride_recommendations/domain/entities/ride_recommendation_entity.dart';
 import 'package:biux/features/ride_recommendations/presentation/providers/ride_recommendation_provider.dart';
+import 'package:biux/core/design_system/locale_notifier.dart';
+import 'package:biux/core/design_system/locale_notifier.dart';
 
 class MyRecommendationsScreen extends StatefulWidget {
   const MyRecommendationsScreen({super.key});
@@ -14,6 +16,8 @@ class MyRecommendationsScreen extends StatefulWidget {
 
 class _MyRecommendationsScreenState extends State<MyRecommendationsScreen>
     with SingleTickerProviderStateMixin {
+  LocaleNotifier get l => Provider.of<LocaleNotifier>(context);
+
   late TabController _tabs;
 
   @override
@@ -33,13 +37,15 @@ class _MyRecommendationsScreenState extends State<MyRecommendationsScreen>
 
   @override
   Widget build(BuildContext context) {
+    final l = Provider.of<LocaleNotifier>(context);
+
     return Scaffold(
       backgroundColor: Colors.grey[50],
       appBar: AppBar(
         backgroundColor: ColorTokens.primary30,
         foregroundColor: Colors.white,
-        title: const Text(
-          'Recomendaciones',
+        title: Text(
+          l.t('recommendations_title'),
           style: TextStyle(fontWeight: FontWeight.w800),
         ),
         bottom: TabBar(
@@ -81,11 +87,11 @@ class _MyRecommendationsScreenState extends State<MyRecommendationsScreen>
           mainAxisSize: MainAxisSize.min,
           children: [
             Icon(Icons.route_outlined, size: 64, color: Colors.grey[300]),
-            const SizedBox(height: 12),
+            SizedBox(height: 12),
             Text(
               isReceived
-                  ? 'Sin recomendaciones recibidas'
-                  : 'No has enviado recomendaciones',
+                  ? l.t('no_recommendations_received')
+                  : l.t('no_recommendations_sent'),
               style: TextStyle(color: Colors.grey[400], fontSize: 15),
             ),
           ],
@@ -328,6 +334,7 @@ class _RecommendationDetailSheet extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l = Provider.of<LocaleNotifier>(context);
     return Container(
       decoration: const BoxDecoration(
         color: Colors.white,
@@ -364,7 +371,7 @@ class _RecommendationDetailSheet extends StatelessWidget {
               'Recomendado por ${rec.fromUserName}',
               style: TextStyle(fontSize: 13, color: Colors.grey[500]),
             ),
-            const SizedBox(height: 16),
+            SizedBox(height: 16),
             Container(
               padding: const EdgeInsets.all(14),
               decoration: BoxDecoration(
@@ -378,7 +385,7 @@ class _RecommendationDetailSheet extends StatelessWidget {
                   _detailStat(
                     '📏',
                     '${rec.totalKm.toStringAsFixed(1)} km',
-                    'Distancia',
+                    l.t('distance'),
                   ),
                   _detailStat('⏱️', rec.estimatedTimeFormatted, 'Duracion'),
                   _detailStat(
@@ -454,8 +461,8 @@ class _RecommendationDetailSheet extends StatelessWidget {
               height: 50,
               child: ElevatedButton.icon(
                 onPressed: () => Navigator.pop(context),
-                icon: const Icon(Icons.close),
-                label: const Text('Cerrar'),
+                icon: Icon(Icons.close),
+                label: Text(l.t('close')),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.grey[100],
                   foregroundColor: Colors.grey[800],

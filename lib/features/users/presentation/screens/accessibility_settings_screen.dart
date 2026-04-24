@@ -4,12 +4,15 @@ import 'package:provider/provider.dart';
 import 'package:biux/core/services/accessibility_service.dart';
 import 'package:biux/core/design_system/theme_notifier.dart';
 import 'package:biux/core/design_system/color_tokens.dart';
+import 'package:biux/core/design_system/locale_notifier.dart';
+import 'package:biux/core/design_system/locale_notifier.dart';
 
 class AccessibilitySettingsScreen extends StatelessWidget {
   const AccessibilitySettingsScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final l = Provider.of<LocaleNotifier>(context);
     return Scaffold(
       appBar: AppBar(
         title: const Text('Accesibilidad y apariencia'),
@@ -21,43 +24,43 @@ class AccessibilitySettingsScreen extends StatelessWidget {
           return ListView(
             padding: const EdgeInsets.all(16),
             children: [
-              _SectionHeader(title: 'Apariencia'),
+              _SectionHeader(title: l.t('appearance_label')),
               _SettingCard(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text(
+                    Text(
                       'Tema',
                       style: TextStyle(
                         fontWeight: FontWeight.w600,
                         fontSize: 15,
                       ),
                     ),
-                    const SizedBox(height: 12),
+                    SizedBox(height: 12),
                     Row(
                       children: [
                         Expanded(
                           child: _ThemeOption(
                             icon: Icons.light_mode_rounded,
-                            label: 'Claro',
+                            label: l.t('light'),
                             selected: theme.mode == ThemeMode.light,
                             onTap: () => theme.setMode(ThemeMode.light),
                           ),
                         ),
-                        const SizedBox(width: 8),
+                        SizedBox(width: 8),
                         Expanded(
                           child: _ThemeOption(
                             icon: Icons.dark_mode_rounded,
-                            label: 'Oscuro',
+                            label: l.t('dark'),
                             selected: theme.mode == ThemeMode.dark,
                             onTap: () => theme.setMode(ThemeMode.dark),
                           ),
                         ),
-                        const SizedBox(width: 8),
+                        SizedBox(width: 8),
                         Expanded(
                           child: _ThemeOption(
                             icon: Icons.phone_android_rounded,
-                            label: 'Sistema',
+                            label: l.t('system'),
                             selected: theme.mode == ThemeMode.system,
                             onTap: () => theme.setMode(ThemeMode.system),
                           ),
@@ -87,7 +90,7 @@ class AccessibilitySettingsScreen extends StatelessWidget {
                             onChanged: acc.setFontScale,
                           ),
                         ),
-                        const Text(
+                        Text(
                           'A',
                           style: TextStyle(
                             fontSize: 20,
@@ -102,9 +105,9 @@ class AccessibilitySettingsScreen extends StatelessWidget {
                         style: TextStyle(fontSize: 14 * acc.fontScale),
                       ),
                     ),
-                    const SizedBox(height: 8),
+                    SizedBox(height: 8),
                     SwitchListTile(
-                      title: const Text('Texto en negrita'),
+                      title: Text(l.t('bold_text')),
                       value: acc.boldText,
                       activeColor: ColorTokens.primary30,
                       onChanged: acc.setBoldText,
@@ -113,15 +116,15 @@ class AccessibilitySettingsScreen extends StatelessWidget {
                   ],
                 ),
               ),
-              const SizedBox(height: 16),
-              _SectionHeader(title: 'Accesibilidad'),
+              SizedBox(height: 16),
+              _SectionHeader(title: l.t('accessibility')),
               _SettingCard(
                 child: Column(
                   children: [
                     SwitchListTile(
-                      title: const Text('Alto contraste'),
-                      subtitle: const Text(
-                        'Aumenta el contraste de colores',
+                      title: Text(l.t('high_contrast')),
+                      subtitle: Text(
+                        l.t('increase_contrast'),
                         style: TextStyle(fontSize: 12),
                       ),
                       value: acc.highContrast,
@@ -129,9 +132,9 @@ class AccessibilitySettingsScreen extends StatelessWidget {
                       onChanged: acc.setHighContrast,
                       contentPadding: EdgeInsets.zero,
                     ),
-                    const Divider(height: 1),
+                    Divider(height: 1),
                     SwitchListTile(
-                      title: const Text('Reducir animaciones'),
+                      title: Text(l.t('reduce_animations')),
                       subtitle: const Text(
                         'Minimiza efectos de movimiento',
                         style: TextStyle(fontSize: 12),
@@ -159,6 +162,7 @@ class _SectionHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l = Provider.of<LocaleNotifier>(context);
     return Padding(
       padding: const EdgeInsets.only(bottom: 8),
       child: Text(
@@ -179,6 +183,7 @@ class _SettingCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l = Provider.of<LocaleNotifier>(context);
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -207,6 +212,7 @@ class _ThemeOption extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l = Provider.of<LocaleNotifier>(context);
     return GestureDetector(
       onTap: onTap,
       child: Container(

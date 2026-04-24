@@ -159,11 +159,16 @@ class UserProfileProvider extends ChangeNotifier {
         // Verificar si la cuenta es privada
         _isPrivateAccount = profile.profileVisibility == 'private';
 
+        debugPrint(
+          '👤 loadUserProfile: userId=$userId, profileVisibility=${profile.profileVisibility}, isPrivate=$_isPrivateAccount, isFollowing=$_isFollowing',
+        );
+
         // Si es privada y no lo sigue, verificar solicitud pendiente
         if (_isPrivateAccount && !_isFollowing) {
           _hasPendingFollowRequest = await _repository.hasPendingFollowRequest(
             userId,
           );
+          debugPrint('👤 hasPendingFollowRequest=$_hasPendingFollowRequest');
         }
 
         // Cargar posts y stories solo si no es privada O si ya lo sigue
@@ -283,10 +288,16 @@ class UserProfileProvider extends ChangeNotifier {
     _isProcessingFollow = true;
     notifyListeners();
 
+    debugPrint(
+      '🔵 followUser: userId=$userId, isPrivate=$_isPrivateAccount, isFollowing=$_isFollowing, hasPending=$_hasPendingFollowRequest',
+    );
+
     try {
       // Si la cuenta es privada, enviar solicitud en vez de seguir directamente
       if (_isPrivateAccount) {
+        debugPrint('🔒 Cuenta privada - enviando follow request...');
         final success = await _repository.sendFollowRequest(userId);
+        debugPrint('🔒 sendFollowRequest resultado: $success');
         if (success) {
           _hasPendingFollowRequest = true;
           notifyListeners();

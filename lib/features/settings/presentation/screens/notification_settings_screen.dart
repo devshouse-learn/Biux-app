@@ -12,6 +12,7 @@ import 'appearance_details_screen.dart';
 import 'privacy_details_screen.dart';
 import 'permissions_screen.dart';
 import 'information_details_screen.dart';
+import 'language_selection_screen.dart';
 
 class NotificationSettingsScreen extends StatefulWidget {
   const NotificationSettingsScreen({super.key});
@@ -38,7 +39,10 @@ class _NotificationSettingsScreenState
 
     return Scaffold(
       backgroundColor: SettingsWidgets.scaffoldBackground(isDark),
-      appBar: SettingsWidgets.buildAppBar(context, 'Configuración y actividad'),
+      appBar: SettingsWidgets.buildAppBar(
+        context,
+        l.t('settings_and_activity'),
+      ),
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [
@@ -46,35 +50,35 @@ class _NotificationSettingsScreenState
           SettingsWidgets.buildMenuCard(
             context,
             icon: Icons.person_outline,
-            title: 'Tu cuenta',
-            subtitle: 'Datos personales, sesiones y seguridad',
+            title: l.t('your_account'),
+            subtitle: l.t('personal_data_sessions'),
             isDark: isDark,
             onTap: () => context.push(AppRoutes.accountSettings),
           ),
 
-          const SizedBox(height: 24),
+          SizedBox(height: 24),
 
           // ── Cómo usas BIUX ─────────────────────────────────────
-          SettingsWidgets.buildSectionTitle('Cómo usas BIUX', isDark),
-          const SizedBox(height: 12),
+          SettingsWidgets.buildSectionTitle(l.t('how_you_use_biux'), isDark),
+          SizedBox(height: 12),
           SettingsWidgets.buildMenuCard(
             context,
             icon: Icons.history,
-            title: 'Tu actividad',
-            subtitle: 'Likes, comentarios, posts e historias',
+            title: l.t('your_activity'),
+            subtitle: l.t('likes_comments_posts_stories'),
             isDark: isDark,
             onTap: () => context.push('/activity'),
           ),
-          const SizedBox(height: 8),
+          SizedBox(height: 8),
           SettingsWidgets.buildMenuCard(
             context,
             icon: Icons.timer_outlined,
-            title: 'Administración de tiempo',
-            subtitle: 'Tu uso diario de la app',
+            title: l.t('time_management'),
+            subtitle: l.t('daily_app_usage'),
             isDark: isDark,
             onTap: () => context.push('/activity/screen-time'),
           ),
-          const SizedBox(height: 8),
+          SizedBox(height: 8),
           SettingsWidgets.buildMenuCard(
             context,
             icon: Icons.notifications_outlined,
@@ -91,95 +95,80 @@ class _NotificationSettingsScreenState
             },
           ),
 
-          const SizedBox(height: 24),
+          SizedBox(height: 24),
 
           // ── Quién puede ver tu contenido ───────────────────────
-          SettingsWidgets.buildSectionTitle(
-            'Quién puede ver tu contenido',
-            isDark,
-          ),
-          const SizedBox(height: 12),
+          SettingsWidgets.buildSectionTitle(l.t('who_can_see_content'), isDark),
+          SizedBox(height: 12),
           SettingsWidgets.buildMenuCard(
             context,
             icon: Icons.lock_outline,
-            title: 'Privacidad de la cuenta',
-            subtitle: 'Controla quién puede ver tu perfil',
+            title: l.t('account_privacy'),
+            subtitle: l.t('control_who_sees_profile'),
             isDark: isDark,
             onTap: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(
-                  builder: (_) => const PrivacyDetailsScreen(),
-                ),
+                MaterialPageRoute(builder: (_) => const PrivacyDetailsScreen()),
               );
             },
           ),
-          const SizedBox(height: 8),
+          SizedBox(height: 8),
           SettingsWidgets.buildMenuCard(
             context,
             icon: Icons.block,
-            title: 'Bloqueados',
-            subtitle: 'Administra usuarios bloqueados',
+            title: l.t('blocked'),
+            subtitle: l.t('manage_blocked_users'),
             isDark: isDark,
             onTap: () => context.push(AppRoutes.blockedUsers),
           ),
 
-          const SizedBox(height: 24),
+          SizedBox(height: 24),
 
           // ── Tu app y contenido multimedia ──────────────────────
-          SettingsWidgets.buildSectionTitle(
-            'Tu app y contenido multimedia',
-            isDark,
-          ),
-          const SizedBox(height: 12),
+          SettingsWidgets.buildSectionTitle(l.t('your_app_and_media'), isDark),
+          SizedBox(height: 12),
           SettingsWidgets.buildMenuCard(
             context,
             icon: Icons.security,
-            title: 'Permisos',
-            subtitle: 'Cámara, ubicación, micrófono y más',
+            title: l.t('permissions_label'),
+            subtitle: l.t('camera_location_mic'),
             isDark: isDark,
             onTap: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(
-                  builder: (_) => const PermissionsScreen(),
-                ),
+                MaterialPageRoute(builder: (_) => const PermissionsScreen()),
               );
             },
           ),
-          const SizedBox(height: 8),
+          SizedBox(height: 8),
           SettingsWidgets.buildMenuCard(
             context,
             icon: Icons.folder_outlined,
-            title: 'Archivo y descarga',
-            subtitle: 'Gestiona almacenamiento multimedia',
+            title: l.t('archive_download'),
+            subtitle: l.t('manage_media_storage'),
             isDark: isDark,
             onTap: () {
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(
-                  content: const Text('Función en desarrollo'),
+                  content: Text(l.t('feature_in_development')),
                   backgroundColor: Colors.orange.shade600,
                 ),
               );
             },
           ),
-          const SizedBox(height: 8),
+          SizedBox(height: 8),
           SettingsWidgets.buildMenuCard(
             context,
             icon: Icons.language,
-            title: 'Idioma',
-            subtitle: 'Español',
+            title: l.t('language'),
+            subtitle: l.languageName,
             isDark: isDark,
             onTap: () {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: const Text('Función en desarrollo'),
-                  backgroundColor: Colors.orange.shade600,
-                ),
-              );
+              LanguageSelectionScreen.show(context);
             },
           ),
-          const SizedBox(height: 8),
+          SizedBox(height: 8),
           SettingsWidgets.buildMenuCard(
             context,
             icon: Icons.palette_outlined,
@@ -196,20 +185,20 @@ class _NotificationSettingsScreenState
             },
           ),
 
-          const SizedBox(height: 24),
+          SizedBox(height: 24),
 
           // ── Soporte ────────────────────────────────────────────
-          SettingsWidgets.buildSectionTitle('Soporte', isDark),
-          const SizedBox(height: 12),
+          SettingsWidgets.buildSectionTitle(l.t('support'), isDark),
+          SizedBox(height: 12),
           SettingsWidgets.buildMenuCard(
             context,
             icon: Icons.help_outline,
-            title: 'Centro de ayuda',
-            subtitle: 'Soporte y preguntas frecuentes',
+            title: l.t('help_center'),
+            subtitle: l.t('support_faq'),
             isDark: isDark,
             onTap: () => context.push(AppRoutes.help),
           ),
-          const SizedBox(height: 8),
+          SizedBox(height: 8),
           SettingsWidgets.buildMenuCard(
             context,
             icon: Icons.info_outline,
@@ -226,23 +215,23 @@ class _NotificationSettingsScreenState
             },
           ),
 
-          const SizedBox(height: 24),
+          SizedBox(height: 24),
 
           // ── Acciones de cuenta ─────────────────────────────────
           SettingsWidgets.buildMenuCard(
             context,
             icon: Icons.logout,
-            title: 'Cerrar sesión',
-            subtitle: 'Salir de tu cuenta actual',
+            title: l.t('close_session'),
+            subtitle: l.t('exit_current_account'),
             isDark: isDark,
             onTap: () => _showLogoutDialog(),
           ),
-          const SizedBox(height: 8),
+          SizedBox(height: 8),
           SettingsWidgets.buildMenuCard(
             context,
             icon: Icons.delete_forever,
-            title: 'Eliminar cuenta',
-            subtitle: 'Eliminar permanentemente tu cuenta',
+            title: l.t('delete_account_option'),
+            subtitle: l.t('delete_account_permanently_option'),
             isDark: isDark,
             onTap: () => _showDeleteAccountDialog(),
           ),
@@ -271,7 +260,10 @@ class _NotificationSettingsScreenState
               await userProvider.signOut();
               if (mounted) context.go('/login');
             },
-            child: Text(l.t('confirm'), style: const TextStyle(color: Colors.red)),
+            child: Text(
+              l.t('confirm'),
+              style: const TextStyle(color: Colors.red),
+            ),
           ),
         ],
       ),
@@ -297,7 +289,10 @@ class _NotificationSettingsScreenState
               await userProvider.requestAccountDeletion();
               if (mounted) context.go('/login');
             },
-            child: Text(l.t('confirm'), style: const TextStyle(color: Colors.red)),
+            child: Text(
+              l.t('confirm'),
+              style: const TextStyle(color: Colors.red),
+            ),
           ),
         ],
       ),

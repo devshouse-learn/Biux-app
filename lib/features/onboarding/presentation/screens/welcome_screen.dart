@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:biux/core/design_system/color_tokens.dart';
+import 'package:biux/core/design_system/locale_notifier.dart';
+import 'package:provider/provider.dart';
 
 /// Pantalla de bienvenida que se muestra después del registro
 class WelcomeScreen extends StatelessWidget {
@@ -8,6 +10,8 @@ class WelcomeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l = Provider.of<LocaleNotifier>(context);
+
     return Scaffold(
       backgroundColor: ColorTokens.primary10,
       body: SafeArea(
@@ -21,30 +25,30 @@ class WelcomeScreen extends StatelessWidget {
               Text(
                 '¡Bienvenido, \$userName!',
                 textAlign: TextAlign.center,
-                style: const TextStyle(
+                style: TextStyle(
                   color: Colors.white,
                   fontSize: 28,
                   fontWeight: FontWeight.bold,
                 ),
               ),
-              const SizedBox(height: 16),
-              const Text(
+              SizedBox(height: 16),
+              Text(
                 'Biux es tu comunidad ciclista. Únete a grupos, planifica rodadas y conecta con otros ciclistas.',
                 textAlign: TextAlign.center,
                 style: TextStyle(color: Colors.white70, fontSize: 16),
               ),
-              const SizedBox(height: 48),
+              SizedBox(height: 48),
               _FeatureRow(
                 icon: Icons.group,
-                text: 'Únete a grupos de ciclismo',
+                text: l.t('join_cycling_groups'),
               ),
-              const SizedBox(height: 16),
+              SizedBox(height: 16),
               _FeatureRow(
                 icon: Icons.directions_bike,
-                text: 'Organiza rodadas',
+                text: l.t('organize_rides'),
               ),
-              const SizedBox(height: 16),
-              _FeatureRow(icon: Icons.map, text: 'Descubre rutas cercanas'),
+              SizedBox(height: 16),
+              _FeatureRow(icon: Icons.map, text: l.t('discover_nearby_routes')),
               const SizedBox(height: 48),
               SizedBox(
                 width: double.infinity,

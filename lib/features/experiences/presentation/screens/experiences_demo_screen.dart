@@ -15,6 +15,8 @@ class ExperiencesDemoScreen extends StatefulWidget {
 }
 
 class _ExperiencesDemoScreenState extends State<ExperiencesDemoScreen> {
+  LocaleNotifier get l => Provider.of<LocaleNotifier>(context);
+
   int? _selectedExperienceIndex;
   late List<ExperienceEntity> _experiences;
 
@@ -150,7 +152,7 @@ class _ExperiencesDemoScreenState extends State<ExperiencesDemoScreen> {
         ),
         backgroundColor: Colors.grey[900],
         elevation: 0,
-        iconTheme: const IconThemeData(color: Colors.white),
+        iconTheme: IconThemeData(color: Colors.white),
       ),
       body: Stack(
         children: [

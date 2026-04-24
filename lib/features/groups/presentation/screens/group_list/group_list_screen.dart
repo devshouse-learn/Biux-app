@@ -15,6 +15,8 @@ class GroupListScreen extends StatefulWidget {
 }
 
 class _GroupListScreenState extends State<GroupListScreen> {
+  LocaleNotifier get l => Provider.of<LocaleNotifier>(context);
+
   @override
   void initState() {
     super.initState();
@@ -74,7 +76,7 @@ class _GroupListScreenState extends State<GroupListScreen> {
       floatingActionButton: FloatingActionButton(
         onPressed: () => context.go('/groups/create'),
         backgroundColor: ColorTokens.primary30,
-        child: const Icon(Icons.add, color: ColorTokens.neutral100),
+        child: Icon(Icons.add, color: ColorTokens.neutral100),
         tooltip: l.t('create_group'),
       ),
     );
@@ -87,12 +89,12 @@ class _GroupListScreenState extends State<GroupListScreen> {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Icon(Icons.group_outlined, size: 80, color: ColorTokens.neutral60),
-          const SizedBox(height: 16),
+          SizedBox(height: 16),
           Text(
             l.t('no_groups_available'),
             style: TextStyle(fontSize: 18, color: ColorTokens.neutral60),
           ),
-          const SizedBox(height: 8),
+          SizedBox(height: 8),
           Text(
             provider.canCreateGroup
                 ? l.t('be_first_create_group')
@@ -103,7 +105,7 @@ class _GroupListScreenState extends State<GroupListScreen> {
           if (provider.canCreateGroup)
             ElevatedButton.icon(
               onPressed: () => context.go('/groups/create'),
-              icon: const Icon(Icons.add),
+              icon: Icon(Icons.add),
               label: Text(l.t('create_group')),
               style: ElevatedButton.styleFrom(
                 backgroundColor: ColorTokens.primary30,
@@ -257,7 +259,7 @@ class _GroupListScreenState extends State<GroupListScreen> {
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
                             ),
-                            const SizedBox(height: 4),
+                            SizedBox(height: 4),
                             Text(
                               '${group.memberIds.length} ${l.t('members')}',
                               style: TextStyle(
@@ -299,7 +301,7 @@ class _GroupListScreenState extends State<GroupListScreen> {
                     ],
                   ),
 
-                  const SizedBox(height: 8),
+                  SizedBox(height: 8),
 
                   // Estados de rodadas
                   Text(
@@ -310,7 +312,7 @@ class _GroupListScreenState extends State<GroupListScreen> {
                       fontWeight: FontWeight.w600,
                     ),
                   ),
-                  const SizedBox(height: 4),
+                  SizedBox(height: 4),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: [
@@ -318,12 +320,12 @@ class _GroupListScreenState extends State<GroupListScreen> {
                         l.t('status_upcoming'),
                         ColorTokens.warning50,
                       ),
-                      const SizedBox(width: 8),
+                      SizedBox(width: 8),
                       _buildRideStatusBadge(
                         l.t('status_cancelled'),
                         ColorTokens.error50,
                       ),
-                      const SizedBox(width: 8),
+                      SizedBox(width: 8),
                       _buildRideStatusBadge(
                         l.t('status_done'),
                         ColorTokens.success40,
@@ -387,7 +389,7 @@ class _GroupListScreenState extends State<GroupListScreen> {
                                       )
                                     : null,
                               ),
-                              const SizedBox(width: 8),
+                              SizedBox(width: 8),
                               Expanded(
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -572,7 +574,7 @@ class _GroupListScreenState extends State<GroupListScreen> {
       case GroupMembershipStatus.pending:
         return ElevatedButton.icon(
           onPressed: () => _cancelJoinRequest(group.id, provider),
-          icon: const Icon(Icons.cancel, size: 16),
+          icon: Icon(Icons.cancel, size: 16),
           label: Text(l.t('cancel')),
           style: ElevatedButton.styleFrom(
             backgroundColor: ColorTokens.error50,
@@ -584,7 +586,7 @@ class _GroupListScreenState extends State<GroupListScreen> {
       case GroupMembershipStatus.notMember:
         return ElevatedButton.icon(
           onPressed: () => _requestJoinGroup(group.id, provider),
-          icon: const Icon(Icons.group_add, size: 16),
+          icon: Icon(Icons.group_add, size: 16),
           label: Text(l.t('join')),
           style: ElevatedButton.styleFrom(
             backgroundColor: ColorTokens.primary30,
@@ -643,7 +645,7 @@ class _GroupListScreenState extends State<GroupListScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(message),
-              const SizedBox(height: 12),
+              SizedBox(height: 12),
               Text(
                 l.t('admins_need_to_know'),
                 style: TextStyle(fontSize: 14, color: ColorTokens.neutral60),

@@ -14,6 +14,8 @@ class SecurityCenterScreen extends StatefulWidget {
 
 class _SecurityCenterScreenState extends State<SecurityCenterScreen>
     with SingleTickerProviderStateMixin {
+  LocaleNotifier get l => Provider.of<LocaleNotifier>(context);
+
   late TabController _tabController;
 
   @override
@@ -36,7 +38,7 @@ class _SecurityCenterScreenState extends State<SecurityCenterScreen>
       appBar: AppBar(
         title: Text(
           l.t('security_center'),
-          style: const TextStyle(fontWeight: FontWeight.bold),
+          style: TextStyle(fontWeight: FontWeight.bold),
         ),
         backgroundColor: _kPrimaryColor,
         foregroundColor: Colors.white,
@@ -48,11 +50,11 @@ class _SecurityCenterScreenState extends State<SecurityCenterScreen>
           unselectedLabelColor: Colors.white60,
           tabs: [
             Tab(
-              icon: const Icon(Icons.directions_bike),
+              icon: Icon(Icons.directions_bike),
               text: l.t('my_bikes_tab'),
             ),
-            Tab(icon: const Icon(Icons.warning_amber), text: l.t('alerts_tab')),
-            Tab(icon: const Icon(Icons.info_outline), text: l.t('info_tab')),
+            Tab(icon: Icon(Icons.warning_amber), text: l.t('alerts_tab')),
+            Tab(icon: Icon(Icons.info_outline), text: l.t('info_tab')),
           ],
         ),
       ),
@@ -64,7 +66,7 @@ class _SecurityCenterScreenState extends State<SecurityCenterScreen>
         onPressed: _showRegisterBikeDialog,
         backgroundColor: _kPrimaryColor,
         foregroundColor: Colors.white,
-        icon: const Icon(Icons.add),
+        icon: Icon(Icons.add),
         label: Text(l.t('register_bike')),
       ),
     );
@@ -78,7 +80,7 @@ class _SecurityCenterScreenState extends State<SecurityCenterScreen>
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Icon(Icons.directions_bike, size: 80, color: Colors.grey.shade300),
-            const SizedBox(height: 16),
+            SizedBox(height: 16),
             Text(
               l.t('register_your_bike'),
               style: TextStyle(
@@ -87,7 +89,7 @@ class _SecurityCenterScreenState extends State<SecurityCenterScreen>
                 color: Colors.grey.shade700,
               ),
             ),
-            const SizedBox(height: 8),
+            SizedBox(height: 8),
             Text(
               l.t('register_your_bike_desc'),
               textAlign: TextAlign.center,
@@ -97,7 +99,7 @@ class _SecurityCenterScreenState extends State<SecurityCenterScreen>
                 height: 1.5,
               ),
             ),
-            const SizedBox(height: 24),
+            SizedBox(height: 24),
             _buildFeatureCard(
               Icons.qr_code,
               l.t('unique_qr_code'),
@@ -179,7 +181,7 @@ class _SecurityCenterScreenState extends State<SecurityCenterScreen>
               size: 80,
               color: Colors.grey.shade300,
             ),
-            const SizedBox(height: 16),
+            SizedBox(height: 16),
             Text(
               l.t('no_active_alerts'),
               style: TextStyle(
@@ -188,13 +190,13 @@ class _SecurityCenterScreenState extends State<SecurityCenterScreen>
                 color: Colors.grey.shade700,
               ),
             ),
-            const SizedBox(height: 8),
+            SizedBox(height: 8),
             Text(
               l.t('no_active_alerts_desc'),
               textAlign: TextAlign.center,
               style: TextStyle(fontSize: 14, color: Colors.grey.shade500),
             ),
-            const SizedBox(height: 24),
+            SizedBox(height: 24),
             ElevatedButton.icon(
               onPressed: () {
                 ScaffoldMessenger.of(context).showSnackBar(
@@ -202,7 +204,7 @@ class _SecurityCenterScreenState extends State<SecurityCenterScreen>
                 );
                 _tabController.animateTo(0);
               },
-              icon: const Icon(Icons.report),
+              icon: Icon(Icons.report),
               label: Text(l.t('report_stolen_bike_btn')),
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.red.shade600,
@@ -347,7 +349,7 @@ class _RegisterBikeFormState extends State<_RegisterBikeForm> {
             child: Row(
               children: [
                 const Icon(Icons.directions_bike, color: _kPrimaryColor),
-                const SizedBox(width: 8),
+                SizedBox(width: 8),
                 Text(
                   l.t('register_bike_form'),
                   style: const TextStyle(
@@ -355,15 +357,15 @@ class _RegisterBikeFormState extends State<_RegisterBikeForm> {
                     fontWeight: FontWeight.bold,
                   ),
                 ),
-                const Spacer(),
+                Spacer(),
                 IconButton(
                   onPressed: () => Navigator.pop(context),
-                  icon: const Icon(Icons.close),
+                  icon: Icon(Icons.close),
                 ),
               ],
             ),
           ),
-          const Divider(height: 1),
+          Divider(height: 1),
           Expanded(
             child: SingleChildScrollView(
               padding: const EdgeInsets.all(16),
@@ -405,7 +407,7 @@ class _RegisterBikeFormState extends State<_RegisterBikeForm> {
                     const SizedBox(height: 16),
                     OutlinedButton.icon(
                       onPressed: () {},
-                      icon: const Icon(Icons.camera_alt),
+                      icon: Icon(Icons.camera_alt),
                       label: Text(l.t('add_photos_btn')),
                       style: OutlinedButton.styleFrom(
                         padding: const EdgeInsets.symmetric(vertical: 14),
@@ -418,7 +420,7 @@ class _RegisterBikeFormState extends State<_RegisterBikeForm> {
                     const SizedBox(height: 24),
                     ElevatedButton.icon(
                       onPressed: _saveBike,
-                      icon: const Icon(Icons.save),
+                      icon: Icon(Icons.save),
                       label: Text(
                         l.t('register_bike_form'),
                         style: const TextStyle(fontSize: 16),

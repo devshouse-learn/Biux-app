@@ -6,6 +6,7 @@ import 'package:biux/features/social/domain/repositories/likes_repository.dart';
 import 'package:biux/features/social/domain/repositories/notifications_repository.dart';
 import 'package:biux/features/social/domain/entities/notification_entity.dart';
 import 'package:biux/features/social/domain/repositories/comments_repository.dart';
+import 'package:provider/provider.dart';
 
 /// Provider para gestionar likes
 class LikesProvider extends ChangeNotifier {

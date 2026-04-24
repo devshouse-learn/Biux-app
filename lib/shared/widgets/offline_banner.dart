@@ -16,6 +16,8 @@ class OfflineBanner extends StatefulWidget {
 
 class _OfflineBannerState extends State<OfflineBanner>
     with SingleTickerProviderStateMixin {
+  LocaleNotifier get l => Provider.of<LocaleNotifier>(context);
+
   late final StreamSubscription<ConnectivityStatus> _subscription;
   late final AnimationController _animController;
   bool _isOffline = false;
@@ -67,7 +69,7 @@ class _OfflineBannerState extends State<OfflineBanner>
 
     return SlideTransition(
       position: Tween<Offset>(
-        begin: const Offset(0, -1),
+        begin: Offset(0, -1),
         end: Offset.zero,
       ).animate(_animController),
       child: Material(
@@ -88,7 +90,7 @@ class _OfflineBannerState extends State<OfflineBanner>
                 color: Colors.white,
                 size: 16,
               ),
-              const SizedBox(width: 8),
+              SizedBox(width: 8),
               Text(
                 _showReconnected
                     ? l.t('connection_restored')

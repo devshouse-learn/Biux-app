@@ -15,6 +15,8 @@ class BikeRegistrationStep3 extends StatefulWidget {
 }
 
 class _BikeRegistrationStep3State extends State<BikeRegistrationStep3> {
+  LocaleNotifier get l => Provider.of<LocaleNotifier>(context);
+
   final _neighborhoodController = TextEditingController();
   final _purchasePlaceController = TextEditingController();
   final _featuredComponentsController = TextEditingController();
@@ -74,7 +76,7 @@ class _BikeRegistrationStep3State extends State<BikeRegistrationStep3> {
                 Row(
                   children: [
                     Icon(Icons.info_outline, color: Colors.blue[700], size: 20),
-                    const SizedBox(width: 8),
+                    SizedBox(width: 8),
                     Text(
                       l.t('optional_info'),
                       style: TextStyle(
@@ -85,7 +87,7 @@ class _BikeRegistrationStep3State extends State<BikeRegistrationStep3> {
                     ),
                   ],
                 ),
-                const SizedBox(height: 8),
+                SizedBox(height: 8),
                 Text(
                   l.t('optional_data_help'),
                   style: TextStyle(fontSize: 12, color: Colors.blue[600]),
@@ -94,7 +96,7 @@ class _BikeRegistrationStep3State extends State<BikeRegistrationStep3> {
             ),
           ),
 
-          const SizedBox(height: 24),
+          SizedBox(height: 24),
 
           // Barrio
           _buildTextField(
@@ -113,7 +115,7 @@ class _BikeRegistrationStep3State extends State<BikeRegistrationStep3> {
           // Fecha de compra
           _buildDateField(),
 
-          const SizedBox(height: 16),
+          SizedBox(height: 16),
 
           // Lugar de compra
           _buildTextField(
@@ -127,7 +129,7 @@ class _BikeRegistrationStep3State extends State<BikeRegistrationStep3> {
             },
           ),
 
-          const SizedBox(height: 16),
+          SizedBox(height: 16),
 
           // Componentes destacados
           _buildTextField(
@@ -227,7 +229,7 @@ class _BikeRegistrationStep3State extends State<BikeRegistrationStep3> {
                   color: ColorTokens.neutral70,
                   size: 20,
                 ),
-                const SizedBox(width: 12),
+                SizedBox(width: 12),
                 Text(
                   _selectedPurchaseDate != null
                       ? '${_selectedPurchaseDate!.day}/${_selectedPurchaseDate!.month}/${_selectedPurchaseDate!.year}'
@@ -321,7 +323,7 @@ class _BikeRegistrationStep3State extends State<BikeRegistrationStep3> {
               children: [
                 TextButton.icon(
                   onPressed: _pickInvoiceImage,
-                  icon: const Icon(Icons.edit, size: 16),
+                  icon: Icon(Icons.edit, size: 16),
                   label: Text(l.t('change')),
                   style: TextButton.styleFrom(
                     foregroundColor: ColorTokens.primary30,
@@ -338,7 +340,7 @@ class _BikeRegistrationStep3State extends State<BikeRegistrationStep3> {
                       null,
                     );
                   },
-                  icon: const Icon(Icons.delete, size: 16),
+                  icon: Icon(Icons.delete, size: 16),
                   label: Text(l.t('delete')),
                   style: TextButton.styleFrom(
                     foregroundColor: ColorTokens.error50,
@@ -361,7 +363,7 @@ class _BikeRegistrationStep3State extends State<BikeRegistrationStep3> {
           size: 32,
           color: hasError ? Colors.red : ColorTokens.neutral70,
         ),
-        const SizedBox(height: 8),
+        SizedBox(height: 8),
         Text(
           hasError ? l.t('error_loading_image') : l.t('tap_to_add_invoice'),
           style: TextStyle(
@@ -437,7 +439,7 @@ class _BikeRegistrationStep3State extends State<BikeRegistrationStep3> {
             mainAxisSize: MainAxisSize.min,
             children: [
               ListTile(
-                leading: const Icon(
+                leading: Icon(
                   Icons.photo_camera,
                   color: ColorTokens.primary30,
                 ),
@@ -447,7 +449,7 @@ class _BikeRegistrationStep3State extends State<BikeRegistrationStep3> {
                 },
               ),
               ListTile(
-                leading: const Icon(
+                leading: Icon(
                   Icons.photo_library,
                   color: ColorTokens.primary30,
                 ),

@@ -2,9 +2,12 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:biux/features/users/data/models/user_model.dart';
 import 'package:biux/core/services/app_logger.dart';
 import 'package:biux/features/users/data/datasources/user_service.dart';
+import 'package:biux/features/social/domain/entities/notification_entity.dart';
+import 'package:biux/features/social/data/repositories/notifications_repository_impl.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart' show kIsWeb, kReleaseMode;
+import 'package:provider/provider.dart';
 
 class UserProvider extends ChangeNotifier {
   final UserService? _userService;
@@ -454,6 +457,25 @@ class UserProvider extends ChangeNotifier {
       );
 
       if (success) {
+        // Crear notificación de follow para el usuario seguido
+        try {
+          final notificationsRepo = NotificationsRepositoryImpl();
+          await notificationsRepo.createNotification(
+            userId: userIdToFollow,
+            type: NotificationType.follow,
+            fromUserId: currentUserId,
+            fromUserName: _user?.name ?? _user?.username ?? 'Usuario',
+            fromUserPhoto: _user?.photoUrl,
+          );
+          AppLogger.info('🔔 Notificación de follow enviada a $userIdToFollow');
+        } catch (e) {
+          // No bloquear el follow si falla la notificación
+          AppLogger.warning(
+            'No se pudo crear notificación de follow: $e',
+            tag: 'UserProvider',
+          );
+        }
+
         // Actualizar la lista de seguidos localmente
         await loadUserData();
         AppLogger.info('✅ Ya sigues a $userIdToFollow');

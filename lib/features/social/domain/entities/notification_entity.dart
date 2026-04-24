@@ -8,7 +8,8 @@ enum NotificationType {
   replyComment('reply_comment'),
   rideJoin('ride_join'),
   mention('mention'),
-  follow('follow');
+  follow('follow'),
+  followRequest('follow_request');
 
   final String value;
   const NotificationType(this.value);

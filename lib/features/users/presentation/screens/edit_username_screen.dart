@@ -14,6 +14,8 @@ class EditUsernameScreen extends StatefulWidget {
 }
 
 class _EditUsernameScreenState extends State<EditUsernameScreen> {
+  LocaleNotifier get l => Provider.of<LocaleNotifier>(context);
+
   final _formKey = GlobalKey<FormState>();
   final _usernameController = TextEditingController();
   final _focusNode = FocusNode();
@@ -76,7 +78,7 @@ class _EditUsernameScreenState extends State<EditUsernameScreen> {
                               color: ColorTokens.primary50,
                               size: 20,
                             ),
-                            const SizedBox(width: 8),
+                            SizedBox(width: 8),
                             Text(
                               l.t('username_label'),
                               style: TextStyle(
@@ -87,7 +89,7 @@ class _EditUsernameScreenState extends State<EditUsernameScreen> {
                             ),
                           ],
                         ),
-                        const SizedBox(height: 8),
+                        SizedBox(height: 8),
                         Text(
                           l.t('username_info_desc'),
                           style: TextStyle(
@@ -99,7 +101,7 @@ class _EditUsernameScreenState extends State<EditUsernameScreen> {
                     ),
                   ),
 
-                  const SizedBox(height: 24),
+                  SizedBox(height: 24),
 
                   // Campo de username
                   Text(
@@ -115,7 +117,7 @@ class _EditUsernameScreenState extends State<EditUsernameScreen> {
                   TextFormField(
                     controller: _usernameController,
                     focusNode: _focusNode,
-                    style: const TextStyle(
+                    style: TextStyle(
                       color: Color(0xFF000000),
                       fontSize: 16,
                       fontWeight: FontWeight.w500,
@@ -226,7 +228,7 @@ class _EditUsernameScreenState extends State<EditUsernameScreen> {
                     ),
                   ],
 
-                  const Spacer(),
+                  Spacer(),
 
                   // Botones
                   Row(

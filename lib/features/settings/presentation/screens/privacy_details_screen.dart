@@ -18,6 +18,8 @@ class PrivacyDetailsScreen extends StatefulWidget {
 
 class _PrivacyDetailsScreenState extends State<PrivacyDetailsScreen>
     with WidgetsBindingObserver {
+  LocaleNotifier get l => Provider.of<LocaleNotifier>(context);
+
   String _profileVisibilityKey = 'public';
   bool _cameraGranted = false;
   bool _locationGranted = false;
@@ -107,7 +109,7 @@ class _PrivacyDetailsScreenState extends State<PrivacyDetailsScreen>
         padding: const EdgeInsets.all(16),
         children: [
           SettingsWidgets.buildSectionTitle(l.t('privacy_control'), isDark),
-          const SizedBox(height: 12),
+          SizedBox(height: 12),
           SettingsWidgets.buildOptionCard(
             context: context,
             icon: Icons.visibility,

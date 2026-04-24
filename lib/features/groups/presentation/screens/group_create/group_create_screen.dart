@@ -15,6 +15,8 @@ class GroupCreateScreen extends StatefulWidget {
 }
 
 class _GroupCreateScreenState extends State<GroupCreateScreen> {
+  LocaleNotifier get l => Provider.of<LocaleNotifier>(context);
+
   final _formKey = GlobalKey<FormState>();
   final _nameController = TextEditingController();
   final _descriptionController = TextEditingController();
@@ -97,7 +99,7 @@ class _GroupCreateScreenState extends State<GroupCreateScreen> {
               size: 80,
               color: ColorTokens.primary30,
             ),
-            const SizedBox(height: 24),
+            SizedBox(height: 24),
             Text(
               l.t('already_admin_of_group'),
               style: const TextStyle(
@@ -151,7 +153,7 @@ class _GroupCreateScreenState extends State<GroupCreateScreen> {
                       ),
                       textAlign: TextAlign.center,
                     ),
-                    const SizedBox(height: 8),
+                    SizedBox(height: 8),
                     Text(
                       '${adminGroup.memberIds.length} ${l.t('members')}',
                       style: TextStyle(
@@ -163,13 +165,13 @@ class _GroupCreateScreenState extends State<GroupCreateScreen> {
                 ),
               ),
             ),
-            const SizedBox(height: 24),
+            SizedBox(height: 24),
             Text(
               l.t('only_one_admin_explanation'),
               style: TextStyle(color: ColorTokens.neutral60, fontSize: 16),
               textAlign: TextAlign.center,
             ),
-            const SizedBox(height: 32),
+            SizedBox(height: 32),
             Row(
               children: [
                 Expanded(
@@ -189,7 +191,7 @@ class _GroupCreateScreenState extends State<GroupCreateScreen> {
                     onPressed: () => context.pop(),
                     style: OutlinedButton.styleFrom(
                       foregroundColor: ColorTokens.primary30,
-                      side: const BorderSide(color: ColorTokens.primary30),
+                      side: BorderSide(color: ColorTokens.primary30),
                       padding: const EdgeInsets.symmetric(vertical: 16),
                     ),
                     child: Text(l.t('back')),
@@ -238,14 +240,14 @@ class _GroupCreateScreenState extends State<GroupCreateScreen> {
                 ),
               ),
             ),
-            const SizedBox(height: 8),
+            SizedBox(height: 8),
             Center(
               child: Text(
                 l.t('group_logo_optional'),
                 style: TextStyle(color: ColorTokens.neutral60, fontSize: 14),
               ),
             ),
-            const SizedBox(height: 24),
+            SizedBox(height: 24),
 
             // Nombre del grupo
             TextFormField(
@@ -258,7 +260,7 @@ class _GroupCreateScreenState extends State<GroupCreateScreen> {
                 ),
                 focusedBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(8),
-                  borderSide: const BorderSide(color: ColorTokens.primary30),
+                  borderSide: BorderSide(color: ColorTokens.primary30),
                 ),
               ),
               validator: (value) {
@@ -315,7 +317,7 @@ class _GroupCreateScreenState extends State<GroupCreateScreen> {
                 );
               },
             ),
-            const SizedBox(height: 16),
+            SizedBox(height: 16),
 
             // Descripción
             TextFormField(
@@ -330,7 +332,7 @@ class _GroupCreateScreenState extends State<GroupCreateScreen> {
                 ),
                 focusedBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(8),
-                  borderSide: const BorderSide(color: ColorTokens.primary30),
+                  borderSide: BorderSide(color: ColorTokens.primary30),
                 ),
               ),
               validator: (value) {
@@ -343,7 +345,7 @@ class _GroupCreateScreenState extends State<GroupCreateScreen> {
                 return null;
               },
             ),
-            const SizedBox(height: 24),
+            SizedBox(height: 24),
 
             // Imagen de portada
             Text(
@@ -377,7 +379,7 @@ class _GroupCreateScreenState extends State<GroupCreateScreen> {
                       size: 50,
                       color: ColorTokens.neutral60,
                     ),
-                    const SizedBox(height: 8),
+                    SizedBox(height: 8),
                     Text(
                       l.t('tap_to_add_cover'),
                       style: const TextStyle(color: ColorTokens.neutral60),
@@ -386,7 +388,7 @@ class _GroupCreateScreenState extends State<GroupCreateScreen> {
                 ),
               ),
             ),
-            const SizedBox(height: 32),
+            SizedBox(height: 32),
 
             // Botón crear
             SizedBox(

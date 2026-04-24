@@ -38,6 +38,8 @@ class PaymentMethodSelector extends StatefulWidget {
 }
 
 class _PaymentMethodSelectorState extends State<PaymentMethodSelector> {
+  LocaleNotifier get l => Provider.of<LocaleNotifier>(context);
+
   @override
   Widget build(BuildContext context) {
     final l = Provider.of<LocaleNotifier>(context);
@@ -126,7 +128,7 @@ class _PaymentMethodSelectorState extends State<PaymentMethodSelector> {
                 ),
               ),
 
-              const SizedBox(width: 16),
+              SizedBox(width: 16),
 
               // Información del método
               Expanded(
@@ -145,7 +147,7 @@ class _PaymentMethodSelectorState extends State<PaymentMethodSelector> {
                             : Colors.black87,
                       ),
                     ),
-                    const SizedBox(height: 4),
+                    SizedBox(height: 4),
                     Text(
                       l.t(method.descriptionKey),
                       style: TextStyle(fontSize: 13, color: Colors.grey[600]),
@@ -200,7 +202,7 @@ class CompactPaymentMethodSelector extends StatelessWidget {
       initialValue: selectedMethod,
       decoration: InputDecoration(
         labelText: l.t('payment_method_label'),
-        prefixIcon: const Icon(Icons.payment),
+        prefixIcon: Icon(Icons.payment),
         border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
         filled: true,
         fillColor: Colors.grey[100],
@@ -212,7 +214,7 @@ class CompactPaymentMethodSelector extends StatelessWidget {
           child: Row(
             children: [
               Icon(method.icon, size: 20),
-              const SizedBox(width: 12),
+              SizedBox(width: 12),
               Text(l.t(method.labelKey)),
             ],
           ),

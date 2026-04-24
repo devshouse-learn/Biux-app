@@ -3,12 +3,15 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:biux/core/design_system/theme_notifier.dart';
 import 'package:biux/core/design_system/color_tokens.dart';
+import 'package:biux/core/design_system/locale_notifier.dart';
 
 class AppearanceDetailsScreen extends StatelessWidget {
   const AppearanceDetailsScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final l = Provider.of<LocaleNotifier>(context);
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Apariencia'),
@@ -31,7 +34,7 @@ class AppearanceDetailsScreen extends StatelessWidget {
                 onTap: () => theme.setMode(ThemeMode.light),
                 isDark: isDark,
               ),
-              const SizedBox(height: 8),
+              SizedBox(height: 8),
               _ThemeOptionTile(
                 icon: Icons.dark_mode_rounded,
                 title: 'Modo oscuro',
@@ -40,10 +43,10 @@ class AppearanceDetailsScreen extends StatelessWidget {
                 onTap: () => theme.setMode(ThemeMode.dark),
                 isDark: isDark,
               ),
-              const SizedBox(height: 8),
+              SizedBox(height: 8),
               _ThemeOptionTile(
                 icon: Icons.phone_android_rounded,
-                title: 'Seguir al sistema',
+                title: l.t('follow_system'),
                 subtitle: 'Usa la preferencia del dispositivo',
                 selected: theme.mode == ThemeMode.system,
                 onTap: () => theme.setMode(ThemeMode.system),

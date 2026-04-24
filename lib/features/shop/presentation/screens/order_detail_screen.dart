@@ -88,7 +88,7 @@ class _StatusCard extends StatelessWidget {
               l.t('order_status_label'),
               style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
             ),
-            const SizedBox(height: 12),
+            SizedBox(height: 12),
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
               decoration: BoxDecoration(
@@ -105,7 +105,7 @@ class _StatusCard extends StatelessWidget {
                 ),
               ),
             ),
-            const SizedBox(height: 8),
+            SizedBox(height: 8),
             Text(
               '${l.t('order_date_prefix')}$date',
               style: TextStyle(color: Colors.grey[600], fontSize: 13),

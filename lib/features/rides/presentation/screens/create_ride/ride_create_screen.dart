@@ -25,6 +25,8 @@ class RideCreateScreen extends StatefulWidget {
 }
 
 class _RideCreateScreenState extends State<RideCreateScreen> {
+  LocaleNotifier get l => Provider.of<LocaleNotifier>(context);
+
   final _formKey = GlobalKey<FormState>();
   final _nameController = TextEditingController();
   final _kilometersController = TextEditingController();

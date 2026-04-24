@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:biux/core/design_system/color_tokens.dart';
 import 'package:biux/features/weather/presentation/providers/weather_provider.dart';
+import 'package:biux/core/design_system/locale_notifier.dart';
+import 'package:biux/core/design_system/locale_notifier.dart';
 
 class WeatherScreen extends StatefulWidget {
   const WeatherScreen({Key? key}) : super(key: key);
@@ -10,6 +12,8 @@ class WeatherScreen extends StatefulWidget {
 }
 
 class _WeatherScreenState extends State<WeatherScreen> {
+  LocaleNotifier get l => Provider.of<LocaleNotifier>(context);
+
   @override
   void initState() {
     super.initState();
@@ -22,11 +26,11 @@ class _WeatherScreenState extends State<WeatherScreen> {
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     return Scaffold(
-      backgroundColor: isDark ? ColorTokens.neutral10 : const Color(0xFFF0F4F8),
+      backgroundColor: isDark ? ColorTokens.neutral10 : Color(0xFFF0F4F8),
       appBar: AppBar(
         backgroundColor: ColorTokens.primary30,
         foregroundColor: Colors.white,
-        title: const Text('Clima para ciclistas'),
+        title: Text(l.t('weather_for_cyclists')),
         actions: [
           IconButton(
             icon: const Icon(Icons.refresh),
@@ -41,10 +45,10 @@ class _WeatherScreenState extends State<WeatherScreen> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  const CircularProgressIndicator(),
-                  const SizedBox(height: 16),
+                  CircularProgressIndicator(),
+                  SizedBox(height: 16),
                   Text(
-                    'Obteniendo tu ubicación y clima...',
+                    l.t('getting_location_weather'),
                     style: TextStyle(
                       color: isDark ? ColorTokens.neutral70 : Colors.grey[600],
                     ),
@@ -79,8 +83,8 @@ class _WeatherScreenState extends State<WeatherScreen> {
                     const SizedBox(height: 24),
                     ElevatedButton.icon(
                       onPressed: () => wp.loadWeather(),
-                      icon: const Icon(Icons.refresh),
-                      label: const Text('Reintentar'),
+                      icon: Icon(Icons.refresh),
+                      label: Text(l.t('retry')),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: ColorTokens.primary30,
                         foregroundColor: Colors.white,
@@ -207,7 +211,7 @@ class _WeatherScreenState extends State<WeatherScreen> {
                         subtitle: wp.uvAdvice,
                       ),
                     ),
-                    const SizedBox(width: 12),
+                    SizedBox(width: 12),
                     Expanded(
                       child: _infoCard(
                         isDark: isDark,
@@ -220,7 +224,7 @@ class _WeatherScreenState extends State<WeatherScreen> {
                     ),
                   ],
                 ),
-                const SizedBox(height: 12),
+                SizedBox(height: 12),
                 Row(
                   children: [
                     Expanded(
@@ -228,7 +232,7 @@ class _WeatherScreenState extends State<WeatherScreen> {
                         isDark: isDark,
                         icon: Icons.visibility_outlined,
                         iconColor: Colors.teal,
-                        title: 'Visibilidad',
+                        title: l.t('visibility_label'),
                         value: '${wp.visibility.toStringAsFixed(1)} km',
                         subtitle: wp.visibility >= 10
                             ? 'Excelente'
@@ -382,14 +386,14 @@ class _WeatherScreenState extends State<WeatherScreen> {
                         color: wp.isSafeToRide ? Colors.green : Colors.orange,
                         size: 36,
                       ),
-                      const SizedBox(width: 12),
+                      SizedBox(width: 12),
                       Expanded(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
                               wp.isSafeToRide
-                                  ? '¡Buen clima para rodar!'
+                                  ? l.t('good_weather_ride')
                                   : 'Precaución al pedalear',
                               style: TextStyle(
                                 fontSize: 16,
@@ -444,9 +448,9 @@ class _WeatherScreenState extends State<WeatherScreen> {
                               borderRadius: BorderRadius.circular(2),
                             ),
                           ),
-                          const SizedBox(width: 8),
+                          SizedBox(width: 8),
                           Text(
-                            'Recomendaciones de seguridad',
+                            l.t('safety_recommendations'),
                             style: TextStyle(
                               fontSize: 16,
                               fontWeight: FontWeight.bold,
@@ -477,7 +481,7 @@ class _WeatherScreenState extends State<WeatherScreen> {
     final tips = <String>[];
     final main = wp.weatherData?['weather']?[0]?['main'] ?? '';
 
-    if (wp.feelsLike > 28) tips.add('Lleva suficiente agua, hace calor');
+    if (wp.feelsLike > 28) tips.add(l.t('carry_water_hot'));
     if (wp.uvIndex > 3) tips.add('Usa protector solar y gafas');
     if (main == 'Rain' || main == 'Drizzle') {
       tips.add('Frena con anticipación en mojado');
@@ -486,7 +490,7 @@ class _WeatherScreenState extends State<WeatherScreen> {
     if (wp.windSpeed > 20) tips.add('Anticipa ráfagas en zonas abiertas');
     if (wp.visibility < 5) tips.add('Usa luces delanteras y traseras');
     if (wp.feelsLike < 15) tips.add('Vístete por capas para el frío');
-    if (wp.humidity > 80) tips.add('La humedad alta causa fatiga, hidrátate');
+    if (wp.humidity > 80) tips.add(l.t('humidity_causes_fatigue'));
 
     // Tips generales si hay pocos contextual
     if (tips.length < 3) {
@@ -567,14 +571,14 @@ class _WeatherScreenState extends State<WeatherScreen> {
         _statPill(
           Icons.water_drop_outlined,
           '${wp.humidity}%',
-          'Humedad',
-          const Color(0xFF1976D2),
+          l.t('humidity'),
+          Color(0xFF1976D2),
           isDark,
         ),
         _statPill(
           Icons.air,
           '${wp.windSpeed.round()} km/h',
-          'Viento',
+          l.t('wind'),
           const Color(0xFF0288D1),
           isDark,
         ),

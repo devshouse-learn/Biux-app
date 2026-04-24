@@ -97,8 +97,8 @@ class _RequestSellerPermissionDialogState
     return AlertDialog(
       title: Row(
         children: [
-          const Icon(Icons.store, color: Colors.blue),
-          const SizedBox(width: 8),
+          Icon(Icons.store, color: Colors.blue),
+          SizedBox(width: 8),
           Expanded(child: Text(l.t('request_sell_permission'))),
         ],
       ),
@@ -107,13 +107,13 @@ class _RequestSellerPermissionDialogState
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(l.t('sell_auth_needed'), style: const TextStyle(fontSize: 14)),
-            const SizedBox(height: 16),
+            Text(l.t('sell_auth_needed'), style: TextStyle(fontSize: 14)),
+            SizedBox(height: 16),
             Text(
               l.t('tell_us_why_sell'),
               style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
             ),
-            const SizedBox(height: 8),
+            SizedBox(height: 8),
             TextField(
               controller: _messageController,
               maxLines: 5,
@@ -136,11 +136,11 @@ class _RequestSellerPermissionDialogState
               child: Row(
                 children: [
                   const Icon(Icons.info_outline, color: Colors.blue, size: 20),
-                  const SizedBox(width: 8),
+                  SizedBox(width: 8),
                   Expanded(
                     child: Text(
                       l.t('admin_will_review'),
-                      style: const TextStyle(fontSize: 12, color: Colors.blue),
+                      style: TextStyle(fontSize: 12, color: Colors.blue),
                     ),
                   ),
                 ],
@@ -165,7 +165,7 @@ class _RequestSellerPermissionDialogState
                     color: Colors.white,
                   ),
                 )
-              : const Icon(Icons.send),
+              : Icon(Icons.send),
           label: Text(_isLoading ? l.t('sending') : l.t('send_request')),
           style: ElevatedButton.styleFrom(
             backgroundColor: Colors.blue,

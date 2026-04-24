@@ -18,6 +18,8 @@ class SellerRequestsScreen extends StatefulWidget {
 
 class _SellerRequestsScreenState extends State<SellerRequestsScreen>
     with SingleTickerProviderStateMixin {
+  LocaleNotifier get l => Provider.of<LocaleNotifier>(context);
+
   late TabController _tabController;
 
   @override
@@ -55,7 +57,7 @@ class _SellerRequestsScreenState extends State<SellerRequestsScreen>
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               const Icon(Icons.block, size: 64, color: Colors.red),
-              const SizedBox(height: 16),
+              SizedBox(height: 16),
               Text(
                 l.t('admin_only_access'),
                 style: const TextStyle(
@@ -63,7 +65,7 @@ class _SellerRequestsScreenState extends State<SellerRequestsScreen>
                   fontWeight: FontWeight.w500,
                 ),
               ),
-              const SizedBox(height: 24),
+              SizedBox(height: 24),
               ElevatedButton(
                 onPressed: () => context.pop(),
                 child: Text(l.t('go_back')),
@@ -77,7 +79,7 @@ class _SellerRequestsScreenState extends State<SellerRequestsScreen>
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
+          icon: Icon(Icons.arrow_back),
           onPressed: () => context.go('/shop'),
           tooltip: l.t('back_to_store'),
         ),
@@ -93,19 +95,19 @@ class _SellerRequestsScreenState extends State<SellerRequestsScreen>
                   return Badge(
                     label: Text('${provider.pendingCount}'),
                     child: Tab(
-                      icon: const Icon(Icons.pending_actions),
+                      icon: Icon(Icons.pending_actions),
                       text: l.t('pending'),
                     ),
                   );
                 }
                 return Tab(
-                  icon: const Icon(Icons.pending_actions),
+                  icon: Icon(Icons.pending_actions),
                   text: l.t('pending'),
                 );
               },
             ),
-            Tab(icon: const Icon(Icons.check_circle), text: l.t('approved')),
-            Tab(icon: const Icon(Icons.cancel), text: l.t('rejected_tab')),
+            Tab(icon: Icon(Icons.check_circle), text: l.t('approved')),
+            Tab(icon: Icon(Icons.cancel), text: l.t('rejected_tab')),
           ],
         ),
       ),
@@ -155,7 +157,7 @@ class _SellerRequestsScreenState extends State<SellerRequestsScreen>
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Icon(Icons.inbox, size: 64, color: Colors.grey[400]),
-            const SizedBox(height: 16),
+            SizedBox(height: 16),
             Text(
               l.t('no_requests'),
               style: TextStyle(
@@ -264,7 +266,7 @@ class _SellerRequestsScreenState extends State<SellerRequestsScreen>
                         request.status.emoji,
                         style: const TextStyle(fontSize: 12),
                       ),
-                      const SizedBox(width: 4),
+                      SizedBox(width: 4),
                       Text(
                         l.t(request.status.displayName),
                         style: const TextStyle(
@@ -278,7 +280,7 @@ class _SellerRequestsScreenState extends State<SellerRequestsScreen>
                 ),
               ],
             ),
-            const SizedBox(height: 16),
+            SizedBox(height: 16),
 
             // Mensaje
             Text(
@@ -308,7 +310,7 @@ class _SellerRequestsScreenState extends State<SellerRequestsScreen>
             Row(
               children: [
                 Icon(Icons.access_time, size: 16, color: Colors.grey[600]),
-                const SizedBox(width: 4),
+                SizedBox(width: 4),
                 Text(
                   '${l.t('requested_on')} ${dateFormat.format(request.createdAt)}',
                   style: TextStyle(fontSize: 12, color: Colors.grey[600]),
@@ -326,7 +328,7 @@ class _SellerRequestsScreenState extends State<SellerRequestsScreen>
                     size: 16,
                     color: Colors.grey[600],
                   ),
-                  const SizedBox(width: 4),
+                  SizedBox(width: 4),
                   Text(
                     '${l.t('reviewed_on')} ${dateFormat.format(request.reviewedAt!)}',
                     style: TextStyle(fontSize: 12, color: Colors.grey[600]),
@@ -334,7 +336,7 @@ class _SellerRequestsScreenState extends State<SellerRequestsScreen>
                 ],
               ),
               if (request.reviewComment != null) ...[
-                const SizedBox(height: 8),
+                SizedBox(height: 8),
                 Text(
                   l.t('admin_comment'),
                   style: TextStyle(
@@ -363,7 +365,7 @@ class _SellerRequestsScreenState extends State<SellerRequestsScreen>
                   Expanded(
                     child: ElevatedButton.icon(
                       onPressed: () => _showApproveDialog(request, adminId),
-                      icon: const Icon(Icons.check),
+                      icon: Icon(Icons.check),
                       label: Text(l.t('approve')),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.green,
@@ -375,7 +377,7 @@ class _SellerRequestsScreenState extends State<SellerRequestsScreen>
                   Expanded(
                     child: ElevatedButton.icon(
                       onPressed: () => _showRejectDialog(request, adminId),
-                      icon: const Icon(Icons.close),
+                      icon: Icon(Icons.close),
                       label: Text(l.t('reject')),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.red,
@@ -408,15 +410,15 @@ class _SellerRequestsScreenState extends State<SellerRequestsScreen>
           children: [
             Text(
               '${l.t('confirm_approve_request_of')} ${request.userName}?',
-              style: const TextStyle(fontSize: 14),
+              style: TextStyle(fontSize: 14),
             ),
-            const SizedBox(height: 16),
+            SizedBox(height: 16),
             TextField(
               controller: commentController,
               maxLines: 3,
               decoration: InputDecoration(
                 labelText: l.t('comment_optional'),
-                border: const OutlineInputBorder(),
+                border: OutlineInputBorder(),
                 hintText: l.t('add_comment_hint'),
               ),
             ),
@@ -472,15 +474,15 @@ class _SellerRequestsScreenState extends State<SellerRequestsScreen>
           children: [
             Text(
               '${l.t('confirm_reject_request_of')} ${request.userName}?',
-              style: const TextStyle(fontSize: 14),
+              style: TextStyle(fontSize: 14),
             ),
-            const SizedBox(height: 16),
+            SizedBox(height: 16),
             TextField(
               controller: commentController,
               maxLines: 3,
               decoration: InputDecoration(
                 labelText: l.t('rejection_reason'),
-                border: const OutlineInputBorder(),
+                border: OutlineInputBorder(),
                 hintText: l.t('indicate_reason_hint'),
               ),
             ),

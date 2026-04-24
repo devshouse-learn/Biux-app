@@ -54,7 +54,7 @@ class ShopAdminDashboardWidget extends StatelessWidget {
                 color: _kPrimaryColor.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(8),
               ),
-              child: const Icon(
+              child: Icon(
                 Icons.admin_panel_settings_rounded,
                 color: _kPrimaryColor,
                 size: 22,
@@ -62,7 +62,7 @@ class ShopAdminDashboardWidget extends StatelessWidget {
             ),
             title: Text(
               l.t('admin_panel_title'),
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 15,
                 fontWeight: FontWeight.w600,
                 color: _kPrimaryColor,
@@ -73,7 +73,7 @@ class ShopAdminDashboardWidget extends StatelessWidget {
               style: TextStyle(fontSize: 12, color: Colors.grey.shade500),
             ),
             children: [
-              const Divider(height: 1),
+              Divider(height: 1),
               // ── Sección: Gestión ──
               _buildSectionHeader(l.t('management_section')),
               _buildMenuItem(
@@ -95,7 +95,7 @@ class ShopAdminDashboardWidget extends StatelessWidget {
                 onTap: onViewRequests,
                 badge: true,
               ),
-              const Divider(height: 1, indent: 56),
+              Divider(height: 1, indent: 56),
               // ── Sección: Análisis ──
               _buildSectionHeader(l.t('analysis_section')),
               _buildMenuItem(
@@ -110,7 +110,7 @@ class ShopAdminDashboardWidget extends StatelessWidget {
                 subtitle: l.t('store_metrics'),
                 onTap: onViewStats,
               ),
-              const Divider(height: 1, indent: 56),
+              Divider(height: 1, indent: 56),
               // ── Sección: Seguridad ──
               _buildSectionHeader(l.t('security_section')),
               _buildMenuItem(

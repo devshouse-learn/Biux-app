@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:biux/core/design_system/color_tokens.dart';
+import 'package:biux/core/design_system/locale_notifier.dart';
+import 'package:provider/provider.dart';
 
 class EducationScreen extends StatefulWidget {
   const EducationScreen({Key? key}) : super(key: key);
@@ -9,6 +11,8 @@ class EducationScreen extends StatefulWidget {
 
 class _EducationScreenState extends State<EducationScreen>
     with SingleTickerProviderStateMixin {
+  LocaleNotifier get l => Provider.of<LocaleNotifier>(context);
+
   late TabController _tabCtrl;
 
   @override
@@ -29,7 +33,7 @@ class _EducationScreenState extends State<EducationScreen>
       appBar: AppBar(
         backgroundColor: ColorTokens.primary30,
         foregroundColor: Colors.white,
-        title: const Text('Educación Vial'),
+        title: Text(l.t('road_education')),
         bottom: TabBar(
           controller: _tabCtrl,
           isScrollable: true,

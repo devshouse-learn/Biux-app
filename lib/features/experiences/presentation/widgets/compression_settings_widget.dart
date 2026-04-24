@@ -51,7 +51,7 @@ class CompressionSettingsWidget extends StatelessWidget {
           Row(
             children: [
               Icon(Icons.tune, color: ColorTokens.primary50, size: 20),
-              const SizedBox(width: 8),
+              SizedBox(width: 8),
               Text(
                 l.t('compression_settings_title'),
                 style: const TextStyle(
@@ -63,7 +63,7 @@ class CompressionSettingsWidget extends StatelessWidget {
             ],
           ),
 
-          const SizedBox(height: 16),
+          SizedBox(height: 16),
 
           // Calidad de compresión
           Text(
@@ -90,7 +90,7 @@ class CompressionSettingsWidget extends StatelessWidget {
           if (showVideoSettings) ...[
             const SizedBox(height: 20),
             const Divider(),
-            const SizedBox(height: 16),
+            SizedBox(height: 16),
 
             Text(
               l.t('video_settings_title'),
@@ -101,7 +101,7 @@ class CompressionSettingsWidget extends StatelessWidget {
               ),
             ),
 
-            const SizedBox(height: 12),
+            SizedBox(height: 12),
 
             // Duración máxima de video
             Row(
@@ -165,7 +165,7 @@ class CompressionSettingsWidget extends StatelessWidget {
               ],
             ),
 
-            const SizedBox(height: 8),
+            SizedBox(height: 8),
 
             Text(
               l.t('videos_auto_cut'),
@@ -229,7 +229,7 @@ class _QualityOption extends StatelessWidget {
                   : null,
             ),
 
-            const SizedBox(width: 12),
+            SizedBox(width: 12),
 
             // Contenido
             Expanded(
@@ -260,7 +260,7 @@ class _QualityOption extends StatelessWidget {
                     ],
                   ),
 
-                  const SizedBox(height: 2),
+                  SizedBox(height: 2),
 
                   Text(
                     l.t(quality.descriptionKey),

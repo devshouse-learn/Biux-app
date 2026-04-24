@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import 'package:video_player/video_player.dart';
 import 'package:biux/core/design_system/color_tokens.dart';
 import 'package:biux/core/design_system/locale_notifier.dart';
+import 'package:biux/core/design_system/locale_notifier.dart';
 
 /// Diálogo para previsualizar videos antes de agregarlos
 class VideoPreviewDialog extends StatefulWidget {
@@ -25,6 +26,8 @@ class VideoPreviewDialog extends StatefulWidget {
 }
 
 class _VideoPreviewDialogState extends State<VideoPreviewDialog> {
+  LocaleNotifier get l => Provider.of<LocaleNotifier>(context);
+
   late VideoPlayerController _controller;
   bool _isInitialized = false;
   bool _hasError = false;
@@ -71,7 +74,7 @@ class _VideoPreviewDialogState extends State<VideoPreviewDialog> {
     return Dialog(
       backgroundColor: Colors.transparent,
       child: Container(
-        constraints: const BoxConstraints(maxWidth: 400, maxHeight: 600),
+        constraints: BoxConstraints(maxWidth: 400, maxHeight: 600),
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(16),
@@ -96,10 +99,10 @@ class _VideoPreviewDialogState extends State<VideoPreviewDialog> {
                     color: ColorTokens.primary50,
                     size: 20,
                   ),
-                  const SizedBox(width: 8),
+                  SizedBox(width: 8),
                   Expanded(
                     child: Text(
-                      widget.title ?? 'Vista previa del video',
+                      widget.title ?? l.t('video_preview'),
                       style: const TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.w600,
@@ -144,7 +147,7 @@ class _VideoPreviewDialogState extends State<VideoPreviewDialog> {
                         side: BorderSide(color: Colors.grey[400]!),
                         padding: const EdgeInsets.symmetric(vertical: 12),
                       ),
-                      child: const Text('Cancelar'),
+                      child: Text(l.t('cancel')),
                     ),
                   ),
                   const SizedBox(width: 12),
@@ -160,8 +163,8 @@ class _VideoPreviewDialogState extends State<VideoPreviewDialog> {
                         backgroundColor: ColorTokens.primary50,
                         padding: const EdgeInsets.symmetric(vertical: 12),
                       ),
-                      child: const Text(
-                        'Usar video',
+                      child: Text(
+                        l.t('use_video'),
                         style: TextStyle(
                           color: Colors.white,
                           fontWeight: FontWeight.w500,

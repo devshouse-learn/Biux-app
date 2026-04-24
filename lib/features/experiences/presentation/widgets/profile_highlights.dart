@@ -5,6 +5,9 @@ import 'package:biux/core/design_system/color_tokens.dart';
 import 'package:biux/core/services/optimized_cache_manager.dart';
 import 'package:biux/features/experiences/data/datasources/highlights_datasource.dart';
 import 'package:biux/features/experiences/data/repositories/experience_repository_impl.dart';
+import 'package:biux/core/design_system/locale_notifier.dart';
+import 'package:provider/provider.dart';
+import 'package:biux/core/design_system/locale_notifier.dart';
 
 /// Widget que muestra los highlights (historias destacadas) en el perfil
 class ProfileHighlights extends StatefulWidget {
@@ -22,6 +25,8 @@ class ProfileHighlights extends StatefulWidget {
 }
 
 class _ProfileHighlightsState extends State<ProfileHighlights> {
+  LocaleNotifier get l => Provider.of<LocaleNotifier>(context);
+
   final _ds = HighlightsDatasource();
   List<Map<String, dynamic>> _highlights = [];
   bool _isLoading = true;
@@ -193,7 +198,7 @@ class _ProfileHighlightsState extends State<ProfileHighlights> {
     showModalBottomSheet(
       context: context,
       backgroundColor: ColorTokens.neutral20,
-      shape: const RoundedRectangleBorder(
+      shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
       ),
       builder: (ctx) => Column(
@@ -211,7 +216,7 @@ class _ProfileHighlightsState extends State<ProfileHighlights> {
           ListTile(
             leading: Icon(Icons.edit_outlined, color: ColorTokens.primary50),
             title: Text(
-              'Editar nombre',
+              l.t('edit_name'),
               style: TextStyle(color: ColorTokens.neutral100),
             ),
             onTap: () {
@@ -222,7 +227,7 @@ class _ProfileHighlightsState extends State<ProfileHighlights> {
           ListTile(
             leading: Icon(Icons.delete_outline, color: ColorTokens.error50),
             title: Text(
-              'Eliminar destacado',
+              l.t('delete_highlight'),
               style: TextStyle(color: ColorTokens.error50),
             ),
             onTap: () async {
@@ -249,7 +254,7 @@ class _ProfileHighlightsState extends State<ProfileHighlights> {
         content: TextField(
           controller: controller,
           decoration: InputDecoration(
-            hintText: 'Nombre del destacado',
+            hintText: l.t('highlight_name'),
             border: OutlineInputBorder(),
           ),
           maxLength: 20,
@@ -257,7 +262,7 @@ class _ProfileHighlightsState extends State<ProfileHighlights> {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx),
-            child: Text('Cancelar'),
+            child: Text(l.t('cancel')),
           ),
           ElevatedButton(
             onPressed: () async {
@@ -272,7 +277,7 @@ class _ProfileHighlightsState extends State<ProfileHighlights> {
                 _loadHighlights();
               }
             },
-            child: Text('Guardar'),
+            child: Text(l.t('save')),
           ),
         ],
       ),
@@ -311,7 +316,7 @@ class _ProfileHighlightsState extends State<ProfileHighlights> {
         context: context,
         builder: (ctx) => StatefulBuilder(
           builder: (context, setDialogState) => AlertDialog(
-            title: Text('Crear Destacado'),
+            title: Text(l.t('create_highlight')),
             content: SizedBox(
               width: double.maxFinite,
               child: Column(
@@ -320,7 +325,7 @@ class _ProfileHighlightsState extends State<ProfileHighlights> {
                   TextField(
                     controller: titleController,
                     decoration: InputDecoration(
-                      hintText: 'Nombre del destacado',
+                      hintText: l.t('highlight_name'),
                       border: OutlineInputBorder(),
                     ),
                     maxLength: 20,
@@ -403,7 +408,7 @@ class _ProfileHighlightsState extends State<ProfileHighlights> {
             actions: [
               TextButton(
                 onPressed: () => Navigator.pop(ctx),
-                child: Text('Cancelar'),
+                child: Text(l.t('cancel')),
               ),
               ElevatedButton(
                 onPressed: selectedIds.isEmpty

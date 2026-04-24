@@ -20,6 +20,8 @@ class AddProductScreen extends StatefulWidget {
 }
 
 class _AddProductScreenState extends State<AddProductScreen> {
+  LocaleNotifier get l => Provider.of<LocaleNotifier>(context);
+
   final _formKey = GlobalKey<FormState>();
   final _nameController = TextEditingController();
   final _descriptionController = TextEditingController();
@@ -70,12 +72,12 @@ class _AddProductScreenState extends State<AddProductScreen> {
         backgroundColor: ColorTokens.primary30,
         foregroundColor: Colors.white,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
+          icon: Icon(Icons.arrow_back),
           onPressed: () => _onBack(),
         ),
         title: Text(
           l.t('add_product'),
-          style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 18),
+          style: TextStyle(fontWeight: FontWeight.w600, fontSize: 18),
         ),
         elevation: 0,
       ),
@@ -89,7 +91,7 @@ class _AddProductScreenState extends State<AddProductScreen> {
               l.t('product_info_section'),
               Icons.info_outline,
             ),
-            const SizedBox(height: 12),
+            SizedBox(height: 12),
             _buildTextField(
               controller: _nameController,
               label: l.t('product_name_label'),
@@ -98,7 +100,7 @@ class _AddProductScreenState extends State<AddProductScreen> {
               validator: (v) =>
                   v == null || v.trim().isEmpty ? l.t('name_required') : null,
             ),
-            const SizedBox(height: 12),
+            SizedBox(height: 12),
             _buildTextField(
               controller: _descriptionController,
               label: l.t('short_description'),
@@ -109,7 +111,7 @@ class _AddProductScreenState extends State<AddProductScreen> {
                   ? l.t('description_required')
                   : null,
             ),
-            const SizedBox(height: 12),
+            SizedBox(height: 12),
             _buildTextField(
               controller: _longDescriptionController,
               label: l.t('detailed_description'),
@@ -118,18 +120,18 @@ class _AddProductScreenState extends State<AddProductScreen> {
               maxLines: 4,
             ),
 
-            const SizedBox(height: 24),
+            SizedBox(height: 24),
 
             // === CATEGORÍA ===
             _buildSectionHeader(l.t('category_label'), Icons.category_outlined),
-            const SizedBox(height: 12),
+            SizedBox(height: 12),
             _buildCategorySelector(),
 
-            const SizedBox(height: 24),
+            SizedBox(height: 24),
 
             // === PRECIO Y STOCK ===
             _buildSectionHeader(l.t('price_and_stock'), Icons.attach_money),
-            const SizedBox(height: 12),
+            SizedBox(height: 12),
             Row(
               children: [
                 Expanded(
@@ -150,7 +152,7 @@ class _AddProductScreenState extends State<AddProductScreen> {
                     },
                   ),
                 ),
-                const SizedBox(width: 12),
+                SizedBox(width: 12),
                 Expanded(
                   child: _buildTextField(
                     controller: _stockController,
@@ -171,18 +173,18 @@ class _AddProductScreenState extends State<AddProductScreen> {
               ],
             ),
 
-            const SizedBox(height: 24),
+            SizedBox(height: 24),
 
             // === TALLAS Y TAGS ===
             _buildSectionHeader(l.t('sizes_and_tags'), Icons.straighten),
-            const SizedBox(height: 12),
+            SizedBox(height: 12),
             _buildTextField(
               controller: _sizesController,
               label: l.t('sizes_hint'),
               hint: l.t('sizes_placeholder'),
               icon: Icons.straighten,
             ),
-            const SizedBox(height: 12),
+            SizedBox(height: 12),
             _buildTextField(
               controller: _tagsController,
               label: l.t('search_tags_hint'),
@@ -190,11 +192,11 @@ class _AddProductScreenState extends State<AddProductScreen> {
               icon: Icons.tag,
             ),
 
-            const SizedBox(height: 24),
+            SizedBox(height: 24),
 
             // === IMÁGENES (OBLIGATORIO) ===
             _buildSectionHeader(l.t('images_required'), Icons.image_outlined),
-            const SizedBox(height: 4),
+            SizedBox(height: 4),
             Text(
               l.t('min_one_photo'),
               style: TextStyle(
@@ -440,7 +442,7 @@ class _AddProductScreenState extends State<AddProductScreen> {
                       ? Colors.red.shade300
                       : ColorTokens.primary30,
                 ),
-                const SizedBox(height: 8),
+                SizedBox(height: 8),
                 Text(
                   _selectedImages.isEmpty
                       ? '📷 ${l.t('tap_add_photos')}'
@@ -477,14 +479,14 @@ class _AddProductScreenState extends State<AddProductScreen> {
           child: Row(
             children: [
               Icon(Icons.pedal_bike, color: ColorTokens.primary30, size: 24),
-              const SizedBox(width: 12),
+              SizedBox(width: 12),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
                       l.t('is_bicycle_question'),
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 15,
                         fontWeight: FontWeight.w600,
                         color: ColorTokens.neutral10,
@@ -539,7 +541,7 @@ class _AddProductScreenState extends State<AddProductScreen> {
                   color: ColorTokens.warning50,
                   size: 24,
                 ),
-                const SizedBox(width: 12),
+                SizedBox(width: 12),
                 Expanded(
                   child: Text(
                     l.t('stolen_bikes_warning'),
@@ -554,7 +556,7 @@ class _AddProductScreenState extends State<AddProductScreen> {
             ),
           ),
 
-          const SizedBox(height: 16),
+          SizedBox(height: 16),
 
           _buildTextField(
             controller: _frameSerialController,
@@ -567,7 +569,7 @@ class _AddProductScreenState extends State<AddProductScreen> {
                       : null
                 : null,
           ),
-          const SizedBox(height: 12),
+          SizedBox(height: 12),
           _buildTextField(
             controller: _bikeBrandController,
             label: '${l.t('brand_label')} *',
@@ -579,7 +581,7 @@ class _AddProductScreenState extends State<AddProductScreen> {
                       : null
                 : null,
           ),
-          const SizedBox(height: 12),
+          SizedBox(height: 12),
           Row(
             children: [
               Expanded(
@@ -590,7 +592,7 @@ class _AddProductScreenState extends State<AddProductScreen> {
                   icon: Icons.directions_bike,
                 ),
               ),
-              const SizedBox(width: 12),
+              SizedBox(width: 12),
               Expanded(
                 child: _buildTextField(
                   controller: _bikeYearController,
@@ -603,7 +605,7 @@ class _AddProductScreenState extends State<AddProductScreen> {
               ),
             ],
           ),
-          const SizedBox(height: 12),
+          SizedBox(height: 12),
           _buildTextField(
             controller: _bikeColorController,
             label: l.t('color_label'),
@@ -634,7 +636,7 @@ class _AddProductScreenState extends State<AddProductScreen> {
         child: Row(
           children: [
             Icon(Icons.verified, color: ColorTokens.success40, size: 28),
-            const SizedBox(width: 12),
+            SizedBox(width: 12),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -647,7 +649,7 @@ class _AddProductScreenState extends State<AddProductScreen> {
                       color: ColorTokens.success30,
                     ),
                   ),
-                  const SizedBox(height: 2),
+                  SizedBox(height: 2),
                   Text(
                     l.t('bike_not_reported_stolen'),
                     style: TextStyle(
@@ -674,7 +676,7 @@ class _AddProductScreenState extends State<AddProductScreen> {
         child: Row(
           children: [
             Icon(Icons.dangerous, color: ColorTokens.error50, size: 28),
-            const SizedBox(width: 12),
+            SizedBox(width: 12),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -687,7 +689,7 @@ class _AddProductScreenState extends State<AddProductScreen> {
                       color: ColorTokens.error50,
                     ),
                   ),
-                  const SizedBox(height: 2),
+                  SizedBox(height: 2),
                   Text(
                     l.t('cannot_publish_contact_admin'),
                     style: TextStyle(fontSize: 12, color: ColorTokens.error50),
@@ -713,7 +715,7 @@ class _AddProductScreenState extends State<AddProductScreen> {
                   color: Colors.white,
                 ),
               )
-            : const Icon(Icons.verified_user),
+            : Icon(Icons.verified_user),
         label: Text(
           _isCheckingStolen ? l.t('verifying') : l.t('verify_not_stolen_btn'),
           style: const TextStyle(fontWeight: FontWeight.w600),
@@ -750,7 +752,7 @@ class _AddProductScreenState extends State<AddProductScreen> {
                       color: Colors.white,
                     ),
                   )
-                : const Icon(Icons.publish),
+                : Icon(Icons.publish),
             label: Text(
               _isSubmitting ? l.t('publishing') : l.t('publish_product'),
               style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w700),
@@ -772,7 +774,7 @@ class _AddProductScreenState extends State<AddProductScreen> {
           height: 48,
           child: OutlinedButton.icon(
             onPressed: _isSubmitting ? null : _onBack,
-            icon: const Icon(Icons.close),
+            icon: Icon(Icons.close),
             label: Text(
               l.t('cancel'),
               style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w600),

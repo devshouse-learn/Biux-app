@@ -19,6 +19,8 @@ class BikeDetailScreen extends StatefulWidget {
 }
 
 class _BikeDetailScreenState extends State<BikeDetailScreen> {
+  LocaleNotifier get l => Provider.of<LocaleNotifier>(context);
+
   BikeEntity? bike;
 
   @override
@@ -159,7 +161,7 @@ class _BikeDetailScreenState extends State<BikeDetailScreen> {
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       const Icon(Icons.zoom_in, size: 20, color: Colors.white),
-                      const SizedBox(width: 4),
+                      SizedBox(width: 4),
                       Text(
                         l.t('tap_to_enlarge'),
                         style: const TextStyle(
@@ -189,7 +191,7 @@ class _BikeDetailScreenState extends State<BikeDetailScreen> {
               child: Row(
                 children: [
                   const Icon(Icons.edit),
-                  const SizedBox(width: 8),
+                  SizedBox(width: 8),
                   Text(l.t('edit_bike')),
                 ],
               ),
@@ -200,7 +202,7 @@ class _BikeDetailScreenState extends State<BikeDetailScreen> {
                 child: Row(
                   children: [
                     const Icon(Icons.swap_horiz),
-                    const SizedBox(width: 8),
+                    SizedBox(width: 8),
                     Text(l.t('transfer')),
                   ],
                 ),
@@ -210,7 +212,7 @@ class _BikeDetailScreenState extends State<BikeDetailScreen> {
               child: Row(
                 children: [
                   const Icon(Icons.delete, color: ColorTokens.error50),
-                  const SizedBox(width: 8),
+                  SizedBox(width: 8),
                   Text(
                     l.t('delete'),
                     style: const TextStyle(color: ColorTokens.error50),
@@ -264,7 +266,7 @@ class _BikeDetailScreenState extends State<BikeDetailScreen> {
       child: Row(
         children: [
           Icon(statusIcon, color: statusColor, size: 24),
-          const SizedBox(width: 12),
+          SizedBox(width: 12),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -301,7 +303,7 @@ class _BikeDetailScreenState extends State<BikeDetailScreen> {
           BoxShadow(
             color: Colors.black.withValues(alpha: 0.05),
             blurRadius: 8,
-            offset: const Offset(0, 2),
+            offset: Offset(0, 2),
           ),
         ],
       ),
@@ -310,13 +312,13 @@ class _BikeDetailScreenState extends State<BikeDetailScreen> {
         children: [
           Text(
             l.t('basic_info'),
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 18,
               fontWeight: FontWeight.w600,
               color: ColorTokens.primary30,
             ),
           ),
-          const SizedBox(height: 16),
+          SizedBox(height: 16),
           _buildInfoRow(l.t('brand_label'), bike.brand),
           _buildInfoRow(l.t('model_label'), bike.model),
           _buildInfoRow(l.t('year_label'), bike.year.toString()),
@@ -396,7 +398,7 @@ class _BikeDetailScreenState extends State<BikeDetailScreen> {
               ),
               const SizedBox(width: 8),
               Icon(Icons.zoom_in, size: 18, color: ColorTokens.neutral60),
-              const SizedBox(width: 4),
+              SizedBox(width: 4),
               Text(
                 l.t('tap_fullscreen'),
                 style: TextStyle(fontSize: 12, color: ColorTokens.neutral60),
@@ -479,7 +481,7 @@ class _BikeDetailScreenState extends State<BikeDetailScreen> {
           BoxShadow(
             color: Colors.black.withValues(alpha: 0.05),
             blurRadius: 8,
-            offset: const Offset(0, 2),
+            offset: Offset(0, 2),
           ),
         ],
       ),
@@ -494,7 +496,7 @@ class _BikeDetailScreenState extends State<BikeDetailScreen> {
               color: ColorTokens.primary30,
             ),
           ),
-          const SizedBox(height: 16),
+          SizedBox(height: 16),
           if (bike.purchaseDate != null)
             _buildInfoRow(
               l.t('purchase_date_label'),
@@ -524,7 +526,7 @@ class _BikeDetailScreenState extends State<BikeDetailScreen> {
           BoxShadow(
             color: Colors.black.withValues(alpha: 0.05),
             blurRadius: 8,
-            offset: const Offset(0, 2),
+            offset: Offset(0, 2),
           ),
         ],
       ),
@@ -576,7 +578,7 @@ class _BikeDetailScreenState extends State<BikeDetailScreen> {
                     backgroundColor: ColorTokens.primary30,
                     foregroundColor: Colors.white,
                   ),
-                  icon: const Icon(Icons.download),
+                  icon: Icon(Icons.download),
                   label: Text(l.t('download_qr')),
                 ),
               ),
@@ -588,7 +590,7 @@ class _BikeDetailScreenState extends State<BikeDetailScreen> {
                     foregroundColor: ColorTokens.primary30,
                     side: const BorderSide(color: ColorTokens.primary30),
                   ),
-                  icon: const Icon(Icons.local_shipping),
+                  icon: Icon(Icons.local_shipping),
                   label: Text(l.t('request_sticker')),
                 ),
               ),
@@ -608,13 +610,13 @@ class _BikeDetailScreenState extends State<BikeDetailScreen> {
         children: [
           Text(
             l.t('actions'),
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 18,
               fontWeight: FontWeight.w600,
               color: ColorTokens.primary30,
             ),
           ),
-          const SizedBox(height: 16),
+          SizedBox(height: 16),
 
           // Reportar robo / Marcar recuperada
           if (bike.status == BikeStatus.active ||
@@ -707,7 +709,7 @@ class _BikeDetailScreenState extends State<BikeDetailScreen> {
           mainAxisSize: MainAxisSize.min,
           children: [
             Text(l.t('report_theft_confirm')),
-            const SizedBox(height: 12),
+            SizedBox(height: 12),
             TextField(
               controller: locationController,
               decoration: InputDecoration(
@@ -715,7 +717,7 @@ class _BikeDetailScreenState extends State<BikeDetailScreen> {
                 hintText: l.t('theft_location_hint'),
               ),
             ),
-            const SizedBox(height: 8),
+            SizedBox(height: 8),
             TextField(
               controller: descriptionController,
               decoration: InputDecoration(
@@ -843,7 +845,7 @@ class _BikeDetailScreenState extends State<BikeDetailScreen> {
           mainAxisSize: MainAxisSize.min,
           children: [
             Text(l.t('transfer_confirm')),
-            const SizedBox(height: 12),
+            SizedBox(height: 12),
             TextField(
               controller: userIdController,
               decoration: InputDecoration(
@@ -851,7 +853,7 @@ class _BikeDetailScreenState extends State<BikeDetailScreen> {
                 hintText: l.t('enter_user_id'),
               ),
             ),
-            const SizedBox(height: 8),
+            SizedBox(height: 8),
             TextField(
               controller: messageController,
               decoration: InputDecoration(labelText: l.t('message_optional')),

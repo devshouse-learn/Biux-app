@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:biux/core/design_system/locale_notifier.dart';
+import 'package:provider/provider.dart';
+import 'package:biux/core/design_system/locale_notifier.dart';
 
 /// Tipos de error predefinidos
 enum ErrorType { network, notFound, permission, server, generic, empty }
@@ -32,8 +35,9 @@ class ErrorView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l = Provider.of<LocaleNotifier>(context);
     final theme = Theme.of(context);
-    final config = _getConfig();
+    final config = _getConfig(l);
 
     return Center(
       child: Padding(
@@ -67,8 +71,8 @@ class ErrorView extends StatelessWidget {
               const SizedBox(height: 24),
               FilledButton.icon(
                 onPressed: onRetry,
-                icon: const Icon(Icons.refresh, size: 18),
-                label: Text(retryLabel ?? 'Reintentar'),
+                icon: Icon(Icons.refresh, size: 18),
+                label: Text(retryLabel ?? l.t('retry')),
               ),
             ],
           ],
@@ -77,43 +81,43 @@ class ErrorView extends StatelessWidget {
     );
   }
 
-  _ErrorConfig _getConfig() {
+  _ErrorConfig _getConfig(LocaleNotifier l) {
     switch (type) {
       case ErrorType.network:
         return _ErrorConfig(
           icon: Icons.wifi_off_rounded,
-          title: 'Sin conexión',
-          message: 'Verifica tu conexión a internet e intenta nuevamente.',
+          title: l.t('no_connection'),
+          message: l.t('check_connection'),
         );
       case ErrorType.notFound:
         return _ErrorConfig(
           icon: Icons.search_off_rounded,
-          title: 'No encontrado',
-          message: 'El contenido que buscas no está disponible.',
+          title: l.t('not_found'),
+          message: l.t('content_not_available'),
         );
       case ErrorType.permission:
         return _ErrorConfig(
           icon: Icons.lock_outline_rounded,
-          title: 'Sin permisos',
-          message: 'No tienes permisos para acceder a este contenido.',
+          title: l.t('no_permissions'),
+          message: l.t('no_permissions_msg'),
         );
       case ErrorType.server:
         return _ErrorConfig(
           icon: Icons.cloud_off_rounded,
-          title: 'Error del servidor',
-          message: 'Hubo un problema con el servidor. Intenta más tarde.',
+          title: l.t('server_error'),
+          message: l.t('server_error_msg'),
         );
       case ErrorType.empty:
         return _ErrorConfig(
           icon: Icons.inbox_rounded,
-          title: 'Sin contenido',
-          message: 'No hay nada que mostrar aquí por ahora.',
+          title: l.t('no_content'),
+          message: l.t('nothing_to_show'),
         );
       case ErrorType.generic:
         return _ErrorConfig(
           icon: Icons.error_outline_rounded,
-          title: 'Algo salió mal',
-          message: 'Ocurrió un error inesperado. Intenta nuevamente.',
+          title: l.t('something_went_wrong'),
+          message: l.t('unexpected_error'),
         );
     }
   }

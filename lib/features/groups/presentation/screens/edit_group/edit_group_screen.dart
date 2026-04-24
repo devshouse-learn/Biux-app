@@ -21,6 +21,8 @@ class EditGroupScreen extends StatefulWidget {
 }
 
 class _EditGroupScreenState extends State<EditGroupScreen> {
+  LocaleNotifier get l => Provider.of<LocaleNotifier>(context);
+
   final _formKey = GlobalKey<FormState>();
   final _nameController = TextEditingController();
   final _descriptionController = TextEditingController();

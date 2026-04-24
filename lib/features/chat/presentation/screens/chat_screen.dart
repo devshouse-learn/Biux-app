@@ -25,6 +25,8 @@ import 'package:biux/features/chat/domain/entities/message_entity.dart';
 import 'package:biux/features/safety/presentation/providers/safety_provider.dart';
 import 'package:biux/features/safety/presentation/screens/report_flow_screen.dart';
 import 'package:biux/core/design_system/color_tokens.dart';
+import 'package:biux/core/design_system/locale_notifier.dart';
+import 'package:biux/core/design_system/locale_notifier.dart';
 
 class ChatScreen extends StatefulWidget {
   final ChatEntity chat;
@@ -50,6 +52,8 @@ class ChatScreen extends StatefulWidget {
 }
 
 class _ChatScreenState extends State<ChatScreen> {
+  LocaleNotifier get l => Provider.of<LocaleNotifier>(context);
+
   final _scrollController = ScrollController();
   late final ChatProvider _provider;
   final _imagePicker = ImagePicker();
@@ -134,7 +138,7 @@ class _ChatScreenState extends State<ChatScreen> {
               data['name'] ??
               data['userName'] ??
               data['username'] ??
-              'Ciclista';
+              l.t('cyclist_label');
           _otherPhoto =
               data['photo'] ?? data['photoUrl'] ?? data['photoURL'] ?? '';
           _loadingProfile = false;
@@ -214,31 +218,31 @@ class _ChatScreenState extends State<ChatScreen> {
       items: [
         AttachMenuItem(
           icon: Icons.photo,
-          label: 'Galería',
-          color: const Color(0xFF7C4DFF),
+          label: l.t('gallery'),
+          color: Color(0xFF7C4DFF),
           onTap: _pickFromGallery,
         ),
         AttachMenuItem(
           icon: Icons.camera_alt,
-          label: 'Cámara',
-          color: const Color(0xFFE91E63),
+          label: l.t('camera'),
+          color: Color(0xFFE91E63),
           onTap: _openCameraFromMenu,
         ),
         AttachMenuItem(
           icon: Icons.headphones,
-          label: 'Audio',
-          color: const Color(0xFFFF6D00),
+          label: l.t('audio'),
+          color: Color(0xFFFF6D00),
           onTap: _pickAudio,
         ),
         AttachMenuItem(
           icon: Icons.location_on,
-          label: 'Ubicación',
-          color: const Color(0xFF00C853),
+          label: l.t('location_label'),
+          color: Color(0xFF00C853),
           onTap: _shareLocation,
         ),
         AttachMenuItem(
           icon: Icons.poll,
-          label: 'Encuesta',
+          label: l.t('poll'),
           color: const Color(0xFF1E8BC3),
           onTap: _createPoll,
         ),
@@ -360,7 +364,7 @@ class _ChatScreenState extends State<ChatScreen> {
     final currentUser = FirebaseAuth.instance.currentUser;
     final myName = userProvider.user?.name?.isNotEmpty == true
         ? userProvider.user!.name!
-        : (currentUser?.displayName ?? 'Usuario');
+        : (currentUser?.displayName ?? l.t('user_default'));
     final myPhoto = userProvider.user?.photoUrl ?? currentUser?.photoURL;
     await _provider.sendMediaFiles(
       chatId: widget.chat.id,
@@ -439,7 +443,7 @@ class _ChatScreenState extends State<ChatScreen> {
       try {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
+            SnackBar(
               content: Row(
                 children: [
                   SizedBox(
@@ -451,7 +455,7 @@ class _ChatScreenState extends State<ChatScreen> {
                     ),
                   ),
                   SizedBox(width: 12),
-                  Text('Obteniendo ubicación...'),
+                  Text(l.t('getting_location')),
                 ],
               ),
               duration: Duration(seconds: 3),
@@ -483,7 +487,7 @@ class _ChatScreenState extends State<ChatScreen> {
     final currentUser = FirebaseAuth.instance.currentUser;
     final myName = userProvider.user?.name?.isNotEmpty == true
         ? userProvider.user!.name!
-        : (currentUser?.displayName ?? 'Usuario');
+        : (currentUser?.displayName ?? l.t('user_default'));
     final myPhoto = userProvider.user?.photoUrl ?? currentUser?.photoURL;
     await _provider.sendLocationMessage(
       chatId: widget.chat.id,
@@ -511,7 +515,7 @@ class _ChatScreenState extends State<ChatScreen> {
     final currentUser = FirebaseAuth.instance.currentUser;
     final myName = userProvider.user?.name?.isNotEmpty == true
         ? userProvider.user!.name!
-        : (currentUser?.displayName ?? 'Usuario');
+        : (currentUser?.displayName ?? l.t('user_default'));
     final myPhoto = userProvider.user?.photoUrl ?? currentUser?.photoURL;
     await _provider.sendPollMessage(
       chatId: widget.chat.id,
@@ -528,7 +532,7 @@ class _ChatScreenState extends State<ChatScreen> {
     final currentUser = FirebaseAuth.instance.currentUser;
     final myName = userProvider.user?.name?.isNotEmpty == true
         ? userProvider.user!.name!
-        : (currentUser?.displayName ?? 'Usuario');
+        : (currentUser?.displayName ?? l.t('user_default'));
     final myPhoto = userProvider.user?.photoUrl ?? currentUser?.photoURL;
     await _provider.sendMediaFiles(
       chatId: widget.chat.id,
@@ -552,7 +556,7 @@ class _ChatScreenState extends State<ChatScreen> {
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: const Text('Bloquear usuario'),
+        title: Text(l.t('block_user')),
         content: Text(
           '¿Deseas bloquear a ${_otherName.isNotEmpty ? _otherName : 'este usuario'}? '
           'No podrá enviarte mensajes, ver tu foto de perfil '
@@ -561,7 +565,7 @@ class _ChatScreenState extends State<ChatScreen> {
         actions: [
           TextButton(
             onPressed: () => Navigator.of(ctx).pop(),
-            child: const Text('Cancelar'),
+            child: Text(l.t('cancel')),
           ),
           TextButton(
             onPressed: () async {
@@ -569,16 +573,13 @@ class _ChatScreenState extends State<ChatScreen> {
               final safetyProvider = context.read<SafetyProvider>();
               await safetyProvider.blockUser(currentUid, otherUid);
               if (mounted) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('Usuario bloqueado')),
-                );
+                ScaffoldMessenger.of(
+                  context,
+                ).showSnackBar(SnackBar(content: Text(l.t('user_blocked'))));
                 setState(() {}); // Forzar rebuild para reflejar bloqueo
               }
             },
-            child: const Text(
-              'Bloquear',
-              style: TextStyle(color: Colors.red),
-            ),
+            child: Text(l.t('block'), style: TextStyle(color: Colors.red)),
           ),
         ],
       ),
@@ -594,7 +595,7 @@ class _ChatScreenState extends State<ChatScreen> {
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: const Text('Desbloquear usuario'),
+        title: Text(l.t('unblock_user_title')),
         content: Text(
           '¿Deseas desbloquear a ${_otherName.isNotEmpty ? _otherName : 'este usuario'}? '
           'Podrá enviarte mensajes y ver tu perfil nuevamente.',
@@ -602,7 +603,7 @@ class _ChatScreenState extends State<ChatScreen> {
         actions: [
           TextButton(
             onPressed: () => Navigator.of(ctx).pop(),
-            child: const Text('Cancelar'),
+            child: Text(l.t('cancel')),
           ),
           TextButton(
             onPressed: () async {
@@ -616,8 +617,10 @@ class _ChatScreenState extends State<ChatScreen> {
                 setState(() {});
               }
             },
-            child: const Text('Desbloquear',
-                style: TextStyle(color: Colors.blue)),
+            child: const Text(
+              'Desbloquear',
+              style: TextStyle(color: Colors.blue),
+            ),
           ),
         ],
       ),
@@ -651,7 +654,7 @@ class _ChatScreenState extends State<ChatScreen> {
                     ),
                   ),
                   const SizedBox(width: 8),
-                  const Expanded(
+                  Expanded(
                     child: Text(
                       'No eliminar mensajes destacados',
                       style: TextStyle(fontSize: 13),
@@ -664,7 +667,7 @@ class _ChatScreenState extends State<ChatScreen> {
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(ctx),
-              child: const Text('Cancelar'),
+              child: Text(l.t('cancel')),
             ),
             TextButton(
               onPressed: () {
@@ -675,7 +678,7 @@ class _ChatScreenState extends State<ChatScreen> {
                 );
               },
               style: TextButton.styleFrom(foregroundColor: Colors.red),
-              child: const Text('Eliminar'),
+              child: Text(l.t('delete')),
             ),
           ],
         ),
@@ -697,7 +700,9 @@ class _ChatScreenState extends State<ChatScreen> {
     final userProvider = context.read<UserProvider>();
     final currentUser = FirebaseAuth.instance.currentUser;
     final myName =
-        userProvider.user?.name ?? currentUser?.displayName ?? 'Usuario';
+        userProvider.user?.name ??
+        currentUser?.displayName ??
+        l.t('user_default');
     final myPhoto = userProvider.user?.photoUrl ?? currentUser?.photoURL;
     final chats = provider.chats.where((c) => c.id != widget.chat.id).toList();
 
@@ -828,7 +833,7 @@ class _ChatScreenState extends State<ChatScreen> {
         ? userProvider.user!.name!
         : (currentUser?.displayName?.isNotEmpty == true
               ? currentUser!.displayName!
-              : 'Usuario');
+              : l.t('user_default'));
     final myPhoto = userProvider.user?.photoUrl?.isNotEmpty == true
         ? userProvider.user!.photoUrl
         : currentUser?.photoURL;
@@ -840,24 +845,22 @@ class _ChatScreenState extends State<ChatScreen> {
       backgroundColor: isDark ? const Color(0xFF0D1B2A) : Colors.grey.shade100,
       appBar: AppBar(
         automaticallyImplyLeading: !widget.embedded,
-        backgroundColor: isDark
-            ? const Color(0xFF0D1B2A)
-            : const Color(0xFF16242D),
+        backgroundColor: isDark ? const Color(0xFF0D1B2A) : Color(0xFF16242D),
         foregroundColor: Colors.white,
         title: _searching
             ? TextField(
                 controller: _searchController,
                 autofocus: true,
-                style: const TextStyle(color: Colors.white),
-                decoration: const InputDecoration(
-                  hintText: 'Buscar mensajes...',
+                style: TextStyle(color: Colors.white),
+                decoration: InputDecoration(
+                  hintText: l.t('search_messages'),
                   hintStyle: TextStyle(color: Colors.white54),
                   border: InputBorder.none,
                 ),
                 onChanged: (v) => setState(() => _searchQuery = v),
               )
             : _loadingProfile
-            ? const Row(
+            ? Row(
                 children: [
                   SizedBox(
                     width: 18,
@@ -868,7 +871,7 @@ class _ChatScreenState extends State<ChatScreen> {
                     ),
                   ),
                   SizedBox(width: 10),
-                  Text('Cargando...', style: TextStyle(fontSize: 14)),
+                  Text(l.t('loading'), style: TextStyle(fontSize: 14)),
                 ],
               )
             : Row(
@@ -976,7 +979,7 @@ class _ChatScreenState extends State<ChatScreen> {
                     break;
                 }
               },
-              itemBuilder: (_) => const [
+              itemBuilder: (_) => [
                 PopupMenuItem(
                   value: 'search',
                   child: ListTile(
@@ -990,7 +993,7 @@ class _ChatScreenState extends State<ChatScreen> {
                   child: ListTile(
                     dense: true,
                     leading: Icon(Icons.block),
-                    title: Text('Bloquear'),
+                    title: Text(l.t('block')),
                   ),
                 ),
                 PopupMenuItem(
@@ -1006,7 +1009,7 @@ class _ChatScreenState extends State<ChatScreen> {
                   child: ListTile(
                     dense: true,
                     leading: Icon(Icons.flag),
-                    title: Text('Reportar'),
+                    title: Text(l.t('report_action')),
                   ),
                 ),
                 PopupMenuItem(
@@ -1179,7 +1182,9 @@ class _ChatScreenState extends State<ChatScreen> {
                               pin: !m.isPinned,
                             ),
                             onStar: (m) {
-                              final willStar = !m.starredBy.contains(currentUser?.uid);
+                              final willStar = !m.starredBy.contains(
+                                currentUser?.uid,
+                              );
                               provider.starMessage(
                                 chatId: widget.chat.id,
                                 messageId: m.id,
@@ -1211,8 +1216,13 @@ class _ChatScreenState extends State<ChatScreen> {
                   final blocked = safetyProv.isUserBlocked(otherUid);
                   if (blocked) {
                     return Container(
-                      padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
-                      color: isDark ? ColorTokens.primary20 : Colors.grey.shade200,
+                      padding: const EdgeInsets.symmetric(
+                        vertical: 12,
+                        horizontal: 16,
+                      ),
+                      color: isDark
+                          ? ColorTokens.primary20
+                          : Colors.grey.shade200,
                       width: double.infinity,
                       child: Column(
                         mainAxisSize: MainAxisSize.min,
@@ -1221,7 +1231,9 @@ class _ChatScreenState extends State<ChatScreen> {
                             'Bloqueaste a ${_otherName.isNotEmpty ? _otherName : "este usuario"}',
                             textAlign: TextAlign.center,
                             style: TextStyle(
-                              color: isDark ? Colors.white70 : Colors.grey.shade700,
+                              color: isDark
+                                  ? Colors.white70
+                                  : Colors.grey.shade700,
                               fontSize: 13,
                             ),
                           ),
@@ -1229,16 +1241,25 @@ class _ChatScreenState extends State<ChatScreen> {
                           TextButton(
                             onPressed: () => _showUnblockDialog(),
                             style: TextButton.styleFrom(
-                              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 8),
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 24,
+                                vertical: 8,
+                              ),
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(20),
-                                side: BorderSide(color: isDark ? Colors.white38 : Colors.grey.shade400),
+                                side: BorderSide(
+                                  color: isDark
+                                      ? Colors.white38
+                                      : Colors.grey.shade400,
+                                ),
                               ),
                             ),
                             child: Text(
                               'Desbloquear',
                               style: TextStyle(
-                                color: isDark ? Colors.white : ColorTokens.primary30,
+                                color: isDark
+                                    ? Colors.white
+                                    : ColorTokens.primary30,
                                 fontWeight: FontWeight.w600,
                                 fontSize: 13,
                               ),
@@ -1249,32 +1270,33 @@ class _ChatScreenState extends State<ChatScreen> {
                     );
                   }
                   return ChatInput(
-                chatId: widget.chat.id,
-                senderName: myName,
-                senderAvatar: myPhoto,
-                replyingTo: provider.replyingTo,
-                onSendText: (text) {
-                  provider.onTypingChanged(false);
-                  provider.sendTextMessage(
                     chatId: widget.chat.id,
-                    text: text,
                     senderName: myName,
                     senderAvatar: myPhoto,
+                    replyingTo: provider.replyingTo,
+                    onSendText: (text) {
+                      provider.onTypingChanged(false);
+                      provider.sendTextMessage(
+                        chatId: widget.chat.id,
+                        text: text,
+                        senderName: myName,
+                        senderAvatar: myPhoto,
+                      );
+                    },
+                    onSendVoice: (path, secs) => provider.sendVoiceMessage(
+                      chatId: widget.chat.id,
+                      audioUrl: path,
+                      durationSeconds: secs,
+                      senderName: myName,
+                      senderAvatar: myPhoto,
+                    ),
+                    onCamera: _openCamera,
+                    onAttach: _showAttachMenu,
+                    onCancelReply: () => provider.setReplyingTo(null),
+                    onTypingChanged: (typing) =>
+                        provider.onTypingChanged(typing),
+                    isDark: isDark,
                   );
-                },
-                onSendVoice: (path, secs) => provider.sendVoiceMessage(
-                  chatId: widget.chat.id,
-                  audioUrl: path,
-                  durationSeconds: secs,
-                  senderName: myName,
-                  senderAvatar: myPhoto,
-                ),
-                onCamera: _openCamera,
-                onAttach: _showAttachMenu,
-                onCancelReply: () => provider.setReplyingTo(null),
-                onTypingChanged: (typing) => provider.onTypingChanged(typing),
-                isDark: isDark,
-              );
                 },
               ),
             ],
@@ -1302,6 +1324,7 @@ class _PinnedMessageBanner extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l = Provider.of<LocaleNotifier>(context);
     return GestureDetector(
       onTap: onTap,
       child: Container(
@@ -1376,6 +1399,8 @@ class _TypingBubble extends StatefulWidget {
 
 class _TypingBubbleState extends State<_TypingBubble>
     with SingleTickerProviderStateMixin {
+  LocaleNotifier get l => Provider.of<LocaleNotifier>(context);
+
   late AnimationController _ctrl;
 
   @override
@@ -1445,6 +1470,8 @@ class _StarToast extends StatefulWidget {
 
 class _StarToastState extends State<_StarToast>
     with SingleTickerProviderStateMixin {
+  LocaleNotifier get l => Provider.of<LocaleNotifier>(context);
+
   late final AnimationController _ctrl;
   late final Animation<double> _opacity;
 

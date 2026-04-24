@@ -15,6 +15,8 @@ class ManageSellersScreen extends StatefulWidget {
 }
 
 class _ManageSellersScreenState extends State<ManageSellersScreen> {
+  LocaleNotifier get l => Provider.of<LocaleNotifier>(context);
+
   List<UserModel> _allUsers = [];
   bool _isLoading = false;
 
@@ -93,7 +95,7 @@ class _ManageSellersScreenState extends State<ManageSellersScreen> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               const Icon(Icons.lock, size: 80, color: Colors.grey),
-              const SizedBox(height: 16),
+              SizedBox(height: 16),
               Text(
                 l.t('admin_only_section'),
                 textAlign: TextAlign.center,
@@ -108,7 +110,7 @@ class _ManageSellersScreenState extends State<ManageSellersScreen> {
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
+          icon: Icon(Icons.arrow_back),
           onPressed: () => context.go('/shop'),
           tooltip: l.t('back_to_store'),
         ),
@@ -116,13 +118,13 @@ class _ManageSellersScreenState extends State<ManageSellersScreen> {
         backgroundColor: ColorTokens.primary30,
         actions: [
           IconButton(
-            icon: const Icon(Icons.refresh),
+            icon: Icon(Icons.refresh),
             onPressed: _loadUsers,
             tooltip: l.t('update'),
           ),
           // Botón de volver (solo icono)
           IconButton(
-            icon: const Icon(Icons.arrow_back, color: Colors.white),
+            icon: Icon(Icons.arrow_back, color: Colors.white),
             tooltip: l.t('go_back'),
             onPressed: () {
               if (Navigator.of(context).canPop()) {
@@ -255,7 +257,7 @@ class _ManageSellersScreenState extends State<ManageSellersScreen> {
                                     ? Colors.green
                                     : Colors.grey,
                               ),
-                              const SizedBox(width: 4),
+                              SizedBox(width: 4),
                               Text(
                                 user.canSellProducts
                                     ? l.t('authorized_seller')

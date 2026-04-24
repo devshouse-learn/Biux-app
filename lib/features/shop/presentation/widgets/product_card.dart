@@ -103,7 +103,7 @@ class ProductCard extends StatelessWidget {
                         ),
                         child: Text(
                           '${l.t('last_units')} ${product.stock}',
-                          style: const TextStyle(
+                          style: TextStyle(
                             color: Colors.white,
                             fontSize: 10,
                             fontWeight: FontWeight.bold,
@@ -149,7 +149,7 @@ class ProductCard extends StatelessWidget {
                       product.name,
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontWeight: FontWeight.bold,
                         fontSize: 14,
                       ),

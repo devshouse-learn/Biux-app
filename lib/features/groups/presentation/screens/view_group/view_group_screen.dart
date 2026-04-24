@@ -11,6 +11,7 @@ import 'package:biux/features/groups/presentation/providers/group_provider.dart'
 import 'package:biux/features/chat/data/datasources/chat_datasource.dart';
 import 'package:biux/features/chat/presentation/providers/chat_provider.dart';
 import 'package:biux/features/chat/presentation/screens/chat_screen.dart';
+import 'package:biux/core/design_system/locale_notifier.dart';
 
 class ViewGroupScreen extends StatefulWidget {
   @override
@@ -19,6 +20,8 @@ class ViewGroupScreen extends StatefulWidget {
 
 class _ViewGroupScreenState extends State<ViewGroupScreen>
     with TickerProviderStateMixin {
+  LocaleNotifier get l => Provider.of<LocaleNotifier>(context);
+
   TabController? _tabController;
   String? groupId;
   bool? _lastAdminStatus;
@@ -170,11 +173,11 @@ class _ViewGroupScreenState extends State<ViewGroupScreen>
                       indicatorSize: TabBarIndicatorSize.tab,
                       labelColor: ColorTokens.primary30,
                       unselectedLabelColor: ColorTokens.neutral60,
-                      labelStyle: const TextStyle(
+                      labelStyle: TextStyle(
                         fontSize: 13,
                         fontWeight: FontWeight.w700,
                       ),
-                      unselectedLabelStyle: const TextStyle(
+                      unselectedLabelStyle: TextStyle(
                         fontSize: 13,
                         fontWeight: FontWeight.w500,
                       ),
@@ -251,7 +254,7 @@ class _ViewGroupScreenState extends State<ViewGroupScreen>
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Icon(Icons.lock_outline, size: 64, color: Colors.grey[400]),
-            const SizedBox(height: 16),
+            SizedBox(height: 16),
             Text(
               l.t('join_to_chat'),
               style: TextStyle(color: Colors.grey[600], fontSize: 16),
@@ -278,12 +281,12 @@ class _ViewGroupScreenState extends State<ViewGroupScreen>
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Icon(Icons.error_outline, size: 48, color: Colors.grey[400]),
-                const SizedBox(height: 12),
+                SizedBox(height: 12),
                 Text(
                   l.t('chat_error'),
                   style: TextStyle(color: Colors.grey[600]),
                 ),
-                const SizedBox(height: 12),
+                SizedBox(height: 12),
                 ElevatedButton(
                   onPressed: () => setState(() => _groupChatId = null),
                   child: Text(l.t('retry')),
@@ -409,7 +412,7 @@ class _ViewGroupScreenState extends State<ViewGroupScreen>
                   size: 48,
                   color: ColorTokens.neutral60.withValues(alpha: 0.5),
                 ),
-                const SizedBox(height: 12),
+                SizedBox(height: 12),
                 Text(
                   l.t('no_members'),
                   style: TextStyle(color: ColorTokens.neutral60),
@@ -435,7 +438,7 @@ class _ViewGroupScreenState extends State<ViewGroupScreen>
               child: Row(
                 children: [
                   Icon(Icons.people, size: 16, color: ColorTokens.primary30),
-                  const SizedBox(width: 8),
+                  SizedBox(width: 8),
                   Text(
                     '${members.length} ${l.t('members')}',
                     style: const TextStyle(
@@ -496,7 +499,7 @@ class _ViewGroupScreenState extends State<ViewGroupScreen>
                                   ),
                                 ),
                               )
-                            : const CircleAvatar(
+                            : CircleAvatar(
                                 radius: 22,
                                 child: Icon(Icons.person),
                               ),
@@ -797,14 +800,14 @@ class _ViewGroupScreenState extends State<ViewGroupScreen>
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: const Text('¿Eliminar grupo?'),
+        title: Text(l.t('delete_group_question')),
         content: Text(
           'Esta acción es permanente y eliminará "${group.name}" para todos los miembros. ¿Estás seguro?',
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx),
-            child: const Text('Cancelar'),
+            child: Text(l.t('cancel')),
           ),
           TextButton(
             onPressed: () async {
@@ -815,7 +818,7 @@ class _ViewGroupScreenState extends State<ViewGroupScreen>
               }
             },
             style: TextButton.styleFrom(foregroundColor: ColorTokens.error50),
-            child: const Text('Eliminar'),
+            child: Text(l.t('delete')),
           ),
         ],
       ),
@@ -858,7 +861,7 @@ class _ViewGroupScreenState extends State<ViewGroupScreen>
                   child: Row(
                     children: [
                       Icon(Icons.pending_actions, color: ColorTokens.primary30),
-                      const SizedBox(width: 10),
+                      SizedBox(width: 10),
                       Text(
                         l.t('pending_requests'),
                         style: const TextStyle(
@@ -949,7 +952,7 @@ class _ViewGroupScreenState extends State<ViewGroupScreen>
                     ],
                   ),
                 ),
-                const PopupMenuDivider(),
+                PopupMenuDivider(),
                 PopupMenuItem<String>(
                   value: 'delete',
                   child: Row(
@@ -957,7 +960,7 @@ class _ViewGroupScreenState extends State<ViewGroupScreen>
                       Icon(Icons.delete_forever, color: ColorTokens.error50),
                       SizedBox(width: 8),
                       Text(
-                        'Borrar grupo',
+                        l.t('delete_group'),
                         style: TextStyle(color: ColorTokens.error50),
                       ),
                     ],

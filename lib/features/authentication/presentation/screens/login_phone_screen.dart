@@ -14,6 +14,8 @@ class LoginPhonePage extends StatefulWidget {
 }
 
 class _LoginPhonePageState extends State<LoginPhonePage> {
+  LocaleNotifier get l => Provider.of<LocaleNotifier>(context);
+
   final TextEditingController phoneController = TextEditingController();
   final List<TextEditingController> codeControllers = List.generate(
     6,

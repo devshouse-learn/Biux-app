@@ -5,6 +5,7 @@ import 'package:biux/features/ride_recommendations/domain/entities/ride_recommen
 import 'package:biux/features/ride_recommendations/data/repositories/ride_recommendation_repository_impl.dart';
 import 'package:biux/features/ride_tracker/domain/entities/ride_track_entity.dart';
 import 'package:biux/features/users/domain/entities/user_entity.dart';
+import 'package:provider/provider.dart';
 
 class RideRecommendationProvider extends ChangeNotifier {
   final _repo = RideRecommendationRepositoryImpl();

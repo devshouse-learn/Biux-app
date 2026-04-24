@@ -1,5 +1,7 @@
 import 'package:biux/features/users/data/models/user.dart';
 import 'package:biux/features/users/domain/repositories/user_profile_repository.dart';
+import 'package:biux/features/social/domain/entities/notification_entity.dart';
+import 'package:biux/features/social/data/repositories/notifications_repository_impl.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import "package:flutter/foundation.dart";
@@ -152,7 +154,7 @@ class UserProfileRepositoryImpl implements UserProfileRepository {
 
       await batch.commit();
 
-      // Crear notificación de seguimiento
+      // Crear notificación de seguimiento en Realtime Database
       try {
         final currentUser = await _firestore
             .collection('users')
@@ -160,22 +162,20 @@ class UserProfileRepositoryImpl implements UserProfileRepository {
             .get();
         final currentUserData = currentUser.data();
 
-        await _firestore
-            .collection('users')
-            .doc(userId)
-            .collection('notifications')
-            .add({
-              'type': 'follow',
-              'fromUserId': _currentUserId,
-              'fromUserName':
-                  currentUserData?['fullName'] ??
-                  currentUserData?['userName'] ??
-                  'Usuario',
-              'fromUserPhoto': currentUserData?['photo'],
-              'message': 'ha comenzado a seguirte',
-              'isRead': false,
-              'createdAt': FieldValue.serverTimestamp(),
-            });
+        final fromUserName =
+            currentUserData?['fullName'] ??
+            currentUserData?['userName'] ??
+            'Usuario';
+        final fromUserPhoto = currentUserData?['photo'] as String?;
+
+        final notificationsRepo = NotificationsRepositoryImpl();
+        await notificationsRepo.createNotification(
+          userId: userId,
+          type: NotificationType.follow,
+          fromUserId: _currentUserId!,
+          fromUserName: fromUserName,
+          fromUserPhoto: fromUserPhoto,
+        );
       } catch (notifError) {
         debugPrint('Error creando notificación de seguimiento: $notifError');
         // No fallar la operación si la notificación falla
@@ -319,11 +319,17 @@ class UserProfileRepositoryImpl implements UserProfileRepository {
     try {
       if (_currentUserId == null || _currentUserId == userId) return false;
 
+      debugPrint('📨 sendFollowRequest: de $_currentUserId a $userId');
+
       final currentUser = await _firestore
           .collection('users')
           .doc(_currentUserId)
           .get();
       final currentUserData = currentUser.data();
+
+      debugPrint(
+        '📨 currentUserData: fullName=${currentUserData?['fullName']}, userName=${currentUserData?['userName']}, photo=${currentUserData?['photo']}',
+      );
 
       // Create follow request document in the target user's subcollection
       await _firestore
@@ -342,31 +348,39 @@ class UserProfileRepositoryImpl implements UserProfileRepository {
             'createdAt': FieldValue.serverTimestamp(),
           });
 
-      // Create notification
+      debugPrint('✅ Follow request creado en Firestore');
+
+      // Create notification in Realtime Database (where the app reads from)
       try {
-        await _firestore
-            .collection('users')
-            .doc(userId)
-            .collection('notifications')
-            .add({
-              'type': 'follow_request',
-              'fromUserId': _currentUserId,
-              'fromUserName':
-                  currentUserData?['fullName'] ??
-                  currentUserData?['userName'] ??
-                  'Usuario',
-              'fromUserPhoto': currentUserData?['photo'],
-              'message': 'quiere seguirte',
-              'isRead': false,
-              'createdAt': FieldValue.serverTimestamp(),
-            });
+        final fromUserName =
+            currentUserData?['fullName'] ??
+            currentUserData?['userName'] ??
+            'Usuario';
+        final fromUserPhoto = currentUserData?['photo'] as String?;
+
+        debugPrint(
+          '📨 Creando notificación en RTDB para userId: $userId, fromUserName: $fromUserName',
+        );
+
+        final notificationsRepo = NotificationsRepositoryImpl();
+        await notificationsRepo.createNotification(
+          userId: userId,
+          type: NotificationType.followRequest,
+          fromUserId: _currentUserId!,
+          fromUserName: fromUserName,
+          fromUserPhoto: fromUserPhoto,
+          notificationId: 'follow_request_${_currentUserId}',
+        );
+        debugPrint(
+          '✅ Notificación de follow_request creada en RTDB para $userId',
+        );
       } catch (notifError) {
-        debugPrint('Error creando notificación de solicitud: $notifError');
+        debugPrint('❌ Error creando notificación de solicitud: $notifError');
       }
 
       return true;
     } catch (e) {
-      debugPrint('Error enviando solicitud de seguimiento: $e');
+      debugPrint('❌ Error enviando solicitud de seguimiento: $e');
       return false;
     }
   }
@@ -417,7 +431,7 @@ class UserProfileRepositoryImpl implements UserProfileRepository {
           .doc(requesterId)
           .delete();
 
-      // Create notification for the requester
+      // Create notification for the requester in Realtime Database
       try {
         final currentUser = await _firestore
             .collection('users')
@@ -425,24 +439,33 @@ class UserProfileRepositoryImpl implements UserProfileRepository {
             .get();
         final currentUserData = currentUser.data();
 
-        await _firestore
-            .collection('users')
-            .doc(requesterId)
-            .collection('notifications')
-            .add({
-              'type': 'follow_request_accepted',
-              'fromUserId': _currentUserId,
-              'fromUserName':
-                  currentUserData?['fullName'] ??
-                  currentUserData?['userName'] ??
-                  'Usuario',
-              'fromUserPhoto': currentUserData?['photo'],
-              'message': 'aceptó tu solicitud de seguimiento',
-              'isRead': false,
-              'createdAt': FieldValue.serverTimestamp(),
-            });
+        final fromUserName =
+            currentUserData?['fullName'] ??
+            currentUserData?['userName'] ??
+            'Usuario';
+        final fromUserPhoto = currentUserData?['photo'] as String?;
+
+        final notificationsRepo = NotificationsRepositoryImpl();
+        await notificationsRepo.createNotification(
+          userId: requesterId,
+          type: NotificationType.follow,
+          fromUserId: _currentUserId!,
+          fromUserName: fromUserName,
+          fromUserPhoto: fromUserPhoto,
+        );
       } catch (notifError) {
         debugPrint('Error creando notificación de aceptación: $notifError');
+      }
+
+      // Delete the follow_request notification from the current user
+      try {
+        final notificationsRepo = NotificationsRepositoryImpl();
+        await notificationsRepo.deleteNotification(
+          _currentUserId!,
+          'follow_request_$requesterId',
+        );
+      } catch (e) {
+        debugPrint('Error eliminando notificación de solicitud: $e');
       }
 
       return true;
@@ -463,6 +486,17 @@ class UserProfileRepositoryImpl implements UserProfileRepository {
           .collection('followRequests')
           .doc(requesterId)
           .delete();
+
+      // Delete the follow_request notification
+      try {
+        final notificationsRepo = NotificationsRepositoryImpl();
+        await notificationsRepo.deleteNotification(
+          _currentUserId!,
+          'follow_request_$requesterId',
+        );
+      } catch (e) {
+        debugPrint('Error eliminando notificación de solicitud: $e');
+      }
 
       return true;
     } catch (e) {

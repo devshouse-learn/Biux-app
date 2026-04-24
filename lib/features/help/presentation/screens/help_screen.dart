@@ -15,7 +15,7 @@ class HelpScreen extends StatelessWidget {
       appBar: AppBar(
         automaticallyImplyLeading: false,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.white),
+          icon: Icon(Icons.arrow_back, color: Colors.white),
           onPressed: () => Navigator.of(context).pop(),
         ),
         title: Text(l.t('help_support')),

@@ -4,6 +4,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:biux/features/safety/presentation/providers/safety_provider.dart';
 import 'package:biux/core/design_system/color_tokens.dart';
+import 'package:biux/core/design_system/locale_notifier.dart';
 
 class BlockedUsersScreen extends StatefulWidget {
   const BlockedUsersScreen({super.key});
@@ -13,6 +14,8 @@ class BlockedUsersScreen extends StatefulWidget {
 }
 
 class _BlockedUsersScreenState extends State<BlockedUsersScreen> {
+  LocaleNotifier get l => Provider.of<LocaleNotifier>(context);
+
   @override
   void initState() {
     super.initState();
@@ -24,12 +27,14 @@ class _BlockedUsersScreenState extends State<BlockedUsersScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l = Provider.of<LocaleNotifier>(context);
+
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Scaffold(
       backgroundColor: isDark ? const Color(0xFF0D1B2A) : Colors.grey.shade50,
       appBar: AppBar(
-        title: const Text('Usuarios bloqueados'),
+        title: Text(l.t('blocked_users')),
         backgroundColor: ColorTokens.primary30,
         foregroundColor: Colors.white,
       ),
@@ -49,9 +54,9 @@ class _BlockedUsersScreenState extends State<BlockedUsersScreen> {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   Icon(Icons.block, size: 64, color: Colors.grey.shade400),
-                  const SizedBox(height: 16),
+                  SizedBox(height: 16),
                   Text(
-                    'No has bloqueado a ningún usuario',
+                    l.t('no_blocked_users'),
                     style: TextStyle(
                       color: isDark ? Colors.white70 : Colors.grey.shade600,
                       fontSize: 16,
@@ -83,14 +88,14 @@ class _BlockedUsersScreenState extends State<BlockedUsersScreen> {
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: const Text('Desbloquear usuario'),
-        content: const Text(
+        title: Text(l.t('unblock_user_title')),
+        content: Text(
           '¿Deseas desbloquear a este usuario? Podrá volver a enviarte mensajes.',
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(ctx).pop(),
-            child: const Text('Cancelar'),
+            child: Text(l.t('cancel')),
           ),
           TextButton(
             onPressed: () async {
@@ -119,19 +124,20 @@ class _BlockedUserTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l = Provider.of<LocaleNotifier>(context);
     return FutureBuilder<DocumentSnapshot>(
       future: FirebaseFirestore.instance
           .collection('users')
           .doc(blockedUserId)
           .get(),
       builder: (context, snapshot) {
-        String name = 'Usuario';
+        String name = l.t('user_default');
         String? photoUrl;
 
         if (snapshot.hasData && snapshot.data!.exists) {
           final data = snapshot.data!.data() as Map<String, dynamic>?;
           if (data != null) {
-            name = data['username'] ?? data['name'] ?? 'Usuario';
+            name = data['username'] ?? data['name'] ?? l.t('user_default');
             photoUrl = data['profileImageUrl'] ?? data['photoUrl'];
           }
         }
@@ -141,8 +147,7 @@ class _BlockedUserTile extends StatelessWidget {
           margin: const EdgeInsets.only(bottom: 8),
           child: ListTile(
             leading: CircleAvatar(
-              backgroundImage:
-                  photoUrl != null ? NetworkImage(photoUrl) : null,
+              backgroundImage: photoUrl != null ? NetworkImage(photoUrl) : null,
               child: photoUrl == null
                   ? const Icon(Icons.person, color: Colors.white)
                   : null,

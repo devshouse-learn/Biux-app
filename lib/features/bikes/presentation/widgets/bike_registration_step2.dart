@@ -15,6 +15,8 @@ class BikeRegistrationStep2 extends StatefulWidget {
 }
 
 class _BikeRegistrationStep2State extends State<BikeRegistrationStep2> {
+  LocaleNotifier get l => Provider.of<LocaleNotifier>(context);
+
   final ImagePicker _picker = ImagePicker();
   String? _mainPhoto;
   String? _serialPhoto;
@@ -42,7 +44,7 @@ class _BikeRegistrationStep2State extends State<BikeRegistrationStep2> {
       padding: const EdgeInsets.all(16),
       child: ListView(
         children: [
-          const SizedBox(height: 8),
+          SizedBox(height: 8),
 
           // Foto Principal (Obligatoria)
           _buildPhotoSection(
@@ -61,7 +63,7 @@ class _BikeRegistrationStep2State extends State<BikeRegistrationStep2> {
             },
           ),
 
-          const SizedBox(height: 24),
+          SizedBox(height: 24),
 
           // Foto del Número de Serie (Muy recomendada)
           _buildPhotoSection(
@@ -179,7 +181,7 @@ class _BikeRegistrationStep2State extends State<BikeRegistrationStep2> {
               children: [
                 TextButton.icon(
                   onPressed: () => _pickImage(onPhotoSelected),
-                  icon: const Icon(Icons.edit, size: 16),
+                  icon: Icon(Icons.edit, size: 16),
                   label: Text(l.t('change')),
                   style: TextButton.styleFrom(
                     foregroundColor: ColorTokens.primary30,
@@ -192,7 +194,7 @@ class _BikeRegistrationStep2State extends State<BikeRegistrationStep2> {
                       onPhotoSelected(null);
                     });
                   },
-                  icon: const Icon(Icons.delete, size: 16),
+                  icon: Icon(Icons.delete, size: 16),
                   label: Text(l.t('delete')),
                   style: TextButton.styleFrom(
                     foregroundColor: ColorTokens.error50,
@@ -215,7 +217,7 @@ class _BikeRegistrationStep2State extends State<BikeRegistrationStep2> {
           size: 48,
           color: hasError ? Colors.red : ColorTokens.neutral70,
         ),
-        const SizedBox(height: 12),
+        SizedBox(height: 12),
         Text(
           hasError ? l.t('error_loading_image') : l.t('tap_to_add_photo'),
           style: TextStyle(
@@ -242,7 +244,7 @@ class _BikeRegistrationStep2State extends State<BikeRegistrationStep2> {
                 color: ColorTokens.primary30,
               ),
             ),
-            const SizedBox(width: 8),
+            SizedBox(width: 8),
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
               decoration: BoxDecoration(
@@ -370,7 +372,7 @@ class _BikeRegistrationStep2State extends State<BikeRegistrationStep2> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Icon(Icons.add, size: 32, color: ColorTokens.neutral70),
-            const SizedBox(height: 8),
+            SizedBox(height: 8),
             Text(
               l.t('add_photo'),
               style: TextStyle(fontSize: 12, color: ColorTokens.neutral70),
@@ -436,7 +438,7 @@ class _BikeRegistrationStep2State extends State<BikeRegistrationStep2> {
             mainAxisSize: MainAxisSize.min,
             children: [
               ListTile(
-                leading: const Icon(
+                leading: Icon(
                   Icons.photo_camera,
                   color: ColorTokens.primary30,
                 ),
@@ -446,7 +448,7 @@ class _BikeRegistrationStep2State extends State<BikeRegistrationStep2> {
                 },
               ),
               ListTile(
-                leading: const Icon(
+                leading: Icon(
                   Icons.photo_library,
                   color: ColorTokens.primary30,
                 ),

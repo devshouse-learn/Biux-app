@@ -39,7 +39,7 @@ class BikeRegistrationStep4 extends StatelessWidget {
                       size: 48,
                       color: ColorTokens.primary30,
                     ),
-                    const SizedBox(height: 16),
+                    SizedBox(height: 16),
                     Text(
                       l.t('step4_title'),
                       style: const TextStyle(
@@ -49,7 +49,7 @@ class BikeRegistrationStep4 extends StatelessWidget {
                       ),
                       textAlign: TextAlign.center,
                     ),
-                    const SizedBox(height: 8),
+                    SizedBox(height: 8),
                     Text(
                       l.t('step4_description'),
                       style: const TextStyle(
@@ -80,7 +80,7 @@ class BikeRegistrationStep4 extends StatelessWidget {
                 child: Row(
                   children: [
                     Icon(Icons.info_outline, color: Colors.blue[700], size: 20),
-                    const SizedBox(width: 8),
+                    SizedBox(width: 8),
                     Expanded(
                       child: Text(
                         l.t('finalize_bike_info'),
@@ -127,10 +127,10 @@ class BikeRegistrationStep4 extends StatelessWidget {
                 color: ColorTokens.primary30,
                 size: 24,
               ),
-              const SizedBox(width: 8),
+              SizedBox(width: 8),
               Text(
                 l.t('bike_summary_title'),
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.w600,
                   color: ColorTokens.primary30,
@@ -138,12 +138,12 @@ class BikeRegistrationStep4 extends StatelessWidget {
               ),
             ],
           ),
-          const SizedBox(height: 16),
+          SizedBox(height: 16),
 
           // Fotos
           _buildPhotosSection(context, data),
 
-          const SizedBox(height: 16),
+          SizedBox(height: 16),
 
           // Información básica
           _buildInfoRow(l.t('brand_colon'), data['brand'] ?? ''),
@@ -242,7 +242,7 @@ class BikeRegistrationStep4 extends StatelessWidget {
         Row(
           children: [
             Icon(Icons.zoom_in, size: 16, color: ColorTokens.neutral60),
-            const SizedBox(width: 4),
+            SizedBox(width: 4),
             Text(
               l.t('tap_to_enlarge_photo'),
               style: TextStyle(fontSize: 12, color: ColorTokens.neutral60),

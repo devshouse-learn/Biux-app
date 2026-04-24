@@ -23,6 +23,8 @@ class MainShell extends StatefulWidget {
 }
 
 class _MainShellState extends State<MainShell> {
+  LocaleNotifier get l => Provider.of<LocaleNotifier>(context);
+
   int _selectedIndex = 0;
   bool _isFullScreenRoute = false;
 

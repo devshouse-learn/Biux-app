@@ -5,6 +5,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:biux/core/design_system/color_tokens.dart';
 import 'package:biux/features/safety/domain/entities/block_report_entity.dart';
 import 'package:biux/features/safety/presentation/providers/safety_provider.dart';
+import 'package:biux/core/design_system/locale_notifier.dart';
+import 'package:biux/core/design_system/locale_notifier.dart';
 
 class ReportUserScreen extends StatefulWidget {
   final String reportedUserId;
@@ -20,6 +22,8 @@ class ReportUserScreen extends StatefulWidget {
 }
 
 class _ReportUserScreenState extends State<ReportUserScreen> {
+  LocaleNotifier get l => Provider.of<LocaleNotifier>(context);
+
   ReportReason? _selectedReason;
   final _descController = TextEditingController();
   bool _loading = false;
@@ -65,7 +69,7 @@ class _ReportUserScreenState extends State<ReportUserScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Reportar usuario'),
+        title: Text(l.t('report_user_title')),
         backgroundColor: ColorTokens.primary30,
         foregroundColor: Colors.white,
       ),
@@ -102,7 +106,7 @@ class _ReportUserScreenState extends State<ReportUserScreen> {
               'Por que reportas este usuario?',
               style: TextStyle(fontWeight: FontWeight.w700, fontSize: 16),
             ),
-            const SizedBox(height: 12),
+            SizedBox(height: 12),
             ...ReportReason.values.map(
               (r) => InkWell(
                 onTap: () => setState(() => _selectedReason = r),
@@ -122,12 +126,12 @@ class _ReportUserScreenState extends State<ReportUserScreen> {
                 ),
               ),
             ),
-            const SizedBox(height: 16),
+            SizedBox(height: 16),
             TextField(
               controller: _descController,
               maxLines: 3,
               decoration: InputDecoration(
-                hintText: 'Descripcion adicional (opcional)',
+                hintText: l.t('additional_description_optional'),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12),
                 ),
@@ -158,8 +162,8 @@ class _ReportUserScreenState extends State<ReportUserScreen> {
                 ),
                 child: _loading
                     ? const CircularProgressIndicator(color: Colors.white)
-                    : const Text(
-                        'Enviar reporte',
+                    : Text(
+                        l.t('send_report_user'),
                         style: TextStyle(
                           fontSize: 15,
                           fontWeight: FontWeight.w700,

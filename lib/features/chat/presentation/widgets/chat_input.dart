@@ -10,6 +10,8 @@ import 'package:path_provider/path_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:biux/shared/services/permission_service.dart';
 import 'package:biux/features/chat/domain/entities/message_entity.dart';
+import 'package:biux/core/design_system/locale_notifier.dart';
+import 'package:provider/provider.dart';
 
 const _kRecentEmojisKey = 'recent_emojis_v1';
 const _kMaxRecentEmojis = 32;
@@ -48,6 +50,8 @@ class ChatInput extends StatefulWidget {
 
 class _ChatInputState extends State<ChatInput>
     with SingleTickerProviderStateMixin {
+  LocaleNotifier get l => Provider.of<LocaleNotifier>(context);
+
   final _controller = TextEditingController();
   final _audioRecorder = AudioRecorder();
 
@@ -1081,7 +1085,7 @@ class _ChatInputState extends State<ChatInput>
                               }
                             },
                             decoration: InputDecoration(
-                              hintText: 'Escribe un mensaje...',
+                              hintText: l.t('write_message'),
                               border: InputBorder.none,
                               hintStyle: TextStyle(
                                 color: widget.isDark
@@ -1377,6 +1381,7 @@ class _ReplyBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l = Provider.of<LocaleNotifier>(context);
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
       color: isDark ? const Color(0xFF1A2B3C) : Colors.grey.shade100,
@@ -1449,6 +1454,7 @@ class _HoldingRecordingBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l = Provider.of<LocaleNotifier>(context);
     final cancelProgress = (dragX / cancelThreshold).clamp(0.0, 1.0);
     final translateX = dragX.clamp(cancelThreshold, 0.0);
 
@@ -1520,6 +1526,8 @@ class _RecordingBar extends StatefulWidget {
 }
 
 class _RecordingBarState extends State<_RecordingBar> {
+  LocaleNotifier get l => Provider.of<LocaleNotifier>(context);
+
   double _dragOffset = 0;
   static const double _cancelThreshold = -80;
 

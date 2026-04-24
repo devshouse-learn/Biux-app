@@ -43,7 +43,7 @@ class WeatherWidget extends StatelessWidget {
               children: [
                 Text(
                   temperature != null ? '${temperature!.toInt()}°C' : '--°C',
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
                   ),

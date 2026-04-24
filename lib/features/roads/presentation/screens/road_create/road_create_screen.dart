@@ -22,6 +22,8 @@ class RoadCreateScreen extends StatefulWidget {
 }
 
 class _RoadCreateScreenState extends State<RoadCreateScreen> {
+  LocaleNotifier get l => Provider.of<LocaleNotifier>(context);
+
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   final TextEditingController controllerRouteName = TextEditingController();
   final TextEditingController controllerMeetingPoint = TextEditingController();
@@ -76,7 +78,7 @@ class _RoadCreateScreenState extends State<RoadCreateScreen> {
               key: _formKey,
               child: ListView(
                 children: [
-                  const SizedBox(height: 10),
+                  SizedBox(height: 10),
                   TextFormFieldBiuxWidget(
                     controller: controllerRouteName,
                     text: l.t('route_name'),

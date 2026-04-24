@@ -7,6 +7,8 @@ import 'package:biux/features/ride_tracker/domain/entities/ride_track_entity.dar
 import 'package:biux/features/users/domain/entities/user_entity.dart';
 import 'package:biux/features/ride_recommendations/domain/entities/ride_recommendation_entity.dart';
 import 'package:biux/features/ride_recommendations/presentation/providers/ride_recommendation_provider.dart';
+import 'package:biux/core/design_system/locale_notifier.dart';
+import 'package:biux/core/design_system/locale_notifier.dart';
 
 class SendRecommendationSheet extends StatefulWidget {
   final RideTrackEntity track;
@@ -18,6 +20,8 @@ class SendRecommendationSheet extends StatefulWidget {
 }
 
 class _SendRecommendationSheetState extends State<SendRecommendationSheet> {
+  LocaleNotifier get l => Provider.of<LocaleNotifier>(context);
+
   UserEntity? _selectedFriend;
   RecommendationType _type = RecommendationType.organizedRoute;
   final _nameCtrl = TextEditingController();
@@ -73,12 +77,12 @@ class _SendRecommendationSheetState extends State<SendRecommendationSheet> {
     if (_selectedFriend == null) {
       ScaffoldMessenger.of(
         context,
-      ).showSnackBar(const SnackBar(content: Text('Selecciona un amigo')));
+      ).showSnackBar(SnackBar(content: Text(l.t('select_friend'))));
       return;
     }
     if (_nameCtrl.text.trim().isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Agrega un nombre a la ruta')),
+        SnackBar(content: Text(l.t('add_route_name'))),
       );
       return;
     }
@@ -108,8 +112,8 @@ class _SendRecommendationSheetState extends State<SendRecommendationSheet> {
         );
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Error al enviar'),
+          SnackBar(
+            content: Text(l.t('error_sending')),
             backgroundColor: Colors.red,
           ),
         );
@@ -181,13 +185,13 @@ class _SendRecommendationSheetState extends State<SendRecommendationSheet> {
                         size: 22,
                       ),
                     ),
-                    const SizedBox(width: 12),
+                    SizedBox(width: 12),
                     Expanded(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          const Text(
-                            'Recomendar ruta',
+                          Text(
+                            l.t('recommend_route'),
                             style: TextStyle(
                               fontSize: 17,
                               fontWeight: FontWeight.w800,
@@ -205,7 +209,7 @@ class _SendRecommendationSheetState extends State<SendRecommendationSheet> {
                     ),
                   ],
                 ),
-                const SizedBox(height: 16),
+                SizedBox(height: 16),
 
                 // Stats resumen
                 Container(
@@ -220,9 +224,9 @@ class _SendRecommendationSheetState extends State<SendRecommendationSheet> {
                     children: [
                       _stat(
                         '${widget.track.totalKm.toStringAsFixed(1)} km',
-                        'Distancia',
+                        l.t('distance'),
                       ),
-                      _stat(widget.track.durationFormatted, 'Duración'),
+                      _stat(widget.track.durationFormatted, l.t('duration')),
                       _stat(
                         '${widget.track.avgSpeed.toStringAsFixed(1)} km/h',
                         'Vel avg',
@@ -231,18 +235,18 @@ class _SendRecommendationSheetState extends State<SendRecommendationSheet> {
                     ],
                   ),
                 ),
-                const SizedBox(height: 14),
+                SizedBox(height: 14),
 
                 // Nombre
-                const Text(
-                  'Nombre de la ruta',
+                Text(
+                  l.t('route_name'),
                   style: TextStyle(fontSize: 13, fontWeight: FontWeight.w700),
                 ),
-                const SizedBox(height: 6),
+                SizedBox(height: 6),
                 TextField(
                   controller: _nameCtrl,
                   decoration: InputDecoration(
-                    hintText: 'Ej: Ruta al cerro, Ciclovia del rio...',
+                    hintText: l.t('route_name_hint'),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(12),
                     ),
@@ -252,11 +256,11 @@ class _SendRecommendationSheetState extends State<SendRecommendationSheet> {
                     ),
                   ),
                 ),
-                const SizedBox(height: 14),
+                SizedBox(height: 14),
 
                 // Tipo
-                const Text(
-                  'Tipo de ruta',
+                Text(
+                  l.t('route_type'),
                   style: TextStyle(fontSize: 13, fontWeight: FontWeight.w700),
                 ),
                 const SizedBox(height: 8),
@@ -295,11 +299,11 @@ class _SendRecommendationSheetState extends State<SendRecommendationSheet> {
                     );
                   }).toList(),
                 ),
-                const SizedBox(height: 14),
+                SizedBox(height: 14),
 
                 // Descripción
-                const Text(
-                  'Descripción',
+                Text(
+                  l.t('description'),
                   style: TextStyle(fontSize: 13, fontWeight: FontWeight.w700),
                 ),
                 const SizedBox(height: 6),
@@ -321,15 +325,15 @@ class _SendRecommendationSheetState extends State<SendRecommendationSheet> {
                 const SizedBox(height: 14),
 
                 // Sitios destacados
-                const Text(
+                Text(
                   'Sitios destacados (máx. 5)',
                   style: TextStyle(fontSize: 13, fontWeight: FontWeight.w700),
                 ),
-                const SizedBox(height: 6),
+                SizedBox(height: 6),
                 TextField(
                   controller: _highlightCtrl,
                   decoration: InputDecoration(
-                    hintText: 'Ej: Mirador, Parque, Cafetería...',
+                    hintText: l.t('point_of_interest_hint'),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(12),
                     ),
@@ -338,9 +342,9 @@ class _SendRecommendationSheetState extends State<SendRecommendationSheet> {
                       vertical: 10,
                     ),
                     suffixIcon: IconButton(
-                      icon: const Icon(Icons.keyboard_return_rounded, size: 18),
+                      icon: Icon(Icons.keyboard_return_rounded, size: 18),
                       onPressed: _addHighlight,
-                      tooltip: 'Agregar',
+                      tooltip: l.t('add_label'),
                     ),
                   ),
                   onSubmitted: (_) => _addHighlight(),
@@ -373,14 +377,14 @@ class _SendRecommendationSheetState extends State<SendRecommendationSheet> {
                         .toList(),
                   ),
                 ],
-                const SizedBox(height: 16),
+                SizedBox(height: 16),
 
                 // Foto de portada (opcional)
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    const Text(
-                      'Foto de portada',
+                    Text(
+                      l.t('cover_photo_label'),
                       style: TextStyle(
                         fontSize: 13,
                         fontWeight: FontWeight.w700,
@@ -392,7 +396,7 @@ class _SendRecommendationSheetState extends State<SendRecommendationSheet> {
                     ),
                   ],
                 ),
-                const SizedBox(height: 8),
+                SizedBox(height: 8),
                 if (_coverImage == null)
                   GestureDetector(
                     onTap: _pickImage,
@@ -415,9 +419,9 @@ class _SendRecommendationSheetState extends State<SendRecommendationSheet> {
                             size: 32,
                             color: Colors.grey[400],
                           ),
-                          const SizedBox(height: 6),
+                          SizedBox(height: 6),
                           Text(
-                            'Toca para agregar una foto',
+                            l.t('tap_to_add_photo'),
                             style: TextStyle(
                               fontSize: 12,
                               color: Colors.grey[500],
@@ -491,11 +495,11 @@ class _SendRecommendationSheetState extends State<SendRecommendationSheet> {
                       ),
                     ],
                   ),
-                const SizedBox(height: 16),
+                SizedBox(height: 16),
 
                 // Enviar a
-                const Text(
-                  'Enviar a',
+                Text(
+                  l.t('send_to'),
                   style: TextStyle(fontSize: 13, fontWeight: FontWeight.w700),
                 ),
                 const SizedBox(height: 8),
@@ -602,9 +606,9 @@ class _SendRecommendationSheetState extends State<SendRecommendationSheet> {
                               color: Colors.white,
                             ),
                           )
-                        : const Icon(Icons.send_rounded),
+                        : Icon(Icons.send_rounded),
                     label: Text(
-                      _sending ? 'Enviando...' : 'Enviar recomendación',
+                      _sending ? 'Enviando...' : l.t('send_recommendation'),
                       style: const TextStyle(
                         fontSize: 15,
                         fontWeight: FontWeight.w700,

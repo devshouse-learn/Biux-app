@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:biux/core/design_system/color_tokens.dart';
 import 'package:biux/features/social/data/datasources/report_datasource.dart';
+import 'package:biux/core/design_system/locale_notifier.dart';
+import 'package:provider/provider.dart';
+import 'package:biux/core/design_system/locale_notifier.dart';
 
 /// Diálogo para reportar contenido (posts, comentarios, usuarios, rodadas)
 class ReportContentDialog {
@@ -22,6 +25,7 @@ class ReportContentDialog {
     required String contentOwnerId,
     required String contentType, // 'post', 'comment', 'user', 'ride'
   }) {
+    final l = Provider.of<LocaleNotifier>(context);
     final uid = FirebaseAuth.instance.currentUser?.uid;
     if (uid == null) return;
 
@@ -68,7 +72,7 @@ class ReportContentDialog {
                   Icon(Icons.flag_outlined, color: ColorTokens.error50),
                   SizedBox(width: 8),
                   Text(
-                    'Reportar contenido',
+                    l.t('report_content'),
                     style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                   ),
                 ],
@@ -103,7 +107,7 @@ class ReportContentDialog {
                 TextField(
                   controller: detailsController,
                   decoration: InputDecoration(
-                    hintText: 'Detalles adicionales (opcional)',
+                    hintText: l.t('additional_details_optional'),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(8),
                     ),
@@ -166,7 +170,7 @@ class ReportContentDialog {
                       borderRadius: BorderRadius.circular(10),
                     ),
                   ),
-                  child: Text('Enviar Reporte'),
+                  child: Text(l.t('send_report_label')),
                 ),
               ),
             ],

@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:biux/core/design_system/color_tokens.dart';
 import 'package:biux/core/services/screen_time_service.dart';
+import 'package:biux/core/design_system/locale_notifier.dart';
+import 'package:provider/provider.dart';
+import 'package:biux/core/design_system/locale_notifier.dart';
 
 /// Pantalla de estadísticas de tiempo de uso, estilo Instagram.
 /// Lee datos del servicio global ScreenTimeService.
@@ -14,6 +17,8 @@ class ActivityScreenTimeScreen extends StatefulWidget {
 }
 
 class _ActivityScreenTimeScreenState extends State<ActivityScreenTimeScreen> {
+  LocaleNotifier get l => Provider.of<LocaleNotifier>(context);
+
   final _service = ScreenTimeService.instance;
 
   String _formatMinutes(int minutes) {
@@ -192,7 +197,7 @@ class _ActivityScreenTimeScreenState extends State<ActivityScreenTimeScreen> {
 
             // Stats cards
             Text(
-              'Estadísticas',
+              l.t('statistics'),
               style: TextStyle(
                 color: ColorTokens.neutral100,
                 fontSize: 18,
@@ -206,7 +211,7 @@ class _ActivityScreenTimeScreenState extends State<ActivityScreenTimeScreen> {
                 Expanded(
                   child: _buildStatCard(
                     icon: Icons.today,
-                    label: 'Hoy',
+                    label: l.t('today'),
                     value: _formatMinutes(today),
                   ),
                 ),
@@ -214,7 +219,7 @@ class _ActivityScreenTimeScreenState extends State<ActivityScreenTimeScreen> {
                 Expanded(
                   child: _buildStatCard(
                     icon: Icons.calendar_view_week,
-                    label: 'Prom. 7 días',
+                    label: l.t('avg_7_days'),
                     value: _formatMinutesDouble(avg7),
                   ),
                 ),
@@ -226,7 +231,7 @@ class _ActivityScreenTimeScreenState extends State<ActivityScreenTimeScreen> {
                 Expanded(
                   child: _buildStatCard(
                     icon: Icons.calendar_month,
-                    label: 'Prom. 30 días',
+                    label: l.t('avg_30_days'),
                     value: _formatMinutesDouble(avg30),
                   ),
                 ),
@@ -234,7 +239,7 @@ class _ActivityScreenTimeScreenState extends State<ActivityScreenTimeScreen> {
                 Expanded(
                   child: _buildStatCard(
                     icon: Icons.access_time,
-                    label: 'Total semana',
+                    label: l.t('total_week'),
                     value: _formatMinutes(
                       last7.fold<int>(0, (sum, d) => sum + d.minutes),
                     ),

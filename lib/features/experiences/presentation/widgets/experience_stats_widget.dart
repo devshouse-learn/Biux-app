@@ -38,7 +38,7 @@ class ExperienceStatsWidget extends StatelessWidget {
           Row(
             children: [
               Icon(Icons.analytics_outlined, color: _getIconColor(), size: 20),
-              const SizedBox(width: 8),
+              SizedBox(width: 8),
               Text(
                 l.t('content_summary'),
                 style: const TextStyle(
@@ -62,7 +62,7 @@ class ExperienceStatsWidget extends StatelessWidget {
             ],
           ),
 
-          const SizedBox(height: 12),
+          SizedBox(height: 12),
 
           // Estadísticas principales
           Row(
@@ -157,14 +157,14 @@ class ExperienceStatsWidget extends StatelessWidget {
       child: Row(
         children: [
           Icon(Icons.lightbulb_outline, color: ColorTokens.warning40, size: 16),
-          const SizedBox(width: 8),
+          SizedBox(width: 8),
           Expanded(
             child: Text(
               l.t('content_heavy_optimize'),
               style: TextStyle(fontSize: 12, color: ColorTokens.warning40),
             ),
           ),
-          const SizedBox(width: 8),
+          SizedBox(width: 8),
           TextButton(
             onPressed: onOptimize,
             style: TextButton.styleFrom(

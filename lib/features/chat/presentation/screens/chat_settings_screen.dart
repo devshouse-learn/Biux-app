@@ -4,6 +4,9 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:biux/core/config/router/app_routes.dart';
 import 'package:biux/core/design_system/color_tokens.dart';
 import 'package:biux/features/settings/presentation/widgets/settings_shared_widgets.dart';
+import 'package:biux/core/design_system/locale_notifier.dart';
+import 'package:provider/provider.dart';
+import 'package:biux/core/design_system/locale_notifier.dart';
 
 class ChatSettingsScreen extends StatefulWidget {
   const ChatSettingsScreen({super.key});
@@ -13,6 +16,8 @@ class ChatSettingsScreen extends StatefulWidget {
 }
 
 class _ChatSettingsScreenState extends State<ChatSettingsScreen> {
+  LocaleNotifier get l => Provider.of<LocaleNotifier>(context);
+
   double _fontSize = 14.0;
 
   @override
@@ -42,7 +47,7 @@ class _ChatSettingsScreenState extends State<ChatSettingsScreen> {
     return Scaffold(
       backgroundColor: SettingsWidgets.scaffoldBackground(isDark),
       appBar: AppBar(
-        title: const Text('Ajustes de chats'),
+        title: Text('Ajustes de chats'),
         backgroundColor: ColorTokens.primary30,
         foregroundColor: Colors.white,
       ),
@@ -50,40 +55,40 @@ class _ChatSettingsScreenState extends State<ChatSettingsScreen> {
         padding: const EdgeInsets.all(16),
         children: [
           // --- Tamaño de fuente ---
-          SettingsWidgets.buildSectionTitle('Personalización', isDark),
-          const SizedBox(height: 12),
+          SettingsWidgets.buildSectionTitle(l.t('customization'), isDark),
+          SizedBox(height: 12),
           _buildFontSizeCard(isDark),
 
-          const SizedBox(height: 24),
+          SizedBox(height: 24),
 
           // --- Copia de seguridad ---
-          SettingsWidgets.buildSectionTitle('Copia de seguridad', isDark),
-          const SizedBox(height: 12),
+          SettingsWidgets.buildSectionTitle(l.t('backup'), isDark),
+          SizedBox(height: 12),
           SettingsWidgets.buildOptionCard(
             context: context,
             icon: Icons.cloud_upload_outlined,
-            title: 'Copia de seguridad',
+            title: l.t('backup'),
             subtitle: 'Respalda tus chats en la nube',
             isDark: isDark,
             onTap: () {
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(
-                  content: const Text('Función en desarrollo'),
+                  content: Text(l.t('feature_in_development')),
                   backgroundColor: Colors.orange.shade600,
                 ),
               );
             },
           ),
 
-          const SizedBox(height: 24),
+          SizedBox(height: 24),
 
           // --- Usuarios bloqueados ---
-          SettingsWidgets.buildSectionTitle('Privacidad', isDark),
-          const SizedBox(height: 12),
+          SettingsWidgets.buildSectionTitle(l.t('privacy'), isDark),
+          SizedBox(height: 12),
           SettingsWidgets.buildOptionCard(
             context: context,
             icon: Icons.block,
-            title: 'Usuarios bloqueados',
+            title: l.t('blocked_users'),
             subtitle: 'Administra tu lista de usuarios bloqueados',
             isDark: isDark,
             onTap: () => context.push(AppRoutes.blockedUsers),
@@ -145,7 +150,7 @@ class _ChatSettingsScreenState extends State<ChatSettingsScreen> {
                   onChanged: _saveFontSize,
                 ),
               ),
-              const Text('A', style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold)),
+              Text('A', style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold)),
             ],
           ),
           Center(
@@ -156,7 +161,7 @@ class _ChatSettingsScreenState extends State<ChatSettingsScreen> {
                 borderRadius: BorderRadius.circular(12),
               ),
               child: Text(
-                'Vista previa del texto',
+                l.t('text_preview'),
                 style: TextStyle(
                   fontSize: _fontSize,
                   color: isDark ? Colors.white : Colors.black87,

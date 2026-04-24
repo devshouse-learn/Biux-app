@@ -4,6 +4,7 @@ import 'package:biux/core/design_system/locale_notifier.dart';
 import 'package:biux/features/store/domain/entities/product_entity.dart';
 import 'package:biux/features/store/presentation/providers/product_provider.dart';
 import 'package:biux/features/users/domain/entities/user_entity.dart';
+import 'package:biux/core/design_system/locale_notifier.dart';
 
 /// Panel de vendedor para gestionar sus productos
 class SellerDashboardScreen extends StatefulWidget {
@@ -16,6 +17,8 @@ class SellerDashboardScreen extends StatefulWidget {
 }
 
 class _SellerDashboardScreenState extends State<SellerDashboardScreen> {
+  LocaleNotifier get l => Provider.of<LocaleNotifier>(context);
+
   @override
   void initState() {
     super.initState();
@@ -61,7 +64,7 @@ class _SellerDashboardScreenState extends State<SellerDashboardScreen> {
                   Text('${l.t('error_generic')}: ${provider.error}'),
                   ElevatedButton(
                     onPressed: _loadSellerProducts,
-                    child: const Text('Reintentar'),
+                    child: Text(l.t('retry')),
                   ),
                 ],
               ),
@@ -195,13 +198,13 @@ class _SellerDashboardScreenState extends State<SellerDashboardScreen> {
         trailing: PopupMenuButton(
           icon: const Icon(Icons.more_vert),
           itemBuilder: (context) => [
-            const PopupMenuItem(
+            PopupMenuItem(
               value: 'edit',
               child: Row(
                 children: [
                   Icon(Icons.edit),
                   SizedBox(width: 8),
-                  Text('Editar'),
+                  Text(l.t('edit')),
                 ],
               ),
             ),
@@ -217,13 +220,13 @@ class _SellerDashboardScreenState extends State<SellerDashboardScreen> {
                 ],
               ),
             ),
-            const PopupMenuItem(
+            PopupMenuItem(
               value: 'delete',
               child: Row(
                 children: [
                   Icon(Icons.delete, color: Colors.red),
                   SizedBox(width: 8),
-                  Text('Eliminar'),
+                  Text(l.t('delete')),
                 ],
               ),
             ),
@@ -251,7 +254,7 @@ class _SellerDashboardScreenState extends State<SellerDashboardScreen> {
       context: context,
       builder: (context) => AlertDialog(
         title: const Text('Agregar Producto'),
-        content: const SingleChildScrollView(
+        content: SingleChildScrollView(
           child: Text(
             'Formulario de creación de producto.\n\n'
             'Aquí implementarías un formulario completo con:\n'
@@ -269,7 +272,7 @@ class _SellerDashboardScreenState extends State<SellerDashboardScreen> {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('Cerrar'),
+            child: Text(l.t('close')),
           ),
           ElevatedButton(
             onPressed: () {
@@ -279,7 +282,7 @@ class _SellerDashboardScreenState extends State<SellerDashboardScreen> {
                 const SnackBar(content: Text('Funcionalidad en desarrollo')),
               );
             },
-            child: const Text('Guardar'),
+            child: Text(l.t('save')),
           ),
         ],
       ),
@@ -297,13 +300,13 @@ class _SellerDashboardScreenState extends State<SellerDashboardScreen> {
             'Formulario de edición de producto.\n\n'
             'Aquí implementarías un formulario prellenado con los datos actuales del producto.\n\n'
             'Por ahora es una versión demo.',
-            style: const TextStyle(fontSize: 14),
+            style: TextStyle(fontSize: 14),
           ),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('Cancelar'),
+            child: Text(l.t('cancel')),
           ),
           ElevatedButton(
             onPressed: () {
@@ -336,7 +339,7 @@ class _SellerDashboardScreenState extends State<SellerDashboardScreen> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Eliminar Producto'),
+        title: Text('Eliminar Producto'),
         content: Text(
           '¿Estás seguro de que deseas eliminar "${product.nombre}"?\n\n'
           'Esta acción no se puede deshacer.',
@@ -344,7 +347,7 @@ class _SellerDashboardScreenState extends State<SellerDashboardScreen> {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('Cancelar'),
+            child: Text(l.t('cancel')),
           ),
           ElevatedButton(
             onPressed: () async {
@@ -377,7 +380,7 @@ class _SellerDashboardScreenState extends State<SellerDashboardScreen> {
               }
             },
             style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
-            child: const Text('Eliminar'),
+            child: Text(l.t('delete')),
           ),
         ],
       ),

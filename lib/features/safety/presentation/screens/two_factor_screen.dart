@@ -3,6 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:biux/features/safety/data/datasources/two_factor_service.dart';
 import 'package:biux/core/design_system/color_tokens.dart';
+import 'package:biux/core/design_system/locale_notifier.dart';
+import 'package:provider/provider.dart';
+import 'package:biux/core/design_system/locale_notifier.dart';
 
 enum _TwoFactorMethod { email, sms }
 
@@ -14,6 +17,8 @@ class TwoFactorScreen extends StatefulWidget {
 }
 
 class _TwoFactorScreenState extends State<TwoFactorScreen> {
+  LocaleNotifier get l => Provider.of<LocaleNotifier>(context);
+
   _TwoFactorMethod _method = _TwoFactorMethod.sms;
   bool _enabled = false; // tracks 2FA activation state
   bool _loading = false;
@@ -81,7 +86,7 @@ class _TwoFactorScreenState extends State<TwoFactorScreen> {
     return Scaffold(
       backgroundColor: isDark ? const Color(0xFF0D1B2A) : Colors.grey.shade50,
       appBar: AppBar(
-        title: const Text('Verificación en dos pasos'),
+        title: Text(l.t('two_step_verification')),
         actions: [
           if (_enabled)
             const Padding(
@@ -101,9 +106,9 @@ class _TwoFactorScreenState extends State<TwoFactorScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             _InfoCard(isDark: isDark),
-            const SizedBox(height: 24),
-            const Text(
-              'Método de verificación',
+            SizedBox(height: 24),
+            Text(
+              l.t('verification_method'),
               style: TextStyle(fontWeight: FontWeight.w700, fontSize: 15),
             ),
             const SizedBox(height: 12),
@@ -118,7 +123,7 @@ class _TwoFactorScreenState extends State<TwoFactorScreen> {
                     isDark: isDark,
                   ),
                 ),
-                const SizedBox(width: 12),
+                SizedBox(width: 12),
                 Expanded(
                   child: _MethodTile(
                     icon: Icons.email_rounded,
@@ -132,12 +137,12 @@ class _TwoFactorScreenState extends State<TwoFactorScreen> {
               ],
             ),
             if (_method == _TwoFactorMethod.email) ...[
-              const SizedBox(height: 16),
+              SizedBox(height: 16),
               TextField(
                 controller: _emailController,
                 keyboardType: TextInputType.emailAddress,
                 decoration: InputDecoration(
-                  labelText: 'Correo electrónico',
+                  labelText: l.t('email_label'),
                   prefixIcon: const Icon(Icons.email_outlined),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
@@ -168,15 +173,15 @@ class _TwoFactorScreenState extends State<TwoFactorScreen> {
                             color: Colors.white,
                           ),
                         )
-                      : const Text(
-                          'Enviar código',
+                      : Text(
+                          l.t('send_code_btn'),
                           style: TextStyle(fontWeight: FontWeight.w600),
                         ),
                 ),
               )
             else ...[
-              const Text(
-                'Ingresa el código de verificación',
+              Text(
+                l.t('enter_verification_code'),
                 style: TextStyle(fontWeight: FontWeight.w600, fontSize: 14),
               ),
               const SizedBox(height: 12),
@@ -231,15 +236,15 @@ class _TwoFactorScreenState extends State<TwoFactorScreen> {
                             color: Colors.white,
                           ),
                         )
-                      : const Text(
-                          'Verificar y activar',
+                      : Text(
+                          l.t('verify_and_activate'),
                           style: TextStyle(fontWeight: FontWeight.w600),
                         ),
                 ),
               ),
               TextButton(
                 onPressed: _loading ? null : _sendCode,
-                child: const Text('Reenviar código'),
+                child: Text(l.t('resend_code')),
               ),
             ],
           ],
@@ -255,6 +260,7 @@ class _InfoCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l = Provider.of<LocaleNotifier>(context);
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -271,13 +277,13 @@ class _InfoCard extends StatelessWidget {
             color: Color(0xFF1E8BC3),
             size: 28,
           ),
-          const SizedBox(width: 12),
-          const Expanded(
+          SizedBox(width: 12),
+          Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'Protege tu cuenta',
+                  l.t('protect_account'),
                   style: TextStyle(fontWeight: FontWeight.w700, fontSize: 14),
                 ),
                 SizedBox(height: 4),
@@ -311,6 +317,7 @@ class _MethodTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l = Provider.of<LocaleNotifier>(context);
     return GestureDetector(
       onTap: onTap,
       child: Container(

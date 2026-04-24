@@ -42,22 +42,22 @@ class ShopStatsScreen extends StatelessWidget {
               children: [
                 // Header con resumen
                 _buildSummaryHeader(l, totalProducts, categoryCount.length),
-                const SizedBox(height: 24),
+                SizedBox(height: 24),
 
                 // Estadísticas rápidas
                 Text(
                   l.t('general_summary'),
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 20,
                     fontWeight: FontWeight.bold,
                     color: _kPrimaryColor,
                   ),
                 ),
-                const SizedBox(height: 12),
+                SizedBox(height: 12),
                 GridView.count(
                   crossAxisCount: 2,
                   shrinkWrap: true,
-                  physics: const NeverScrollableScrollPhysics(),
+                  physics: NeverScrollableScrollPhysics(),
                   mainAxisSpacing: 12,
                   crossAxisSpacing: 12,
                   childAspectRatio: 1.4,
@@ -92,7 +92,7 @@ class ShopStatsScreen extends StatelessWidget {
                     ),
                   ],
                 ),
-                const SizedBox(height: 24),
+                SizedBox(height: 24),
 
                 // Distribución por categoría
                 Text(
@@ -119,18 +119,18 @@ class ShopStatsScreen extends StatelessWidget {
                     );
                   }),
 
-                const SizedBox(height: 24),
+                SizedBox(height: 24),
 
                 // Actividad reciente
                 Text(
                   l.t('recent_activity'),
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 20,
                     fontWeight: FontWeight.bold,
                     color: _kPrimaryColor,
                   ),
                 ),
-                const SizedBox(height: 12),
+                SizedBox(height: 12),
                 _buildActivityItem(
                   Icons.shopping_bag,
                   l.t('store_operational'),
@@ -179,7 +179,7 @@ class ShopStatsScreen extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text('📊 ', style: TextStyle(fontSize: 22)),
+          Text('📊 ', style: TextStyle(fontSize: 22)),
           Text(
             l.t('your_store_in_numbers'),
             style: const TextStyle(
@@ -188,18 +188,18 @@ class ShopStatsScreen extends StatelessWidget {
               color: Colors.white,
             ),
           ),
-          const SizedBox(height: 8),
+          SizedBox(height: 8),
           Text(
             '$totalProducts ${l.t('count_products')} ${l.t('in_preposition')} $totalCategories ${l.t('count_categories')}',
             style: const TextStyle(fontSize: 14, color: Colors.white70),
           ),
-          const SizedBox(height: 16),
+          SizedBox(height: 16),
           Row(
             children: [
               _buildMiniStat('🛒', l.t('sales'), '-'),
-              const SizedBox(width: 24),
+              SizedBox(width: 24),
               _buildMiniStat('⭐', l.t('rating'), '-'),
-              const SizedBox(width: 24),
+              SizedBox(width: 24),
               _buildMiniStat('👁️', l.t('views_label'), '-'),
             ],
           ),
@@ -301,7 +301,7 @@ class ShopStatsScreen extends StatelessWidget {
               children: [
                 Text(
                   name,
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 14,
                     fontWeight: FontWeight.w600,
                   ),
@@ -371,7 +371,7 @@ class ShopStatsScreen extends StatelessWidget {
               size: 60,
               color: Colors.grey.shade300,
             ),
-            const SizedBox(height: 12),
+            SizedBox(height: 12),
             Text(
               l.t('no_products_yet_stats'),
               style: TextStyle(
@@ -380,7 +380,7 @@ class ShopStatsScreen extends StatelessWidget {
                 color: Colors.grey.shade600,
               ),
             ),
-            const SizedBox(height: 4),
+            SizedBox(height: 4),
             Text(
               l.t('stats_when_products'),
               textAlign: TextAlign.center,

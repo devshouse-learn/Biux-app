@@ -17,6 +17,8 @@ class ShopReportsScreen extends StatefulWidget {
 
 class _ShopReportsScreenState extends State<ShopReportsScreen>
     with SingleTickerProviderStateMixin {
+  LocaleNotifier get l => Provider.of<LocaleNotifier>(context);
+
   late TabController _tabController;
 
   @override
@@ -39,7 +41,7 @@ class _ShopReportsScreenState extends State<ShopReportsScreen>
       appBar: AppBar(
         title: Text(
           l.t('reports_and_info'),
-          style: const TextStyle(fontWeight: FontWeight.bold),
+          style: TextStyle(fontWeight: FontWeight.bold),
         ),
         backgroundColor: _kPrimaryColor,
         foregroundColor: Colors.white,
@@ -50,11 +52,11 @@ class _ShopReportsScreenState extends State<ShopReportsScreen>
           labelColor: Colors.white,
           unselectedLabelColor: Colors.white60,
           tabs: [
-            Tab(icon: const Icon(Icons.add_circle), text: l.t('new_report')),
-            Tab(icon: const Icon(Icons.list_alt), text: l.t('my_reports')),
+            Tab(icon: Icon(Icons.add_circle), text: l.t('new_report')),
+            Tab(icon: Icon(Icons.list_alt), text: l.t('my_reports')),
             if (widget.isAdmin)
               Tab(
-                icon: const Icon(Icons.admin_panel_settings),
+                icon: Icon(Icons.admin_panel_settings),
                 text: l.t('admin'),
               ),
           ],
@@ -80,18 +82,18 @@ class _ShopReportsScreenState extends State<ShopReportsScreen>
         children: [
           Text(
             l.t('what_to_report'),
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 20,
               fontWeight: FontWeight.bold,
               color: _kPrimaryColor,
             ),
           ),
-          const SizedBox(height: 4),
+          SizedBox(height: 4),
           Text(
             l.t('select_report_type'),
             style: TextStyle(color: Colors.grey.shade600),
           ),
-          const SizedBox(height: 20),
+          SizedBox(height: 20),
           _buildReportTypeCard(
             ReportType.productReport,
             Icons.inventory_2,
@@ -198,7 +200,7 @@ class _ShopReportsScreenState extends State<ShopReportsScreen>
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Icon(Icons.flag_outlined, size: 80, color: Colors.grey.shade300),
-            const SizedBox(height: 16),
+            SizedBox(height: 16),
             Text(
               l.t('no_reports'),
               style: TextStyle(
@@ -207,7 +209,7 @@ class _ShopReportsScreenState extends State<ShopReportsScreen>
                 color: Colors.grey.shade700,
               ),
             ),
-            const SizedBox(height: 8),
+            SizedBox(height: 8),
             Text(
               l.t('no_reports_created'),
               textAlign: TextAlign.center,
@@ -232,7 +234,7 @@ class _ShopReportsScreenState extends State<ShopReportsScreen>
               size: 80,
               color: Colors.grey.shade300,
             ),
-            const SizedBox(height: 16),
+            SizedBox(height: 16),
             Text(
               l.t('admin_reports_panel'),
               style: TextStyle(
@@ -241,7 +243,7 @@ class _ShopReportsScreenState extends State<ShopReportsScreen>
                 color: Colors.grey.shade700,
               ),
             ),
-            const SizedBox(height: 24),
+            SizedBox(height: 24),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
@@ -321,7 +323,7 @@ class _ShopReportsScreenState extends State<ShopReportsScreen>
                     fontWeight: FontWeight.bold,
                   ),
                 ),
-                const SizedBox(height: 16),
+                SizedBox(height: 16),
                 TextField(
                   controller: titleController,
                   decoration: InputDecoration(
@@ -333,7 +335,7 @@ class _ShopReportsScreenState extends State<ShopReportsScreen>
                     fillColor: Colors.grey.shade50,
                   ),
                 ),
-                const SizedBox(height: 12),
+                SizedBox(height: 12),
                 TextField(
                   controller: descriptionController,
                   maxLines: 5,
@@ -350,7 +352,7 @@ class _ShopReportsScreenState extends State<ShopReportsScreen>
                 const SizedBox(height: 12),
                 OutlinedButton.icon(
                   onPressed: () {},
-                  icon: const Icon(Icons.attach_file),
+                  icon: Icon(Icons.attach_file),
                   label: Text(l.t('attach_evidence')),
                   style: OutlinedButton.styleFrom(
                     padding: const EdgeInsets.symmetric(vertical: 12),
@@ -372,7 +374,7 @@ class _ShopReportsScreenState extends State<ShopReportsScreen>
                         ),
                       );
                     },
-                    icon: const Icon(Icons.send),
+                    icon: Icon(Icons.send),
                     label: Text(l.t('send_report')),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: _kPrimaryColor,
