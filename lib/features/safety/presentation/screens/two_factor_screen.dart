@@ -5,7 +5,6 @@ import 'package:biux/features/safety/data/datasources/two_factor_service.dart';
 import 'package:biux/core/design_system/color_tokens.dart';
 import 'package:biux/core/design_system/locale_notifier.dart';
 import 'package:provider/provider.dart';
-import 'package:biux/core/design_system/locale_notifier.dart';
 
 enum _TwoFactorMethod { email, sms }
 
@@ -317,7 +316,6 @@ class _MethodTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final l = Provider.of<LocaleNotifier>(context);
     return GestureDetector(
       onTap: onTap,
       child: Container(

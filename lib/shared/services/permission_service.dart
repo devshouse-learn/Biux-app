@@ -3,7 +3,6 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:biux/core/design_system/locale_notifier.dart';
 import 'package:provider/provider.dart';
-import 'package:biux/core/design_system/locale_notifier.dart';
 
 /// Servicio centralizado de permisos.
 /// Verifica si el permiso ya fue concedido en configuración de la app

@@ -14,7 +14,6 @@ import 'package:biux/features/users/presentation/providers/user_provider.dart';
 import 'package:biux/core/design_system/color_tokens.dart';
 import 'package:biux/features/shop/data/datasources/stolen_bike_verification_datasource.dart';
 import 'package:biux/features/bikes/data/repositories/bike_repository_impl.dart';
-import 'package:biux/core/design_system/locale_notifier.dart';
 
 /// Pantalla de administración de productos (solo para admins)
 class AdminShopScreen extends StatefulWidget {

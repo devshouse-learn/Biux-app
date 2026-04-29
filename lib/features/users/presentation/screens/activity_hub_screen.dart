@@ -4,7 +4,6 @@ import 'package:biux/core/design_system/color_tokens.dart';
 import 'package:biux/features/settings/presentation/widgets/settings_shared_widgets.dart';
 import 'package:biux/core/design_system/locale_notifier.dart';
 import 'package:provider/provider.dart';
-import 'package:biux/core/design_system/locale_notifier.dart';
 
 class ActivityHubScreen extends StatelessWidget {
   const ActivityHubScreen({super.key});
@@ -17,14 +16,17 @@ class ActivityHubScreen extends StatelessWidget {
     return Scaffold(
       backgroundColor: SettingsWidgets.scaffoldBackground(isDark),
       appBar: AppBar(
-        title: Text('Tu actividad'),
+        title: Text(l.t('your_activity')),
         backgroundColor: ColorTokens.primary30,
         foregroundColor: Colors.white,
       ),
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [
-          SettingsWidgets.buildSectionTitle('Interacciones', isDark),
+          SettingsWidgets.buildSectionTitle(
+            l.t('interactions_section'),
+            isDark,
+          ),
           SizedBox(height: 12),
           SettingsWidgets.buildMenuCard(
             context,
@@ -44,13 +46,13 @@ class ActivityHubScreen extends StatelessWidget {
             onTap: () => context.push('/activity/comments'),
           ),
           SizedBox(height: 24),
-          SettingsWidgets.buildSectionTitle('Tu contenido', isDark),
+          SettingsWidgets.buildSectionTitle(l.t('your_content'), isDark),
           SizedBox(height: 12),
           SettingsWidgets.buildMenuCard(
             context,
             icon: Icons.grid_on_outlined,
             title: l.t('posts'),
-            subtitle: 'Tus posts compartidos',
+            subtitle: l.t('your_shared_posts'),
             isDark: isDark,
             onTap: () => context.push('/activity/posts'),
           ),

@@ -8,7 +8,6 @@ import 'package:biux/features/social/presentation/widgets/post_social_actions.da
 import 'package:biux/core/design_system/locale_notifier.dart';
 import 'package:biux/shared/widgets/post_card.dart';
 import 'package:firebase_database/firebase_database.dart';
-import 'package:biux/core/design_system/locale_notifier.dart';
 
 /// Pantalla estilo Instagram para ver publicaciones con galería
 /// Permite: ver imágenes en grande, darle like, y comentar
@@ -144,7 +143,7 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
             const SizedBox(height: 24),
             ElevatedButton(
               onPressed: () => context.pop(),
-              child: const Text('Volver'),
+              child: Text(l.t('back')),
             ),
           ],
         ),
@@ -484,7 +483,6 @@ class _RepostBannerDetail extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final l = Provider.of<LocaleNotifier>(context);
     final primaryColor = Theme.of(context).colorScheme.primary;
     return GestureDetector(
       onTap: () => _navigate(context),

@@ -8,7 +8,6 @@ import 'package:biux/core/config/router/app_routes.dart';
 import 'package:go_router/go_router.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:intl/intl.dart';
-import 'package:biux/core/design_system/locale_notifier.dart';
 
 class AccountSettingsScreen extends StatefulWidget {
   const AccountSettingsScreen({Key? key}) : super(key: key);
@@ -124,8 +123,8 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen> {
         boxShadow: [
           BoxShadow(
             color: isDark
-                ? Colors.black.withOpacity(0.15)
-                : Colors.grey.withOpacity(0.08),
+                ? Colors.black.withValues(alpha: 0.15)
+                : Colors.grey.withValues(alpha: 0.08),
             blurRadius: 8,
             offset: const Offset(0, 2),
           ),
@@ -139,7 +138,11 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen> {
               color: isDark ? Colors.grey.shade700 : Colors.grey.shade200,
               borderRadius: BorderRadius.circular(12),
             ),
-            child: Icon(icon, color: isDark ? Colors.white : Colors.black87, size: 26),
+            child: Icon(
+              icon,
+              color: isDark ? Colors.white : Colors.black87,
+              size: 26,
+            ),
           ),
           const SizedBox(width: 16),
           Expanded(
@@ -167,87 +170,6 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen> {
           ),
         ],
       ),
-    );
-  }
-
-  /// Formatea el número de teléfono
-  String _formatPhoneNumber(String phoneNumber) {
-    String cleaned = phoneNumber.replaceAll(RegExp(r'[^\d]'), '');
-
-    // Si comienza con 57 (código de Colombia), remover
-    if (cleaned.startsWith('57')) {
-      cleaned = cleaned.substring(2);
-    }
-
-    // Formatear como XXX XXX XXXX
-    if (cleaned.length == 10) {
-      return '${cleaned.substring(0, 3)} ${cleaned.substring(3, 6)} ${cleaned.substring(6)}';
-    }
-
-    return phoneNumber;
-  }
-
-  void _showLogoutDialog() {
-    final l = Provider.of<LocaleNotifier>(context, listen: false);
-    showDialog(
-      context: context,
-      builder: (BuildContext dialogContext) {
-        return AlertDialog(
-          title: Text(l.t('logout')),
-          content: Text(l.t('sign_out_confirm')),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.of(dialogContext).pop();
-              },
-              child: Text(l.t('cancel')),
-            ),
-            TextButton(
-              onPressed: () async {
-                Navigator.of(dialogContext).pop();
-                final userProvider = context.read<UserProvider>();
-                await userProvider.signOut();
-                if (mounted) {
-                  context.go('/login');
-                }
-              },
-              child: Text(l.t('confirm'), style: TextStyle(color: Colors.red)),
-            ),
-          ],
-        );
-      },
-    );
-  }
-
-  void _showDeleteAccountDialog() {
-    final l = Provider.of<LocaleNotifier>(context, listen: false);
-    showDialog(
-      context: context,
-      builder: (BuildContext dialogContext) {
-        return AlertDialog(
-          title: Text(l.t('delete_account')),
-          content: Text(l.t('delete_account_confirm')),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.of(dialogContext).pop();
-              },
-              child: Text(l.t('cancel')),
-            ),
-            TextButton(
-              onPressed: () async {
-                Navigator.of(dialogContext).pop();
-                final userProvider = context.read<UserProvider>();
-                await userProvider.requestAccountDeletion();
-                if (mounted) {
-                  context.go('/login');
-                }
-              },
-              child: Text(l.t('confirm'), style: TextStyle(color: Colors.red)),
-            ),
-          ],
-        );
-      },
     );
   }
 

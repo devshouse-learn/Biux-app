@@ -1,11 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:permission_handler/permission_handler.dart';
-import 'package:biux/core/design_system/color_tokens.dart';
 import 'package:biux/core/design_system/locale_notifier.dart';
 import 'package:biux/shared/services/permission_service.dart';
 import 'package:biux/features/settings/presentation/widgets/settings_shared_widgets.dart';
-import 'package:biux/core/design_system/locale_notifier.dart';
 
 class PermissionsScreen extends StatefulWidget {
   const PermissionsScreen({super.key});

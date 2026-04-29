@@ -11,7 +11,6 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:share_plus/share_plus.dart';
-import 'package:biux/core/design_system/locale_notifier.dart';
 
 class UserProfileScreen extends StatefulWidget {
   final String userId;

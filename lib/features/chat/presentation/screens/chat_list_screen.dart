@@ -9,7 +9,6 @@ import 'package:biux/features/chat/presentation/providers/chat_provider.dart';
 import 'package:timeago/timeago.dart' as timeago;
 import 'package:biux/shared/widgets/shimmer_loading.dart';
 import 'package:biux/core/design_system/locale_notifier.dart';
-import 'package:biux/core/design_system/locale_notifier.dart';
 
 class ChatListScreen extends StatefulWidget {
   const ChatListScreen({Key? key}) : super(key: key);

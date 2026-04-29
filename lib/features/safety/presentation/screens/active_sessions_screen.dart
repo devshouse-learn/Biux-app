@@ -8,7 +8,6 @@ import 'package:biux/core/config/router/app_routes.dart';
 import 'package:intl/intl.dart';
 import 'package:biux/core/design_system/locale_notifier.dart';
 import 'package:provider/provider.dart';
-import 'package:biux/core/design_system/locale_notifier.dart';
 
 class ActiveSessionsScreen extends StatefulWidget {
   const ActiveSessionsScreen({super.key});
@@ -314,13 +313,13 @@ class _FirebaseAuthInfo extends StatelessWidget {
             ],
           ),
           SizedBox(height: 10),
-          _InfoRow(isDark: isDark, label: l.t('account_created'), value: creation),
-          SizedBox(height: 6),
           _InfoRow(
             isDark: isDark,
-            label: l.t('last_access'),
-            value: lastSign,
+            label: l.t('account_created'),
+            value: creation,
           ),
+          SizedBox(height: 6),
+          _InfoRow(isDark: isDark, label: l.t('last_access'), value: lastSign),
           if (user.phoneNumber?.isNotEmpty == true) ...[
             SizedBox(height: 6),
             _InfoRow(
@@ -347,7 +346,6 @@ class _InfoRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final l = Provider.of<LocaleNotifier>(context);
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [

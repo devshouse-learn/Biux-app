@@ -9,7 +9,6 @@ import 'package:biux/shared/widgets/post_card.dart';
 import 'package:biux/features/social/presentation/widgets/post_social_actions.dart';
 import 'package:biux/core/design_system/locale_notifier.dart';
 import 'package:provider/provider.dart';
-import 'package:biux/core/design_system/locale_notifier.dart';
 
 /// Pantalla que muestra todas las publicaciones (posts) del usuario.
 /// Usa la misma estructura visual que el feed.

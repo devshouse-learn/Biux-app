@@ -11,7 +11,6 @@ import 'package:biux/core/design_system/locale_notifier.dart';
 import 'package:biux/features/experiences/presentation/screens/image_crop_editor_screen.dart';
 import 'dart:io';
 import 'package:image_picker/image_picker.dart';
-import 'package:biux/core/design_system/locale_notifier.dart';
 
 /// Pantalla para crear nuevas experiencias
 /// Soporta imágenes y videos con compresión automática

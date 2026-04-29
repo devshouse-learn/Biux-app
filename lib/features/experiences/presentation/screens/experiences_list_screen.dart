@@ -18,7 +18,6 @@ import 'package:biux/core/design_system/locale_notifier.dart';
 import 'package:biux/shared/widgets/post_card.dart';
 import 'package:biux/features/social/presentation/widgets/report_content_dialog.dart';
 import 'package:biux/shared/widgets/shimmer_loading.dart';
-import 'package:biux/core/design_system/locale_notifier.dart';
 
 /// Pantalla principal para mostrar la lista de experiencias
 class ExperiencesListScreen extends StatefulWidget {
@@ -561,7 +560,6 @@ class _ExperienceCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final l = Provider.of<LocaleNotifier>(context);
     final imageUrls = experience.media.map((m) => m.url).toList();
     final currentUserId = FirebaseAuth.instance.currentUser?.uid;
     // ignore: unused_local_variable
@@ -1057,7 +1055,6 @@ class _RepostBanner extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final l = Provider.of<LocaleNotifier>(context);
     final primaryColor = Theme.of(context).colorScheme.primary;
     return GestureDetector(
       onTap: () => _navigate(context),

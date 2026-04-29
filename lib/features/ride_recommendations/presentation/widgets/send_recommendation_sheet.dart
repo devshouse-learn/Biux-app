@@ -8,7 +8,6 @@ import 'package:biux/features/users/domain/entities/user_entity.dart';
 import 'package:biux/features/ride_recommendations/domain/entities/ride_recommendation_entity.dart';
 import 'package:biux/features/ride_recommendations/presentation/providers/ride_recommendation_provider.dart';
 import 'package:biux/core/design_system/locale_notifier.dart';
-import 'package:biux/core/design_system/locale_notifier.dart';
 
 class SendRecommendationSheet extends StatefulWidget {
   final RideTrackEntity track;

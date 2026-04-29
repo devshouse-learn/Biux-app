@@ -14,7 +14,7 @@ class AppearanceDetailsScreen extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Apariencia'),
+        title: Text(l.t('appearance')),
         backgroundColor: const Color(0xFF16242D),
         foregroundColor: Colors.white,
       ),
@@ -24,12 +24,12 @@ class AppearanceDetailsScreen extends StatelessWidget {
           return ListView(
             padding: const EdgeInsets.all(16),
             children: [
-              _SectionTitle(title: 'Tema de la aplicación'),
+              _SectionTitle(title: l.t('app_theme_section')),
               const SizedBox(height: 12),
               _ThemeOptionTile(
                 icon: Icons.light_mode_rounded,
-                title: 'Modo claro',
-                subtitle: 'Fondo blanco, colores brillantes',
+                title: l.t('light_mode'),
+                subtitle: l.t('light_mode_subtitle'),
                 selected: theme.mode == ThemeMode.light,
                 onTap: () => theme.setMode(ThemeMode.light),
                 isDark: isDark,
@@ -37,8 +37,8 @@ class AppearanceDetailsScreen extends StatelessWidget {
               SizedBox(height: 8),
               _ThemeOptionTile(
                 icon: Icons.dark_mode_rounded,
-                title: 'Modo oscuro',
-                subtitle: 'Fondo oscuro, menor fatiga visual',
+                title: l.t('dark_mode'),
+                subtitle: l.t('dark_mode_subtitle'),
                 selected: theme.mode == ThemeMode.dark,
                 onTap: () => theme.setMode(ThemeMode.dark),
                 isDark: isDark,
@@ -47,13 +47,13 @@ class AppearanceDetailsScreen extends StatelessWidget {
               _ThemeOptionTile(
                 icon: Icons.phone_android_rounded,
                 title: l.t('follow_system'),
-                subtitle: 'Usa la preferencia del dispositivo',
+                subtitle: l.t('device_preference_subtitle'),
                 selected: theme.mode == ThemeMode.system,
                 onTap: () => theme.setMode(ThemeMode.system),
                 isDark: isDark,
               ),
               const SizedBox(height: 24),
-              _SectionTitle(title: 'Cambio rápido'),
+              _SectionTitle(title: l.t('quick_theme_change')),
               const SizedBox(height: 12),
               _QuickToggleCard(theme: theme, isDark: isDark),
             ],
@@ -175,6 +175,7 @@ class _QuickToggleCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l = Provider.of<LocaleNotifier>(context);
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -191,7 +192,7 @@ class _QuickToggleCard extends StatelessWidget {
           const SizedBox(width: 12),
           Expanded(
             child: Text(
-              isDark ? 'Modo oscuro activo' : 'Modo claro activo',
+              isDark ? l.t('dark_mode_active') : l.t('light_mode_active'),
               style: const TextStyle(fontWeight: FontWeight.w600),
             ),
           ),

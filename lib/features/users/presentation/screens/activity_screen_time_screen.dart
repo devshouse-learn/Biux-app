@@ -4,7 +4,6 @@ import 'package:biux/core/design_system/color_tokens.dart';
 import 'package:biux/core/services/screen_time_service.dart';
 import 'package:biux/core/design_system/locale_notifier.dart';
 import 'package:provider/provider.dart';
-import 'package:biux/core/design_system/locale_notifier.dart';
 
 /// Pantalla de estadísticas de tiempo de uso, estilo Instagram.
 /// Lee datos del servicio global ScreenTimeService.

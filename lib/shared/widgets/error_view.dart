@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:biux/core/design_system/locale_notifier.dart';
 import 'package:provider/provider.dart';
-import 'package:biux/core/design_system/locale_notifier.dart';
 
 /// Tipos de error predefinidos
 enum ErrorType { network, notFound, permission, server, generic, empty }

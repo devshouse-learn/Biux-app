@@ -9,7 +9,6 @@ import 'package:biux/core/design_system/color_tokens.dart';
 import 'package:biux/core/design_system/locale_notifier.dart';
 import 'package:biux/features/road_reports/presentation/providers/road_reports_provider.dart';
 import 'package:biux/features/users/presentation/providers/user_provider.dart';
-import 'package:biux/core/design_system/locale_notifier.dart';
 
 class RoadReportsScreen extends StatefulWidget {
   const RoadReportsScreen({Key? key}) : super(key: key);

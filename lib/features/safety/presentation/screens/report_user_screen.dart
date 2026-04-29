@@ -6,7 +6,6 @@ import 'package:biux/core/design_system/color_tokens.dart';
 import 'package:biux/features/safety/domain/entities/block_report_entity.dart';
 import 'package:biux/features/safety/presentation/providers/safety_provider.dart';
 import 'package:biux/core/design_system/locale_notifier.dart';
-import 'package:biux/core/design_system/locale_notifier.dart';
 
 class ReportUserScreen extends StatefulWidget {
   final String reportedUserId;

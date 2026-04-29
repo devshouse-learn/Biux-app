@@ -16,7 +16,6 @@ import 'package:biux/features/shop/presentation/screens/shop_admin_sheets.dart';
 import 'package:biux/features/shop/presentation/widgets/shop_admin_dashboard_widget_v2.dart';
 import 'package:biux/features/shop/presentation/widgets/promotions_widget.dart';
 import 'package:biux/features/shop/presentation/widgets/request_seller_permission_dialog.dart';
-import 'package:biux/core/design_system/locale_notifier.dart';
 // import 'package:biux/features/shop/presentation/widgets/recommended_for_rides_widget.dart'; // actualmente no usado
 
 /// Tienda virtual profesional con características de e-commerce avanzadas

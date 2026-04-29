@@ -7,7 +7,6 @@ import 'package:biux/features/experiences/data/datasources/highlights_datasource
 import 'package:biux/features/experiences/data/repositories/experience_repository_impl.dart';
 import 'package:biux/core/design_system/locale_notifier.dart';
 import 'package:provider/provider.dart';
-import 'package:biux/core/design_system/locale_notifier.dart';
 
 /// Widget que muestra los highlights (historias destacadas) en el perfil
 class ProfileHighlights extends StatefulWidget {

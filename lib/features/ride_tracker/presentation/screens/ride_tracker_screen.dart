@@ -11,7 +11,6 @@ import 'package:biux/features/ride_tracker/domain/entities/ride_track_entity.dar
 import 'package:biux/features/road_reports/presentation/providers/road_reports_provider.dart';
 import 'package:biux/features/road_reports/domain/entities/road_report_entity.dart';
 import 'package:biux/core/design_system/locale_notifier.dart';
-import 'package:biux/core/design_system/locale_notifier.dart';
 
 class RideTrackerScreen extends StatefulWidget {
   final bool showHistory;
@@ -272,7 +271,7 @@ class _RideTrackerScreenState extends State<RideTrackerScreen>
           ),
           SizedBox(height: 24),
           Text(
-            p.isTracking ? 'Obteniendo señal GPS...' : l.t('ready_to_ride'),
+            p.isTracking ? l.t('getting_gps_signal') : l.t('ready_to_ride'),
             style: TextStyle(
               fontSize: 20,
               fontWeight: FontWeight.w700,
@@ -281,9 +280,7 @@ class _RideTrackerScreenState extends State<RideTrackerScreen>
           ),
           SizedBox(height: 8),
           Text(
-            p.isTracking
-                ? l.t('waiting_location')
-                : l.t('press_start_record'),
+            p.isTracking ? l.t('waiting_location') : l.t('press_start_record'),
             textAlign: TextAlign.center,
             style: TextStyle(
               fontSize: 14,
@@ -369,7 +366,7 @@ class _RideTrackerScreenState extends State<RideTrackerScreen>
                     ),
                     const SizedBox(width: 8),
                     Text(
-                      p.isPaused ? 'EN PAUSA' : 'GRABANDO',
+                      p.isPaused ? l.t('ride_paused') : l.t('ride_recording'),
                       style: const TextStyle(
                         color: Colors.white,
                         fontSize: 12,
@@ -1423,11 +1420,7 @@ class _RideTrackerScreenState extends State<RideTrackerScreen>
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Icon(
-                Icons.edit_rounded,
-                color: ColorTokens.primary30,
-                size: 34,
-              ),
+              Icon(Icons.edit_rounded, color: ColorTokens.primary30, size: 34),
               SizedBox(height: 10),
               Text(
                 l.t('edit_name'),
@@ -1844,11 +1837,7 @@ class _RideTrackerScreenState extends State<RideTrackerScreen>
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Icon(
-                Icons.edit_rounded,
-                color: ColorTokens.primary30,
-                size: 38,
-              ),
+              Icon(Icons.edit_rounded, color: ColorTokens.primary30, size: 38),
               SizedBox(height: 10),
               Text(
                 l.t('ride_name_question'),
@@ -1988,7 +1977,7 @@ class _RideTrackerScreenState extends State<RideTrackerScreen>
           ],
         ),
         content: Text(
-          'Tienes una rodada en curso. Si sales perderás los datos.',
+          l.t('ride_in_progress_warning'),
           style: TextStyle(fontSize: 14),
         ),
         actions: [
@@ -2288,10 +2277,8 @@ class _RideTrackerScreenState extends State<RideTrackerScreen>
     final result = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: const Text('¿Salir de la rodada?'),
-        content: Text(
-          'Tienes una rodada activa. Si sales, se perderá el progreso.',
-        ),
+        title: Text(l.t('exit_ride_question')),
+        content: Text(l.t('active_ride_warning')),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(ctx).pop(false),

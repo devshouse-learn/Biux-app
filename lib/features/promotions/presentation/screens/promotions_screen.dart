@@ -7,7 +7,6 @@ import 'package:biux/features/users/presentation/providers/user_provider.dart';
 import 'package:biux/features/promotions/data/models/promotion_request_model.dart';
 import 'package:biux/features/promotions/presentation/providers/promotions_provider.dart';
 import 'package:intl/intl.dart';
-import 'package:biux/core/design_system/locale_notifier.dart';
 
 class PromotionsScreen extends StatefulWidget {
   const PromotionsScreen({Key? key}) : super(key: key);

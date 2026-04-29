@@ -4,7 +4,6 @@ import 'package:biux/core/design_system/color_tokens.dart';
 import 'package:biux/core/services/biometric_service.dart';
 import 'package:biux/core/design_system/locale_notifier.dart';
 import 'package:provider/provider.dart';
-import 'package:biux/core/design_system/locale_notifier.dart';
 
 class BiometricSettingsScreen extends StatefulWidget {
   const BiometricSettingsScreen({super.key});

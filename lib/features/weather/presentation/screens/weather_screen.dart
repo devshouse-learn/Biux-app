@@ -3,7 +3,6 @@ import 'package:provider/provider.dart';
 import 'package:biux/core/design_system/color_tokens.dart';
 import 'package:biux/features/weather/presentation/providers/weather_provider.dart';
 import 'package:biux/core/design_system/locale_notifier.dart';
-import 'package:biux/core/design_system/locale_notifier.dart';
 
 class WeatherScreen extends StatefulWidget {
   const WeatherScreen({Key? key}) : super(key: key);
@@ -96,7 +95,7 @@ class _WeatherScreenState extends State<WeatherScreen> {
             );
           }
           if (wp.weatherData == null) {
-            return const Center(child: Text('Cargando clima...'));
+            return Center(child: Text(l.t('loading_weather_msg')));
           }
 
           return SingleChildScrollView(

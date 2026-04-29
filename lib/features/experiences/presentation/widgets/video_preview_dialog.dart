@@ -4,7 +4,6 @@ import 'package:provider/provider.dart';
 import 'package:video_player/video_player.dart';
 import 'package:biux/core/design_system/color_tokens.dart';
 import 'package:biux/core/design_system/locale_notifier.dart';
-import 'package:biux/core/design_system/locale_notifier.dart';
 
 /// Diálogo para previsualizar videos antes de agregarlos
 class VideoPreviewDialog extends StatefulWidget {

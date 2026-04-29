@@ -18,7 +18,6 @@ import 'package:biux/features/experiences/domain/entities/experience_entity.dart
 import 'package:biux/features/experiences/presentation/screens/create_experience_screen.dart';
 import 'package:biux/shared/widgets/shimmer_loading.dart';
 import 'package:biux/core/design_system/locale_notifier.dart';
-import 'package:biux/core/design_system/locale_notifier.dart';
 
 class ProfileScreen extends StatelessWidget {
   // Función para formatear número de teléfono colombiano
@@ -42,7 +41,6 @@ class ProfileScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final l = Provider.of<LocaleNotifier>(context);
     return Consumer<UserProvider>(
       builder: (context, userProvider, child) {
         return ProfileScreenContent(
@@ -955,7 +953,9 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
                                           size: 20,
                                         ),
                                         onPressed: () {
-                                          context.push(AppRoutes.notificationSettings);
+                                          context.push(
+                                            AppRoutes.notificationSettings,
+                                          );
                                         },
                                         constraints: BoxConstraints(
                                           minWidth: 32,
@@ -1633,7 +1633,9 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
                                                           'Quitar reposteo',
                                                         ),
                                                         content: Text(
-                                                          l.t('delete_repost_question'),
+                                                          l.t(
+                                                            'delete_repost_question',
+                                                          ),
                                                         ),
                                                         actions: [
                                                           TextButton(

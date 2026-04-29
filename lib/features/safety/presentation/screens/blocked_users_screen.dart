@@ -89,9 +89,7 @@ class _BlockedUsersScreenState extends State<BlockedUsersScreen> {
       context: context,
       builder: (ctx) => AlertDialog(
         title: Text(l.t('unblock_user_title')),
-        content: Text(
-          '¿Deseas desbloquear a este usuario? Podrá volver a enviarte mensajes.',
-        ),
+        content: Text(l.t('unblock_user_msg')),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(ctx).pop(),
@@ -103,7 +101,7 @@ class _BlockedUsersScreenState extends State<BlockedUsersScreen> {
               final uid = FirebaseAuth.instance.currentUser?.uid ?? '';
               await context.read<SafetyProvider>().unblockUser(uid, blockedId);
             },
-            child: const Text('Desbloquear'),
+            child: Text(l.t('unblock')),
           ),
         ],
       ),
@@ -162,9 +160,9 @@ class _BlockedUserTile extends StatelessWidget {
             ),
             trailing: TextButton(
               onPressed: onUnblock,
-              child: const Text(
-                'Desbloquear',
-                style: TextStyle(color: Colors.red),
+              child: Text(
+                l.t('unblock'),
+                style: const TextStyle(color: Colors.red),
               ),
             ),
           ),

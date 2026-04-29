@@ -8,7 +8,6 @@ import 'package:biux/features/experiences/domain/entities/experience_entity.dart
 import 'dart:developer' as developer;
 import 'package:biux/core/design_system/locale_notifier.dart';
 import 'package:provider/provider.dart';
-import 'package:biux/core/design_system/locale_notifier.dart';
 
 /// Pantalla que muestra todas las historias (stories) subidas por el usuario.
 /// Grid estilo Instagram de thumbnails.

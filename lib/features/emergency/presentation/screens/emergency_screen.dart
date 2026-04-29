@@ -14,7 +14,6 @@ import 'package:biux/features/accidents/domain/entities/accident_entity.dart';
 import 'package:biux/features/accidents/presentation/screens/accidents_list_screen.dart';
 import 'package:biux/features/accidents/presentation/screens/accident_report_screen.dart';
 import 'package:biux/features/accidents/presentation/screens/accident_detail_screen.dart';
-import 'package:biux/core/design_system/locale_notifier.dart';
 
 class EmergencyScreen extends StatefulWidget {
   const EmergencyScreen({Key? key}) : super(key: key);
@@ -38,7 +37,7 @@ class _EmergencyScreenState extends State<EmergencyScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Emergencia SOS'),
+        title: Text(l.t('emergency_sos')),
         backgroundColor: Colors.red[700],
         foregroundColor: Colors.white,
       ),
@@ -101,7 +100,7 @@ class _EmergencyScreenState extends State<EmergencyScreen> {
           const Icon(Icons.sos, size: 60, color: Colors.white),
           const SizedBox(height: 12),
           Text(
-            p.sosActive ? 'ALERTA ACTIVA' : 'BOTÓN DE EMERGENCIA',
+            p.sosActive ? l.t('alert_active') : l.t('emergency_button_label'),
             style: const TextStyle(
               color: Colors.white,
               fontSize: 20,
@@ -110,9 +109,7 @@ class _EmergencyScreenState extends State<EmergencyScreen> {
           ),
           const SizedBox(height: 8),
           Text(
-            p.sosActive
-                ? 'Tus contactos han sido notificados'
-                : 'Mantén presionado para enviar alerta SOS',
+            p.sosActive ? l.t('contacts_notified') : l.t('hold_to_send_sos'),
             style: const TextStyle(color: Colors.white70, fontSize: 13),
             textAlign: TextAlign.center,
           ),
@@ -166,18 +163,19 @@ class _EmergencyScreenState extends State<EmergencyScreen> {
         ),
       );
       final uid = FirebaseAuth.instance.currentUser?.uid ?? '';
-      final name = context.read<UserProvider>().user?.name ?? l.t('cyclist_label');
+      final name =
+          context.read<UserProvider>().user?.name ?? l.t('cyclist_label');
       await p.sendSOS(
         userId: uid,
         userName: name,
         latitude: pos.latitude,
         longitude: pos.longitude,
-        message: 'Emergencia ciclista',
+        message: l.t('cycling_emergency'),
       );
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('¡Alerta SOS enviada!'),
+          SnackBar(
+            content: Text(l.t('sos_alert_sent')),
             backgroundColor: Colors.red,
           ),
         );
@@ -222,7 +220,7 @@ class _EmergencyScreenState extends State<EmergencyScreen> {
                     const SizedBox(width: 8),
                     Flexible(
                       child: Text(
-                        'Accidentes Recientes',
+                        l.t('recent_accidents'),
                         style: TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.bold,
@@ -275,7 +273,7 @@ class _EmergencyScreenState extends State<EmergencyScreen> {
                       const Icon(Icons.error_outline, color: Colors.red),
                       const SizedBox(height: 4),
                       Text(
-                        'Error al cargar accidentes',
+                        l.t('error_loading_accidents'),
                         style: TextStyle(color: Colors.grey[600], fontSize: 13),
                       ),
                     ],
@@ -307,13 +305,13 @@ class _EmergencyScreenState extends State<EmergencyScreen> {
                           color: Colors.green[300],
                         ),
                         const SizedBox(height: 8),
-                        const Text(
-                          '¡Sin accidentes reportados!',
+                        Text(
+                          l.t('no_reported_accidents'),
                           style: TextStyle(fontWeight: FontWeight.w600),
                         ),
                         const SizedBox(height: 4),
                         Text(
-                          'Las vías están despejadas',
+                          l.t('roads_clear'),
                           style: TextStyle(
                             color: Colors.grey[500],
                             fontSize: 12,
@@ -339,7 +337,7 @@ class _EmergencyScreenState extends State<EmergencyScreen> {
                         ),
                       ),
                       icon: const Icon(Icons.map, size: 18),
-                      label: const Text('Ver todos en mapa'),
+                      label: Text(l.t('view_all_on_map')),
                       style: OutlinedButton.styleFrom(
                         foregroundColor: Colors.red[700],
                         side: BorderSide(color: Colors.red[200]!),
@@ -486,11 +484,11 @@ class _EmergencyScreenState extends State<EmergencyScreen> {
   String _severityLabel(String severity) {
     switch (severity) {
       case 'severe':
-        return 'Grave';
+        return l.t('severity_severe');
       case 'moderate':
-        return 'Moderado';
+        return l.t('severity_moderate');
       default:
-        return 'Leve';
+        return l.t('severity_mild');
     }
   }
 

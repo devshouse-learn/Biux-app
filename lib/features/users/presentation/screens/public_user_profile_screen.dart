@@ -15,7 +15,6 @@ import 'package:biux/features/users/data/models/user.dart';
 import 'package:biux/features/users/presentation/providers/user_provider.dart';
 import 'package:biux/features/users/presentation/providers/user_profile_provider.dart';
 import 'package:biux/features/experiences/domain/entities/experience_entity.dart';
-import 'package:biux/core/design_system/locale_notifier.dart';
 
 /// Pantalla de perfil p├║blico de usuario
 /// Muestra informaci├│n b├ísica, posts y bot├│n de seguir/dejar de seguir

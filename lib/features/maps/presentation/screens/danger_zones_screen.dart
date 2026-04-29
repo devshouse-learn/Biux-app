@@ -5,7 +5,6 @@ import 'package:geolocator/geolocator.dart';
 import 'package:biux/features/maps/data/datasources/danger_zones_datasource.dart';
 import 'package:biux/core/design_system/locale_notifier.dart';
 import 'package:provider/provider.dart';
-import 'package:biux/core/design_system/locale_notifier.dart';
 
 class DangerZonesScreen extends StatefulWidget {
   const DangerZonesScreen({super.key});
@@ -116,7 +115,10 @@ class _DangerZonesScreenState extends State<DangerZonesScreen> {
                   SizedBox(height: 6),
                   _LegendItem(color: Colors.red, label: l.t('accident_label')),
                   _LegendItem(color: Colors.orange, label: l.t('robbery')),
-                  _LegendItem(color: Colors.yellow.shade700, label: l.t('others')),
+                  _LegendItem(
+                    color: Colors.yellow.shade700,
+                    label: l.t('others'),
+                  ),
                 ],
               ),
             ),
@@ -369,7 +371,6 @@ class _LegendItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final l = Provider.of<LocaleNotifier>(context);
     return Row(
       children: [
         Container(

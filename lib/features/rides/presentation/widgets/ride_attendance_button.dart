@@ -35,9 +35,9 @@ class RideAttendanceButton extends StatelessWidget {
         child: ElevatedButton.icon(
           onPressed: null, // Deshabilitado
           icon: const Icon(Icons.block, size: 24),
-          label: const Text(
-            'Rodada finalizada - No se pueden agregar participantes',
-            style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
+          label: Text(
+            l.t('ride_finished_no_add'),
+            style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
           ),
           style: ElevatedButton.styleFrom(
             backgroundColor: const Color(0xFF9E9E9E), // Gris
@@ -67,6 +67,7 @@ class RideAttendanceButton extends StatelessWidget {
     bool isConfirmed,
     bool isMaybe,
   ) {
+    final l = Provider.of<LocaleNotifier>(context);
     // Estado: NO participa - Mostrar popup para elegir
     if (!isConfirmed && !isMaybe) {
       return SizedBox(
@@ -76,9 +77,9 @@ class RideAttendanceButton extends StatelessWidget {
               ? null
               : () => _showOptionsForJoin(context, provider),
           icon: const Icon(Icons.directions_bike, size: 24),
-          label: const Text(
-            '¿Vas a esta rodada?',
-            style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+          label: Text(
+            l.t('going_to_ride'),
+            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
           ),
           style: ElevatedButton.styleFrom(
             backgroundColor: const Color(0xFF2196F3), // Material Blue
@@ -102,9 +103,9 @@ class RideAttendanceButton extends StatelessWidget {
               ? null
               : () => _showOptions(context, provider),
           icon: const Icon(Icons.check_circle, size: 24),
-          label: const Text(
-            '¡Confirmado! - Toca para cambiar',
-            style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+          label: Text(
+            l.t('confirmed_tap_change'),
+            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
           ),
           style: ElevatedButton.styleFrom(
             backgroundColor: const Color(0xFF4CAF50), // Material Green
@@ -127,9 +128,9 @@ class RideAttendanceButton extends StatelessWidget {
             ? null
             : () => _showOptions(context, provider),
         icon: const Icon(Icons.help_outline, size: 24),
-        label: const Text(
-          'Tal vez - Toca para cambiar',
-          style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+        label: Text(
+          l.t('maybe_tap_change'),
+          style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
         ),
         style: ElevatedButton.styleFrom(
           backgroundColor: const Color(0xFFFF9800), // Material Orange
@@ -182,7 +183,7 @@ class RideAttendanceButton extends StatelessWidget {
                   color: Colors.orange,
                   size: 32,
                 ),
-                title: Text('Tal vez voy'),
+                title: Text(l.t('maybe_going')),
                 subtitle: Text(l.t('not_sure_yet')),
                 onTap: () {
                   Navigator.pop(context);
@@ -233,7 +234,7 @@ class RideAttendanceButton extends StatelessWidget {
                     size: 32,
                   ),
                   title: Text(l.t('confirm_attendance')),
-                  subtitle: const Text('Definitivamente voy'),
+                  subtitle: Text(l.t('definitely_going')),
                   onTap: () {
                     Navigator.pop(context);
                     _confirmAttendance(context, provider);
@@ -248,8 +249,8 @@ class RideAttendanceButton extends StatelessWidget {
                     color: Colors.orange,
                     size: 32,
                   ),
-                  title: const Text('Tal vez voy'),
-                  subtitle: const Text('No estoy seguro/a'),
+                  title: Text(l.t('maybe_going')),
+                  subtitle: Text(l.t('not_sure_attendance')),
                   onTap: () {
                     Navigator.pop(context);
                     _changeToMaybe(context, provider);
@@ -262,7 +263,7 @@ class RideAttendanceButton extends StatelessWidget {
               ListTile(
                 leading: Icon(Icons.cancel, color: Colors.red, size: 32),
                 title: Text(l.t('cancel_attendance')),
-                subtitle: const Text('Ya no voy a ir'),
+                subtitle: Text(l.t('not_going_anymore')),
                 onTap: () {
                   Navigator.pop(context);
                   _cancelAttendance(context, provider);
@@ -280,6 +281,7 @@ class RideAttendanceButton extends StatelessWidget {
     BuildContext context,
     RideProvider provider,
   ) async {
+    final l = Provider.of<LocaleNotifier>(context, listen: false);
     final success = await provider.joinRide(ride.id, maybe: false);
 
     if (context.mounted) {
@@ -287,8 +289,8 @@ class RideAttendanceButton extends StatelessWidget {
         SnackBar(
           content: Text(
             success
-                ? '✅ Asistencia confirmada'
-                : '❌ ${provider.error ?? "Error al confirmar"}',
+                ? '✅ ${l.t('attendance_confirmed')}'
+                : '❌ ${provider.error ?? l.t('error_generic')}',
           ),
           backgroundColor: success ? Colors.green : Colors.red,
         ),
@@ -300,6 +302,7 @@ class RideAttendanceButton extends StatelessWidget {
     BuildContext context,
     RideProvider provider,
   ) async {
+    final l = Provider.of<LocaleNotifier>(context, listen: false);
     final success = await provider.joinRide(ride.id, maybe: true);
 
     if (context.mounted) {
@@ -307,8 +310,8 @@ class RideAttendanceButton extends StatelessWidget {
         SnackBar(
           content: Text(
             success
-                ? '🤔 Marcado como "Tal vez"'
-                : '❌ ${provider.error ?? "Error al actualizar"}',
+                ? '🤔 ${l.t('marked_as_maybe')}'
+                : '❌ ${provider.error ?? l.t('error_generic')}',
           ),
           backgroundColor: success ? Colors.orange : Colors.red,
         ),
@@ -326,9 +329,7 @@ class RideAttendanceButton extends StatelessWidget {
       context: context,
       builder: (context) => AlertDialog(
         title: Text(l.t('cancel_attendance')),
-        content: const Text(
-          '¿Estás seguro de que ya no vas a asistir a esta rodada?',
-        ),
+        content: Text(l.t('cancel_attendance_question')),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
@@ -351,8 +352,8 @@ class RideAttendanceButton extends StatelessWidget {
         SnackBar(
           content: Text(
             success
-                ? '👋 Asistencia cancelada'
-                : '❌ ${provider.error ?? "Error al cancelar"}',
+                ? '👋 ${l.t('attendance_cancelled_msg')}'
+                : '❌ ${provider.error ?? l.t('error_generic')}',
           ),
           backgroundColor: success ? Colors.grey : Colors.red,
         ),

@@ -3,10 +3,8 @@ import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:permission_handler/permission_handler.dart';
 import 'package:biux/core/design_system/color_tokens.dart';
 import 'package:biux/core/design_system/locale_notifier.dart';
-import 'package:biux/shared/services/permission_service.dart';
 import 'package:biux/features/settings/presentation/widgets/settings_shared_widgets.dart';
 
 class PrivacyDetailsScreen extends StatefulWidget {
@@ -21,12 +19,6 @@ class _PrivacyDetailsScreenState extends State<PrivacyDetailsScreen>
   LocaleNotifier get l => Provider.of<LocaleNotifier>(context);
 
   String _profileVisibilityKey = 'public';
-  bool _cameraGranted = false;
-  bool _locationGranted = false;
-  bool _microphoneGranted = false;
-  bool _photosGranted = false;
-  bool _notificationsGranted = false;
-  bool _contactsGranted = false;
 
   @override
   void initState() {
@@ -51,16 +43,9 @@ class _PrivacyDetailsScreenState extends State<PrivacyDetailsScreen>
 
   Future<void> _loadPermissions() async {
     final prefs = await SharedPreferences.getInstance();
-    final permissions = await PermissionService().loadAllPermissions();
     setState(() {
       _profileVisibilityKey =
           prefs.getString('profile_visibility_key') ?? 'public';
-      _cameraGranted = permissions['camera'] ?? false;
-      _locationGranted = permissions['location'] ?? false;
-      _microphoneGranted = permissions['microphone'] ?? false;
-      _photosGranted = permissions['photos'] ?? false;
-      _notificationsGranted = permissions['notifications'] ?? false;
-      _contactsGranted = permissions['contacts'] ?? false;
     });
   }
 
@@ -75,25 +60,6 @@ class _PrivacyDetailsScreenState extends State<PrivacyDetailsScreen>
       await FirebaseFirestore.instance.collection('users').doc(uid).update({
         'profileVisibility': visibilityKey,
       });
-    }
-  }
-
-  Future<void> _togglePermission(
-    Permission permission,
-    bool currentValue,
-  ) async {
-    if (currentValue) {
-      // Si ya está concedido, abrir configuración del sistema para revocar
-      await openAppSettings();
-    } else {
-      // Si no está concedido, solicitar permiso
-      final granted = await PermissionService().ensurePermission(
-        permission,
-        context: context,
-      );
-      if (granted) {
-        _loadPermissions();
-      }
     }
   }
 

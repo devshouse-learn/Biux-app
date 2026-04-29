@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:io';
 import 'package:biux/features/eps/data/models/eps.dart';
 import 'package:biux/core/config/api_config.dart';
@@ -14,7 +15,14 @@ class EpsRepository {
     return response;
   }
 
-  Future sendDatesEps(Eps eps) async {
-    // TODO: Implementar envío de datos EPS
+  Future<http.Response> sendDatesEps(Eps eps) async {
+    final headers = {HttpHeaders.contentTypeHeader: 'application/json'};
+    final body = jsonEncode({'id': eps.id, 'name': eps.name});
+    final response = await http.post(
+      Uri.parse(ApiConfig.eps),
+      headers: headers,
+      body: body,
+    );
+    return response;
   }
 }

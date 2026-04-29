@@ -4,7 +4,6 @@ import 'package:biux/core/design_system/locale_notifier.dart';
 import 'package:biux/features/store/domain/entities/product_entity.dart';
 import 'package:biux/features/store/presentation/providers/product_provider.dart';
 import 'package:biux/features/users/domain/entities/user_entity.dart';
-import 'package:biux/core/design_system/locale_notifier.dart';
 
 /// Panel de vendedor para gestionar sus productos
 class SellerDashboardScreen extends StatefulWidget {
@@ -35,8 +34,8 @@ class _SellerDashboardScreenState extends State<SellerDashboardScreen> {
     // Verificar permisos
     if (!widget.currentUser.canCreateProducts) {
       return Scaffold(
-        appBar: AppBar(title: const Text('Panel de Vendedor')),
-        body: const Center(child: Text('No tienes permisos de vendedor')),
+        appBar: AppBar(title: Text(l.t('seller_dashboard'))),
+        body: Center(child: Text(l.t('no_seller_permissions'))),
       );
     }
 
@@ -91,7 +90,7 @@ class _SellerDashboardScreenState extends State<SellerDashboardScreen> {
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () => _showAddProductDialog(),
         icon: const Icon(Icons.add),
-        label: const Text('Agregar Producto'),
+        label: Text(l.t('add_product')),
       ),
     );
   }
@@ -104,19 +103,19 @@ class _SellerDashboardScreenState extends State<SellerDashboardScreen> {
           Icon(Icons.inventory_2_outlined, size: 100, color: Colors.grey[400]),
           const SizedBox(height: 16),
           Text(
-            'No tienes productos',
+            l.t('no_products'),
             style: TextStyle(fontSize: 20, color: Colors.grey[600]),
           ),
           const SizedBox(height: 8),
           Text(
-            'Agrega tu primer producto para empezar a vender',
+            l.t('add_first_product_msg'),
             style: TextStyle(fontSize: 14, color: Colors.grey[500]),
           ),
           const SizedBox(height: 24),
           ElevatedButton.icon(
             onPressed: () => _showAddProductDialog(),
             icon: const Icon(Icons.add),
-            label: const Text('Agregar Producto'),
+            label: Text(l.t('add_product')),
           ),
         ],
       ),
@@ -177,7 +176,9 @@ class _SellerDashboardScreenState extends State<SellerDashboardScreen> {
                 ),
                 const SizedBox(width: 4),
                 Text(
-                  product.activo ? 'Activo' : 'Inactivo',
+                  product.activo
+                      ? l.t('active_status')
+                      : l.t('inactive_status'),
                   style: TextStyle(
                     fontSize: 12,
                     color: product.activo ? Colors.green : Colors.red,
@@ -185,7 +186,7 @@ class _SellerDashboardScreenState extends State<SellerDashboardScreen> {
                 ),
                 const SizedBox(width: 16),
                 Text(
-                  'Stock: ${product.stock}',
+                  '${l.t('stock_count_label')} ${product.stock}',
                   style: TextStyle(
                     fontSize: 12,
                     color: product.stock > 0 ? Colors.black : Colors.red,

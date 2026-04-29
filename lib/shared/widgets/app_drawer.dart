@@ -10,7 +10,6 @@ import 'package:biux/core/design_system/design_system.dart';
 import 'package:biux/core/config/router/app_routes.dart';
 import 'package:biux/features/users/presentation/providers/user_provider.dart';
 import 'package:biux/features/emergency/presentation/providers/emergency_provider.dart';
-import 'package:biux/core/design_system/locale_notifier.dart';
 
 class AppDrawer extends StatefulWidget {
   @override

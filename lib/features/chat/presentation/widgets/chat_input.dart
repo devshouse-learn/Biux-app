@@ -1381,7 +1381,6 @@ class _ReplyBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final l = Provider.of<LocaleNotifier>(context);
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
       color: isDark ? const Color(0xFF1A2B3C) : Colors.grey.shade100,
@@ -1454,7 +1453,6 @@ class _HoldingRecordingBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final l = Provider.of<LocaleNotifier>(context);
     final cancelProgress = (dragX / cancelThreshold).clamp(0.0, 1.0);
     final translateX = dragX.clamp(cancelThreshold, 0.0);
 

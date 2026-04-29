@@ -7,7 +7,6 @@ import 'package:biux/features/social/data/repositories/notifications_repository_
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart' show kIsWeb, kReleaseMode;
-import 'package:provider/provider.dart';
 
 class UserProvider extends ChangeNotifier {
   final UserService? _userService;

@@ -11,7 +11,6 @@ import 'package:biux/features/groups/presentation/providers/group_provider.dart'
 import 'package:biux/features/chat/data/datasources/chat_datasource.dart';
 import 'package:biux/features/chat/presentation/providers/chat_provider.dart';
 import 'package:biux/features/chat/presentation/screens/chat_screen.dart';
-import 'package:biux/core/design_system/locale_notifier.dart';
 
 class ViewGroupScreen extends StatefulWidget {
   @override

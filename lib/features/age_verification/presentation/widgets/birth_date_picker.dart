@@ -50,8 +50,6 @@ class BirthDatePicker extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final l = Provider.of<LocaleNotifier>(context);
-
     return GestureDetector(
       onTap: () => _pickDate(context),
       child: Container(

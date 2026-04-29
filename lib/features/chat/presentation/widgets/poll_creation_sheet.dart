@@ -58,7 +58,7 @@ class _PollCreationSheetState extends State<PollCreationSheet> {
     if (question.isEmpty) {
       ScaffoldMessenger.of(
         context,
-      ).showSnackBar(const SnackBar(content: Text('Escribe una pregunta')));
+      ).showSnackBar(SnackBar(content: Text(l.t('write_question'))));
       return;
     }
     final options = _optionControllers
@@ -66,9 +66,9 @@ class _PollCreationSheetState extends State<PollCreationSheet> {
         .where((t) => t.isNotEmpty)
         .toList();
     if (options.length < 2) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Agrega al menos 2 opciones')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(l.t('add_at_least_2_options'))));
       return;
     }
     Navigator.pop(
@@ -135,9 +135,12 @@ class _PollCreationSheetState extends State<PollCreationSheet> {
               const SizedBox(height: 8),
 
               // Options label
-              const Text(
-                'Opciones',
-                style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
+              Text(
+                l.t('options_section'),
+                style: const TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w600,
+                ),
               ),
               const SizedBox(height: 8),
 
@@ -153,7 +156,7 @@ class _PollCreationSheetState extends State<PollCreationSheet> {
                         child: TextField(
                           controller: controller,
                           decoration: InputDecoration(
-                            hintText: 'Opción ${index + 1}',
+                            hintText: '${l.t('option_n')} ${index + 1}',
                             filled: true,
                             fillColor: isDark
                                 ? Colors.white.withValues(alpha: 0.08)
@@ -208,13 +211,13 @@ class _PollCreationSheetState extends State<PollCreationSheet> {
               // Allow multiple votes
               SwitchListTile(
                 contentPadding: EdgeInsets.zero,
-                title: const Text(
-                  'Permitir votar más de una vez',
-                  style: TextStyle(fontSize: 14),
+                title: Text(
+                  l.t('allow_multiple_votes'),
+                  style: const TextStyle(fontSize: 14),
                 ),
-                subtitle: const Text(
-                  'Los participantes podrán elegir varias opciones',
-                  style: TextStyle(fontSize: 12),
+                subtitle: Text(
+                  l.t('participants_choose_multiple'),
+                  style: const TextStyle(fontSize: 12),
                 ),
                 value: _allowMultiple,
                 activeThumbColor: const Color(0xFF4CAF50),
@@ -236,9 +239,12 @@ class _PollCreationSheetState extends State<PollCreationSheet> {
                     ),
                   ),
                   icon: const Icon(Icons.send_rounded, size: 20),
-                  label: const Text(
-                    'Enviar encuesta',
-                    style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600),
+                  label: Text(
+                    l.t('send_poll'),
+                    style: const TextStyle(
+                      fontSize: 15,
+                      fontWeight: FontWeight.w600,
+                    ),
                   ),
                   onPressed: _submit,
                 ),

@@ -228,7 +228,7 @@ class _ActivityLikesScreenState extends State<ActivityLikesScreen> {
                   ),
                   SizedBox(height: 16),
                   Text(
-                    'No has dado like a nada aún',
+                    l.t('no_likes_yet'),
                     style: TextStyle(
                       color: ColorTokens.neutral80,
                       fontSize: 16,
@@ -423,7 +423,10 @@ class _ActivityLikesScreenState extends State<ActivityLikesScreen> {
               Navigator.of(ctx).pop();
               _unlikeItem(item);
             },
-            child: Text('Quitar', style: TextStyle(color: ColorTokens.error50)),
+            child: Text(
+              l.t('remove_like'),
+              style: TextStyle(color: ColorTokens.error50),
+            ),
           ),
         ],
       ),
@@ -432,12 +435,17 @@ class _ActivityLikesScreenState extends State<ActivityLikesScreen> {
 
   String _formatTimeAgo(DateTime date) {
     final diff = DateTime.now().difference(date);
-    if (diff.inDays > 365) return 'Hace ${diff.inDays ~/ 365} año(s)';
-    if (diff.inDays > 30) return 'Hace ${diff.inDays ~/ 30} mes(es)';
-    if (diff.inDays > 0) return 'Hace ${diff.inDays}d';
-    if (diff.inHours > 0) return 'Hace ${diff.inHours}h';
-    if (diff.inMinutes > 0) return 'Hace ${diff.inMinutes}m';
-    return 'Ahora';
+    if (diff.inDays > 365)
+      return l.t('time_years_ago').replaceAll('{n}', '${diff.inDays ~/ 365}');
+    if (diff.inDays > 30)
+      return l.t('time_months_ago').replaceAll('{n}', '${diff.inDays ~/ 30}');
+    if (diff.inDays > 0)
+      return l.t('time_days_ago').replaceAll('{n}', '${diff.inDays}');
+    if (diff.inHours > 0)
+      return l.t('time_hours_ago').replaceAll('{n}', '${diff.inHours}');
+    if (diff.inMinutes > 0)
+      return l.t('time_minutes_ago').replaceAll('{n}', '${diff.inMinutes}');
+    return l.t('time_now');
   }
 }
 

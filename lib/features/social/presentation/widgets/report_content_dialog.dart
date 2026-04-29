@@ -4,7 +4,6 @@ import 'package:biux/core/design_system/color_tokens.dart';
 import 'package:biux/features/social/data/datasources/report_datasource.dart';
 import 'package:biux/core/design_system/locale_notifier.dart';
 import 'package:provider/provider.dart';
-import 'package:biux/core/design_system/locale_notifier.dart';
 
 /// Diálogo para reportar contenido (posts, comentarios, usuarios, rodadas)
 class ReportContentDialog {

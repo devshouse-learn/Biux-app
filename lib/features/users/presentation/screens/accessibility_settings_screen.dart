@@ -5,7 +5,6 @@ import 'package:biux/core/services/accessibility_service.dart';
 import 'package:biux/core/design_system/theme_notifier.dart';
 import 'package:biux/core/design_system/color_tokens.dart';
 import 'package:biux/core/design_system/locale_notifier.dart';
-import 'package:biux/core/design_system/locale_notifier.dart';
 
 class AccessibilitySettingsScreen extends StatelessWidget {
   const AccessibilitySettingsScreen({super.key});
@@ -15,7 +14,7 @@ class AccessibilitySettingsScreen extends StatelessWidget {
     final l = Provider.of<LocaleNotifier>(context);
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Accesibilidad y apariencia'),
+        title: Text(l.t('accessibility_appearance')),
         backgroundColor: const Color(0xFF16242D),
         foregroundColor: Colors.white,
       ),
@@ -30,7 +29,7 @@ class AccessibilitySettingsScreen extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'Tema',
+                      l.t('theme'),
                       style: TextStyle(
                         fontWeight: FontWeight.w600,
                         fontSize: 15,
@@ -71,7 +70,7 @@ class AccessibilitySettingsScreen extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 16),
-              _SectionHeader(title: 'Tamano de texto'),
+              _SectionHeader(title: l.t('text_size_label')),
               _SettingCard(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -101,7 +100,7 @@ class AccessibilitySettingsScreen extends StatelessWidget {
                     ),
                     Center(
                       child: Text(
-                        'Texto de ejemplo',
+                        l.t('sample_text'),
                         style: TextStyle(fontSize: 14 * acc.fontScale),
                       ),
                     ),
@@ -135,9 +134,9 @@ class AccessibilitySettingsScreen extends StatelessWidget {
                     Divider(height: 1),
                     SwitchListTile(
                       title: Text(l.t('reduce_animations')),
-                      subtitle: const Text(
-                        'Minimiza efectos de movimiento',
-                        style: TextStyle(fontSize: 12),
+                      subtitle: Text(
+                        l.t('reduce_motion_label'),
+                        style: const TextStyle(fontSize: 12),
                       ),
                       value: acc.reduceMotion,
                       activeColor: ColorTokens.primary30,
@@ -162,7 +161,6 @@ class _SectionHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final l = Provider.of<LocaleNotifier>(context);
     return Padding(
       padding: const EdgeInsets.only(bottom: 8),
       child: Text(
@@ -183,7 +181,6 @@ class _SettingCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final l = Provider.of<LocaleNotifier>(context);
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -212,7 +209,6 @@ class _ThemeOption extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final l = Provider.of<LocaleNotifier>(context);
     return GestureDetector(
       onTap: onTap,
       child: Container(

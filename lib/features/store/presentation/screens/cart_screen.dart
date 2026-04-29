@@ -19,7 +19,7 @@ class _CartScreenState extends State<CartScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Carrito de Compras')),
+      appBar: AppBar(title: Text(l.t('shopping_cart'))),
       body: Consumer<CartProvider>(
         builder: (context, cart, child) {
           if (cart.isEmpty) {
@@ -70,7 +70,7 @@ class _CartScreenState extends State<CartScreen> {
             ),
             const SizedBox(height: 32),
             Text(
-              '¡Tu carrito está vacío!',
+              l.t('cart_empty'),
               style: TextStyle(
                 fontSize: 26,
                 fontWeight: FontWeight.bold,
@@ -94,7 +94,7 @@ class _CartScreenState extends State<CartScreen> {
                   ),
                   const SizedBox(height: 12),
                   Text(
-                    'Pon tus productos aquí',
+                    l.t('put_products_here'),
                     style: TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
@@ -104,7 +104,7 @@ class _CartScreenState extends State<CartScreen> {
                   ),
                   const SizedBox(height: 8),
                   Text(
-                    'Explora nuestra tienda y agrega los productos que más te gusten',
+                    l.t('explore_store_message'),
                     style: TextStyle(fontSize: 14, color: Colors.orange[800]),
                     textAlign: TextAlign.center,
                   ),
@@ -113,7 +113,7 @@ class _CartScreenState extends State<CartScreen> {
             ),
             const SizedBox(height: 24),
             Text(
-              'Encuentra productos increíbles para tu ciclismo',
+              l.t('find_amazing_products'),
               style: TextStyle(fontSize: 15, color: Colors.grey[600]),
               textAlign: TextAlign.center,
             ),
@@ -123,9 +123,12 @@ class _CartScreenState extends State<CartScreen> {
                 Navigator.pushReplacementNamed(context, '/store');
               },
               icon: const Icon(Icons.shopping_bag, size: 24),
-              label: const Text(
-                'Explorar Tienda',
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+              label: Text(
+                l.t('explore_store'),
+                style: const TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
               style: ElevatedButton.styleFrom(
                 backgroundColor: const Color(0xFF3B82F6),

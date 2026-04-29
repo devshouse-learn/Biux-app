@@ -10,7 +10,6 @@ import 'package:biux/features/ride_tracker/domain/entities/ride_track_entity.dar
 import 'package:biux/features/users/presentation/providers/user_provider.dart';
 import 'package:biux/features/weather/presentation/providers/weather_provider.dart';
 import 'package:biux/core/design_system/locale_notifier.dart';
-import 'package:biux/core/design_system/locale_notifier.dart';
 
 class CyclingStatsScreen extends StatefulWidget {
   const CyclingStatsScreen({Key? key}) : super(key: key);

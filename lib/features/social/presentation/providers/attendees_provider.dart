@@ -7,7 +7,6 @@ import 'package:biux/features/social/domain/repositories/attendees_repository.da
 // import 'package:biux/features/social/domain/entities/notification_entity.dart'; // ✅ Not needed - Cloud Functions handle notifications
 import 'package:biux/features/social/data/datasources/attendees_firestore_adapter.dart';
 import 'package:biux/features/users/domain/repositories/user_repository.dart';
-import 'package:provider/provider.dart';
 
 /// Provider para gestionar asistentes a rodadas
 class AttendeesProvider extends ChangeNotifier {

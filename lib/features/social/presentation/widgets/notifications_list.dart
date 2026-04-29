@@ -6,7 +6,6 @@ import 'package:biux/features/social/presentation/providers/notifications_provid
 import 'package:biux/features/users/presentation/providers/user_profile_provider.dart';
 import 'package:timeago/timeago.dart' as timeago;
 import 'package:go_router/go_router.dart';
-import 'package:biux/core/design_system/locale_notifier.dart';
 
 /// Widget de lista de notificaciones
 class NotificationsList extends StatelessWidget {
