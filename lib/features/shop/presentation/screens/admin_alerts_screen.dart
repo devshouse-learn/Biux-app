@@ -145,7 +145,7 @@ class _AdminAlertsScreenState extends State<AdminAlertsScreen>
                   child: TextField(
                     autofocus: true,
                     decoration: InputDecoration(
-                      hintText: 'Buscar...',
+                      hintText: l.t('search_placeholder'),
                       prefixIcon: const Icon(Icons.search, size: 20),
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(12),
@@ -414,7 +414,7 @@ class _AdminAlertsScreenState extends State<AdminAlertsScreen>
             children: [
               TextField(
                 decoration: InputDecoration(
-                  hintText: 'Buscar vendedor, serial, marca...',
+                  hintText: l.t('search_seller_serial'),
                   prefixIcon: Icon(Icons.search, color: ColorTokens.primary50),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),

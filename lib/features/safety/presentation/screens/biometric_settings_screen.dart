@@ -40,12 +40,14 @@ class _BiometricSettingsScreenState extends State<BiometricSettingsScreen> {
 
   Future<void> _toggle(bool value) async {
     if (value) {
-      final auth = await BiometricService.authenticate();
+      final auth = await BiometricService.authenticate(
+        reason: l.t('biometric_reason'),
+      );
       if (!auth) {
         if (mounted)
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(l.t('auth_failed'))),
-          );
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(SnackBar(content: Text(l.t('auth_failed'))));
         return;
       }
     }

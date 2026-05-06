@@ -25,6 +25,7 @@ import 'package:biux/features/chat/domain/entities/message_entity.dart';
 import 'package:biux/features/safety/presentation/providers/safety_provider.dart';
 import 'package:biux/features/safety/presentation/screens/report_flow_screen.dart';
 import 'package:biux/core/design_system/color_tokens.dart';
+import 'package:biux/core/design_system/locale_notifier.dart';
 
 class ChatScreen extends StatefulWidget {
   final ChatEntity chat;
@@ -163,15 +164,17 @@ class _ChatScreenState extends State<ChatScreen> {
   }
 
   String _formatLastSeen(DateTime? dt) {
-    if (dt == null) return 'Última vez: desconocida';
+    final l = Provider.of<LocaleNotifier>(context, listen: false);
+    if (dt == null) return l.t('last_seen_unknown');
     final now = DateTime.now();
     final diff = now.difference(dt);
-    if (diff.inMinutes < 1) return 'Última vez: hace un momento';
-    if (diff.inMinutes < 60) return 'Última vez: hace ${diff.inMinutes} min';
+    if (diff.inMinutes < 1) return l.t('last_seen_just_now');
+    if (diff.inMinutes < 60)
+      return l.t('last_seen_minutes').replaceAll('@min', '${diff.inMinutes}');
     if (diff.inHours < 24) {
       final h = dt.hour.toString().padLeft(2, '0');
       final m = dt.minute.toString().padLeft(2, '0');
-      return 'Última vez hoy a las $h:$m';
+      return l.t('last_seen_today_at').replaceAll('@time', '$h:$m');
     }
     return 'Última vez: ${dt.day}/${dt.month}/${dt.year}';
   }
@@ -208,37 +211,38 @@ class _ChatScreenState extends State<ChatScreen> {
   // ignore: unused_element
   void _showAttachMenu() {
     final isDark = Theme.of(context).brightness == Brightness.dark;
+    final l = Provider.of<LocaleNotifier>(context, listen: false);
     AttachMenuPopup.show(
       context,
       isDark: isDark,
       items: [
         AttachMenuItem(
           icon: Icons.photo,
-          label: 'Galería',
+          label: l.t('gallery_label'),
           color: const Color(0xFF7C4DFF),
           onTap: _pickFromGallery,
         ),
         AttachMenuItem(
           icon: Icons.camera_alt,
-          label: 'Cámara',
+          label: l.t('camera'),
           color: const Color(0xFFE91E63),
           onTap: _openCameraFromMenu,
         ),
         AttachMenuItem(
           icon: Icons.headphones,
-          label: 'Audio',
+          label: l.t('audio'),
           color: const Color(0xFFFF6D00),
           onTap: _pickAudio,
         ),
         AttachMenuItem(
           icon: Icons.location_on,
-          label: 'Ubicación',
+          label: l.t('location'),
           color: const Color(0xFF00C853),
           onTap: _shareLocation,
         ),
         AttachMenuItem(
           icon: Icons.poll,
-          label: 'Encuesta',
+          label: l.t('poll'),
           color: const Color(0xFF1E8BC3),
           onTap: _createPoll,
         ),
@@ -338,7 +342,12 @@ class _ChatScreenState extends State<ChatScreen> {
                 child: ElevatedButton.icon(
                   onPressed: () => Navigator.pop(context, true),
                   icon: const Icon(Icons.send),
-                  label: const Text('Enviar audio'),
+                  label: Text(
+                    Provider.of<LocaleNotifier>(
+                      context,
+                      listen: false,
+                    ).t('send_audio'),
+                  ),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: const Color(0xFFFF6D00),
                     foregroundColor: Colors.white,
@@ -393,17 +402,33 @@ class _ChatScreenState extends State<ChatScreen> {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              const Padding(
-                padding: EdgeInsets.only(bottom: 12),
+              Padding(
+                padding: const EdgeInsets.only(bottom: 12),
                 child: Text(
-                  'Compartir ubicación',
-                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+                  Provider.of<LocaleNotifier>(
+                    context,
+                    listen: false,
+                  ).t('share_location'),
+                  style: const TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w600,
+                  ),
                 ),
               ),
               ListTile(
                 leading: const Icon(Icons.my_location, color: Colors.green),
-                title: const Text('Ubicación precisa'),
-                subtitle: const Text('Se comparte tu ubicación exacta'),
+                title: Text(
+                  Provider.of<LocaleNotifier>(
+                    context,
+                    listen: false,
+                  ).t('precise_location'),
+                ),
+                subtitle: Text(
+                  Provider.of<LocaleNotifier>(
+                    context,
+                    listen: false,
+                  ).t('precise_location_subtitle'),
+                ),
                 onTap: () => Navigator.pop(ctx, LocationAccuracy.high),
               ),
               ListTile(
@@ -411,8 +436,13 @@ class _ChatScreenState extends State<ChatScreen> {
                   Icons.location_searching,
                   color: Colors.orange,
                 ),
-                title: const Text('Ubicación aproximada'),
-                subtitle: const Text('Se comparte un área general'),
+                title: Text(
+                  Provider.of<LocaleNotifier>(
+                    context,
+                    listen: false,
+                  ).t('approximate_location'),
+                ),
+                subtitle: const Text(''),
                 onTap: () => Navigator.pop(ctx, LocationAccuracy.low),
               ),
             ],
@@ -439,10 +469,10 @@ class _ChatScreenState extends State<ChatScreen> {
       try {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
+            SnackBar(
               content: Row(
                 children: [
-                  SizedBox(
+                  const SizedBox(
                     width: 16,
                     height: 16,
                     child: CircularProgressIndicator(
@@ -450,11 +480,16 @@ class _ChatScreenState extends State<ChatScreen> {
                       color: Colors.white,
                     ),
                   ),
-                  SizedBox(width: 12),
-                  Text('Obteniendo ubicación...'),
+                  const SizedBox(width: 12),
+                  Text(
+                    Provider.of<LocaleNotifier>(
+                      context,
+                      listen: false,
+                    ).t('getting_location'),
+                  ),
                 ],
               ),
-              duration: Duration(seconds: 3),
+              duration: const Duration(seconds: 3),
             ),
           );
         }
@@ -472,7 +507,14 @@ class _ChatScreenState extends State<ChatScreen> {
         if (mounted) {
           ScaffoldMessenger.of(context).hideCurrentSnackBar();
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('No se pudo obtener la ubicación')),
+            SnackBar(
+              content: Text(
+                Provider.of<LocaleNotifier>(
+                  context,
+                  listen: false,
+                ).t('could_not_get_location'),
+              ),
+            ),
           );
         }
         return;
@@ -540,6 +582,7 @@ class _ChatScreenState extends State<ChatScreen> {
 
   // ── Bloquear usuario ─────────────────────────────────────────────────
   void _showBlockUserDialog() {
+    final l = Provider.of<LocaleNotifier>(context, listen: false);
     final currentUid = FirebaseAuth.instance.currentUser?.uid ?? '';
     final otherUid = _otherUid.isNotEmpty
         ? _otherUid
@@ -552,7 +595,7 @@ class _ChatScreenState extends State<ChatScreen> {
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: const Text('Bloquear usuario'),
+        title: Text(l.t('block_user')),
         content: Text(
           '¿Deseas bloquear a ${_otherName.isNotEmpty ? _otherName : 'este usuario'}? '
           'No podrá enviarte mensajes, ver tu foto de perfil '
@@ -561,7 +604,7 @@ class _ChatScreenState extends State<ChatScreen> {
         actions: [
           TextButton(
             onPressed: () => Navigator.of(ctx).pop(),
-            child: const Text('Cancelar'),
+            child: Text(l.t('cancel')),
           ),
           TextButton(
             onPressed: () async {
@@ -569,13 +612,16 @@ class _ChatScreenState extends State<ChatScreen> {
               final safetyProvider = context.read<SafetyProvider>();
               await safetyProvider.blockUser(currentUid, otherUid);
               if (mounted) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('Usuario bloqueado')),
-                );
+                ScaffoldMessenger.of(
+                  context,
+                ).showSnackBar(SnackBar(content: Text(l.t('user_blocked'))));
                 setState(() {}); // Forzar rebuild para reflejar bloqueo
               }
             },
-            child: const Text('Bloquear', style: TextStyle(color: Colors.red)),
+            child: Text(
+              l.t('block'),
+              style: const TextStyle(color: Colors.red),
+            ),
           ),
         ],
       ),
@@ -584,6 +630,7 @@ class _ChatScreenState extends State<ChatScreen> {
 
   // ── Desbloquear usuario ─────────────────────────────────────────────
   void _showUnblockDialog() {
+    final l = Provider.of<LocaleNotifier>(context, listen: false);
     final currentUid = FirebaseAuth.instance.currentUser?.uid ?? '';
     final otherUid = _otherUid;
     if (otherUid.isEmpty) return;
@@ -591,7 +638,7 @@ class _ChatScreenState extends State<ChatScreen> {
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: const Text('Desbloquear usuario'),
+        title: Text(l.t('unblock_user')),
         content: Text(
           '¿Deseas desbloquear a ${_otherName.isNotEmpty ? _otherName : 'este usuario'}? '
           'Podrá enviarte mensajes y ver tu perfil nuevamente.',
@@ -599,7 +646,7 @@ class _ChatScreenState extends State<ChatScreen> {
         actions: [
           TextButton(
             onPressed: () => Navigator.of(ctx).pop(),
-            child: const Text('Cancelar'),
+            child: Text(l.t('cancel')),
           ),
           TextButton(
             onPressed: () async {
@@ -607,15 +654,15 @@ class _ChatScreenState extends State<ChatScreen> {
               final safetyProvider = context.read<SafetyProvider>();
               await safetyProvider.unblockUser(currentUid, otherUid);
               if (mounted) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('Usuario desbloqueado')),
-                );
+                ScaffoldMessenger.of(
+                  context,
+                ).showSnackBar(SnackBar(content: Text(l.t('user_unblocked'))));
                 setState(() {});
               }
             },
-            child: const Text(
-              'Desbloquear',
-              style: TextStyle(color: Colors.blue),
+            child: Text(
+              l.t('unblock'),
+              style: const TextStyle(color: Colors.blue),
             ),
           ),
         ],
@@ -626,17 +673,16 @@ class _ChatScreenState extends State<ChatScreen> {
   // ── Vaciar chat ─────────────────────────────────────────────────────────
   void _showClearChatDialog() {
     bool keepStarred = true;
+    final l = Provider.of<LocaleNotifier>(context, listen: false);
     showDialog(
       context: context,
       builder: (ctx) => StatefulBuilder(
         builder: (ctx, setDialogState) => AlertDialog(
-          title: const Text('Vaciar chat'),
+          title: Text(l.t('clear_chat')),
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              const Text(
-                '¿Deseas eliminar todos los mensajes de este chat para ti?',
-              ),
+              Text(l.t('delete_all_chat_messages')),
               const SizedBox(height: 12),
               Row(
                 children: [
@@ -650,10 +696,10 @@ class _ChatScreenState extends State<ChatScreen> {
                     ),
                   ),
                   const SizedBox(width: 8),
-                  const Expanded(
+                  Expanded(
                     child: Text(
-                      'No eliminar mensajes destacados',
-                      style: TextStyle(fontSize: 13),
+                      l.t('keep_starred_messages'),
+                      style: const TextStyle(fontSize: 13),
                     ),
                   ),
                 ],
@@ -663,7 +709,7 @@ class _ChatScreenState extends State<ChatScreen> {
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(ctx),
-              child: const Text('Cancelar'),
+              child: Text(l.t('cancel')),
             ),
             TextButton(
               onPressed: () {
@@ -674,7 +720,7 @@ class _ChatScreenState extends State<ChatScreen> {
                 );
               },
               style: TextButton.styleFrom(foregroundColor: Colors.red),
-              child: const Text('Eliminar'),
+              child: Text(l.t('delete')),
             ),
           ],
         ),
@@ -762,7 +808,9 @@ class _ChatScreenState extends State<ChatScreen> {
                       );
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(
-                          content: Text('Mensaje reenviado a ${c.name}'),
+                          content: Text(
+                            '${Provider.of<LocaleNotifier>(context, listen: false).t('forwarded_to')} ${c.name}',
+                          ),
                           behavior: SnackBarBehavior.floating,
                           duration: const Duration(seconds: 2),
                         ),
@@ -848,9 +896,12 @@ class _ChatScreenState extends State<ChatScreen> {
                 controller: _searchController,
                 autofocus: true,
                 style: const TextStyle(color: Colors.white),
-                decoration: const InputDecoration(
-                  hintText: 'Buscar mensajes...',
-                  hintStyle: TextStyle(color: Colors.white54),
+                decoration: InputDecoration(
+                  hintText: Provider.of<LocaleNotifier>(
+                    context,
+                    listen: false,
+                  ).t('search_messages'),
+                  hintStyle: const TextStyle(color: Colors.white54),
                   border: InputBorder.none,
                 ),
                 onChanged: (v) => setState(() => _searchQuery = v),
@@ -918,7 +969,10 @@ class _ChatScreenState extends State<ChatScreen> {
                                   )
                                 : Text(
                                     _isOnline
-                                        ? 'En línea'
+                                        ? Provider.of<LocaleNotifier>(
+                                            context,
+                                            listen: false,
+                                          ).t('online')
                                         : _formatLastSeen(_lastSeen),
                                     key: const ValueKey('status'),
                                     style: TextStyle(
@@ -973,40 +1027,43 @@ class _ChatScreenState extends State<ChatScreen> {
                     break;
                 }
               },
-              itemBuilder: (_) => const [
-                PopupMenuItem(
-                  value: 'search',
-                  child: ListTile(
-                    dense: true,
-                    leading: Icon(Icons.search),
-                    title: Text('Buscar mensaje'),
+              itemBuilder: (_) {
+                final l = Provider.of<LocaleNotifier>(context, listen: false);
+                return [
+                  PopupMenuItem(
+                    value: 'search',
+                    child: ListTile(
+                      dense: true,
+                      leading: const Icon(Icons.search),
+                      title: Text(l.t('search_message')),
+                    ),
                   ),
-                ),
-                PopupMenuItem(
-                  value: 'block',
-                  child: ListTile(
-                    dense: true,
-                    leading: Icon(Icons.block),
-                    title: Text('Bloquear'),
+                  PopupMenuItem(
+                    value: 'block',
+                    child: ListTile(
+                      dense: true,
+                      leading: const Icon(Icons.block),
+                      title: Text(l.t('block')),
+                    ),
                   ),
-                ),
-                PopupMenuItem(
-                  value: 'clear',
-                  child: ListTile(
-                    dense: true,
-                    leading: Icon(Icons.delete_sweep),
-                    title: Text('Vaciar chat'),
+                  PopupMenuItem(
+                    value: 'clear',
+                    child: ListTile(
+                      dense: true,
+                      leading: const Icon(Icons.delete_sweep),
+                      title: Text(l.t('clear_chat')),
+                    ),
                   ),
-                ),
-                PopupMenuItem(
-                  value: 'report',
-                  child: ListTile(
-                    dense: true,
-                    leading: Icon(Icons.flag),
-                    title: Text('Reportar'),
+                  PopupMenuItem(
+                    value: 'report',
+                    child: ListTile(
+                      dense: true,
+                      leading: const Icon(Icons.flag),
+                      title: Text(l.t('report')),
+                    ),
                   ),
-                ),
-              ],
+                ];
+              },
             ),
           ],
         ],
@@ -1081,8 +1138,11 @@ class _ChatScreenState extends State<ChatScreen> {
                             const SizedBox(height: 12),
                             Text(
                               _searchQuery.isNotEmpty
-                                  ? 'Sin resultados para "$_searchQuery"'
-                                  : 'Sé el primero en enviar un mensaje',
+                                  ? '${Provider.of<LocaleNotifier>(context, listen: false).t('no_results')} "$_searchQuery"'
+                                  : Provider.of<LocaleNotifier>(
+                                      context,
+                                      listen: false,
+                                    ).t('be_first_to_message'),
                               style: TextStyle(
                                 color: isDark
                                     ? Colors.white38

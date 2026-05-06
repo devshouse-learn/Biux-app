@@ -197,7 +197,11 @@ class _ReportFlowScreenState extends State<ReportFlowScreen> {
         children: [
           Text(
             '¿Qué quieres reportar?',
-            style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: isDark ? Colors.white : Colors.black),
+            style: TextStyle(
+              fontSize: 22,
+              fontWeight: FontWeight.bold,
+              color: isDark ? Colors.white : Colors.black,
+            ),
           ),
           const SizedBox(height: 16),
           Container(
@@ -205,22 +209,31 @@ class _ReportFlowScreenState extends State<ReportFlowScreen> {
             decoration: BoxDecoration(
               color: Colors.blue.withValues(alpha: isDark ? 0.15 : 0.06),
               borderRadius: BorderRadius.circular(14),
-              border: Border.all(color: Colors.blue.withValues(alpha: isDark ? 0.3 : 0.15)),
+              border: Border.all(
+                color: Colors.blue.withValues(alpha: isDark ? 0.3 : 0.15),
+              ),
             ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Row(
                   children: [
-                    Icon(Icons.shield_outlined,
-                        color: isDark ? Colors.blue.shade300 : Colors.blue.shade700, size: 20),
+                    Icon(
+                      Icons.shield_outlined,
+                      color: isDark
+                          ? Colors.blue.shade300
+                          : Colors.blue.shade700,
+                      size: 20,
+                    ),
                     const SizedBox(width: 8),
                     Text(
                       'Tu reporte es anónimo',
                       style: TextStyle(
                         fontWeight: FontWeight.w700,
                         fontSize: 14,
-                        color: isDark ? Colors.blue.shade300 : Colors.blue.shade700,
+                        color: isDark
+                            ? Colors.blue.shade300
+                            : Colors.blue.shade700,
                       ),
                     ),
                   ],
@@ -229,7 +242,10 @@ class _ReportFlowScreenState extends State<ReportFlowScreen> {
                 Text(
                   'La persona a la que reportes no sabrá quién realizó '
                   'el reporte. Nuestro equipo revisará tu caso.',
-                  style: TextStyle(fontSize: 13, color: isDark ? Colors.white70 : Colors.black87),
+                  style: TextStyle(
+                    fontSize: 13,
+                    color: isDark ? Colors.white70 : Colors.black87,
+                  ),
                 ),
               ],
             ),
@@ -240,18 +256,26 @@ class _ReportFlowScreenState extends State<ReportFlowScreen> {
             decoration: BoxDecoration(
               color: Colors.red.withValues(alpha: isDark ? 0.15 : 0.06),
               borderRadius: BorderRadius.circular(14),
-              border: Border.all(color: Colors.red.withValues(alpha: isDark ? 0.3 : 0.15)),
+              border: Border.all(
+                color: Colors.red.withValues(alpha: isDark ? 0.3 : 0.15),
+              ),
             ),
             child: Row(
               children: [
-                Icon(Icons.emergency_outlined,
-                    color: isDark ? Colors.red.shade300 : Colors.red.shade700, size: 20),
+                Icon(
+                  Icons.emergency_outlined,
+                  color: isDark ? Colors.red.shade300 : Colors.red.shade700,
+                  size: 20,
+                ),
                 const SizedBox(width: 10),
                 Expanded(
                   child: Text(
                     'Si alguien se encuentra en peligro inmediato, '
                     'llama a los servicios de emergencia locales.',
-                    style: TextStyle(fontSize: 13, color: isDark ? Colors.red.shade300 : Colors.red.shade700),
+                    style: TextStyle(
+                      fontSize: 13,
+                      color: isDark ? Colors.red.shade300 : Colors.red.shade700,
+                    ),
                   ),
                 ),
               ],
@@ -260,8 +284,8 @@ class _ReportFlowScreenState extends State<ReportFlowScreen> {
           const SizedBox(height: 32),
           _buildOptionCard(
             icon: Icons.photo_library_outlined,
-            title: 'Una publicación concreta',
-            subtitle: 'Selecciona una publicación de este usuario para reportar',
+            title: l.t('report_post'),
+            subtitle: l.t('select_post_to_report'),
             isDark: isDark,
             onTap: () {
               _reportType = 'post';
@@ -272,8 +296,8 @@ class _ReportFlowScreenState extends State<ReportFlowScreen> {
           const SizedBox(height: 12),
           _buildOptionCard(
             icon: Icons.person_off_outlined,
-            title: 'Algo sobre esta cuenta',
-            subtitle: 'Reporta la cuenta por suplantación, hackeo u otros motivos',
+            title: l.t('something_about_account'),
+            subtitle: l.t('report_account_subtitle'),
             isDark: isDark,
             onTap: () {
               _reportType = 'account';
@@ -300,7 +324,9 @@ class _ReportFlowScreenState extends State<ReportFlowScreen> {
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(14),
           color: isDark ? ColorTokens.primary20 : null,
-          border: Border.all(color: isDark ? Colors.grey.shade700 : Colors.grey.shade300),
+          border: Border.all(
+            color: isDark ? Colors.grey.shade700 : Colors.grey.shade300,
+          ),
         ),
         child: Row(
           children: [
@@ -311,24 +337,42 @@ class _ReportFlowScreenState extends State<ReportFlowScreen> {
                 color: isDark ? ColorTokens.primary30 : Colors.grey.shade100,
                 borderRadius: BorderRadius.circular(12),
               ),
-              child: Icon(icon, color: isDark ? Colors.white70 : ColorTokens.primary30, size: 22),
+              child: Icon(
+                icon,
+                color: isDark ? Colors.white70 : ColorTokens.primary30,
+                size: 22,
+              ),
             ),
             const SizedBox(width: 14),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(title,
-                      style: TextStyle(
-                          fontWeight: FontWeight.w600, fontSize: 15, color: isDark ? Colors.white : null)),
+                  Text(
+                    title,
+                    style: TextStyle(
+                      fontWeight: FontWeight.w600,
+                      fontSize: 15,
+                      color: isDark ? Colors.white : null,
+                    ),
+                  ),
                   const SizedBox(height: 2),
-                  Text(subtitle,
-                      style:
-                          TextStyle(fontSize: 12, color: isDark ? Colors.grey.shade400 : Colors.grey.shade600)),
+                  Text(
+                    subtitle,
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: isDark
+                          ? Colors.grey.shade400
+                          : Colors.grey.shade600,
+                    ),
+                  ),
                 ],
               ),
             ),
-            Icon(Icons.chevron_right, color: isDark ? Colors.grey.shade500 : Colors.grey.shade400),
+            Icon(
+              Icons.chevron_right,
+              color: isDark ? Colors.grey.shade500 : Colors.grey.shade400,
+            ),
           ],
         ),
       ),
@@ -356,7 +400,10 @@ class _ReportFlowScreenState extends State<ReportFlowScreen> {
           padding: const EdgeInsets.symmetric(horizontal: 20),
           child: Text(
             'Toca la publicación que quieres reportar',
-            style: TextStyle(fontSize: 13, color: isDark ? Colors.grey.shade400 : Colors.grey.shade500),
+            style: TextStyle(
+              fontSize: 13,
+              color: isDark ? Colors.grey.shade400 : Colors.grey.shade500,
+            ),
           ),
         ),
         const SizedBox(height: 16),
@@ -368,8 +415,11 @@ class _ReportFlowScreenState extends State<ReportFlowScreen> {
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Icon(Icons.photo_library_outlined,
-                      size: 48, color: Colors.grey.shade300),
+                  Icon(
+                    Icons.photo_library_outlined,
+                    size: 48,
+                    color: Colors.grey.shade300,
+                  ),
                   const SizedBox(height: 12),
                   Text(
                     'Este usuario no tiene publicaciones',
@@ -401,7 +451,9 @@ class _ReportFlowScreenState extends State<ReportFlowScreen> {
                   child: CachedNetworkImage(
                     imageUrl: post['imageUrl'] as String,
                     fit: BoxFit.cover,
-                    placeholder: (_, __) => Container(color: isDark ? Colors.grey[800] : Colors.grey[200]),
+                    placeholder: (_, __) => Container(
+                      color: isDark ? Colors.grey[800] : Colors.grey[200],
+                    ),
                     errorWidget: (_, __, ___) => Container(
                       color: isDark ? Colors.grey[800] : Colors.grey[200],
                       child: const Icon(Icons.broken_image, color: Colors.grey),
@@ -427,12 +479,19 @@ class _ReportFlowScreenState extends State<ReportFlowScreen> {
             type == 'post'
                 ? '¿Por qué reportas esta publicación?'
                 : '¿Por qué reportas esta cuenta?',
-            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: isDark ? Colors.white : null),
+            style: TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+              color: isDark ? Colors.white : null,
+            ),
           ),
           const SizedBox(height: 6),
           Text(
             'Selecciona el motivo que mejor se ajuste',
-            style: TextStyle(fontSize: 13, color: isDark ? Colors.grey.shade400 : Colors.grey.shade500),
+            style: TextStyle(
+              fontSize: 13,
+              color: isDark ? Colors.grey.shade400 : Colors.grey.shade500,
+            ),
           ),
           if (_selectedPost != null) ...[
             const SizedBox(height: 12),
@@ -495,7 +554,9 @@ class _ReportFlowScreenState extends State<ReportFlowScreen> {
               width: selected ? 2 : 1,
             ),
             color: selected
-                ? (isDark ? Colors.blue.withValues(alpha: 0.15) : ColorTokens.primary30.withValues(alpha: 0.06))
+                ? (isDark
+                      ? Colors.blue.withValues(alpha: 0.15)
+                      : ColorTokens.primary30.withValues(alpha: 0.06))
                 : (isDark ? ColorTokens.primary20 : null),
           ),
           child: Row(
@@ -511,8 +572,11 @@ class _ReportFlowScreenState extends State<ReportFlowScreen> {
                 ),
               ),
               if (selected)
-                Icon(Icons.check_circle,
-                    color: isDark ? Colors.blue.shade300 : ColorTokens.primary30, size: 20),
+                Icon(
+                  Icons.check_circle,
+                  color: isDark ? Colors.blue.shade300 : ColorTokens.primary30,
+                  size: 20,
+                ),
             ],
           ),
         ),
@@ -525,7 +589,8 @@ class _ReportFlowScreenState extends State<ReportFlowScreen> {
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    final showSubmit = _selectedReason != null &&
+    final showSubmit =
+        _selectedReason != null &&
         (_step == _ReportStep.postReason || _step == _ReportStep.accountReason);
 
     return Scaffold(
@@ -546,8 +611,7 @@ class _ReportFlowScreenState extends State<ReportFlowScreen> {
       bottomNavigationBar: showSubmit
           ? SafeArea(
               child: Padding(
-                padding:
-                    EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                padding: EdgeInsets.symmetric(horizontal: 20, vertical: 12),
                 child: SizedBox(
                   width: double.infinity,
                   height: 52,
@@ -557,18 +621,25 @@ class _ReportFlowScreenState extends State<ReportFlowScreen> {
                       backgroundColor: Colors.red,
                       foregroundColor: Colors.white,
                       shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(14)),
+                        borderRadius: BorderRadius.circular(14),
+                      ),
                     ),
                     child: _sending
                         ? const SizedBox(
                             width: 24,
                             height: 24,
                             child: CircularProgressIndicator(
-                                color: Colors.white, strokeWidth: 2),
+                              color: Colors.white,
+                              strokeWidth: 2,
+                            ),
                           )
-                        : Text(l.t('report_action'),
+                        : Text(
+                            l.t('report_action'),
                             style: TextStyle(
-                                fontSize: 15, fontWeight: FontWeight.w700)),
+                              fontSize: 15,
+                              fontWeight: FontWeight.w700,
+                            ),
+                          ),
                   ),
                 ),
               ),
@@ -593,20 +664,30 @@ class _ReportFlowScreenState extends State<ReportFlowScreen> {
                 color: Colors.green.withValues(alpha: isDark ? 0.2 : 0.1),
                 shape: BoxShape.circle,
               ),
-              child: const Icon(Icons.check_rounded,
-                  color: Colors.green, size: 40),
+              child: const Icon(
+                Icons.check_rounded,
+                color: Colors.green,
+                size: 40,
+              ),
             ),
             const SizedBox(height: 20),
             Text(
               'Reporte enviado',
-              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: isDark ? Colors.white : null),
+              style: TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+                color: isDark ? Colors.white : null,
+              ),
             ),
             const SizedBox(height: 8),
             Text(
               'Gracias por ayudar a mantener BIUX seguro.\n'
               'Nuestro equipo revisará tu reporte.',
               textAlign: TextAlign.center,
-              style: TextStyle(fontSize: 14, color: isDark ? Colors.grey.shade400 : Colors.grey.shade600),
+              style: TextStyle(
+                fontSize: 14,
+                color: isDark ? Colors.grey.shade400 : Colors.grey.shade600,
+              ),
             ),
             const SizedBox(height: 28),
             SizedBox(
@@ -615,14 +696,20 @@ class _ReportFlowScreenState extends State<ReportFlowScreen> {
               child: OutlinedButton(
                 onPressed: () => Navigator.of(context).pop(),
                 style: OutlinedButton.styleFrom(
-                  side: BorderSide(color: isDark ? Colors.white54 : ColorTokens.primary30),
+                  side: BorderSide(
+                    color: isDark ? Colors.white54 : ColorTokens.primary30,
+                  ),
                   shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(14)),
+                    borderRadius: BorderRadius.circular(14),
+                  ),
                 ),
-                child: Text('Listo',
-                    style: TextStyle(
-                        color: isDark ? Colors.white : ColorTokens.primary30,
-                        fontWeight: FontWeight.w600)),
+                child: Text(
+                  'Listo',
+                  style: TextStyle(
+                    color: isDark ? Colors.white : ColorTokens.primary30,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
               ),
             ),
           ],

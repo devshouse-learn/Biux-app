@@ -884,7 +884,7 @@ class _ChatInputState extends State<ChatInput>
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error al iniciar grabación: $e')),
+          SnackBar(content: Text('${l.t('error_recording')}: $e')),
         );
       }
     }
@@ -1294,7 +1294,7 @@ class _ChatInputState extends State<ChatInput>
                       _recentEmojis.isEmpty
                           ? Center(
                               child: Text(
-                                'Aún no hay emojis recientes',
+                                l.t('no_recent_emojis'),
                                 style: TextStyle(
                                   fontSize: 13,
                                   color: widget.isDark

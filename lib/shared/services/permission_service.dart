@@ -53,11 +53,11 @@ class PermissionService {
       if (result.isPermanentlyDenied) {
         _showSettingsDialog(context, _permissionName(permission));
       } else {
+        final l = Provider.of<LocaleNotifier>(context, listen: false);
+        final name = _permissionName(permission, l: l);
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(
-              'Se necesita permiso de ${_permissionName(permission)}',
-            ),
+            content: Text(l.t('permission_need_msg').replaceAll('@name', name)),
           ),
         );
       }
@@ -112,32 +112,43 @@ class PermissionService {
     return null;
   }
 
-  String _permissionName(Permission permission) {
-    if (permission == Permission.camera) return 'cámara';
-    if (permission == Permission.location) return 'ubicación';
-    if (permission == Permission.locationWhenInUse) return 'ubicación';
-    if (permission == Permission.microphone) return 'micrófono';
-    if (permission == Permission.photos) return 'galería';
-    if (permission == Permission.notification) return 'notificaciones';
-    if (permission == Permission.contacts) return 'contactos';
-    if (permission == Permission.storage) return 'almacenamiento';
-    return 'acceso';
+  String _permissionName(Permission permission, {LocaleNotifier? l}) {
+    if (l == null) {
+      // Fallback sin context
+      if (permission == Permission.camera) return 'camera';
+      if (permission == Permission.location) return 'location';
+      if (permission == Permission.locationWhenInUse) return 'location';
+      if (permission == Permission.microphone) return 'microphone';
+      if (permission == Permission.photos) return 'gallery';
+      if (permission == Permission.notification) return 'notifications';
+      if (permission == Permission.contacts) return 'contacts';
+      if (permission == Permission.storage) return 'storage';
+      return 'access';
+    }
+    if (permission == Permission.camera) return l.t('perm_camera');
+    if (permission == Permission.location) return l.t('perm_location');
+    if (permission == Permission.locationWhenInUse) return l.t('perm_location');
+    if (permission == Permission.microphone) return l.t('perm_microphone');
+    if (permission == Permission.photos) return l.t('perm_gallery');
+    if (permission == Permission.notification) return l.t('perm_notifications');
+    if (permission == Permission.contacts) return l.t('perm_contacts');
+    if (permission == Permission.storage) return l.t('perm_storage');
+    return l.t('perm_access');
   }
 
   void _showSettingsDialog(BuildContext context, String permissionName) {
-    final l = Provider.of<LocaleNotifier>(context);
+    final l = Provider.of<LocaleNotifier>(context, listen: false);
     final isDark = Theme.of(context).brightness == Brightness.dark;
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
         backgroundColor: isDark ? const Color(0xFF1A2B3C) : Colors.white,
         title: Text(
-          'Permiso requerido',
+          l.t('permission_required'),
           style: TextStyle(color: isDark ? Colors.white : Colors.black87),
         ),
         content: Text(
-          'El permiso de $permissionName fue denegado. '
-          'Actívalo desde la configuración de tu dispositivo.',
+          l.t('permission_denied_msg').replaceAll('@name', permissionName),
           style: TextStyle(color: isDark ? Colors.white70 : Colors.black54),
         ),
         actions: [

@@ -24,15 +24,15 @@ class _AchievementsScreenState extends State<AchievementsScreen>
   String _selectedCategory = 'all';
   late TabController _tabCtrl;
 
-  final _categories = [
-    {'id': 'all', 'label': 'Todos', 'icon': '🏆'},
-    {'id': 'distance', 'label': 'Distancia', 'icon': '🚴'},
-    {'id': 'rides', 'label': 'Rodadas', 'icon': '🏁'},
-    {'id': 'speed', 'label': 'Velocidad', 'icon': '🚀'},
-    {'id': 'streak', 'label': 'Racha', 'icon': '🔥'},
+  List<Map<String, String>> get _categories => [
+    {'id': 'all', 'label': l.t('all'), 'icon': '🏆'},
+    {'id': 'distance', 'label': l.t('distance'), 'icon': '🚴'},
+    {'id': 'rides', 'label': l.t('rides'), 'icon': '🏁'},
+    {'id': 'speed', 'label': l.t('speed'), 'icon': '🚀'},
+    {'id': 'streak', 'label': l.t('streak'), 'icon': '🔥'},
     {'id': 'social', 'label': 'Social', 'icon': '👥'},
-    {'id': 'special', 'label': 'Especiales', 'icon': '⭐'},
-    {'id': 'aventura', 'label': 'Aventura', 'icon': '🏔️'},
+    {'id': 'special', 'label': l.t('special'), 'icon': '⭐'},
+    {'id': 'aventura', 'label': l.t('adventure'), 'icon': '🏔️'},
   ];
 
   @override
@@ -111,9 +111,9 @@ class _AchievementsScreenState extends State<AchievementsScreen>
                               provider.forceSync(uid);
                               ScaffoldMessenger.of(context).showSnackBar(
                                 SnackBar(
-                                  content: const Row(
+                                  content: Row(
                                     children: [
-                                      SizedBox(
+                                      const SizedBox(
                                         width: 16,
                                         height: 16,
                                         child: CircularProgressIndicator(
@@ -124,8 +124,8 @@ class _AchievementsScreenState extends State<AchievementsScreen>
                                               ),
                                         ),
                                       ),
-                                      SizedBox(width: 12),
-                                      Text('Sincronizando logros...'),
+                                      const SizedBox(width: 12),
+                                      Text(l.t('syncing_achievements')),
                                     ],
                                   ),
                                   backgroundColor: Colors.amber,
@@ -201,7 +201,7 @@ class _AchievementsScreenState extends State<AchievementsScreen>
                             ),
                             const SizedBox(height: 8),
                             Text(
-                              '$unlocked / $total Logros desbloqueados',
+                              '$unlocked / $total ${l.t('achievements_unlocked')}',
                               style: TextStyle(
                                 color: Colors.white,
                                 fontSize: 14,
@@ -221,17 +221,17 @@ class _AchievementsScreenState extends State<AchievementsScreen>
                                 _statBadge(
                                   '🏁',
                                   '${_countByCategory(provider, 'rides')}',
-                                  'Rodadas',
+                                  l.t('rides'),
                                 ),
                                 _statBadge(
                                   '🚀',
                                   '${_countByCategory(provider, 'speed')}',
-                                  'Velocidad',
+                                  l.t('speed'),
                                 ),
                                 _statBadge(
                                   '🔥',
                                   '${_countByCategory(provider, 'streak')}',
-                                  'Racha',
+                                  l.t('streak'),
                                 ),
                               ],
                             ),
@@ -248,12 +248,12 @@ class _AchievementsScreenState extends State<AchievementsScreen>
                                 _statBadge(
                                   '⭐',
                                   '${_countByCategory(provider, 'special')}',
-                                  'Especiales',
+                                  l.t('special'),
                                 ),
                                 _statBadge(
                                   '🏔️',
                                   '${_countByCategory(provider, 'aventura')}',
-                                  'Aventura',
+                                  l.t('adventure'),
                                 ),
                               ],
                             ),
@@ -289,7 +289,7 @@ class _AchievementsScreenState extends State<AchievementsScreen>
                         const SizedBox(width: 12),
                         Expanded(
                           child: Text(
-                            'Sincronizando logros con tus rodadas...',
+                            l.t('syncing_achievements'),
                             style: TextStyle(
                               fontSize: 13,
                               color: Colors.amber[900],
@@ -948,7 +948,7 @@ class _AchievementsScreenState extends State<AchievementsScreen>
                                           );
                                         },
                                         icon: const Icon(Icons.share, size: 18),
-                                        label: const Text('Compartir logro'),
+                                        label: Text(l.t('share_achievement')),
                                         style: ElevatedButton.styleFrom(
                                           backgroundColor: Colors.amber[800],
                                           foregroundColor: Colors.white,
@@ -991,9 +991,9 @@ class _AchievementsScreenState extends State<AchievementsScreen>
                                             crossAxisAlignment:
                                                 CrossAxisAlignment.start,
                                             children: [
-                                              const Text(
-                                                'Aún no desbloqueado',
-                                                style: TextStyle(
+                                              Text(
+                                                l.t('not_unlocked_yet'),
+                                                style: const TextStyle(
                                                   fontWeight: FontWeight.w700,
                                                   color: Colors.blue,
                                                 ),
@@ -1068,23 +1068,23 @@ class _AchievementsScreenState extends State<AchievementsScreen>
 
   String _unitLabel(String cat) => switch (cat) {
     'distance' => 'km',
-    'rides' => 'rodadas',
+    'rides' => l.t('rides'),
     'speed' => 'km/h',
-    'streak' => 'días',
-    'social' => 'grupos',
+    'streak' => l.t('days_unit'),
+    'social' => l.t('groups'),
     'aventura' => 'km',
     _ => '',
   };
 
   String _categoryLabel(String cat) => switch (cat) {
-    'distance' => '🚴 Distancia',
-    'rides' => '🏁 Rodadas',
-    'speed' => '🚀 Velocidad',
-    'streak' => '🔥 Racha',
+    'distance' => '🚴 ${l.t('distance')}',
+    'rides' => '🏁 ${l.t('rides')}',
+    'speed' => '🚀 ${l.t('speed')}',
+    'streak' => '🔥 ${l.t('streak')}',
     'social' => '👥 Social',
-    'special' => '⭐ Especiales',
-    'aventura' => '🏔️ Aventura',
-    _ => '🏆 General',
+    'special' => '⭐ ${l.t('special')}',
+    'aventura' => '🏔️ ${l.t('adventure')}',
+    _ => '🏆 ${l.t('general')}',
   };
 
   void _shareAchievements(AchievementsProvider provider) {
@@ -1122,13 +1122,13 @@ class _AchievementsScreenState extends State<AchievementsScreen>
               ),
             ),
             const SizedBox(height: 20),
-            const Text(
-              'Compartir logros',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            Text(
+              l.t('share_achievements'),
+              style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 6),
             Text(
-              'Elige cómo quieres compartir tus logros',
+              l.t('choose_how_share'),
               style: TextStyle(fontSize: 13, color: Colors.grey[500]),
             ),
             const SizedBox(height: 24),
@@ -1176,7 +1176,7 @@ class _AchievementsScreenState extends State<AchievementsScreen>
                           ),
                           const SizedBox(height: 3),
                           Text(
-                            'Envía tus logros por chat a otros ciclistas',
+                            l.t('send_achievements_chat'),
                             style: TextStyle(
                               fontSize: 12,
                               color: Colors.grey[500],
@@ -1235,7 +1235,7 @@ class _AchievementsScreenState extends State<AchievementsScreen>
                           ),
                           const SizedBox(height: 3),
                           Text(
-                            'WhatsApp, Instagram, X y más',
+                            l.t('share_outside_biux'),
                             style: TextStyle(
                               fontSize: 12,
                               color: Colors.grey[500],
@@ -1411,7 +1411,8 @@ class _AchievementsShareInAppSheetState
         final data = doc.data();
         contacts.add({
           'userId': otherId,
-          'name': data?['fullName'] ?? data?['userName'] ?? l.t('cyclist_label'),
+          'name':
+              data?['fullName'] ?? data?['userName'] ?? l.t('cyclist_label'),
           'photo': data?['photo'] ?? '',
           'chatId': chat.id,
         });
@@ -1451,7 +1452,7 @@ class _AchievementsShareInAppSheetState
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Enviado a ' + (contact['name'] as String)),
+            content: Text('${l.t('sent_to')} ${contact['name'] as String}'),
             backgroundColor: Colors.green[600],
             duration: const Duration(seconds: 2),
           ),
@@ -1460,8 +1461,8 @@ class _AchievementsShareInAppSheetState
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Error al enviar el mensaje'),
+          SnackBar(
+            content: Text(l.t('error_sending_message')),
             backgroundColor: Colors.red,
           ),
         );
@@ -1537,7 +1538,7 @@ class _AchievementsShareInAppSheetState
                               Navigator.pop(context);
                               context.push('/users/search');
                             },
-                            child: const Text('Buscar ciclistas'),
+                            child: Text(l.t('search_cyclists')),
                           ),
                         ],
                       ),

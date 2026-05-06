@@ -87,7 +87,7 @@ class _PermissionsScreenState extends State<PermissionsScreen>
             context: context,
             icon: Icons.camera_alt,
             title: l.t('camera'),
-            subtitle: 'Fotos, cámara en chat y reportes',
+            subtitle: l.t('camera_permission_subtitle'),
             isDark: isDark,
             value: _cameraGranted,
             onChanged: (_) =>
@@ -98,7 +98,7 @@ class _PermissionsScreenState extends State<PermissionsScreen>
             context: context,
             icon: Icons.photo_library,
             title: l.t('gallery_label'),
-            subtitle: 'Enviar fotos y videos desde galería',
+            subtitle: l.t('gallery_permission_subtitle'),
             isDark: isDark,
             value: _photosGranted,
             onChanged: (_) =>
@@ -109,7 +109,7 @@ class _PermissionsScreenState extends State<PermissionsScreen>
             context: context,
             icon: Icons.location_on,
             title: l.t('location'),
-            subtitle: 'GPS, mapa, rodadas y ubicación en chat',
+            subtitle: l.t('location_permission_subtitle'),
             isDark: isDark,
             value: _locationGranted,
             onChanged: (_) =>
@@ -120,7 +120,7 @@ class _PermissionsScreenState extends State<PermissionsScreen>
             context: context,
             icon: Icons.mic,
             title: l.t('microphone'),
-            subtitle: 'Notas de voz en chat',
+            subtitle: l.t('mic_permission_subtitle'),
             isDark: isDark,
             value: _microphoneGranted,
             onChanged: (_) =>
@@ -131,7 +131,7 @@ class _PermissionsScreenState extends State<PermissionsScreen>
             context: context,
             icon: Icons.notifications,
             title: l.t('notifications_label'),
-            subtitle: 'Mensajes, rodadas y alertas',
+            subtitle: l.t('notifications_permission_subtitle'),
             isDark: isDark,
             value: _notificationsGranted,
             onChanged: (_) => _togglePermission(
@@ -144,7 +144,7 @@ class _PermissionsScreenState extends State<PermissionsScreen>
             context: context,
             icon: Icons.contacts,
             title: l.t('contacts'),
-            subtitle: 'Encontrar amigos e invitar ciclistas',
+            subtitle: l.t('contacts_permission_subtitle'),
             isDark: isDark,
             value: _contactsGranted,
             onChanged: (_) =>

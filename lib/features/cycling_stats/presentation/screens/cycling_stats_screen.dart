@@ -292,10 +292,13 @@ class _CyclingStatsScreenState extends State<CyclingStatsScreen>
                         ),
                       ],
                     )
-                  : const Center(
+                  : Center(
                       child: Text(
-                        'Completa tu primera rodada',
-                        style: TextStyle(color: Colors.white70, fontSize: 16),
+                        l.t('complete_first_ride'),
+                        style: const TextStyle(
+                          color: Colors.white70,
+                          fontSize: 16,
+                        ),
                       ),
                     ),
             ),
@@ -311,8 +314,8 @@ class _CyclingStatsScreenState extends State<CyclingStatsScreen>
     if (stats == null) {
       return _buildEmptyState(
         icon: Icons.pedal_bike,
-        title: 'Sin estadísticas aún',
-        subtitle: 'Completa tu primera rodada para ver\ntus estadísticas aquí',
+        title: l.t('no_stats_yet'),
+        subtitle: l.t('complete_first_ride_stats'),
       );
     }
 
@@ -511,11 +514,7 @@ class _CyclingStatsScreenState extends State<CyclingStatsScreen>
               // Título de sección
               Row(
                 children: [
-                  Icon(
-                    Icons.wb_sunny_outlined,
-                    size: 14,
-                    color: Colors.amber,
-                  ),
+                  Icon(Icons.wb_sunny_outlined, size: 14, color: Colors.amber),
                   SizedBox(width: 6),
                   Text(
                     l.t('current_weather_cycling'),
@@ -1594,7 +1593,7 @@ class _CyclingStatsScreenState extends State<CyclingStatsScreen>
           child: Row(
             children: [
               _rankingChip(
-                label: '👥 Amigos',
+                label: l.t('friends_tab'),
                 selected: _rankingMode == 'amigos',
                 onTap: () {
                   setState(() => _rankingMode = 'amigos');
@@ -1603,7 +1602,7 @@ class _CyclingStatsScreenState extends State<CyclingStatsScreen>
               ),
               SizedBox(width: 8),
               _rankingChip(
-                label: '📍 Regional',
+                label: l.t('regional_tab'),
                 selected: _rankingMode == 'regional',
                 onTap: () {
                   setState(() => _rankingMode = 'regional');

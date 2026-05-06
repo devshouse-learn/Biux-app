@@ -206,53 +206,51 @@ class _AppDrawerState extends State<AppDrawer> {
                         const Spacer(),
                         GestureDetector(
                           onTap: () {
-                                Navigator.pop(context);
-                                context.push(AppRoutes.emergency);
-                              },
-                              child: SizedBox(
-                                width: 90,
-                                child: Container(
-                                  padding: const EdgeInsets.symmetric(
-                                    horizontal: 12,
-                                    vertical: 7,
+                            Navigator.pop(context);
+                            context.push(AppRoutes.emergency);
+                          },
+                          child: SizedBox(
+                            width: 90,
+                            child: Container(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 12,
+                                vertical: 7,
+                              ),
+                              decoration: BoxDecoration(
+                                color: Colors.red,
+                                borderRadius: BorderRadius.circular(12),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Colors.red.withValues(alpha: 0.4),
+                                    blurRadius: 6,
+                                    spreadRadius: 1,
                                   ),
-                                  decoration: BoxDecoration(
-                                    color: Colors.red,
-                                    borderRadius: BorderRadius.circular(12),
-                                    boxShadow: [
-                                      BoxShadow(
-                                        color: Colors.red.withValues(
-                                          alpha: 0.4,
-                                        ),
-                                        blurRadius: 6,
-                                        spreadRadius: 1,
-                                      ),
-                                    ],
+                                ],
+                              ),
+                              child: const Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Icon(
+                                    Icons.sos_rounded,
+                                    color: Colors.white,
+                                    size: 14,
                                   ),
-                                  child: const Row(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    mainAxisSize: MainAxisSize.min,
-                                    children: [
-                                      Icon(
-                                        Icons.sos_rounded,
-                                        color: Colors.white,
-                                        size: 14,
-                                      ),
-                                      SizedBox(width: 5),
-                                      Text(
-                                        'SOS',
-                                        style: TextStyle(
-                                          color: Colors.white,
-                                          fontSize: 12,
-                                          fontWeight: FontWeight.w900,
-                                          letterSpacing: 1,
-                                        ),
-                                      ),
-                                    ],
+                                  SizedBox(width: 5),
+                                  Text(
+                                    'SOS',
+                                    style: TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 12,
+                                      fontWeight: FontWeight.w900,
+                                      letterSpacing: 1,
+                                    ),
                                   ),
-                                ),
+                                ],
                               ),
                             ),
+                          ),
+                        ),
                       ],
                     ),
 
@@ -743,7 +741,7 @@ class _AppDrawerState extends State<AppDrawer> {
                   ),
                 ),
                 const SizedBox(width: 16),
-                const Text('Cerrando sesion...'),
+                Text(l.t('closing_session')),
               ],
             ),
           ),

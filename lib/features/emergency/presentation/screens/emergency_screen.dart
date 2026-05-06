@@ -529,7 +529,7 @@ class _EmergencyScreenState extends State<EmergencyScreen> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'Números de Emergencia',
+            l.t('emergency_numbers'),
             style: TextStyle(
               fontSize: 16,
               fontWeight: FontWeight.bold,
@@ -539,36 +539,36 @@ class _EmergencyScreenState extends State<EmergencyScreen> {
           const SizedBox(height: 12),
           _eTile(
             emoji: '🚑',
-            service: 'Ambulancia / SAMU',
-            description: 'Emergencias médicas y accidentes',
+            service: l.t('ambulance_samu'),
+            description: l.t('medical_emergencies'),
             number: '123',
             color: Colors.red,
           ),
           _eTile(
             emoji: '🚔',
-            service: 'Policía Nacional',
-            description: 'Seguridad, delitos y orden público',
+            service: l.t('national_police'),
+            description: l.t('security_crimes'),
             number: '112',
             color: Colors.blue,
           ),
           _eTile(
             emoji: '🚒',
-            service: 'Bomberos',
-            description: 'Incendios, rescates y materiales peligrosos',
+            service: l.t('firefighters'),
+            description: l.t('fires_rescues'),
             number: '119',
             color: Colors.orange,
           ),
           _eTile(
             emoji: '🏥',
-            service: 'Cruz Roja',
-            description: 'Primeros auxilios y asistencia humanitaria',
+            service: l.t('red_cross'),
+            description: l.t('first_aid_humanitarian'),
             number: '132',
             color: Colors.red[800]!,
           ),
           _eTile(
             emoji: '🛡️',
-            service: 'Defensa Civil',
-            description: 'Desastres naturales y emergencias civiles',
+            service: l.t('civil_defense'),
+            description: l.t('natural_disasters'),
             number: '144',
             color: Colors.green[700]!,
           ),
@@ -591,7 +591,7 @@ class _EmergencyScreenState extends State<EmergencyScreen> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'Llama solo en caso de emergencia real',
+                        l.t('call_only_real_emergency'),
                         style: TextStyle(
                           fontWeight: FontWeight.bold,
                           fontSize: 13,
@@ -600,7 +600,7 @@ class _EmergencyScreenState extends State<EmergencyScreen> {
                       ),
                       const SizedBox(height: 4),
                       Text(
-                        'Realizar llamadas falsas a servicios de emergencia es una infracción legal que puede acarrear multas o sanciones penales, y desvía recursos que podrían salvar vidas reales.',
+                        l.t('false_calls_warning'),
                         style: TextStyle(
                           fontSize: 11,
                           color: isDark ? Colors.white60 : Colors.black54,

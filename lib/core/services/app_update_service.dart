@@ -109,14 +109,11 @@ class AppUpdateService {
         canPop: false,
         child: AlertDialog(
           title: Text(l.t('update_required')),
-          content: const Text(
-            'Hay una nueva versión disponible que es obligatoria para seguir usando Biux. '
-            'Por favor actualiza la app.',
-          ),
+          content: Text(l.t('force_update_msg')),
           actions: [
             FilledButton(
               onPressed: () => _openStore(platform),
-              child: const Text('Actualizar'),
+              child: Text(l.t('update_app')),
             ),
           ],
         ),
@@ -131,9 +128,7 @@ class AppUpdateService {
       context: context,
       builder: (ctx) => AlertDialog(
         title: Text(l.t('new_version_available')),
-        content: Text(
-          'Hay una nueva versión de Biux disponible con mejoras y correcciones.',
-        ),
+        content: Text(l.t('optional_update_msg')),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(ctx).pop(),
@@ -144,7 +139,7 @@ class AppUpdateService {
               Navigator.of(ctx).pop();
               _openStore(platform);
             },
-            child: const Text('Actualizar'),
+            child: Text(l.t('update_app')),
           ),
         ],
       ),
@@ -152,6 +147,7 @@ class AppUpdateService {
   }
 
   static Future<void> showMaintenanceDialog(BuildContext context) async {
+    final l = Provider.of<LocaleNotifier>(context, listen: false);
     await showDialog(
       context: context,
       barrierDismissible: false,
@@ -159,12 +155,12 @@ class AppUpdateService {
         canPop: false,
         child: AlertDialog(
           icon: const Icon(Icons.construction_rounded, size: 48),
-          title: const Text('Mantenimiento'),
+          title: Text(l.t('maintenance_title')),
           content: Text(maintenanceMessage),
           actions: [
             FilledButton(
               onPressed: () => Navigator.of(ctx).pop(),
-              child: const Text('Reintentar'),
+              child: Text(l.t('retry')),
             ),
           ],
         ),

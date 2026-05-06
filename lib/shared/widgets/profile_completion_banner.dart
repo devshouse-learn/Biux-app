@@ -36,11 +36,10 @@ class ProfileCompletionBanner extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
-                    'Perfil completado al \$percent%',
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 14,
-                    ),
+                    l
+                        .t('profile_completed_at')
+                        .replaceAll('@percent', '$percent'),
+                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
                   ),
                   TextButton(
                     onPressed: () => context.push('/edit-user'),
@@ -63,7 +62,9 @@ class ProfileCompletionBanner extends StatelessWidget {
               if (missing.isNotEmpty) ...[
                 const SizedBox(height: 8),
                 Text(
-                  'Faltan: \${missing.join(", ")}',
+                  l
+                      .t('missing_fields')
+                      .replaceAll('@fields', missing.join(', ')),
                   style: TextStyle(fontSize: 12, color: Colors.grey.shade600),
                 ),
               ],

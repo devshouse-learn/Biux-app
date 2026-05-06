@@ -381,9 +381,7 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
       context: context,
       builder: (dialogContext) => AlertDialog(
         title: Text(l.t('delete_post')),
-        content: Text(
-          '¿Estás seguro de que deseas eliminar esta publicación? Esta acción no se puede deshacer.',
-        ),
+        content: Text(l.t('confirm_delete_post')),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(dialogContext),

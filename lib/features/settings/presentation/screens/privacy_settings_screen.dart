@@ -18,7 +18,7 @@ class PrivacySettingsScreen extends StatelessWidget {
       appBar: AppBar(
         backgroundColor: ColorTokens.primary10,
         title: Text(
-          'Privacidad y datos',
+          l.t('privacy_and_data'),
           style: TextStyle(color: Colors.white),
         ),
         leading: IconButton(
@@ -29,17 +29,17 @@ class PrivacySettingsScreen extends StatelessWidget {
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [
-          _SectionTitle('Tus datos'),
+          _SectionTitle(l.t('your_data')),
           _PrivacyTile(
             icon: Icons.download,
-            title: 'Exportar mis datos',
-            subtitle: 'Descarga una copia de toda tu información',
+            title: l.t('export_my_data'),
+            subtitle: l.t('download_copy_info'),
             onTap: () => _exportData(context),
           ),
           _PrivacyTile(
             icon: Icons.visibility_off,
             title: l.t('activity_history'),
-            subtitle: 'Gestiona qué actividades quedan registradas',
+            subtitle: l.t('manage_activity_log'),
             onTap: () {},
           ),
           SizedBox(height: 16),
@@ -47,13 +47,13 @@ class PrivacySettingsScreen extends StatelessWidget {
           _PrivacyTile(
             icon: Icons.lock_reset,
             title: l.t('active_sessions'),
-            subtitle: 'Ver y cerrar sesiones en otros dispositivos',
+            subtitle: l.t('view_close_sessions'),
             onTap: () => context.push('/settings/sessions'),
           ),
           _PrivacyTile(
             icon: Icons.delete_forever,
-            title: 'Solicitar eliminación de cuenta',
-            subtitle: 'Tu cuenta y datos serán eliminados permanentemente',
+            title: l.t('request_account_deletion'),
+            subtitle: l.t('account_deleted_permanently'),
             color: Colors.red,
             onTap: () => _confirmDeleteAccount(context),
           ),
@@ -63,11 +63,10 @@ class PrivacySettingsScreen extends StatelessWidget {
   }
 
   void _exportData(BuildContext context) {
+    final l = Provider.of<LocaleNotifier>(context, listen: false);
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text(
-          'Solicitud enviada. Recibirás un email con tus datos en 48h.',
-        ),
+      SnackBar(
+        content: Text(l.t('data_export_sent')),
         behavior: SnackBarBehavior.floating,
       ),
     );
@@ -78,10 +77,8 @@ class PrivacySettingsScreen extends StatelessWidget {
     showDialog(
       context: context,
       builder: (_) => AlertDialog(
-        title: const Text('¿Eliminar cuenta?'),
-        content: Text(
-          'Esta acción es irreversible. Todos tus datos, grupos y rodadas serán eliminados permanentemente.',
-        ),
+        title: Text(l.t('delete_account_question')),
+        content: Text(l.t('delete_account_irreversible')),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),

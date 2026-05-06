@@ -107,7 +107,7 @@ class _PublicUserProfileScreenState extends State<PublicUserProfileScreen> {
                     backgroundColor: ColorTokens.primary50,
                     foregroundColor: ColorTokens.neutral100,
                   ),
-                  child: const Text('Volver'),
+                  child: Text(l.t('go_back')),
                 ),
               ],
             ),
@@ -1344,8 +1344,7 @@ class _PublicUserProfileScreenState extends State<PublicUserProfileScreen> {
         title: Text(l.t('block_user')),
         content: Text(
           '¿Deseas bloquear a ${user.fullName.isNotEmpty ? user.fullName : user.userName}? '
-          'No podrá enviarte mensajes ni ver tu perfil. '
-          'También será removido de tus seguidores.',
+          '${l.t('also_removed_followers')}',
         ),
         actions: [
           TextButton(
@@ -1360,9 +1359,9 @@ class _PublicUserProfileScreenState extends State<PublicUserProfileScreen> {
                 widget.userId,
               );
               if (mounted) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(content: Text(l.t('user_blocked'))),
-                );
+                ScaffoldMessenger.of(
+                  context,
+                ).showSnackBar(SnackBar(content: Text(l.t('user_blocked'))));
                 context.pop();
               }
             },
@@ -1390,9 +1389,9 @@ class _PublicUserProfileScreenState extends State<PublicUserProfileScreen> {
     final url =
         'https://biux.app/u/${user.userName.isNotEmpty ? user.userName : widget.userId}';
     Clipboard.setData(ClipboardData(text: url));
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('URL copiada al portapapeles')),
-    );
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(SnackBar(content: Text(l.t('url_copied'))));
   }
 
   void _showQrCode(BiuxUser user) {

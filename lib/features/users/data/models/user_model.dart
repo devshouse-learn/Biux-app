@@ -60,6 +60,9 @@ class UserModel {
     return UserRole.user;
   }
 
+  // Getter compatible con UserEntity
+  bool get isAdministrador => isAdmin || userRole == UserRole.admin;
+
   // Getter para verificar si puede crear productos
   bool get canCreateProducts =>
       isAdmin ||

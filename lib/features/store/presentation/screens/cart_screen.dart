@@ -630,8 +630,8 @@ class _CartScreenState extends State<CartScreen> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text('Eliminar producto'),
-        content: Text('¿Deseas eliminar "$productName" del carrito?'),
+        title: Text(l.t('delete')),
+        content: Text('${l.t('confirm_delete_product')} "$productName"?'),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
@@ -1200,7 +1200,7 @@ class _CartScreenState extends State<CartScreen> {
                 controller: controller,
                 textCapitalization: TextCapitalization.characters,
                 decoration: InputDecoration(
-                  hintText: 'Ingresa tu código',
+                  hintText: l.t('enter_code'),
                   filled: true,
                   fillColor: Theme.of(context).colorScheme.surface,
                   border: OutlineInputBorder(

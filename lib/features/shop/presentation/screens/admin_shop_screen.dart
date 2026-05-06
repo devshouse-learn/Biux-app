@@ -215,8 +215,8 @@ class _AdminShopScreenState extends State<AdminShopScreen> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text('Eliminar Producto'),
-        content: Text('¿Estás seguro de eliminar "${product.name}"?'),
+        title: Text(l.t('delete')),
+        content: Text('${l.t('confirm_delete_product')} "${product.name}"?'),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(),
@@ -335,7 +335,7 @@ class _AdminShopScreenState extends State<AdminShopScreen> {
                 child: TextField(
                   controller: _searchController,
                   decoration: InputDecoration(
-                    hintText: 'Buscar productos...',
+                    hintText: l.t('search_products_placeholder'),
                     prefixIcon: const Icon(Icons.search),
                     suffixIcon: _searchQuery.isNotEmpty
                         ? IconButton(
@@ -630,8 +630,8 @@ class _ProductFormModalState extends State<ProductFormModal> {
       if (mounted) {
         if (context.mounted)
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('No se pudo acceder a la cámara'),
+            SnackBar(
+              content: Text(l.t('camera_not_available')),
               backgroundColor: Colors.orange,
             ),
           );
@@ -1378,7 +1378,7 @@ class _ProductFormModalState extends State<ProductFormModal> {
                 decoration: InputDecoration(
                   labelText: 'Descripción detallada (opcional)',
                   labelStyle: TextStyle(color: ColorTokens.neutral60),
-                  hintText: 'Características, materiales, medidas, etc.',
+                  hintText: l.t('description_hint'),
                   hintStyle: TextStyle(color: ColorTokens.neutral70),
                   filled: true,
                   fillColor: ColorTokens.neutral100,
@@ -1493,7 +1493,7 @@ class _ProductFormModalState extends State<ProductFormModal> {
                 decoration: InputDecoration(
                   labelText: 'Ciudad (opcional)',
                   labelStyle: TextStyle(color: ColorTokens.neutral60),
-                  hintText: 'Ej: Bogotá, Medellín, Cali...',
+                  hintText: l.t('city_hint'),
                   hintStyle: TextStyle(color: ColorTokens.neutral70),
                   prefixIcon: Icon(
                     Icons.location_on,
@@ -1677,7 +1677,7 @@ class _ProductFormModalState extends State<ProductFormModal> {
                         decoration: InputDecoration(
                           labelText: 'Número de Serie / Chasis *',
                           labelStyle: TextStyle(color: ColorTokens.neutral60),
-                          hintText: 'Ej: AB123456789',
+                          hintText: l.t('serial_hint'),
                           hintStyle: TextStyle(color: ColorTokens.neutral70),
                           filled: true,
                           fillColor: ColorTokens.neutral100,
@@ -1707,7 +1707,7 @@ class _ProductFormModalState extends State<ProductFormModal> {
                         decoration: InputDecoration(
                           labelText: 'Marca',
                           labelStyle: TextStyle(color: ColorTokens.neutral60),
-                          hintText: 'Ej: Trek, Giant, Specialized...',
+                          hintText: l.t('brand_hint'),
                           filled: true,
                           fillColor: ColorTokens.neutral100,
                           border: OutlineInputBorder(

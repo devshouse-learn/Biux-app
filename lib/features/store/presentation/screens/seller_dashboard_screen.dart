@@ -340,10 +340,10 @@ class _SellerDashboardScreenState extends State<SellerDashboardScreen> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text('Eliminar Producto'),
+        title: Text(l.t('delete')),
         content: Text(
-          '¿Estás seguro de que deseas eliminar "${product.nombre}"?\n\n'
-          'Esta acción no se puede deshacer.',
+          '${l.t('confirm_delete_product')} "${product.nombre}"?\n\n'
+          '${l.t('action_cannot_be_undone')}',
         ),
         actions: [
           TextButton(

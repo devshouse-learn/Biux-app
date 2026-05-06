@@ -480,10 +480,7 @@ class _StolenBikesScreenState extends State<StolenBikesScreen>
           indicatorWeight: 3,
           labelColor: Colors.white,
           unselectedLabelColor: Colors.white60,
-          labelStyle: TextStyle(
-            fontWeight: FontWeight.w700,
-            fontSize: 13,
-          ),
+          labelStyle: TextStyle(fontWeight: FontWeight.w700, fontSize: 13),
           tabs: [
             Tab(icon: Icon(Icons.list_alt, size: 20), text: 'Listado'),
             Tab(icon: Icon(Icons.search, size: 20), text: 'Verificar'),
@@ -689,7 +686,7 @@ class _StolenBikesScreenState extends State<StolenBikesScreen>
             controller: _serialController,
             textCapitalization: TextCapitalization.characters,
             decoration: InputDecoration(
-              hintText: 'Ej: WTU123H456789',
+              hintText: l.t('serial_example'),
               prefixIcon: const Icon(Icons.fingerprint),
               suffixIcon: IconButton(
                 icon: const Icon(Icons.clear, size: 18),

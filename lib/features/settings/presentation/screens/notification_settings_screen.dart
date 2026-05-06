@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:go_router/go_router.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:biux/core/config/router/app_routes.dart';
-import 'package:biux/core/design_system/color_tokens.dart';
 import 'package:biux/core/design_system/locale_notifier.dart';
 import 'package:biux/features/users/presentation/providers/user_provider.dart';
 import 'package:biux/features/settings/presentation/widgets/settings_shared_widgets.dart';
@@ -13,6 +11,7 @@ import 'privacy_details_screen.dart';
 import 'permissions_screen.dart';
 import 'information_details_screen.dart';
 import 'language_selection_screen.dart';
+import 'archive_download_screen.dart';
 
 class NotificationSettingsScreen extends StatefulWidget {
   const NotificationSettingsScreen({super.key});
@@ -24,13 +23,9 @@ class NotificationSettingsScreen extends StatefulWidget {
 
 class _NotificationSettingsScreenState
     extends State<NotificationSettingsScreen> {
-  bool _saveStories = false;
-  bool _savePosts = false;
-
   @override
   void initState() {
     super.initState();
-    _loadSavePreferences();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       context.read<UserProvider>().loadUserData();
     });
@@ -146,7 +141,21 @@ class _NotificationSettingsScreenState
             },
           ),
           SizedBox(height: 8),
-          _buildSaveMediaPermission(isDark),
+          SettingsWidgets.buildMenuCard(
+            context,
+            icon: Icons.save_alt_rounded,
+            title: l.t('archive_download'),
+            subtitle: l.t('archive_download_subtitle'),
+            isDark: isDark,
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => const ArchiveDownloadScreen(),
+                ),
+              );
+            },
+          ),
           SizedBox(height: 8),
           SettingsWidgets.buildMenuCard(
             context,
@@ -283,120 +292,6 @@ class _NotificationSettingsScreenState
               l.t('confirm'),
               style: const TextStyle(color: Colors.red),
             ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Future<void> _loadSavePreferences() async {
-    final prefs = await SharedPreferences.getInstance();
-    if (mounted) {
-      setState(() {
-        _saveStories = prefs.getBool('save_stories_to_phone') ?? false;
-        _savePosts = prefs.getBool('save_posts_to_phone') ?? false;
-      });
-    }
-  }
-
-  Future<void> _toggleSaveStories(bool value) async {
-    setState(() => _saveStories = value);
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setBool('save_stories_to_phone', value);
-  }
-
-  Future<void> _toggleSavePosts(bool value) async {
-    setState(() => _savePosts = value);
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setBool('save_posts_to_phone', value);
-  }
-
-  Widget _buildSaveMediaPermission(bool isDark) {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: isDark ? const Color(0xFF1A2B3C) : Colors.white,
-        borderRadius: BorderRadius.circular(12),
-        boxShadow: [
-          if (!isDark)
-            BoxShadow(
-              color: Colors.black.withValues(alpha: 0.05),
-              blurRadius: 4,
-              offset: const Offset(0, 2),
-            ),
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              Icon(
-                Icons.save_alt_rounded,
-                color: isDark ? Colors.white70 : ColorTokens.primary30,
-              ),
-              const SizedBox(width: 12),
-              Text(
-                'Guardar en el tel\u00e9fono',
-                style: TextStyle(
-                  color: isDark ? Colors.white : Colors.black87,
-                  fontWeight: FontWeight.w600,
-                  fontSize: 16,
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 4),
-          Padding(
-            padding: const EdgeInsets.only(left: 36),
-            child: Text(
-              'Guarda autom\u00e1ticamente contenido en tu galer\u00eda',
-              style: TextStyle(
-                color: isDark ? Colors.white54 : Colors.grey[600],
-                fontSize: 13,
-              ),
-            ),
-          ),
-          const SizedBox(height: 12),
-          SwitchListTile(
-            contentPadding: const EdgeInsets.only(left: 4),
-            title: Text(
-              'Guardar historias',
-              style: TextStyle(
-                color: isDark ? Colors.white : Colors.black87,
-                fontSize: 15,
-              ),
-            ),
-            subtitle: Text(
-              'Guarda tus historias publicadas en la galer\u00eda',
-              style: TextStyle(
-                color: isDark ? Colors.white54 : Colors.grey[600],
-                fontSize: 12,
-              ),
-            ),
-            value: _saveStories,
-            activeThumbColor: ColorTokens.primary30,
-            onChanged: _toggleSaveStories,
-          ),
-          SwitchListTile(
-            contentPadding: const EdgeInsets.only(left: 4),
-            title: Text(
-              'Guardar posts',
-              style: TextStyle(
-                color: isDark ? Colors.white : Colors.black87,
-                fontSize: 15,
-              ),
-            ),
-            subtitle: Text(
-              'Guarda tus publicaciones con foto/video en la galer\u00eda',
-              style: TextStyle(
-                color: isDark ? Colors.white54 : Colors.grey[600],
-                fontSize: 12,
-              ),
-            ),
-            value: _savePosts,
-            activeThumbColor: ColorTokens.primary30,
-            onChanged: _toggleSavePosts,
           ),
         ],
       ),

@@ -634,7 +634,7 @@ class _PromotionsWidgetState extends State<PromotionsWidget>
                   ? 'El título es obligatorio'
                   : null,
               decoration: _inputDecoration(
-                hint: 'Ej: Descuento en cascos de ciclismo',
+                hint: l.t('promotion_hint'),
                 icon: Icons.title,
               ),
               style: const TextStyle(color: Color(0xFF16242D), fontSize: 14),
@@ -832,7 +832,7 @@ class _PromotionsWidgetState extends State<PromotionsWidget>
             TextFormField(
               controller: _locationController,
               decoration: _inputDecoration(
-                hint: 'Ej: Tienda de ciclismo Calle 80, Bogotá',
+                hint: l.t('store_address_hint'),
                 icon: Icons.location_on_outlined,
               ),
               style: const TextStyle(color: Color(0xFF16242D), fontSize: 14),
@@ -845,7 +845,7 @@ class _PromotionsWidgetState extends State<PromotionsWidget>
             TextFormField(
               controller: _contactController,
               decoration: _inputDecoration(
-                hint: 'Ej: https://mitienda.com o +57 300 123 4567',
+                hint: l.t('store_url_hint'),
                 icon: Icons.link,
               ),
               style: const TextStyle(color: Color(0xFF16242D), fontSize: 14),
@@ -1115,7 +1115,7 @@ class _PromotionsWidgetState extends State<PromotionsWidget>
           ),
         ),
         content: Text(
-          '¿Estás seguro de eliminar "${promo.title}"?\nEsta acción no se puede deshacer.',
+          '${l.t('confirm_delete_product')} "${promo.title}"?\n${l.t('action_cannot_be_undone')}',
           style: TextStyle(color: Color(0xFF5A7A8A)),
         ),
         actions: [

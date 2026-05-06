@@ -80,6 +80,7 @@ import 'package:biux/features/shop/presentation/screens/my_orders_screen.dart';
 import 'package:biux/features/shop/presentation/screens/stolen_bikes_screen.dart';
 import 'package:biux/features/shop/presentation/screens/admin_alerts_screen.dart';
 import 'package:biux/features/shop/presentation/screens/bike_qr_screen.dart';
+import 'package:biux/features/shop/presentation/screens/qr_scanner_screen.dart';
 
 // Store (Tienda Online) imports
 import 'package:biux/features/store/presentation/screens/store_screen.dart';
@@ -90,8 +91,6 @@ import 'package:biux/features/store/presentation/screens/cart_screen.dart'
 import 'package:biux/features/store/presentation/screens/seller_dashboard_screen.dart';
 import 'package:biux/features/store/presentation/screens/admin_dashboard_screen.dart';
 import 'package:biux/features/store/domain/entities/product_entity.dart';
-
-// PENDIENTE: Descomentar cuando se resuelva conflicto de dependencias con mobile_scanner
 
 // Settings imports
 import 'package:biux/features/settings/presentation/screens/notification_settings_screen.dart';
@@ -724,12 +723,11 @@ final GoRouter _router = GoRouter(
           path: '/shop/admin',
           name: 'adminShop',
           builder: (context, state) => const AdminShopScreen(),
-          // PENDIENTE: Agregar redirect cuando UserEntity tenga isAdmin
-          // redirect: (context, state) {
-          //   final userProvider = context.read<UserProvider>();
-          //   final isAdmin = userProvider.user?.isAdmin ?? false;
-          //   return isAdmin ? null : '/shop';
-          // },
+          redirect: (context, state) {
+            final userProvider = context.read<UserProvider>();
+            final isAdmin = userProvider.user?.isAdministrador ?? false;
+            return isAdmin ? null : '/shop';
+          },
         ),
 
         // Gestión de vendedores (solo admins) - DEBE IR ANTES DE /shop/:id
@@ -737,6 +735,11 @@ final GoRouter _router = GoRouter(
           path: '/shop/manage-sellers',
           name: 'manageSellers',
           builder: (context, state) => const ManageSellersScreen(),
+          redirect: (context, state) {
+            final userProvider = context.read<UserProvider>();
+            final isAdmin = userProvider.user?.isAdministrador ?? false;
+            return isAdmin ? null : '/shop';
+          },
         ),
 
         // Solicitudes de vendedores (solo admins) - DEBE IR ANTES DE /shop/:id
@@ -744,6 +747,11 @@ final GoRouter _router = GoRouter(
           path: '/shop/seller-requests',
           name: 'sellerRequests',
           builder: (context, state) => const SellerRequestsScreen(),
+          redirect: (context, state) {
+            final userProvider = context.read<UserProvider>();
+            final isAdmin = userProvider.user?.isAdministrador ?? false;
+            return isAdmin ? null : '/shop';
+          },
         ),
 
         // Eliminar todos los productos (solo admins) - DEBE IR ANTES DE /shop/:id
@@ -751,6 +759,11 @@ final GoRouter _router = GoRouter(
           path: '/shop/delete-all-products',
           name: 'deleteAllProducts',
           builder: (context, state) => const DeleteAllProductsScreen(),
+          redirect: (context, state) {
+            final userProvider = context.read<UserProvider>();
+            final isAdmin = userProvider.user?.isAdministrador ?? false;
+            return isAdmin ? null : '/shop';
+          },
         ),
 
         // Dashboard de alertas para administradores - DEBE IR ANTES DE /shop/:id
@@ -758,6 +771,11 @@ final GoRouter _router = GoRouter(
           path: '/shop/admin-alerts',
           name: 'adminAlerts',
           builder: (context, state) => const AdminAlertsScreen(),
+          redirect: (context, state) {
+            final userProvider = context.read<UserProvider>();
+            final isAdmin = userProvider.user?.isAdministrador ?? false;
+            return isAdmin ? null : '/shop';
+          },
         ),
 
         // Código QR de bicicleta verificada - DEBE IR ANTES DE /shop/:id
@@ -782,13 +800,12 @@ final GoRouter _router = GoRouter(
 
         // ⚠️ Detalle de producto movido FUERA del ShellRoute (ver abajo)
 
-        // PENDIENTE: Descomentar cuando se resuelva conflicto de dependencias con mobile_scanner
         // Escáner QR
-        // GoRoute(
-        //   path: '/shop/qr-scanner',
-        //   name: 'qrScanner',
-        //   builder: (context, state) => const QRScannerScreen(),
-        // ),
+        GoRoute(
+          path: '/shop/qr-scanner',
+          name: 'qrScanner',
+          builder: (context, state) => const QRScannerScreen(),
+        ),
 
         // ===== STORE (TIENDA ONLINE) ROUTES =====
 
@@ -850,10 +867,15 @@ final GoRouter _router = GoRouter(
           },
         ),
 
-        // Panel de administración
+        // Panel de administración (solo admins)
         GoRoute(
           path: '/store/admin-dashboard',
           name: 'storeAdminDashboard',
+          redirect: (context, state) {
+            final userProvider = context.read<UserProvider>();
+            final isAdmin = userProvider.user?.isAdministrador ?? false;
+            return isAdmin ? null : '/store';
+          },
           builder: (context, state) {
             final l = Provider.of<LocaleNotifier>(context, listen: false);
             final userProvider = context.read<UserProvider>();

@@ -23,10 +23,10 @@ class BiometricService {
     }
   }
 
-  static Future<bool> authenticate() async {
+  static Future<bool> authenticate({String? reason}) async {
     try {
       return await _auth.authenticate(
-        localizedReason: 'Confirma tu identidad para entrar a Biux',
+        localizedReason: reason ?? 'Confirm your identity to enter Biux',
       );
     } catch (_) {
       return false;

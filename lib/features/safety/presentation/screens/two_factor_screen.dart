@@ -116,7 +116,7 @@ class _TwoFactorScreenState extends State<TwoFactorScreen> {
                 Expanded(
                   child: _MethodTile(
                     icon: Icons.sms_rounded,
-                    label: 'SMS',
+                    label: l.t('sms_label'),
                     selected: _method == _TwoFactorMethod.sms,
                     onTap: () => setState(() => _method = _TwoFactorMethod.sms),
                     isDark: isDark,
@@ -126,7 +126,7 @@ class _TwoFactorScreenState extends State<TwoFactorScreen> {
                 Expanded(
                   child: _MethodTile(
                     icon: Icons.email_rounded,
-                    label: 'Email',
+                    label: l.t('email_label'),
                     selected: _method == _TwoFactorMethod.email,
                     onTap: () =>
                         setState(() => _method = _TwoFactorMethod.email),

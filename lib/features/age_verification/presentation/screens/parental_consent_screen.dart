@@ -219,7 +219,7 @@ class _ParentalConsentScreenState extends State<ParentalConsentScreen> {
                     )
                   : const Icon(Icons.send_rounded),
               label: Text(
-                _sending ? 'Enviando...' : 'Enviar solicitud',
+                _sending ? l.t('sending') : l.t('send_request'),
                 style: const TextStyle(
                   fontSize: 15,
                   fontWeight: FontWeight.w700,
@@ -274,9 +274,9 @@ class _ParentalConsentScreenState extends State<ParentalConsentScreen> {
           ),
         ),
         const SizedBox(height: 24),
-        const Text(
-          '¡Solicitud enviada!',
-          style: TextStyle(fontSize: 22, fontWeight: FontWeight.w800),
+        Text(
+          l.t('request_sent_excl'),
+          style: const TextStyle(fontSize: 22, fontWeight: FontWeight.w800),
         ),
         const SizedBox(height: 12),
         Container(

@@ -1,6 +1,8 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:camera/camera.dart';
+import 'package:provider/provider.dart';
+import 'package:biux/core/design_system/locale_notifier.dart';
 
 /// Pantalla de cámara real con preview en vivo, flash, cambio de cámara
 /// y toggle Foto/Video estilo WhatsApp.
@@ -316,7 +318,10 @@ class _CameraModePickerState extends State<CameraModePicker>
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     _ModeTab(
-                      label: 'Video',
+                      label: Provider.of<LocaleNotifier>(
+                        context,
+                        listen: false,
+                      ).t('video'),
                       isActive: _isVideo,
                       onTap: _isRecording
                           ? null
@@ -324,7 +329,10 @@ class _CameraModePickerState extends State<CameraModePicker>
                     ),
                     const SizedBox(width: 32),
                     _ModeTab(
-                      label: 'Foto',
+                      label: Provider.of<LocaleNotifier>(
+                        context,
+                        listen: false,
+                      ).t('photo'),
                       isActive: !_isVideo,
                       onTap: _isRecording
                           ? null

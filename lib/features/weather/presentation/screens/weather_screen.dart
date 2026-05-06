@@ -180,7 +180,7 @@ class _WeatherScreenState extends State<WeatherScreen> {
                       ),
                       const SizedBox(height: 6),
                       Text(
-                        'Sensación térmica · ${wp.feelsLike.round()}°C',
+                        '${l.t('feels_like')} · ${wp.feelsLike.round()}°C',
                         style: const TextStyle(
                           fontSize: 15,
                           color: Colors.white60,
@@ -205,7 +205,7 @@ class _WeatherScreenState extends State<WeatherScreen> {
                         isDark: isDark,
                         icon: Icons.wb_sunny_outlined,
                         iconColor: _uvColor(wp.uvIndex),
-                        title: 'Índice UV',
+                        title: l.t('uv_index'),
                         value: wp.uvIndex.toStringAsFixed(1),
                         subtitle: wp.uvAdvice,
                       ),
@@ -216,7 +216,7 @@ class _WeatherScreenState extends State<WeatherScreen> {
                         isDark: isDark,
                         icon: Icons.water_drop_outlined,
                         iconColor: Colors.blue,
-                        title: 'Precipitación',
+                        title: l.t('precipitation'),
                         value: '${wp.precipitationProbability}%',
                         subtitle: '${wp.precipitation} mm',
                       ),
@@ -234,10 +234,10 @@ class _WeatherScreenState extends State<WeatherScreen> {
                         title: l.t('visibility_label'),
                         value: '${wp.visibility.toStringAsFixed(1)} km',
                         subtitle: wp.visibility >= 10
-                            ? 'Excelente'
+                            ? l.t('excellent')
                             : wp.visibility >= 5
-                            ? 'Buena'
-                            : 'Reducida',
+                            ? l.t('good')
+                            : l.t('reduced'),
                       ),
                     ),
                     const SizedBox(width: 12),
@@ -246,9 +246,11 @@ class _WeatherScreenState extends State<WeatherScreen> {
                         isDark: isDark,
                         icon: Icons.speed_outlined,
                         iconColor: Colors.deepPurple,
-                        title: 'Presión',
+                        title: l.t('pressure'),
                         value: '${wp.pressure.round()} hPa',
-                        subtitle: wp.pressure >= 1013 ? 'Alta' : 'Baja',
+                        subtitle: wp.pressure >= 1013
+                            ? l.t('high')
+                            : l.t('low'),
                       ),
                     ),
                   ],
@@ -269,7 +271,7 @@ class _WeatherScreenState extends State<WeatherScreen> {
                       ),
                       const SizedBox(width: 8),
                       Text(
-                        'Pronóstico por horas',
+                        l.t('hourly_forecast'),
                         style: TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.bold,
@@ -393,7 +395,7 @@ class _WeatherScreenState extends State<WeatherScreen> {
                             Text(
                               wp.isSafeToRide
                                   ? l.t('good_weather_ride')
-                                  : 'Precaución al pedalear',
+                                  : l.t('caution_cycling'),
                               style: TextStyle(
                                 fontSize: 16,
                                 fontWeight: FontWeight.bold,
@@ -584,14 +586,14 @@ class _WeatherScreenState extends State<WeatherScreen> {
         _statPill(
           Icons.storm,
           '${wp.windGusts.round()} km/h',
-          'Ráfagas',
+          l.t('gusts'),
           const Color(0xFFEF6C00),
           isDark,
         ),
         _statPill(
           Icons.explore_outlined,
           wp.windDirectionLabel,
-          'Dirección',
+          l.t('direction'),
           const Color(0xFF00796B),
           isDark,
         ),

@@ -170,9 +170,9 @@ class _ChatListScreenState extends State<ChatListScreen>
                     fontWeight: FontWeight.w600,
                     fontSize: 14,
                   ),
-                  tabs: const [
-                    Tab(text: 'Chats'),
-                    Tab(text: 'Amigos'),
+                  tabs: [
+                    Tab(text: l.t('chats')),
+                    Tab(text: l.t('friends')),
                   ],
                 ),
               ],
@@ -251,7 +251,7 @@ class _ChatListScreenState extends State<ChatListScreen>
                             ),
                             const SizedBox(height: 12),
                             Text(
-                              'Error al cargar chats',
+                              l.t('error_loading_chats'),
                               style: TextStyle(
                                 color: isDark ? Colors.white : Colors.grey[700],
                                 fontSize: 16,
@@ -316,7 +316,7 @@ class _ChatListScreenState extends State<ChatListScreen>
                             ElevatedButton.icon(
                               onPressed: () => _showNewChat(context),
                               icon: const Icon(Icons.add),
-                              label: const Text('Nuevo mensaje'),
+                              label: Text(l.t('new_message')),
                               style: ElevatedButton.styleFrom(
                                 backgroundColor: ColorTokens.primary30,
                                 foregroundColor: Colors.white,
@@ -441,7 +441,7 @@ class _ChatListScreenState extends State<ChatListScreen>
                             }
                             final userData = userSnap.data ?? {};
                             final name = isGroup
-                                ? 'Chat grupal'
+                                ? l.t('group_chat')
                                 : (userData['fullName'] as String? ??
                                       userData['name'] as String? ??
                                       l.t('cyclist_label'));
@@ -624,7 +624,9 @@ class _ChatListScreenState extends State<ChatListScreen>
 
   /// Obtiene el nombre de un mapa de datos de usuario con fallback
   String _getUserName(Map<String, dynamic> data) {
-    return data['fullName'] as String? ?? data['name'] as String? ?? l.t('cyclist_label');
+    return data['fullName'] as String? ??
+        data['name'] as String? ??
+        l.t('cyclist_label');
   }
 
   /// Obtiene la foto de un mapa de datos de usuario con fallback
@@ -658,7 +660,7 @@ class _ChatListScreenState extends State<ChatListScreen>
             ),
             const SizedBox(height: 20),
             Text(
-              'Aún no tienes amigos',
+              l.t('no_friends_yet'),
               style: TextStyle(
                 color: isDark ? Colors.white : Colors.grey[700],
                 fontSize: 18,
@@ -669,7 +671,7 @@ class _ChatListScreenState extends State<ChatListScreen>
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 40),
               child: Text(
-                'Sigue a otros ciclistas y cuando te sigan de vuelta aparecerán aquí',
+                l.t('follow_cyclists_appear_here'),
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   color: isDark ? Colors.white54 : Colors.grey[400],
@@ -818,13 +820,16 @@ class _ChatListScreenState extends State<ChatListScreen>
                     ),
                   ),
                   const SizedBox(height: 16),
-                  const Text(
-                    'Nuevo mensaje',
-                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                  Text(
+                    l.t('new_message'),
+                    style: const TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                   SizedBox(height: 4),
                   Text(
-                    'Elige un ciclista que sigues',
+                    l.t('choose_cyclist_you_follow'),
                     style: TextStyle(
                       color: mIsDark ? Colors.white54 : Colors.grey[500],
                       fontSize: 13,
@@ -861,8 +866,8 @@ class _ChatListScreenState extends State<ChatListScreen>
                                 const SizedBox(height: 8),
                                 Text(
                                   _followingUsers.isEmpty
-                                      ? 'Aún no sigues a nadie'
-                                      : 'Sin resultados',
+                                      ? l.t('not_following_anyone')
+                                      : l.t('no_results'),
                                   style: TextStyle(
                                     color: mIsDark
                                         ? Colors.white54
@@ -974,8 +979,8 @@ class _ChatListScreenState extends State<ChatListScreen>
       if (existing.exists) {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('Ya enviaste una solicitud a este usuario'),
+            SnackBar(
+              content: Text(l.t('already_sent_request')),
               backgroundColor: Colors.orange,
             ),
           );
@@ -1020,7 +1025,7 @@ class _ChatListScreenState extends State<ChatListScreen>
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Solicitud de mensaje enviada a $targetName'),
+            content: Text('${l.t('message_request_sent')} $targetName'),
             backgroundColor: ColorTokens.primary30,
           ),
         );
@@ -1028,8 +1033,8 @@ class _ChatListScreenState extends State<ChatListScreen>
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Error al enviar la solicitud'),
+          SnackBar(
+            content: Text(l.t('error_sending_request')),
             backgroundColor: Colors.red,
           ),
         );

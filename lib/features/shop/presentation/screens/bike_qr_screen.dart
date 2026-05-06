@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'package:provider/provider.dart';
 import 'package:biux/core/design_system/locale_notifier.dart';
 import 'package:flutter/material.dart';
@@ -5,6 +6,9 @@ import 'package:biux/core/design_system/color_tokens.dart';
 import 'package:biux/features/shop/data/datasources/bike_qr_datasource.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:intl/intl.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:permission_handler/permission_handler.dart';
+import 'package:biux/shared/services/permission_service.dart';
 
 /// Pantalla que muestra el código QR de una bicicleta verificada
 class BikeQRScreen extends StatefulWidget {
@@ -331,13 +335,38 @@ class _BikeQRScreenState extends State<BikeQRScreen> {
 
       if (qrImage != null && mounted) {
         final l = Provider.of<LocaleNotifier>(context, listen: false);
-        // PENDIENTE: Implementar guardado en galería usando image_gallery_saver
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(l.t('qr_download_coming_soon')),
-            backgroundColor: ColorTokens.primary40,
-          ),
-        );
+
+        // Solicitar permiso de almacenamiento en Android < 13
+        if (Platform.isAndroid) {
+          final granted = await PermissionService().ensurePermission(
+            Permission.storage,
+            context: context,
+          );
+          if (!granted && mounted) return;
+        }
+
+        // Guardar en el directorio de descargas/imágenes
+        final dir = Platform.isAndroid
+            ? Directory('/storage/emulated/0/Pictures/Biux')
+            : await getApplicationDocumentsDirectory();
+
+        if (Platform.isAndroid && !await dir.exists()) {
+          await dir.create(recursive: true);
+        }
+
+        final fileName =
+            'biux_qr_${widget.frameSerial}_${DateTime.now().millisecondsSinceEpoch}.png';
+        final file = File('${dir.path}/$fileName');
+        await file.writeAsBytes(qrImage);
+
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(l.t('saved_to_gallery')),
+              backgroundColor: Colors.green,
+            ),
+          );
+        }
       }
     } catch (e) {
       if (mounted) {

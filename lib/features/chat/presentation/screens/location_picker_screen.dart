@@ -102,10 +102,10 @@ class _LocationPickerScreenState extends State<LocationPickerScreen> {
                 color: Colors.black87,
                 borderRadius: BorderRadius.circular(8),
               ),
-              child: const Text(
-                'Toca el mapa o arrastra el marcador para elegir la ubicación',
+              child: Text(
+                l.t('tap_map_location'),
                 textAlign: TextAlign.center,
-                style: TextStyle(color: Colors.white, fontSize: 13),
+                style: const TextStyle(color: Colors.white, fontSize: 13),
               ),
             ),
           ),

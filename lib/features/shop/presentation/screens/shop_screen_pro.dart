@@ -1266,7 +1266,7 @@ class _ShopScreenProState extends State<ShopScreenPro>
                     context.read<ShopProvider>().searchProducts(query);
                   },
                   decoration: InputDecoration(
-                    hintText: 'Buscar productos, marcas, categorías...',
+                    hintText: l.t('search_products_brands'),
                     hintStyle: TextStyle(color: Colors.grey[400], fontSize: 14),
                     prefixIcon: Icon(
                       Icons.search,
@@ -1281,14 +1281,15 @@ class _ShopScreenProState extends State<ShopScreenPro>
                               setState(() {});
                             },
                           )
-                        // IMPLEMENTADO (STUB): Descomentar cuando se resuelva conflicto de dependencias con mobile_scanner
-                        : null,
-                    // : IconButton(
-                    //     icon: const Icon(Icons.qr_code_scanner, color: Colors.grey),
-                    //     onPressed: () {
-                    //       context.push('/shop/qr-scanner');
-                    //     },
-                    //   ),
+                        : IconButton(
+                            icon: const Icon(
+                              Icons.qr_code_scanner,
+                              color: Colors.grey,
+                            ),
+                            onPressed: () {
+                              context.push('/shop/qr-scanner');
+                            },
+                          ),
                     border: InputBorder.none,
                     contentPadding: const EdgeInsets.symmetric(
                       horizontal: 16,
@@ -1567,7 +1568,7 @@ class _ShopScreenProState extends State<ShopScreenPro>
             const SizedBox(height: 6),
             TextField(
               decoration: InputDecoration(
-                hintText: 'Ej: Descuento en cascos de ciclismo',
+                hintText: l.t('promotion_hint'),
                 hintStyle: TextStyle(
                   color: const Color(0xFF16242D).withValues(alpha: 0.35),
                   fontSize: 14,
@@ -1839,7 +1840,7 @@ class _ShopScreenProState extends State<ShopScreenPro>
             const SizedBox(height: 6),
             TextField(
               decoration: InputDecoration(
-                hintText: 'Ej: Tienda de ciclismo Calle 80, Bogotá',
+                hintText: l.t('store_address_hint'),
                 hintStyle: TextStyle(
                   color: const Color(0xFF16242D).withValues(alpha: 0.35),
                   fontSize: 14,
@@ -1891,7 +1892,7 @@ class _ShopScreenProState extends State<ShopScreenPro>
             const SizedBox(height: 6),
             TextField(
               decoration: InputDecoration(
-                hintText: 'Ej: https://mitienda.com o +57 300 123 4567',
+                hintText: l.t('store_url_hint'),
                 hintStyle: TextStyle(
                   color: const Color(0xFF16242D).withValues(alpha: 0.35),
                   fontSize: 14,
@@ -3938,6 +3939,7 @@ class _ShopScreenProState extends State<ShopScreenPro>
 /// Bottom sheet para gestionar productos de la tienda
 // ignore: unused_element
 void _showManageProductsSheet(BuildContext context) {
+  final l = Provider.of<LocaleNotifier>(context, listen: false);
   showModalBottomSheet(
     context: context,
     isScrollControlled: true,
@@ -4040,7 +4042,7 @@ void _showManageProductsSheet(BuildContext context) {
                     icon: Icons.add_circle,
                     color: Colors.green,
                     title: 'Agregar Producto',
-                    subtitle: 'Añadir un nuevo producto al catálogo',
+                    subtitle: l.t('add_new_product'),
                     onTap: () {
                       Navigator.pop(context);
                       // Navegar a agregar producto
@@ -4050,28 +4052,28 @@ void _showManageProductsSheet(BuildContext context) {
                     icon: Icons.edit,
                     color: Colors.blue,
                     title: 'Editar Productos',
-                    subtitle: 'Modificar información de productos existentes',
+                    subtitle: l.t('modify_existing_products'),
                     onTap: () {},
                   ),
                   _buildActionTile(
                     icon: Icons.category,
                     color: Colors.purple,
                     title: 'Categorías',
-                    subtitle: 'Organizar productos por categorías',
+                    subtitle: l.t('organize_categories'),
                     onTap: () {},
                   ),
                   _buildActionTile(
                     icon: Icons.local_offer,
                     color: Colors.red,
                     title: 'Ofertas y Descuentos',
-                    subtitle: 'Configurar promociones especiales',
+                    subtitle: l.t('configure_promotions'),
                     onTap: () {},
                   ),
                   _buildActionTile(
                     icon: Icons.photo_library,
                     color: Colors.teal,
                     title: 'Galería de Productos',
-                    subtitle: 'Gestionar fotos y multimedia',
+                    subtitle: l.t('manage_media'),
                     onTap: () {},
                   ),
                   const SizedBox(height: 16),

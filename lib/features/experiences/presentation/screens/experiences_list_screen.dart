@@ -491,7 +491,7 @@ class _ExperiencesListScreenState extends State<ExperiencesListScreen>
                 _PostOptionTile(
                   icon: Icons.photo_library,
                   title: 'Post con Multimedia',
-                  subtitle: 'Solo fotos',
+                  subtitle: l.t('photos_only'),
                   color: ColorTokens.secondary50,
                   onTap: () {
                     Navigator.of(context).pop();
@@ -505,7 +505,7 @@ class _ExperiencesListScreenState extends State<ExperiencesListScreen>
                 _PostOptionTile(
                   icon: Icons.text_fields,
                   title: 'Post de Texto',
-                  subtitle: 'Solo texto, sin multimedia',
+                  subtitle: l.t('text_only_no_media'),
                   color: ColorTokens.primary30,
                   onTap: () {
                     Navigator.of(context).pop();
