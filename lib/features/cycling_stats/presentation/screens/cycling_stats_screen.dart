@@ -8,6 +8,8 @@ import 'package:biux/features/cycling_stats/domain/entities/cycling_stats_entity
 import 'package:biux/features/ride_tracker/presentation/providers/ride_tracker_provider.dart';
 import 'package:biux/features/ride_tracker/domain/entities/ride_track_entity.dart';
 import 'package:biux/features/users/presentation/providers/user_provider.dart';
+import 'package:biux/features/weather/presentation/providers/weather_provider.dart';
+import 'package:biux/core/design_system/locale_notifier.dart';
 
 class CyclingStatsScreen extends StatefulWidget {
   const CyclingStatsScreen({Key? key}) : super(key: key);
@@ -18,6 +20,8 @@ class CyclingStatsScreen extends StatefulWidget {
 
 class _CyclingStatsScreenState extends State<CyclingStatsScreen>
     with SingleTickerProviderStateMixin {
+  LocaleNotifier get l => Provider.of<LocaleNotifier>(context);
+
   late TabController _tabController;
   String _selectedPeriod = 'total';
   String _rankingMode = 'amigos'; // 'amigos' | 'regional'
@@ -37,6 +41,10 @@ class _CyclingStatsScreenState extends State<CyclingStatsScreen>
       context.read<CyclingStatsProvider>().refreshAll(uid);
       context.read<RideTrackerProvider>().loadHistory(uid);
     }
+    final wp = context.read<WeatherProvider>();
+    if (wp.weatherData == null && !wp.loading) {
+      wp.loadWeather();
+    }
   }
 
   void _syncAndNotify() {
@@ -49,11 +57,11 @@ class _CyclingStatsScreenState extends State<CyclingStatsScreen>
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: const Row(
+            content: Row(
               children: [
                 Icon(Icons.check_circle, color: Colors.white, size: 18),
                 SizedBox(width: 10),
-                Text('Estadísticas actualizadas'),
+                Text(l.t('stats_updated')),
               ],
             ),
             backgroundColor: ColorTokens.primary30,
@@ -114,8 +122,8 @@ class _CyclingStatsScreenState extends State<CyclingStatsScreen>
                   const SizedBox(height: 16),
                   ElevatedButton.icon(
                     onPressed: _loadData,
-                    icon: const Icon(Icons.refresh),
-                    label: const Text('Reintentar'),
+                    icon: Icon(Icons.refresh),
+                    label: Text(l.t('retry')),
                   ),
                 ],
               ),
@@ -147,8 +155,8 @@ class _CyclingStatsScreenState extends State<CyclingStatsScreen>
       pinned: true,
       backgroundColor: ColorTokens.primary30,
       foregroundColor: Colors.white,
-      title: const Text(
-        'Mis Estadísticas',
+      title: Text(
+        l.t('my_stats'),
         style: TextStyle(fontWeight: FontWeight.bold),
       ),
       actions: [
@@ -167,8 +175,8 @@ class _CyclingStatsScreenState extends State<CyclingStatsScreen>
           onPressed: provider.isSyncing ? null : _syncAndNotify,
         ),
         IconButton(
-          icon: const Icon(Icons.share),
-          tooltip: 'Compartir',
+          icon: Icon(Icons.share),
+          tooltip: l.t('share'),
           onPressed: () => _shareStats(stats),
         ),
       ],
@@ -178,11 +186,11 @@ class _CyclingStatsScreenState extends State<CyclingStatsScreen>
         indicatorWeight: 3,
         labelColor: Colors.white,
         unselectedLabelColor: Colors.white60,
-        labelStyle: const TextStyle(fontWeight: FontWeight.w600, fontSize: 13),
-        tabs: const [
+        labelStyle: TextStyle(fontWeight: FontWeight.w600, fontSize: 13),
+        tabs: [
           Tab(
             icon: Icon(Icons.bar_chart_rounded, size: 22),
-            text: 'Estadísticas',
+            text: l.t('statistics'),
           ),
           Tab(
             icon: Icon(Icons.emoji_events_rounded, size: 22),
@@ -284,10 +292,13 @@ class _CyclingStatsScreenState extends State<CyclingStatsScreen>
                         ),
                       ],
                     )
-                  : const Center(
+                  : Center(
                       child: Text(
-                        'Completa tu primera rodada',
-                        style: TextStyle(color: Colors.white70, fontSize: 16),
+                        l.t('complete_first_ride'),
+                        style: const TextStyle(
+                          color: Colors.white70,
+                          fontSize: 16,
+                        ),
                       ),
                     ),
             ),
@@ -303,8 +314,8 @@ class _CyclingStatsScreenState extends State<CyclingStatsScreen>
     if (stats == null) {
       return _buildEmptyState(
         icon: Icons.pedal_bike,
-        title: 'Sin estadísticas aún',
-        subtitle: 'Completa tu primera rodada para ver\ntus estadísticas aquí',
+        title: l.t('no_stats_yet'),
+        subtitle: l.t('complete_first_ride_stats'),
       );
     }
 
@@ -349,14 +360,14 @@ class _CyclingStatsScreenState extends State<CyclingStatsScreen>
                                 ),
                               ),
                             )
-                          : const Icon(
+                          : Icon(
                               Icons.refresh,
                               size: 14,
                               color: ColorTokens.primary30,
                             ),
-                      const SizedBox(width: 4),
+                      SizedBox(width: 4),
                       Text(
-                        provider.isSyncing ? 'Actualizando...' : 'Actualizar',
+                        provider.isSyncing ? 'Actualizando...' : l.t('update'),
                         style: const TextStyle(
                           fontSize: 11,
                           color: ColorTokens.primary30,
@@ -370,6 +381,10 @@ class _CyclingStatsScreenState extends State<CyclingStatsScreen>
             ),
           ),
           _buildPeriodFilter(),
+          const SizedBox(height: 16),
+
+          // Clima actual para ciclismo
+          _buildWeatherCard(),
           const SizedBox(height: 16),
 
           // Stats principales en grid
@@ -445,6 +460,206 @@ class _CyclingStatsScreenState extends State<CyclingStatsScreen>
       default: // total
         return rides;
     }
+  }
+
+  // ─── TARJETA DE CLIMA ────────────────────────────────────
+  Widget _buildWeatherCard() {
+    return Consumer<WeatherProvider>(
+      builder: (context, wp, _) {
+        if (wp.loading) {
+          return Container(
+            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+            decoration: BoxDecoration(
+              color: Colors.blue.withValues(alpha: 0.06),
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(color: Colors.blue.withValues(alpha: 0.15)),
+            ),
+            child: Row(
+              children: [
+                SizedBox(
+                  width: 14,
+                  height: 14,
+                  child: CircularProgressIndicator(
+                    strokeWidth: 2,
+                    color: Colors.blue,
+                  ),
+                ),
+                SizedBox(width: 10),
+                Text(
+                  l.t('loading_weather'),
+                  style: TextStyle(fontSize: 12, color: Colors.blue),
+                ),
+              ],
+            ),
+          );
+        }
+        if (wp.weatherData == null) return const SizedBox.shrink();
+
+        final safe = wp.isSafeToRide;
+        final safeColor = safe ? Colors.green : Colors.orange;
+        final isDark = Theme.of(context).brightness == Brightness.dark;
+
+        return Container(
+          padding: const EdgeInsets.all(14),
+          decoration: BoxDecoration(
+            color: isDark
+                ? safeColor.withValues(alpha: 0.08)
+                : safeColor.withValues(alpha: 0.05),
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(color: safeColor.withValues(alpha: 0.25)),
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Título de sección
+              Row(
+                children: [
+                  Icon(Icons.wb_sunny_outlined, size: 14, color: Colors.amber),
+                  SizedBox(width: 6),
+                  Text(
+                    l.t('current_weather_cycling'),
+                    style: TextStyle(
+                      fontSize: 11,
+                      fontWeight: FontWeight.w700,
+                      color: isDark ? Colors.white54 : Colors.grey[600],
+                      letterSpacing: 0.5,
+                    ),
+                  ),
+                  const Spacer(),
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 8,
+                      vertical: 3,
+                    ),
+                    decoration: BoxDecoration(
+                      color: safeColor.withValues(alpha: 0.15),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: Text(
+                      safe ? '✅ Apto para rodar' : '⚠️ Precaución',
+                      style: TextStyle(
+                        fontSize: 10,
+                        fontWeight: FontWeight.w700,
+                        color: safeColor,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 10),
+              // Fila principal: emoji + temp + datos
+              Row(
+                children: [
+                  Text(wp.weatherEmoji, style: const TextStyle(fontSize: 32)),
+                  const SizedBox(width: 12),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        wp.temperature,
+                        style: const TextStyle(
+                          fontSize: 24,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      Text(
+                        wp.description,
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: isDark ? Colors.white54 : Colors.grey[600],
+                        ),
+                      ),
+                    ],
+                  ),
+                  const Spacer(),
+                  // Grid de datos
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    children: [
+                      _statsWeatherRow(
+                        '💨',
+                        '${wp.windSpeed.round()} km/h ${wp.windDirectionLabel}',
+                      ),
+                      const SizedBox(height: 4),
+                      _statsWeatherRow('💧', 'Humedad ${wp.humidity}%'),
+                      const SizedBox(height: 4),
+                      _statsWeatherRow('🌡️', 'ST ${wp.feelsLike.round()}°C'),
+                    ],
+                  ),
+                ],
+              ),
+              if (wp.uvIndex > 0 || wp.precipitationProbability > 0) ...[
+                const SizedBox(height: 8),
+                Row(
+                  children: [
+                    if (wp.uvIndex > 0)
+                      _statsWeatherChip(
+                        '☀️ UV ${wp.uvIndex.toStringAsFixed(1)} · ${wp.uvAdvice}',
+                      ),
+                    if (wp.uvIndex > 0 && wp.precipitationProbability > 0)
+                      const SizedBox(width: 8),
+                    if (wp.precipitationProbability > 0)
+                      _statsWeatherChip(
+                        '🌧️ Prec. ${wp.precipitationProbability}%',
+                      ),
+                  ],
+                ),
+              ],
+              if (wp.rideAdvice.isNotEmpty) ...[
+                const SizedBox(height: 8),
+                Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 10,
+                    vertical: 6,
+                  ),
+                  decoration: BoxDecoration(
+                    color: safeColor.withValues(alpha: 0.1),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Text(
+                    wp.rideAdvice,
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: safeColor.withValues(alpha: 0.9),
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                ),
+              ],
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _statsWeatherRow(String emoji, String label) {
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Text(emoji, style: const TextStyle(fontSize: 12)),
+        const SizedBox(width: 4),
+        Text(
+          label,
+          style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w500),
+        ),
+      ],
+    );
+  }
+
+  Widget _statsWeatherChip(String label) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      decoration: BoxDecoration(
+        color: Colors.grey.withValues(alpha: 0.12),
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: Text(
+        label,
+        style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w500),
+      ),
+    );
   }
 
   // ─── FILTRO DE PERÍODO ───────────────────────────────────
@@ -532,7 +747,7 @@ class _CyclingStatsScreenState extends State<CyclingStatsScreen>
     final items = [
       _StatItem(
         icon: Icons.straighten_rounded,
-        label: 'Distancia',
+        label: l.t('distance'),
         value: km.toStringAsFixed(1),
         unit: 'km',
         color: isDark ? Colors.white : ColorTokens.primary30,
@@ -540,54 +755,54 @@ class _CyclingStatsScreenState extends State<CyclingStatsScreen>
       ),
       _StatItem(
         icon: Icons.flag_rounded,
-        label: 'Rodadas',
+        label: l.t('rides_label'),
         value: '$rideCount',
         unit: '',
-        color: const Color(0xFF2196F3),
+        color: Color(0xFF2196F3),
         statKey: 'rides',
       ),
       _StatItem(
         icon: Icons.speed_rounded,
-        label: 'Vel. Promedio',
+        label: l.t('avg_speed'),
         value: avgSpd.toStringAsFixed(1),
         unit: 'km/h',
-        color: const Color(0xFFFF9800),
+        color: Color(0xFFFF9800),
         statKey: 'avgSpeed',
       ),
       _StatItem(
         icon: Icons.rocket_launch_rounded,
-        label: 'Vel. Máxima',
+        label: l.t('max_speed'),
         value: maxSpd.toStringAsFixed(1),
         unit: 'km/h',
-        color: const Color(0xFFF44336),
+        color: Color(0xFFF44336),
         statKey: 'maxSpeed',
       ),
       _StatItem(
         icon: Icons.terrain_rounded,
-        label: 'Elevación',
+        label: l.t('elevation'),
         value: '$elev',
         unit: 'm',
-        color: const Color(0xFF4CAF50),
+        color: Color(0xFF4CAF50),
         statKey: 'elevation',
       ),
       _StatItem(
         icon: Icons.local_fire_department_rounded,
-        label: 'Calorías',
+        label: l.t('calories'),
         value: '$cal',
         unit: 'kcal',
-        color: const Color(0xFFFF5722),
+        color: Color(0xFFFF5722),
         statKey: 'calories',
       ),
       _StatItem(
         icon: Icons.timer_rounded,
-        label: 'Tiempo',
+        label: l.t('time_label'),
         value: timeStr,
         unit: '',
-        color: const Color(0xFF3F51B5),
+        color: Color(0xFF3F51B5),
       ),
       _StatItem(
         icon: Icons.bolt_rounded,
-        label: 'Racha',
+        label: l.t('streak'),
         value: '$currentStreak',
         unit: 'días',
         color: const Color(0xFFFFC107),
@@ -846,13 +1061,13 @@ class _CyclingStatsScreenState extends State<CyclingStatsScreen>
                   ],
                 ),
               ),
-              const Divider(height: 1),
+              Divider(height: 1),
               // Lista
               Expanded(
                 child: sorted.isEmpty
                     ? Center(
                         child: Text(
-                          'Sin rodadas aún',
+                          l.t('no_rides_yet'),
                           style: TextStyle(
                             color: isDark ? Colors.white54 : Colors.grey[400],
                           ),
@@ -988,7 +1203,7 @@ class _CyclingStatsScreenState extends State<CyclingStatsScreen>
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Row(
+          Row(
             children: [
               Icon(Icons.emoji_events_rounded, color: Colors.amber, size: 22),
               SizedBox(width: 8),
@@ -998,13 +1213,13 @@ class _CyclingStatsScreenState extends State<CyclingStatsScreen>
               ),
             ],
           ),
-          const SizedBox(height: 14),
+          SizedBox(height: 14),
           Row(
             children: [
               Expanded(
                 child: _buildRecordItem(
                   '🏎️',
-                  'Vel. Máxima',
+                  l.t('max_speed'),
                   '${maxSpdAll.toStringAsFixed(1)} km/h',
                 ),
               ),
@@ -1022,7 +1237,7 @@ class _CyclingStatsScreenState extends State<CyclingStatsScreen>
               ),
             ],
           ),
-          const SizedBox(height: 12),
+          SizedBox(height: 12),
           Row(
             children: [
               Expanded(
@@ -1036,7 +1251,7 @@ class _CyclingStatsScreenState extends State<CyclingStatsScreen>
               Expanded(
                 child: _buildRecordItem(
                   '🏁',
-                  'Total Rodadas',
+                  l.t('total_rides'),
                   '$totalRidesAll',
                 ),
               ),
@@ -1378,22 +1593,22 @@ class _CyclingStatsScreenState extends State<CyclingStatsScreen>
           child: Row(
             children: [
               _rankingChip(
-                label: '👥 Amigos',
+                label: l.t('friends_tab'),
                 selected: _rankingMode == 'amigos',
                 onTap: () {
                   setState(() => _rankingMode = 'amigos');
                   provider.loadFriendsLeaderboard(followingIds);
                 },
               ),
-              const SizedBox(width: 8),
+              SizedBox(width: 8),
               _rankingChip(
-                label: '📍 Regional',
+                label: l.t('regional_tab'),
                 selected: _rankingMode == 'regional',
                 onTap: () {
                   setState(() => _rankingMode = 'regional');
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
-                      content: const Text('Ranking regional próximamente'),
+                      content: Text(l.t('regional_ranking_soon')),
                       backgroundColor: ColorTokens.primary30,
                       behavior: SnackBarBehavior.floating,
                       shape: RoundedRectangleBorder(
@@ -1406,14 +1621,14 @@ class _CyclingStatsScreenState extends State<CyclingStatsScreen>
             ],
           ),
         ),
-        const Divider(height: 1),
+        Divider(height: 1),
         // ── LISTA ──
         Expanded(
           child: leaderboard.isEmpty
               ? _buildEmptyState(
                   icon: Icons.leaderboard_rounded,
                   title: _rankingMode == 'amigos'
-                      ? 'Sin amigos en el ranking'
+                      ? l.t('no_friends_ranking')
                       : 'Ranking vacío',
                   subtitle: _rankingMode == 'amigos'
                       ? 'Sigue a otros ciclistas\npara verlos aquí'
@@ -1762,8 +1977,8 @@ class _CyclingStatsScreenState extends State<CyclingStatsScreen>
             const SizedBox(height: 24),
             ElevatedButton.icon(
               onPressed: _loadData,
-              icon: const Icon(Icons.refresh, size: 18),
-              label: const Text('Actualizar'),
+              icon: Icon(Icons.refresh, size: 18),
+              label: Text(l.t('update')),
               style: ElevatedButton.styleFrom(
                 backgroundColor: ColorTokens.primary30,
                 foregroundColor: Colors.white,

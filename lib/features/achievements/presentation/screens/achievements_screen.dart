@@ -6,6 +6,10 @@ import 'package:biux/core/design_system/locale_notifier.dart';
 import 'package:biux/features/achievements/presentation/providers/achievements_provider.dart';
 import 'package:biux/features/achievements/domain/entities/achievement_entity.dart';
 import 'package:share_plus/share_plus.dart';
+import 'package:go_router/go_router.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:biux/features/chat/presentation/providers/chat_provider.dart';
+import 'package:biux/shared/widgets/shimmer_loading.dart';
 
 class AchievementsScreen extends StatefulWidget {
   const AchievementsScreen({Key? key}) : super(key: key);
@@ -15,18 +19,20 @@ class AchievementsScreen extends StatefulWidget {
 
 class _AchievementsScreenState extends State<AchievementsScreen>
     with TickerProviderStateMixin {
+  LocaleNotifier get l => Provider.of<LocaleNotifier>(context);
+
   String _selectedCategory = 'all';
   late TabController _tabCtrl;
 
-  final _categories = [
-    {'id': 'all', 'label': 'Todos', 'icon': '🏆'},
-    {'id': 'distance', 'label': 'Distancia', 'icon': '🚴'},
-    {'id': 'rides', 'label': 'Rodadas', 'icon': '🏁'},
-    {'id': 'speed', 'label': 'Velocidad', 'icon': '🚀'},
-    {'id': 'streak', 'label': 'Racha', 'icon': '🔥'},
+  List<Map<String, String>> get _categories => [
+    {'id': 'all', 'label': l.t('all'), 'icon': '🏆'},
+    {'id': 'distance', 'label': l.t('distance'), 'icon': '🚴'},
+    {'id': 'rides', 'label': l.t('rides'), 'icon': '🏁'},
+    {'id': 'speed', 'label': l.t('speed'), 'icon': '🚀'},
+    {'id': 'streak', 'label': l.t('streak'), 'icon': '🔥'},
     {'id': 'social', 'label': 'Social', 'icon': '👥'},
-    {'id': 'special', 'label': 'Especiales', 'icon': '⭐'},
-    {'id': 'aventura', 'label': 'Aventura', 'icon': '🏔️'},
+    {'id': 'special', 'label': l.t('special'), 'icon': '⭐'},
+    {'id': 'aventura', 'label': l.t('adventure'), 'icon': '🏔️'},
   ];
 
   @override
@@ -58,7 +64,7 @@ class _AchievementsScreenState extends State<AchievementsScreen>
       body: Consumer<AchievementsProvider>(
         builder: (context, provider, _) {
           if (provider.isLoading) {
-            return const Center(child: CircularProgressIndicator());
+            return const ShimmerListLoading();
           }
 
           final allInCategory = _selectedCategory == 'all'
@@ -81,7 +87,7 @@ class _AchievementsScreenState extends State<AchievementsScreen>
                 pinned: true,
                 backgroundColor: Colors.amber[800],
                 foregroundColor: Colors.white,
-                title: const Text('Mis Logros'),
+                title: Text(l.t('my_achievements')),
                 actions: [
                   IconButton(
                     icon: provider.isSyncing
@@ -95,8 +101,8 @@ class _AchievementsScreenState extends State<AchievementsScreen>
                               ),
                             ),
                           )
-                        : const Icon(Icons.sync),
-                    tooltip: 'Sincronizar logros',
+                        : Icon(Icons.sync),
+                    tooltip: l.t('sync_achievements'),
                     onPressed: provider.isSyncing
                         ? null
                         : () {
@@ -105,9 +111,9 @@ class _AchievementsScreenState extends State<AchievementsScreen>
                               provider.forceSync(uid);
                               ScaffoldMessenger.of(context).showSnackBar(
                                 SnackBar(
-                                  content: const Row(
+                                  content: Row(
                                     children: [
-                                      SizedBox(
+                                      const SizedBox(
                                         width: 16,
                                         height: 16,
                                         child: CircularProgressIndicator(
@@ -118,8 +124,8 @@ class _AchievementsScreenState extends State<AchievementsScreen>
                                               ),
                                         ),
                                       ),
-                                      SizedBox(width: 12),
-                                      Text('Sincronizando logros...'),
+                                      const SizedBox(width: 12),
+                                      Text(l.t('syncing_achievements')),
                                     ],
                                   ),
                                   backgroundColor: Colors.amber,
@@ -195,14 +201,14 @@ class _AchievementsScreenState extends State<AchievementsScreen>
                             ),
                             const SizedBox(height: 8),
                             Text(
-                              '$unlocked / $total Logros desbloqueados',
-                              style: const TextStyle(
+                              '$unlocked / $total ${l.t('achievements_unlocked')}',
+                              style: TextStyle(
                                 color: Colors.white,
                                 fontSize: 14,
                                 fontWeight: FontWeight.w600,
                               ),
                             ),
-                            const SizedBox(height: 8),
+                            SizedBox(height: 8),
                             // Stats rapidos — fila 1
                             Row(
                               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -210,22 +216,22 @@ class _AchievementsScreenState extends State<AchievementsScreen>
                                 _statBadge(
                                   '🚴',
                                   '${_countByCategory(provider, 'distance')}',
-                                  'Distancia',
+                                  l.t('distance'),
                                 ),
                                 _statBadge(
                                   '🏁',
                                   '${_countByCategory(provider, 'rides')}',
-                                  'Rodadas',
+                                  l.t('rides'),
                                 ),
                                 _statBadge(
                                   '🚀',
                                   '${_countByCategory(provider, 'speed')}',
-                                  'Velocidad',
+                                  l.t('speed'),
                                 ),
                                 _statBadge(
                                   '🔥',
                                   '${_countByCategory(provider, 'streak')}',
-                                  'Racha',
+                                  l.t('streak'),
                                 ),
                               ],
                             ),
@@ -242,12 +248,12 @@ class _AchievementsScreenState extends State<AchievementsScreen>
                                 _statBadge(
                                   '⭐',
                                   '${_countByCategory(provider, 'special')}',
-                                  'Especiales',
+                                  l.t('special'),
                                 ),
                                 _statBadge(
                                   '🏔️',
                                   '${_countByCategory(provider, 'aventura')}',
-                                  'Aventura',
+                                  l.t('adventure'),
                                 ),
                               ],
                             ),
@@ -283,7 +289,7 @@ class _AchievementsScreenState extends State<AchievementsScreen>
                         const SizedBox(width: 12),
                         Expanded(
                           child: Text(
-                            'Sincronizando logros con tus rodadas...',
+                            l.t('syncing_achievements'),
                             style: TextStyle(
                               fontSize: 13,
                               color: Colors.amber[900],
@@ -689,7 +695,7 @@ class _AchievementsScreenState extends State<AchievementsScreen>
                         style: TextStyle(fontSize: 11, color: Colors.grey[500]),
                       ),
                     ],
-                    const SizedBox(height: 4),
+                    SizedBox(height: 4),
                     // Paginas deslizables — una por nivel
                     Expanded(
                       child: PageView.builder(
@@ -927,7 +933,7 @@ class _AchievementsScreenState extends State<AchievementsScreen>
                                       ],
                                     ),
                                   ),
-                                  const SizedBox(height: 12),
+                                  SizedBox(height: 12),
                                   if (a.isUnlocked)
                                     SizedBox(
                                       width: double.infinity,
@@ -942,7 +948,7 @@ class _AchievementsScreenState extends State<AchievementsScreen>
                                           );
                                         },
                                         icon: const Icon(Icons.share, size: 18),
-                                        label: const Text('Compartir logro'),
+                                        label: Text(l.t('share_achievement')),
                                         style: ElevatedButton.styleFrom(
                                           backgroundColor: Colors.amber[800],
                                           foregroundColor: Colors.white,
@@ -985,9 +991,9 @@ class _AchievementsScreenState extends State<AchievementsScreen>
                                             crossAxisAlignment:
                                                 CrossAxisAlignment.start,
                                             children: [
-                                              const Text(
-                                                'Aún no desbloqueado',
-                                                style: TextStyle(
+                                              Text(
+                                                l.t('not_unlocked_yet'),
+                                                style: const TextStyle(
                                                   fontWeight: FontWeight.w700,
                                                   color: Colors.blue,
                                                 ),
@@ -1062,23 +1068,23 @@ class _AchievementsScreenState extends State<AchievementsScreen>
 
   String _unitLabel(String cat) => switch (cat) {
     'distance' => 'km',
-    'rides' => 'rodadas',
+    'rides' => l.t('rides'),
     'speed' => 'km/h',
-    'streak' => 'días',
-    'social' => 'grupos',
+    'streak' => l.t('days_unit'),
+    'social' => l.t('groups'),
     'aventura' => 'km',
     _ => '',
   };
 
   String _categoryLabel(String cat) => switch (cat) {
-    'distance' => '🚴 Distancia',
-    'rides' => '🏁 Rodadas',
-    'speed' => '🚀 Velocidad',
-    'streak' => '🔥 Racha',
+    'distance' => '🚴 ${l.t('distance')}',
+    'rides' => '🏁 ${l.t('rides')}',
+    'speed' => '🚀 ${l.t('speed')}',
+    'streak' => '🔥 ${l.t('streak')}',
     'social' => '👥 Social',
-    'special' => '⭐ Especiales',
-    'aventura' => '🏔️ Aventura',
-    _ => '🏆 General',
+    'special' => '⭐ ${l.t('special')}',
+    'aventura' => '🏔️ ${l.t('adventure')}',
+    _ => '🏆 ${l.t('general')}',
   };
 
   void _shareAchievements(AchievementsProvider provider) {
@@ -1089,7 +1095,177 @@ class _AchievementsScreenState extends State<AchievementsScreen>
         .join('\n');
     final text =
         'Mis logros en Biux: $unlocked/$total desbloqueados\n\n$names\n\n¡Descarga Biux y empieza a pedalear!';
-    SharePlus.instance.share(ShareParams(text: text));
+    _showShareOptions(text);
+  }
+
+  void _showShareOptions(String text) {
+    showModalBottomSheet(
+      context: context,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      ),
+      backgroundColor: Colors.white,
+      builder: (ctx) => Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 28),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Center(
+              child: Container(
+                width: 40,
+                height: 4,
+                decoration: BoxDecoration(
+                  color: Colors.grey[300],
+                  borderRadius: BorderRadius.circular(2),
+                ),
+              ),
+            ),
+            const SizedBox(height: 20),
+            Text(
+              l.t('share_achievements'),
+              style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: 6),
+            Text(
+              l.t('choose_how_share'),
+              style: TextStyle(fontSize: 13, color: Colors.grey[500]),
+            ),
+            const SizedBox(height: 24),
+            InkWell(
+              onTap: () {
+                Navigator.pop(ctx);
+                _shareInApp(text);
+              },
+              borderRadius: BorderRadius.circular(16),
+              child: Container(
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: Colors.amber.withValues(alpha: 0.06),
+                  borderRadius: BorderRadius.circular(16),
+                  border: Border.all(
+                    color: Colors.amber.withValues(alpha: 0.3),
+                  ),
+                ),
+                child: Row(
+                  children: [
+                    Container(
+                      width: 48,
+                      height: 48,
+                      decoration: BoxDecoration(
+                        color: Colors.amber[800],
+                        borderRadius: BorderRadius.circular(14),
+                      ),
+                      child: const Icon(
+                        Icons.people_rounded,
+                        color: Colors.white,
+                        size: 26,
+                      ),
+                    ),
+                    const SizedBox(width: 16),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Text(
+                            'Compartir con amigos en Biux',
+                            style: TextStyle(
+                              fontWeight: FontWeight.w700,
+                              fontSize: 15,
+                            ),
+                          ),
+                          const SizedBox(height: 3),
+                          Text(
+                            l.t('send_achievements_chat'),
+                            style: TextStyle(
+                              fontSize: 12,
+                              color: Colors.grey[500],
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    Icon(Icons.chevron_right_rounded, color: Colors.grey[400]),
+                  ],
+                ),
+              ),
+            ),
+            const SizedBox(height: 12),
+            InkWell(
+              onTap: () {
+                Navigator.pop(ctx);
+                SharePlus.instance.share(ShareParams(text: text));
+              },
+              borderRadius: BorderRadius.circular(16),
+              child: Container(
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: Colors.green.withValues(alpha: 0.06),
+                  borderRadius: BorderRadius.circular(16),
+                  border: Border.all(
+                    color: Colors.green.withValues(alpha: 0.2),
+                  ),
+                ),
+                child: Row(
+                  children: [
+                    Container(
+                      width: 48,
+                      height: 48,
+                      decoration: BoxDecoration(
+                        color: Colors.green[600],
+                        borderRadius: BorderRadius.circular(14),
+                      ),
+                      child: const Icon(
+                        Icons.share_rounded,
+                        color: Colors.white,
+                        size: 26,
+                      ),
+                    ),
+                    const SizedBox(width: 16),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Text(
+                            'Compartir fuera de Biux',
+                            style: TextStyle(
+                              fontWeight: FontWeight.w700,
+                              fontSize: 15,
+                            ),
+                          ),
+                          const SizedBox(height: 3),
+                          Text(
+                            l.t('share_outside_biux'),
+                            style: TextStyle(
+                              fontSize: 12,
+                              color: Colors.grey[500],
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    Icon(Icons.chevron_right_rounded, color: Colors.grey[400]),
+                  ],
+                ),
+              ),
+            ),
+            const SizedBox(height: 16),
+          ],
+        ),
+      ),
+    );
+  }
+
+  void _shareInApp(String text) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      ),
+      backgroundColor: Colors.white,
+      builder: (ctx) => _AchievementsShareInAppSheet(statsText: text),
+    );
   }
 
   void _showInfo() {
@@ -1097,11 +1273,11 @@ class _AchievementsScreenState extends State<AchievementsScreen>
       context: context,
       builder: (dc) => AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        title: const Row(
+        title: Row(
           children: [
             Icon(Icons.info_outline, color: Colors.amber),
             SizedBox(width: 8),
-            Text('Cómo funcionan los logros'),
+            Text(l.t('how_achievements_work')),
           ],
         ),
         content: const Column(
@@ -1175,4 +1351,272 @@ class _TabBarDelegate extends SliverPersistentHeaderDelegate {
   double get minExtent => tabBar.preferredSize.height;
   @override
   bool shouldRebuild(covariant _TabBarDelegate oldDelegate) => false;
+}
+
+// WIDGET: Compartir logros dentro de la app
+class _AchievementsShareInAppSheet extends StatefulWidget {
+  final String statsText;
+  const _AchievementsShareInAppSheet({required this.statsText});
+
+  @override
+  State<_AchievementsShareInAppSheet> createState() =>
+      _AchievementsShareInAppSheetState();
+}
+
+class _AchievementsShareInAppSheetState
+    extends State<_AchievementsShareInAppSheet> {
+  LocaleNotifier get l => Provider.of<LocaleNotifier>(context);
+
+  final TextEditingController _searchController = TextEditingController();
+  List<Map<String, dynamic>> _contacts = [];
+  List<Map<String, dynamic>> _filtered = [];
+  bool _isLoading = true;
+  final Set<String> _sent = {};
+
+  @override
+  void initState() {
+    super.initState();
+    _loadContacts();
+    _searchController.addListener(_filterContacts);
+  }
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
+  }
+
+  Future<void> _loadContacts() async {
+    try {
+      final currentUser = FirebaseAuth.instance.currentUser;
+      if (currentUser == null) {
+        setState(() => _isLoading = false);
+        return;
+      }
+      final chatProvider = context.read<ChatProvider>();
+      final chats = chatProvider.chats
+          .where((c) => c.typeString == 'direct')
+          .toList();
+      final contacts = <Map<String, dynamic>>[];
+      for (final chat in chats) {
+        final otherId = chat.participantIds.firstWhere(
+          (id) => id != currentUser.uid,
+          orElse: () => '',
+        );
+        if (otherId.isEmpty) continue;
+        final doc = await FirebaseFirestore.instance
+            .collection('users')
+            .doc(otherId)
+            .get();
+        final data = doc.data();
+        contacts.add({
+          'userId': otherId,
+          'name':
+              data?['fullName'] ?? data?['userName'] ?? l.t('cyclist_label'),
+          'photo': data?['photo'] ?? '',
+          'chatId': chat.id,
+        });
+      }
+      setState(() {
+        _contacts = contacts;
+        _filtered = contacts;
+        _isLoading = false;
+      });
+    } catch (e) {
+      setState(() => _isLoading = false);
+    }
+  }
+
+  void _filterContacts() {
+    final query = _searchController.text.toLowerCase();
+    setState(() {
+      _filtered = _contacts
+          .where((c) => (c['name'] as String).toLowerCase().contains(query))
+          .toList();
+    });
+  }
+
+  Future<void> _sendToContact(Map<String, dynamic> contact) async {
+    final chatProvider = context.read<ChatProvider>();
+    final currentUser = FirebaseAuth.instance.currentUser;
+    if (currentUser == null) return;
+    try {
+      await chatProvider.sendMessage(
+        contact['chatId'] as String,
+        senderId: currentUser.uid,
+        senderName: currentUser.displayName ?? l.t('user_default'),
+        content: widget.statsText,
+        participants: [currentUser.uid, contact['userId'] as String], // legacy
+      );
+      setState(() => _sent.add(contact['userId'] as String));
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('${l.t('sent_to')} ${contact['name'] as String}'),
+            backgroundColor: Colors.green[600],
+            duration: const Duration(seconds: 2),
+          ),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(l.t('error_sending_message')),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return DraggableScrollableSheet(
+      initialChildSize: 0.75,
+      maxChildSize: 0.95,
+      minChildSize: 0.5,
+      expand: false,
+      builder: (_, scrollController) => Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 20),
+        child: Column(
+          children: [
+            const SizedBox(height: 12),
+            Container(
+              width: 40,
+              height: 4,
+              decoration: BoxDecoration(
+                color: Colors.grey[300],
+                borderRadius: BorderRadius.circular(2),
+              ),
+            ),
+            const SizedBox(height: 16),
+            Text(
+              'Enviar a amigos en Biux',
+              style: TextStyle(fontSize: 17, fontWeight: FontWeight.bold),
+            ),
+            SizedBox(height: 14),
+            TextField(
+              controller: _searchController,
+              decoration: InputDecoration(
+                hintText: l.t('search_friend'),
+                prefixIcon: const Icon(Icons.search, size: 20),
+                filled: true,
+                fillColor: Colors.grey[100],
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: BorderSide.none,
+                ),
+                contentPadding: const EdgeInsets.symmetric(vertical: 10),
+              ),
+            ),
+            const SizedBox(height: 12),
+            Expanded(
+              child: _isLoading
+                  ? const Center(child: CircularProgressIndicator())
+                  : _filtered.isEmpty
+                  ? Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(
+                            Icons.people_outline,
+                            size: 48,
+                            color: Colors.grey[300],
+                          ),
+                          const SizedBox(height: 12),
+                          Text(
+                            'No tienes chats aun',
+                            style: TextStyle(
+                              color: Colors.grey[400],
+                              fontSize: 14,
+                            ),
+                          ),
+                          const SizedBox(height: 8),
+                          TextButton(
+                            onPressed: () {
+                              Navigator.pop(context);
+                              context.push('/users/search');
+                            },
+                            child: Text(l.t('search_cyclists')),
+                          ),
+                        ],
+                      ),
+                    )
+                  : ListView.separated(
+                      controller: scrollController,
+                      itemCount: _filtered.length,
+                      separatorBuilder: (_, __) => const Divider(height: 1),
+                      itemBuilder: (_, index) {
+                        final contact = _filtered[index];
+                        final alreadySent = _sent.contains(contact['userId']);
+                        return ListTile(
+                          leading: CircleAvatar(
+                            backgroundColor: Colors.amber.withValues(
+                              alpha: 0.15,
+                            ),
+                            backgroundImage:
+                                (contact['photo'] as String).isNotEmpty
+                                ? NetworkImage(contact['photo'] as String)
+                                : null,
+                            child: (contact['photo'] as String).isEmpty
+                                ? Text(
+                                    (contact['name'] as String)[0]
+                                        .toUpperCase(),
+                                    style: const TextStyle(
+                                      color: Colors.amber,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  )
+                                : null,
+                          ),
+                          title: Text(
+                            contact['name'] as String,
+                            style: const TextStyle(fontWeight: FontWeight.w600),
+                          ),
+                          subtitle: Text(
+                            alreadySent ? 'Enviado' : 'Toca para enviar',
+                            style: TextStyle(
+                              fontSize: 12,
+                              color: alreadySent
+                                  ? Colors.green[600]
+                                  : Colors.grey[400],
+                            ),
+                          ),
+                          trailing: alreadySent
+                              ? Icon(
+                                  Icons.check_circle_rounded,
+                                  color: Colors.green[600],
+                                )
+                              : ElevatedButton(
+                                  onPressed: () => _sendToContact(contact),
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: Colors.amber[800],
+                                    foregroundColor: Colors.white,
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 14,
+                                      vertical: 8,
+                                    ),
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(10),
+                                    ),
+                                    minimumSize: Size.zero,
+                                    tapTargetSize:
+                                        MaterialTapTargetSize.shrinkWrap,
+                                  ),
+                                  child: const Text(
+                                    'Enviar',
+                                    style: TextStyle(fontSize: 13),
+                                  ),
+                                ),
+                        );
+                      },
+                    ),
+            ),
+            const SizedBox(height: 16),
+          ],
+        ),
+      ),
+    );
+  }
 }

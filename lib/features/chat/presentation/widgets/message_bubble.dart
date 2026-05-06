@@ -9,6 +9,7 @@ import 'package:biux/core/config/router/app_routes.dart';
 import 'package:biux/features/chat/presentation/widgets/media_fullscreen_viewer.dart';
 import 'package:biux/features/chat/domain/entities/message_entity.dart';
 import 'package:biux/features/chat/presentation/providers/chat_provider.dart';
+import 'package:biux/core/design_system/locale_notifier.dart';
 import 'package:provider/provider.dart';
 
 class MessageBubble extends StatelessWidget {
@@ -51,10 +52,11 @@ class MessageBubble extends StatelessWidget {
     if (message.deletedFor.contains(currentUserId)) {
       return const SizedBox.shrink();
     }
-    if (message.deleted) return _DeletedBubble(
-      isMe: isMe,
-      onDeleteForMe: () => onDeleteForMe(message),
-    );
+    if (message.deleted)
+      return _DeletedBubble(
+        isMe: isMe,
+        onDeleteForMe: () => onDeleteForMe(message),
+      );
     // Ocultar si expiró
     if (message.expiresAt != null &&
         DateTime.now().isAfter(message.expiresAt!)) {
@@ -263,9 +265,14 @@ class MessageBubble extends StatelessWidget {
                       Navigator.pop(context);
                       Clipboard.setData(ClipboardData(text: message.content));
                       ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                          content: Text('Texto copiado'),
-                          duration: Duration(seconds: 1),
+                        SnackBar(
+                          content: Text(
+                            Provider.of<LocaleNotifier>(
+                              context,
+                              listen: false,
+                            ).t('text_copied'),
+                          ),
+                          duration: const Duration(seconds: 1),
                           behavior: SnackBarBehavior.floating,
                         ),
                       );
@@ -322,9 +329,12 @@ class MessageBubble extends StatelessWidget {
                             maxLines: 4,
                             minLines: 1,
                             autofocus: true,
-                            decoration: const InputDecoration(
-                              border: OutlineInputBorder(),
-                              hintText: 'Escribe el nuevo mensaje...',
+                            decoration: InputDecoration(
+                              border: const OutlineInputBorder(),
+                              hintText: Provider.of<LocaleNotifier>(
+                                context,
+                                listen: false,
+                              ).t('write_new_message'),
                             ),
                           ),
                           actions: [
@@ -451,9 +461,12 @@ class MessageBubble extends StatelessWidget {
                       size: 20,
                     ),
                   ),
-                  title: const Text(
-                    'Eliminar para mí',
-                    style: TextStyle(color: Colors.red),
+                  title: Text(
+                    Provider.of<LocaleNotifier>(
+                      context,
+                      listen: false,
+                    ).t('delete_for_me'),
+                    style: const TextStyle(color: Colors.red),
                   ),
                   subtitle: const Text(
                     'Solo tú dejarás de ver este mensaje',
@@ -484,9 +497,12 @@ class MessageBubble extends StatelessWidget {
                         size: 20,
                       ),
                     ),
-                    title: const Text(
-                      'Eliminar para todos',
-                      style: TextStyle(
+                    title: Text(
+                      Provider.of<LocaleNotifier>(
+                        context,
+                        listen: false,
+                      ).t('delete_for_all'),
+                      style: const TextStyle(
                         color: Colors.red,
                         fontWeight: FontWeight.w600,
                       ),
@@ -540,7 +556,9 @@ class MessageBubble extends StatelessWidget {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx),
-            child: const Text('Cancelar'),
+            child: Text(
+              Provider.of<LocaleNotifier>(ctx, listen: false).t('cancel'),
+            ),
           ),
           ElevatedButton(
             style: ElevatedButton.styleFrom(
@@ -554,7 +572,9 @@ class MessageBubble extends StatelessWidget {
               Navigator.pop(ctx);
               onConfirm();
             },
-            child: const Text('Eliminar'),
+            child: Text(
+              Provider.of<LocaleNotifier>(ctx, listen: false).t('delete'),
+            ),
           ),
         ],
       ),
@@ -576,7 +596,10 @@ class MessageBubble extends StatelessWidget {
         final showAbove = aboveSpace > 80;
         final top = showAbove ? offset.dy - 52 : offset.dy + size.height + 4;
         final left = isMe
-            ? (offset.dx + size.width - 280).clamp(8.0, MediaQuery.of(ctx).size.width - 288.0)
+            ? (offset.dx + size.width - 280).clamp(
+                8.0,
+                MediaQuery.of(ctx).size.width - 288.0,
+              )
             : offset.dx.clamp(8.0, MediaQuery.of(ctx).size.width - 288.0);
         return Stack(
           children: [
@@ -594,7 +617,10 @@ class MessageBubble extends StatelessWidget {
               child: Material(
                 color: Colors.transparent,
                 child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 8,
+                    vertical: 6,
+                  ),
                   decoration: BoxDecoration(
                     color: isDark ? const Color(0xFF1A2B3C) : Colors.white,
                     borderRadius: BorderRadius.circular(24),
@@ -608,16 +634,25 @@ class MessageBubble extends StatelessWidget {
                   ),
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
-                    children: emojis.map((e) => GestureDetector(
-                      onTap: () {
-                        entry.remove();
-                        onReact(message, e);
-                      },
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 3),
-                        child: Text(e, style: const TextStyle(fontSize: 22)),
-                      ),
-                    )).toList(),
+                    children: emojis
+                        .map(
+                          (e) => GestureDetector(
+                            onTap: () {
+                              entry.remove();
+                              onReact(message, e);
+                            },
+                            child: Padding(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 3,
+                              ),
+                              child: Text(
+                                e,
+                                style: const TextStyle(fontSize: 22),
+                              ),
+                            ),
+                          ),
+                        )
+                        .toList(),
                   ),
                 ),
               ),
@@ -831,7 +866,14 @@ class _VoiceMessageState extends State<_VoiceMessage> {
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('No se puede reproducir el audio')),
+          SnackBar(
+            content: Text(
+              Provider.of<LocaleNotifier>(
+                context,
+                listen: false,
+              ).t('cannot_play_audio'),
+            ),
+          ),
         );
       }
     } finally {
@@ -983,10 +1025,7 @@ class _ImageMessage extends StatelessWidget {
       },
       child: Stack(
         children: [
-          ClipRRect(
-            borderRadius: BorderRadius.circular(8),
-            child: image,
-          ),
+          ClipRRect(borderRadius: BorderRadius.circular(8), child: image),
           if (_isLocal)
             Positioned.fill(
               child: Container(
@@ -1046,12 +1085,19 @@ class _VideoMessage extends StatelessWidget {
                   ),
                 )
               else
-                const Icon(Icons.play_circle_fill, size: 48, color: Colors.white70),
+                const Icon(
+                  Icons.play_circle_fill,
+                  size: 48,
+                  color: Colors.white70,
+                ),
               Positioned(
                 bottom: 8,
                 left: 8,
                 child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 6,
+                    vertical: 2,
+                  ),
                   decoration: BoxDecoration(
                     color: Colors.black54,
                     borderRadius: BorderRadius.circular(4),
@@ -1059,11 +1105,18 @@ class _VideoMessage extends StatelessWidget {
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      const Icon(Icons.videocam, size: 14, color: Colors.white70),
+                      const Icon(
+                        Icons.videocam,
+                        size: 14,
+                        color: Colors.white70,
+                      ),
                       const SizedBox(width: 4),
                       Text(
                         _isLocal ? 'Subiendo...' : 'Video',
-                        style: const TextStyle(color: Colors.white70, fontSize: 11),
+                        style: const TextStyle(
+                          color: Colors.white70,
+                          fontSize: 11,
+                        ),
                       ),
                     ],
                   ),
@@ -1130,7 +1183,10 @@ class _PollMessage extends StatelessWidget {
           Padding(
             padding: const EdgeInsets.only(top: 2),
             child: Text(
-              'Selección múltiple',
+              Provider.of<LocaleNotifier>(
+                context,
+                listen: false,
+              ).t('multiple_selection'),
               style: TextStyle(
                 fontSize: 11,
                 color: isMe ? Colors.white60 : Colors.grey,
@@ -1320,20 +1376,31 @@ class _LocationMessage extends StatelessWidget {
                       ],
                     ),
                   ),
-                  child: const Row(
+                  child: Row(
                     children: [
-                      Icon(Icons.location_on, color: Colors.white, size: 16),
-                      SizedBox(width: 4),
+                      const Icon(
+                        Icons.location_on,
+                        color: Colors.white,
+                        size: 16,
+                      ),
+                      const SizedBox(width: 4),
                       Text(
-                        'Ver ubicación',
-                        style: TextStyle(
+                        Provider.of<LocaleNotifier>(
+                          context,
+                          listen: false,
+                        ).t('view_location'),
+                        style: const TextStyle(
                           color: Colors.white,
                           fontSize: 12,
                           fontWeight: FontWeight.w600,
                         ),
                       ),
-                      Spacer(),
-                      Icon(Icons.open_in_new, color: Colors.white, size: 14),
+                      const Spacer(),
+                      const Icon(
+                        Icons.open_in_new,
+                        color: Colors.white,
+                        size: 14,
+                      ),
                     ],
                   ),
                 ),
@@ -1370,7 +1437,9 @@ class _LocationViewerScreen extends StatelessWidget {
       appBar: AppBar(
         backgroundColor: const Color(0xFF16242D),
         foregroundColor: Colors.white,
-        title: const Text('Ubicación'),
+        title: Text(
+          Provider.of<LocaleNotifier>(context, listen: false).t('location'),
+        ),
       ),
       body: Stack(
         children: [
@@ -1384,7 +1453,10 @@ class _LocationViewerScreen extends StatelessWidget {
                 markerId: const gmaps.MarkerId('shared_location'),
                 position: target,
                 infoWindow: gmaps.InfoWindow(
-                  title: 'Ubicación compartida',
+                  title: Provider.of<LocaleNotifier>(
+                    context,
+                    listen: false,
+                  ).t('shared_location'),
                   snippet:
                       '${lat.toStringAsFixed(5)}, ${lng.toStringAsFixed(5)}',
                 ),
@@ -1420,7 +1492,10 @@ class _LocationViewerScreen extends StatelessWidget {
                   AppRoutes.rideTracker,
                   extra: {
                     'destination': gmaps.LatLng(lat, lng),
-                    'destinationName': 'Ubicación compartida',
+                    'destinationName': Provider.of<LocaleNotifier>(
+                      context,
+                      listen: false,
+                    ).t('shared_location'),
                   },
                 );
               },
@@ -1590,23 +1665,39 @@ class _DeletedBubble extends StatelessWidget {
               showDialog(
                 context: context,
                 builder: (ctx) => AlertDialog(
-                  title: const Text('Eliminar mensaje'),
-                  content: const Text(
-                    '¿Deseas eliminar este mensaje para ti?',
+                  title: Text(
+                    Provider.of<LocaleNotifier>(
+                      context,
+                      listen: false,
+                    ).t('delete_for_me'),
+                  ),
+                  content: Text(
+                    Provider.of<LocaleNotifier>(
+                      context,
+                      listen: false,
+                    ).t('confirm_delete_message'),
                   ),
                   actions: [
                     TextButton(
                       onPressed: () => Navigator.of(ctx).pop(),
-                      child: const Text('Cancelar'),
+                      child: Text(
+                        Provider.of<LocaleNotifier>(
+                          ctx,
+                          listen: false,
+                        ).t('cancel'),
+                      ),
                     ),
                     TextButton(
                       onPressed: () {
                         Navigator.of(ctx).pop();
                         onDeleteForMe!();
                       },
-                      child: const Text(
-                        'Eliminar',
-                        style: TextStyle(color: Colors.red),
+                      child: Text(
+                        Provider.of<LocaleNotifier>(
+                          ctx,
+                          listen: false,
+                        ).t('delete'),
+                        style: const TextStyle(color: Colors.red),
                       ),
                     ),
                   ],

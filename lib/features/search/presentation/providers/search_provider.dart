@@ -1,9 +1,9 @@
-﻿import 'package:flutter/foundation.dart';
+import 'package:flutter/foundation.dart';
 import 'package:biux/features/search/data/repositories/search_repository_impl.dart';
 import 'package:biux/features/search/domain/entities/search_result_entity.dart';
 import 'package:biux/features/search/domain/repositories/search_repository.dart';
 
-/// Provider de bÃºsqueda global.
+/// Provider de búsqueda global.
 class SearchProvider extends ChangeNotifier {
   final SearchRepository _repository;
 
@@ -46,7 +46,7 @@ class SearchProvider extends ChangeNotifier {
       _users = results[0];
       _groups = results[1];
       _rides = results[2];
-    } on Exception catch (e) {
+    } catch (e) {
       // Keep previous results on error
     }
 
@@ -63,4 +63,3 @@ class SearchProvider extends ChangeNotifier {
     notifyListeners();
   }
 }
-
