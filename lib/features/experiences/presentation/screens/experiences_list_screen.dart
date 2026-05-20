@@ -15,9 +15,9 @@ import 'package:biux/features/social/presentation/widgets/post_social_actions.da
 import 'package:biux/features/social/presentation/providers/likes_provider.dart';
 import 'package:biux/core/design_system/color_tokens.dart';
 import 'package:biux/core/design_system/locale_notifier.dart';
-import 'package:biux/shared/widgets/post_card.dart';
+import 'package:biux/shared/widgets/common/post_card.dart';
 import 'package:biux/features/social/presentation/widgets/report_content_dialog.dart';
-import 'package:biux/shared/widgets/shimmer_loading.dart';
+import 'package:biux/shared/widgets/loading/shimmer_loading.dart';
 
 /// Pantalla principal para mostrar la lista de experiencias
 class ExperiencesListScreen extends StatefulWidget {

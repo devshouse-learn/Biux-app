@@ -9,7 +9,7 @@ import 'package:biux/features/users/presentation/providers/user_provider.dart';
 import 'app_drawer.dart';
 import 'package:flutter/material.dart';
 import 'package:biux/core/design_system/color_tokens.dart';
-import 'package:biux/shared/widgets/offline_banner.dart';
+import 'package:biux/shared/widgets/banners/offline_banner.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 

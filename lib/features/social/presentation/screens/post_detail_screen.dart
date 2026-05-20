@@ -6,7 +6,7 @@ import 'package:biux/features/experiences/presentation/providers/experience_clas
 import 'package:biux/features/experiences/domain/entities/experience_entity.dart';
 import 'package:biux/features/social/presentation/widgets/post_social_actions.dart';
 import 'package:biux/core/design_system/locale_notifier.dart';
-import 'package:biux/shared/widgets/post_card.dart';
+import 'package:biux/shared/widgets/common/post_card.dart';
 import 'package:firebase_database/firebase_database.dart';
 
 /// Pantalla estilo Instagram para ver publicaciones con galería

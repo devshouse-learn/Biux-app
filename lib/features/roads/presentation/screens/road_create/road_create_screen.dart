@@ -8,7 +8,7 @@ import 'package:biux/features/roads/data/models/road.dart';
 import 'package:biux/core/utils/datetime_utils.dart';
 import 'package:biux/core/utils/snackbar_utils.dart';
 import 'package:biux/features/roads/presentation/screens/road_create/road_create_bloc.dart';
-import 'package:biux/shared/widgets/text_form_field_biux_widget.dart';
+import 'package:biux/shared/widgets/form/text_form_field_biux_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:location/location.dart';
 import 'package:provider/provider.dart';

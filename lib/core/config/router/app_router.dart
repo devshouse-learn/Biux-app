@@ -119,7 +119,7 @@ import 'package:biux/features/achievements/presentation/screens/achievements_scr
 import 'package:biux/features/education/presentation/screens/education_screen.dart';
 
 // Shared imports
-import 'package:biux/shared/widgets/main_shell.dart';
+import 'package:biux/shared/widgets/navigation/main_shell.dart';
 import 'package:biux/shared/screens/splash_screen.dart';
 
 import 'app_routes.dart';

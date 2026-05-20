@@ -4,7 +4,7 @@ import 'package:biux/features/rides/data/models/ride_model.dart';
 import 'package:biux/features/rides/presentation/providers/ride_provider.dart';
 import 'package:biux/features/rides/presentation/widgets/ride_attendance_button.dart';
 import 'package:biux/features/rides/presentation/widgets/ride_attendees_list_optimized.dart';
-import 'package:biux/shared/widgets/optimized_image_picker.dart';
+import 'package:biux/shared/widgets/images/optimized_image_picker.dart';
 import 'package:biux/core/services/deep_link_service.dart';
 import 'package:biux/features/social/presentation/widgets/ride_social_actions.dart';
 import 'package:flutter/material.dart';

@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:biux/features/experiences/presentation/providers/story_groups_provider.dart';
 import 'package:biux/features/experiences/domain/entities/user_story_group_entity.dart';
-import 'package:biux/shared/widgets/optimized_network_image.dart';
+import 'package:biux/shared/widgets/images/optimized_image_picker.dart';
 import 'package:biux/core/design_system/color_tokens.dart';
 import 'package:biux/core/design_system/locale_notifier.dart';
 

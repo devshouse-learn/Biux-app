@@ -5,7 +5,7 @@ import 'package:biux/core/design_system/color_tokens.dart';
 import 'package:biux/core/design_system/locale_notifier.dart';
 import 'package:biux/features/bikes/presentation/providers/bike_provider.dart';
 import 'package:biux/features/bikes/domain/entities/bike_enums.dart';
-import 'package:biux/shared/widgets/photo_viewer.dart';
+import 'package:biux/shared/widgets/images/photo_viewer.dart';
 
 /// Cuarto paso del registro: Generar QR y finalizar
 class BikeRegistrationStep4 extends StatelessWidget {
