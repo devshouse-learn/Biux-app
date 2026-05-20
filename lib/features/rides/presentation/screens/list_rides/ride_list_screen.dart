@@ -1,7 +1,7 @@
 import 'package:biux/features/groups/data/models/group_model.dart';
 import 'package:biux/features/rides/data/models/ride_model.dart';
 import 'package:biux/features/rides/presentation/providers/ride_provider.dart';
-import 'package:biux/shared/widgets/optimized_image_picker.dart';
+import 'package:biux/shared/widgets/images/optimized_image_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
@@ -11,7 +11,7 @@ import 'package:biux/core/design_system/locale_notifier.dart';
 import 'package:biux/features/groups/presentation/providers/group_provider.dart';
 import 'package:biux/features/maps/presentation/providers/meeting_point_provider.dart';
 import 'package:biux/features/maps/data/models/meeting_point.dart';
-import 'package:biux/shared/widgets/shimmer_loading.dart';
+import 'package:biux/shared/widgets/loading/shimmer_loading.dart';
 
 class RideListScreen extends StatefulWidget {
   final String? groupId;

@@ -607,35 +607,4 @@ class BikeRepositoryImpl implements BikeRepository {
       throw Exception('Error al buscar bicicletas: $e');
     }
   }
-
-  /// MÉTODO TEMPORAL: Corrige el ownerId de bicicletas con placeholder
-  Future<int> fixPlaceholderOwnerIds(String correctUserId) async {
-    try {
-      debugPrint('🔧 Iniciando corrección de ownerIds...');
-
-      final querySnapshot = await _firestore
-          .collection(_bikesCollection)
-          .where('ownerId', isEqualTo: 'current-user-id')
-          .get();
-
-      debugPrint(
-        '🔧 Encontradas ${querySnapshot.docs.length} bicis con placeholder',
-      );
-
-      int updatedCount = 0;
-      for (var doc in querySnapshot.docs) {
-        await doc.reference.update({'ownerId': correctUserId});
-        updatedCount++;
-        debugPrint('✅ Actualizada bici ${doc.id} -> ownerId: "$correctUserId"');
-      }
-
-      debugPrint(
-        '🎉 Corrección completada: $updatedCount bicicletas actualizadas',
-      );
-      return updatedCount;
-    } catch (e) {
-      debugPrint('❌ Error corrigiendo ownerIds: $e');
-      throw Exception('Error al corregir ownerIds: $e');
-    }
-  }
 }

@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:biux/features/authentication/data/repositories/auth_repository.dart';
+import 'package:biux/features/authentication/domain/repositories/auth_repository_interface.dart';
 import 'package:biux/core/services/app_logger.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -10,7 +10,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 enum AuthState { initial, loading, codeSent, authenticated, error }
 
 class AuthProvider extends ChangeNotifier {
-  final AuthRepository _authRepository;
+  final AuthRepositoryInterface _authRepository;
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
@@ -24,7 +24,7 @@ class AuthProvider extends ChangeNotifier {
   static const int _maxSendAttempts = 3;
   bool _needsProfileSetup = false; // Nueva bandera para perfil incompleto
 
-  AuthProvider({required AuthRepository authRepository})
+  AuthProvider({required AuthRepositoryInterface authRepository})
     : _authRepository = authRepository;
 
   AuthState get state => _state;
@@ -141,14 +141,22 @@ class AuthProvider extends ChangeNotifier {
       );
 
       AppLogger.info('✅ [AuthProvider] Código validado correctamente');
+
+      if (authResponse.token == null || authResponse.token!.isEmpty) {
+        _state = AuthState.error;
+        _errorMessage = 'err_invalid_token';
+        notifyListeners();
+        return;
+      }
+
       AppLogger.debug(
-        '🔑 Token recibido: ${authResponse.token.substring(0, 20)}...',
+        '🔑 Token recibido: ${authResponse.token!.substring(0, 20)}...',
       );
 
       // Autenticar con Firebase
       AppLogger.debug('🔐 Autenticando con Firebase...');
       final userCredential = await _auth.signInWithCustomToken(
-        authResponse.token,
+        authResponse.token!,
       );
       final user = userCredential.user;
 

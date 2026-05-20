@@ -7,7 +7,7 @@ import 'package:biux/core/design_system/locale_notifier.dart';
 import 'package:biux/features/cities/data/models/city_model.dart';
 import 'package:biux/features/cities/presentation/providers/city_provider.dart';
 import 'package:biux/features/groups/presentation/providers/group_provider.dart';
-import 'package:biux/shared/widgets/optimized_image_picker.dart';
+import 'package:biux/shared/widgets/images/optimized_image_picker.dart';
 
 class GroupCreateScreen extends StatefulWidget {
   @override

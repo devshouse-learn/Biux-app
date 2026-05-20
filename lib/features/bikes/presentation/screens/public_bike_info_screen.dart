@@ -7,7 +7,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:biux/features/bikes/presentation/providers/bike_provider.dart';
 import 'package:biux/features/bikes/domain/entities/bike_entity.dart';
 import 'package:biux/features/bikes/domain/entities/bike_enums.dart';
-import 'package:biux/shared/widgets/optimized_network_image.dart';
+import 'package:biux/shared/widgets/images/optimized_image_picker.dart';
 
 /// Pantalla pública de información de bicicleta accesible por QR
 /// Muestra información básica sin datos personales

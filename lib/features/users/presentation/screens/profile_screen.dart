@@ -10,13 +10,13 @@ import 'package:biux/core/config/router/app_routes.dart';
 
 import 'package:biux/core/design_system/color_tokens.dart';
 import 'package:biux/core/config/styles.dart';
-import 'package:biux/shared/widgets/optimized_image_picker.dart';
+import 'package:biux/shared/widgets/images/optimized_image_picker.dart';
 import 'package:biux/core/services/optimized_cache_manager.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:biux/features/experiences/data/repositories/experience_repository_impl.dart';
 import 'package:biux/features/experiences/domain/entities/experience_entity.dart';
 import 'package:biux/features/experiences/presentation/screens/create_experience_screen.dart';
-import 'package:biux/shared/widgets/shimmer_loading.dart';
+import 'package:biux/shared/widgets/loading/shimmer_loading.dart';
 import 'package:biux/core/design_system/locale_notifier.dart';
 
 class ProfileScreen extends StatelessWidget {

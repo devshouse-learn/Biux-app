@@ -7,7 +7,7 @@ import 'package:biux/core/design_system/locale_notifier.dart';
 import 'package:biux/features/bikes/presentation/providers/bike_provider.dart';
 import 'package:biux/features/bikes/domain/entities/bike_entity.dart';
 import 'package:biux/features/bikes/domain/entities/bike_enums.dart';
-import 'package:biux/shared/widgets/optimized_network_image.dart';
+import 'package:biux/shared/widgets/images/optimized_image_picker.dart';
 
 /// Pantalla principal para ver todas las bicicletas del usuario
 class MyBikesScreen extends StatefulWidget {

@@ -5,7 +5,7 @@ import 'package:go_router/go_router.dart';
 import 'package:biux/core/design_system/color_tokens.dart';
 import 'package:biux/features/experiences/data/models/experience_model.dart';
 import 'package:biux/features/experiences/domain/entities/experience_entity.dart';
-import 'package:biux/shared/widgets/post_card.dart';
+import 'package:biux/shared/widgets/common/post_card.dart';
 import 'package:biux/features/social/presentation/widgets/post_social_actions.dart';
 import 'package:biux/core/design_system/locale_notifier.dart';
 import 'package:provider/provider.dart';

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:share_plus/share_plus.dart';
-import 'package:biux/shared/widgets/optimized_network_image.dart';
+import 'package:biux/shared/widgets/images/optimized_image_picker.dart';
 import 'package:vector_math/vector_math_64.dart' show Vector3;
 
 /// Widget para visualizar fotos en pantalla completa con zoom y gestos

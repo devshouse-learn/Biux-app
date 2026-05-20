@@ -6,7 +6,7 @@ import 'package:biux/core/config/styles.dart';
 import 'package:biux/features/cities/data/models/city.dart';
 import 'package:biux/features/users/presentation/screens/edit_user_screen/edit_user_screen_bloc.dart';
 import 'package:biux/features/users/presentation/widgets/profile_image_picker.dart';
-import 'package:biux/shared/widgets/text_form_field_biux_widget.dart';
+import 'package:biux/shared/widgets/form/text_form_field_biux_widget.dart';
 import 'package:biux/core/utils/snackbar_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';

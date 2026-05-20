@@ -785,9 +785,12 @@ class ChatProvider extends ChangeNotifier {
 
   @override
   void dispose() {
+    // Cancelar todas las suscripciones
     _chatsSub?.cancel();
     _messagesSub?.cancel();
     _activeChatSub?.cancel();
+    _typingSub?.cancel();
+    _typingTimer?.cancel();
     super.dispose();
   }
 }
