@@ -24,6 +24,11 @@ class NotificationService {
 
   bool _isInitialized = false;
 
+  // Suscripciones para cleanup
+  StreamSubscription<RemoteMessage>? _onMessageSubscription;
+  StreamSubscription<RemoteMessage>? _onMessageOpenedAppSubscription;
+  StreamSubscription<String>? _onTokenRefreshSubscription;
+
   /// Inicializa el servicio de notificaciones
   Future<void> initialize() async {
     if (_isInitialized) return;
@@ -104,10 +109,10 @@ class NotificationService {
   /// Configura los manejadores de FCM
   void _configureFCMHandlers() {
     // Mensaje recibido cuando la app está en foreground
-    FirebaseMessaging.onMessage.listen(_handleForegroundMessage);
+    _onMessageSubscription = FirebaseMessaging.onMessage.listen(_handleForegroundMessage);
 
     // Mensaje tocado cuando la app está en background/terminated
-    FirebaseMessaging.onMessageOpenedApp.listen(_handleMessageOpenedApp);
+    _onMessageOpenedAppSubscription = FirebaseMessaging.onMessageOpenedApp.listen(_handleMessageOpenedApp);
 
     // Verificar si la app se abrió desde una notificación
     _checkInitialMessage();
@@ -275,7 +280,7 @@ class NotificationService {
       AppLogger.info('Token FCM guardado', tag: 'Notifications');
 
       // Escuchar cambios de token
-      _fcm.onTokenRefresh.listen((newToken) {
+      _onTokenRefreshSubscription = _fcm.onTokenRefresh.listen((newToken) {
         _updateDeviceToken(userId, newToken);
       });
     } catch (e) {
@@ -425,8 +430,14 @@ class NotificationService {
   }
 
   /// Libera recursos
-  void dispose() {
-    _notificationStreamController.close();
+  Future<void> dispose() async {
+    // Cancelar suscripciones FCM
+    await _onMessageSubscription?.cancel();
+    await _onMessageOpenedAppSubscription?.cancel();
+    await _onTokenRefreshSubscription?.cancel();
+
+    // Cerrar stream controller
+    await _notificationStreamController.close();
   }
 
   // ========================================

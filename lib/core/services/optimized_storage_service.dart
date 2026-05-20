@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
@@ -68,13 +69,15 @@ class OptimizedStorageService {
       final uploadTask = ref.putFile(compressedFile, metadata);
 
       // Monitorear progreso si se proporciona callback
+      StreamSubscription? progressSubscription;
       if (onProgress != null) {
-        uploadTask.snapshotEvents.listen((snapshot) {
+        progressSubscription = uploadTask.snapshotEvents.listen((snapshot) {
           onProgress();
         });
       }
 
       final snapshot = await uploadTask;
+      progressSubscription?.cancel();
       final downloadUrl = await snapshot.ref.getDownloadURL();
 
       // Limpiar archivo temporal
@@ -284,13 +287,15 @@ class OptimizedStorageService {
       final uploadTask = ref.putFile(compressedFile, metadata);
 
       // Monitorear progreso si se proporciona callback
+      StreamSubscription? progressSubscription;
       if (onProgress != null) {
-        uploadTask.snapshotEvents.listen((snapshot) {
+        progressSubscription = uploadTask.snapshotEvents.listen((snapshot) {
           onProgress();
         });
       }
 
       final snapshot = await uploadTask;
+      progressSubscription?.cancel();
       final downloadUrl = await snapshot.ref.getDownloadURL();
 
       await _cleanupTempFiles([compressedFile]);
@@ -453,13 +458,15 @@ class OptimizedStorageService {
         final uploadTask = ref.putFile(mediaFile, metadata);
 
         // Monitorear progreso si se proporciona callback
+        StreamSubscription? progressSubscription;
         if (onProgress != null) {
-          uploadTask.snapshotEvents.listen((snapshot) {
+          progressSubscription = uploadTask.snapshotEvents.listen((snapshot) {
             onProgress();
           });
         }
 
         final snapshot = await uploadTask;
+        progressSubscription?.cancel();
         final downloadUrl = await snapshot.ref.getDownloadURL();
 
         results['url'] = _optimizeCdnUrl(downloadUrl);

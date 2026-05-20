@@ -3,7 +3,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:provider/provider.dart';
 import 'package:biux/features/authentication/presentation/providers/auth_provider.dart'
     as app_auth;
-import 'package:biux/features/authentication/data/repositories/auth_repository.dart';
+import 'package:biux/features/authentication/data/repositories/authentication_repository.dart';
 import 'package:biux/features/experiences/presentation/providers/experience_classic_provider.dart';
 import 'package:biux/features/experiences/presentation/providers/experience_creator_classic_provider.dart';
 import 'package:biux/features/users/presentation/providers/user_provider.dart';
@@ -19,7 +19,7 @@ class IntegrationTestHelper {
       providers: [
         ChangeNotifierProvider(
           create: (_) =>
-              app_auth.AuthProvider(authRepository: AuthRepository()),
+              app_auth.AuthProvider(authRepository: AuthenticationRepository()),
         ),
         ChangeNotifierProvider(create: (_) => UserProvider()),
         ChangeNotifierProvider(create: (_) => GroupProvider()),

@@ -1,10 +1,12 @@
 import 'package:biux/core/services/local_storage.dart';
 import 'package:biux/core/models/common/response.dart';
+import 'package:biux/features/authentication/domain/entities/auth_entity.dart';
+import 'package:biux/features/authentication/domain/repositories/auth_repository_interface.dart';
 import 'package:biux/features/users/data/models/user.dart';
 import 'package:biux/features/users/data/repositories/user_firebase_repository.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
-class AuthenticationRepository {
+class AuthenticationRepository implements AuthRepositoryInterface {
   final FirebaseAuth _auth = FirebaseAuth.instance;
 
   bool get isLoggedIn {
@@ -125,5 +127,23 @@ class AuthenticationRepository {
         );
       }
     }
+  }
+
+  // Implementaciones de AuthRepositoryInterface
+  @override
+  String? get currentUserId => _auth.currentUser?.uid;
+
+  @override
+  Future<bool> sendOTP(String phoneNumber) async {
+    // Firebase Phone Auth - Implementación stub
+    // Nota: Requiere configuración adicional en Firebase Console
+    // y permisos especiales para Android 12+
+    return false;
+  }
+
+  @override
+  Future<AuthEntity> validateOTP(String phoneNumber, String code) async {
+    // Firebase Phone Auth - Implementación stub
+    throw UnimplementedError('OTP validation not yet implemented');
   }
 }

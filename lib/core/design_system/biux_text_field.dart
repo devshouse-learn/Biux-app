@@ -64,6 +64,10 @@ class _BiuxTextFieldState extends State<BiuxTextField> {
 
   @override
   void dispose() {
+    // Remover listener antes de disponer
+    _focusNode.removeListener(_onFocusChange);
+
+    // Disponer el FocusNode solo si fue creado localmente
     if (widget.focusNode == null) {
       _focusNode.dispose();
     }

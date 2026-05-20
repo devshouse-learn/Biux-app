@@ -4,12 +4,11 @@ import 'package:provider/provider.dart';
 import 'package:provider/single_child_widget.dart';
 
 // Core
-import 'package:biux/core/config/api_config.dart';
 import 'package:biux/core/design_system/theme_notifier.dart';
 import 'package:biux/core/design_system/locale_notifier.dart';
 
 // Auth
-import 'package:biux/features/authentication/data/repositories/auth_repository.dart';
+import 'package:biux/features/authentication/data/repositories/authentication_repository.dart';
 import 'package:biux/features/authentication/presentation/providers/auth_provider.dart'
     as app_auth;
 
@@ -123,7 +122,7 @@ class AppProviders {
   static List<SingleChildWidget> get _authProviders => [
     ChangeNotifierProvider(
       create: (_) => app_auth.AuthProvider(
-        authRepository: AuthRepository(baseUrl: ApiConfig.authBaseUrl),
+        authRepository: AuthenticationRepository(),
       ),
     ),
     ChangeNotifierProxyProvider<app_auth.AuthProvider, NotificationsProvider?>(
