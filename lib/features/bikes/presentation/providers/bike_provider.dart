@@ -10,7 +10,6 @@ import 'package:biux/features/bikes/domain/usecases/transfer_bike_ownership_usec
 import 'package:biux/features/bikes/domain/usecases/get_public_bike_info_usecase.dart';
 import 'package:biux/features/bikes/domain/usecases/delete_bike_usecase.dart';
 import 'package:biux/features/bikes/domain/usecases/mark_as_recovered_usecase.dart';
-import 'package:biux/features/bikes/data/repositories/bike_repository_impl.dart';
 import 'package:biux/core/services/optimized_storage_service.dart';
 
 /// Estados del provider de bicicletas
@@ -555,27 +554,5 @@ class BikeProvider extends ChangeNotifier {
           bike.color.toLowerCase().contains(lowercaseQuery) ||
           bike.frameSerial.toLowerCase().contains(lowercaseQuery);
     }).toList();
-  }
-
-  /// MÉTODO TEMPORAL: Corrige bicicletas con ownerId placeholder
-  Future<int> fixPlaceholderBikes(String correctUserId) async {
-    try {
-      _setState(BikeProviderState.loading);
-
-      // Acceder directamente al repositorio
-      final repository = _getUserBikesUseCase.repository as BikeRepositoryImpl;
-      final updatedCount = await repository.fixPlaceholderOwnerIds(
-        correctUserId,
-      );
-
-      // Recargar las bicicletas después de la corrección
-      await loadUserBikes(correctUserId);
-
-      _setState(BikeProviderState.loaded);
-      return updatedCount;
-    } catch (e) {
-      _setState(BikeProviderState.error, error: e.toString());
-      return 0;
-    }
   }
 }
