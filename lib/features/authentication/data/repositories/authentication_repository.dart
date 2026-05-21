@@ -6,6 +6,9 @@ import 'package:biux/features/authentication/domain/repositories/auth_repository
 import 'package:biux/features/users/data/models/user.dart';
 import 'package:biux/features/users/data/repositories/user_firebase_repository.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
+import 'package:biux/core/config/api_config.dart';
 
 class AuthenticationRepository implements AuthRepositoryInterface {
   final FirebaseAuth _auth = FirebaseAuth.instance;
@@ -138,37 +141,28 @@ class AuthenticationRepository implements AuthRepositoryInterface {
   @override
   Future<bool> sendOTP(String phoneNumber) async {
     try {
-      final Completer<bool> completer = Completer<bool>();
-
-      await _auth.verifyPhoneNumber(
-        phoneNumber: phoneNumber,
-        timeout: const Duration(seconds: 60),
-        verificationCompleted: (PhoneAuthCredential credential) async {
-          try {
-            await _auth.signInWithCredential(credential);
-            if (!completer.isCompleted) completer.complete(true);
-          } catch (e) {
-            if (!completer.isCompleted) completer.complete(false);
-          }
-        },
-        verificationFailed: (FirebaseAuthException e) {
-          if (!completer.isCompleted) completer.complete(false);
-        },
-        codeSent: (String verificationId, int? resendToken) {
-          _verificationId = verificationId;
-          if (!completer.isCompleted) completer.complete(true);
-        },
-        codeAutoRetrievalTimeout: (String verificationId) {
-          _verificationId = verificationId;
-        },
+      final response = await http.post(
+        Uri.parse(ApiConfig.sendOtp),
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode({
+          'phoneNumber': phoneNumber,
+        }),
+      ).timeout(
+        const Duration(seconds: 30),
+        onTimeout: () => throw Exception('Timeout sending OTP'),
       );
 
-      return await completer.future.timeout(
-        const Duration(seconds: 65),
-        onTimeout: () => false,
-      );
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        final data = jsonDecode(response.body);
+        _verificationId = data['verificationId'] ?? data['id'] ?? phoneNumber;
+        return true;
+      } else {
+        throw Exception(
+          'Error sending OTP: ${response.statusCode} - ${response.body}',
+        );
+      }
     } catch (e) {
-      return false;
+      throw Exception('Error sending OTP: $e');
     }
   }
 
@@ -179,22 +173,38 @@ class AuthenticationRepository implements AuthRepositoryInterface {
         throw Exception('Verification ID not found');
       }
 
-      final credential = PhoneAuthProvider.credential(
-        verificationId: _verificationId!,
-        smsCode: code,
+      final response = await http.post(
+        Uri.parse(ApiConfig.validateOtp),
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode({
+          'phoneNumber': phoneNumber,
+          'code': code,
+          'verificationId': _verificationId,
+        }),
+      ).timeout(
+        const Duration(seconds: 30),
+        onTimeout: () => throw Exception('Timeout validating OTP'),
       );
 
-      final userCredential = await _auth.signInWithCredential(credential);
-      final user = userCredential.user;
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        final data = jsonDecode(response.body);
+        final token = data['token'] ?? data['customToken'];
+        final uid = data['uid'] ?? data['userId'];
 
-      if (user == null) {
-        throw Exception('User is null after sign in');
+        if (token == null || uid == null) {
+          throw Exception('Invalid response: missing token or uid');
+        }
+
+        return AuthEntity(
+          uid: uid,
+          token: token,
+          phoneNumber: phoneNumber,
+        );
+      } else {
+        throw Exception(
+          'Error validating OTP: ${response.statusCode} - ${response.body}',
+        );
       }
-
-      return AuthEntity(
-        uid: user.uid,
-        phoneNumber: phoneNumber,
-      );
     } catch (e) {
       throw Exception('OTP validation failed: $e');
     }

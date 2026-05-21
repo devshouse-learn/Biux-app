@@ -3,7 +3,7 @@ import 'package:biux/features/maps/presentation/providers/meeting_point_provider
 import 'package:biux/features/rides/data/models/ride_model.dart';
 import 'package:biux/features/rides/presentation/providers/ride_provider.dart';
 import 'package:biux/features/weather/presentation/providers/weather_provider.dart';
-import 'package:biux/shared/widgets/optimized_image_picker.dart';
+import 'package:biux/shared/widgets/images/optimized_image_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
