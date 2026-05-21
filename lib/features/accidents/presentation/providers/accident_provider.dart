@@ -24,4 +24,34 @@ class AccidentProvider extends ChangeNotifier {
       debugPrint('Error reporting accident: $e');
     }
   }
+
+  Future<void> deleteAllAccidents() async {
+    try {
+      _loading = true;
+      notifyListeners();
+      await _ds.deleteAllAccidents();
+      _accidents = [];
+      _loading = false;
+      notifyListeners();
+    } catch (e) {
+      debugPrint('Error deleting accidents: $e');
+      _loading = false;
+      notifyListeners();
+    }
+  }
+
+  Future<void> deleteResolvedAccidents() async {
+    try {
+      _loading = true;
+      notifyListeners();
+      await _ds.deleteResolvedAccidents();
+      _accidents = _accidents.where((a) => !a.resolved).toList();
+      _loading = false;
+      notifyListeners();
+    } catch (e) {
+      debugPrint('Error deleting resolved accidents: $e');
+      _loading = false;
+      notifyListeners();
+    }
+  }
 }
