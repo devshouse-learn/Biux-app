@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:biux/core/services/remote_config_service.dart';
 import 'package:biux/core/services/app_logger.dart';
@@ -8,11 +8,11 @@ import 'package:provider/provider.dart';
 /// Servicio para verificar actualizaciones de la app.
 ///
 /// Lee desde Firestore (via RemoteConfigService):
-/// - `min_version`: versión mínima requerida (force update)
-/// - `latest_version`: última versión disponible (update sugerido)
+/// - `min_version`: versiÃ³n mÃ­nima requerida (force update)
+/// - `latest_version`: Ãºltima versiÃ³n disponible (update sugerido)
 /// - `update_url_ios`: URL de App Store
 /// - `update_url_android`: URL de Play Store
-/// - `maintenance_mode`: si la app está en mantenimiento
+/// - `maintenance_mode`: si la app estÃ¡ en mantenimiento
 /// - `maintenance_message`: mensaje de mantenimiento
 class AppUpdateService {
   AppUpdateService._();
@@ -62,7 +62,7 @@ class AppUpdateService {
     final config = RemoteConfigService();
     return config.getString(
       'maintenance_message',
-      defaultValue: 'La app está en mantenimiento. Vuelve pronto.',
+      defaultValue: 'La app estÃ¡ en mantenimiento. Vuelve pronto.',
     );
   }
 
@@ -89,7 +89,7 @@ class AppUpdateService {
         if (parts1[i] > parts2[i]) return false;
       }
       return false;
-    } catch (e) {
+    } on Exception catch (e) {
       AppLogger.error(
         'Error comparando versiones: $v1 vs $v2',
         error: e,
@@ -189,3 +189,4 @@ class AppUpdateService {
     }
   }
 }
+

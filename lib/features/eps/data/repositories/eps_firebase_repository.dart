@@ -1,4 +1,4 @@
-import 'package:biux/features/eps/data/models/eps.dart';
+﻿import 'package:biux/features/eps/data/models/eps.dart';
 import 'package:biux/features/eps/domain/repositories/eps_repository_abstract.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
@@ -12,8 +12,9 @@ class EpsFirebaseRepository extends EpsRepositoryAbstract {
       return result.docs
           .map((doc) => Eps.fromJson(json: doc.data(), docId: doc.id))
           .toList();
-    } catch (e) {
+    } on FirebaseException catch (e) {
       return [];
     }
   }
 }
+

@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -16,8 +16,8 @@ import 'package:biux/features/users/presentation/providers/user_provider.dart';
 import 'package:biux/features/users/presentation/providers/user_profile_provider.dart';
 import 'package:biux/features/experiences/domain/entities/experience_entity.dart';
 
-/// Pantalla de perfil p├║blico de usuario
-/// Muestra informaci├│n b├ísica, posts y bot├│n de seguir/dejar de seguir
+/// Pantalla de perfil pâ”œâ•‘blico de usuario
+/// Muestra informaciâ”œâ”‚n bâ”œÃ­sica, posts y botâ”œâ”‚n de seguir/dejar de seguir
 class PublicUserProfileScreen extends StatefulWidget {
   final String userId;
 
@@ -50,7 +50,7 @@ class _PublicUserProfileScreenState extends State<PublicUserProfileScreen> {
         isCurrentUser = currentUserUid == widget.userId;
       });
 
-      // Verificar si ya est├í siguiendo a este usuario
+      // Verificar si ya estâ”œÃ­ siguiendo a este usuario
       if (!isCurrentUser && currentUserUid != null) {
         final userProvider = context.read<UserProvider>();
         if (userProvider.user?.following != null) {
@@ -128,7 +128,7 @@ class _PublicUserProfileScreenState extends State<PublicUserProfileScreen> {
           body: SingleChildScrollView(
             child: Column(
               children: [
-                // ========== SECCIÓN DE PERFIL (misma estructura que mi perfil) ==========
+                // ========== SECCIÃ“N DE PERFIL (misma estructura que mi perfil) ==========
                 Container(
                   decoration: BoxDecoration(
                     image: user.profileCover.isNotEmpty
@@ -157,7 +157,7 @@ class _PublicUserProfileScreenState extends State<PublicUserProfileScreen> {
                       padding: EdgeInsets.fromLTRB(16, 16, 16, 20),
                       child: Column(
                         children: [
-                          // Primera fila: Botón atrás a la izquierda
+                          // Primera fila: BotÃ³n atrÃ¡s a la izquierda
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
@@ -326,7 +326,7 @@ class _PublicUserProfileScreenState extends State<PublicUserProfileScreen> {
 
                           SizedBox(height: 16),
 
-                          // Tercera fila: Estadísticas
+                          // Tercera fila: EstadÃ­sticas
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceAround,
                             children: [
@@ -408,7 +408,7 @@ class _PublicUserProfileScreenState extends State<PublicUserProfileScreen> {
 
                           SizedBox(height: 12),
 
-                          // Descripción
+                          // DescripciÃ³n
                           if (user.description.isNotEmpty)
                             Align(
                               alignment: Alignment.centerLeft,
@@ -428,7 +428,7 @@ class _PublicUserProfileScreenState extends State<PublicUserProfileScreen> {
 
                           SizedBox(height: 12),
 
-                          // Botón de Seguir (solo si no es el usuario actual)
+                          // BotÃ³n de Seguir (solo si no es el usuario actual)
                           if (!isCurrentUser)
                             SizedBox(
                               width: double.infinity,
@@ -498,7 +498,7 @@ class _PublicUserProfileScreenState extends State<PublicUserProfileScreen> {
         if (!url.startsWith('http://') && !url.startsWith('https://'))
           return false;
         return true;
-      } catch (e) {
+      } on FirebaseException catch (e) {
         return false;
       }
     }).length;
@@ -515,7 +515,7 @@ class _PublicUserProfileScreenState extends State<PublicUserProfileScreen> {
         if (!url.startsWith('http://') && !url.startsWith('https://'))
           return false;
         return true;
-      } catch (e) {
+      } on FirebaseException catch (e) {
         return false;
       }
     }).toList();
@@ -645,12 +645,12 @@ class _PublicUserProfileScreenState extends State<PublicUserProfileScreen> {
     final currentUserId = AuthenticationRepository().getUserId;
     final isOwnProfile = currentUserId == profileUserId;
 
-    // Si es el perfil propio, no mostrar bot├│n de seguir
+    // Si es el perfil propio, no mostrar botâ”œâ”‚n de seguir
     if (isOwnProfile) {
       return SizedBox.shrink();
     }
 
-    // Deshabilitar si est├í procesando
+    // Deshabilitar si estâ”œÃ­ procesando
     final isDisabled = provider.isProcessingFollow;
 
     // Determinar estado: following, requested, or follow
@@ -822,7 +822,7 @@ class _PublicUserProfileScreenState extends State<PublicUserProfileScreen> {
           );
         }
 
-        // Sin datos o lista vacía
+        // Sin datos o lista vacÃ­a
         if (!snapshot.hasData ||
             snapshot.data == null ||
             (snapshot.data as dynamic).isEmpty) {
@@ -856,10 +856,10 @@ class _PublicUserProfileScreenState extends State<PublicUserProfileScreen> {
           );
         }
 
-        // Filtrar: solo PUBLICACIONES (no historias) con media válido
+        // Filtrar: solo PUBLICACIONES (no historias) con media vÃ¡lido
         final allExperiences = snapshot.data as dynamic;
         final experiences = allExperiences.where((exp) {
-          // Excluir historias — solo publicaciones en el perfil
+          // Excluir historias â€” solo publicaciones en el perfil
           if (exp.isStoryFormat == true) return false;
           try {
             if (exp.media == null || exp.media.isEmpty) return false;
@@ -869,19 +869,19 @@ class _PublicUserProfileScreenState extends State<PublicUserProfileScreen> {
             if (url.isEmpty) return false;
             if (!url.startsWith('http://') && !url.startsWith('https://'))
               return false;
-            // Para videos: validar que tenga thumbnail o URL válida
+            // Para videos: validar que tenga thumbnail o URL vÃ¡lida
             if (media.mediaType == MediaType.video) {
               final thumb = media.thumbnailUrl ?? '';
               return thumb.isNotEmpty && thumb.startsWith('http') ||
                   url.isNotEmpty;
             }
             return true;
-          } catch (e) {
+          } on FirebaseException catch (e) {
             return false;
           }
         }).toList();
 
-        // Eliminar publicaciones con imágenes que fallaron al cargar
+        // Eliminar publicaciones con imÃ¡genes que fallaron al cargar
         experiences.removeWhere(
           (exp) => _failedImageIds.contains(exp.id.toString()),
         );
@@ -893,7 +893,7 @@ class _PublicUserProfileScreenState extends State<PublicUserProfileScreen> {
           });
         }
 
-        // Si después de filtrar no hay experiencias, mostrar el mensaje
+        // Si despuÃ©s de filtrar no hay experiencias, mostrar el mensaje
         if (experiences.isEmpty) {
           return Container(
             width: double.infinity,
@@ -1343,7 +1343,7 @@ class _PublicUserProfileScreenState extends State<PublicUserProfileScreen> {
       builder: (ctx) => AlertDialog(
         title: Text(l.t('block_user')),
         content: Text(
-          '¿Deseas bloquear a ${user.fullName.isNotEmpty ? user.fullName : user.userName}? '
+          'Â¿Deseas bloquear a ${user.fullName.isNotEmpty ? user.fullName : user.userName}? '
           '${l.t('also_removed_followers')}',
         ),
         actions: [
@@ -1437,3 +1437,4 @@ class _PublicUserProfileScreenState extends State<PublicUserProfileScreen> {
     );
   }
 }
+

@@ -1,4 +1,4 @@
-import 'dart:async';
+﻿import 'dart:async';
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:biux/features/bikes/domain/entities/bike_entity.dart';
@@ -15,7 +15,7 @@ import 'package:biux/core/services/optimized_storage_service.dart';
 /// Estados del provider de bicicletas
 enum BikeProviderState { initial, loading, loaded, error }
 
-/// Provider para la gestión de bicicletas
+/// Provider para la gestiÃ³n de bicicletas
 class BikeProvider extends ChangeNotifier {
   final RegisterBikeUseCase _registerBikeUseCase;
   final GetUserBikesUseCase _getUserBikesUseCase;
@@ -46,7 +46,7 @@ class BikeProvider extends ChangeNotifier {
   String? _errorMessage;
   List<BikeEntity> _userBikes = [];
   BikeEntity? _currentBike;
-  BikeEntity? _publicBike; // Para ficha pública
+  BikeEntity? _publicBike; // Para ficha pÃºblica
 
   // Getters
   BikeProviderState get state => _state;
@@ -68,7 +68,7 @@ class BikeProvider extends ChangeNotifier {
   void _setState(BikeProviderState newState, {String? error}) {
     _state = newState;
     _errorMessage = error;
-    // Diferir la notificación para evitar llamadas durante el build
+    // Diferir la notificaciÃ³n para evitar llamadas durante el build
     scheduleMicrotask(() {
       notifyListeners();
     });
@@ -84,34 +84,34 @@ class BikeProvider extends ChangeNotifier {
     });
   }
 
-  // ========== Gestión de bicicletas ==========
+  // ========== GestiÃ³n de bicicletas ==========
 
   /// Obtiene todas las bicicletas del usuario
   Future<void> loadUserBikes(String userId) async {
     try {
-      debugPrint('🚴 BikeProvider: Cargando bicicletas para userId: "$userId"');
+      debugPrint('ðŸš´ BikeProvider: Cargando bicicletas para userId: "$userId"');
       _setState(BikeProviderState.loading);
       _userBikes = await _getUserBikesUseCase(userId);
       debugPrint(
-        '🚴 BikeProvider: Se encontraron ${_userBikes.length} bicicletas',
+        'ðŸš´ BikeProvider: Se encontraron ${_userBikes.length} bicicletas',
       );
       if (_userBikes.isNotEmpty) {
-        debugPrint('🚴 Primera bici - ownerId: "${_userBikes.first.ownerId}"');
+        debugPrint('ðŸš´ Primera bici - ownerId: "${_userBikes.first.ownerId}"');
       }
       _setState(BikeProviderState.loaded);
-    } catch (e) {
-      debugPrint('❌ BikeProvider: Error cargando bicicletas: $e');
+    } on Exception catch (e) {
+      debugPrint('âŒ BikeProvider: Error cargando bicicletas: $e');
       _setState(BikeProviderState.error, error: e.toString());
     }
   }
 
-  /// Obtiene ficha pública de bicicleta por QR
+  /// Obtiene ficha pÃºblica de bicicleta por QR
   Future<void> loadPublicBike(String qrCode) async {
     try {
       _setState(BikeProviderState.loading);
       _publicBike = await _getPublicBikeInfoUseCase(qrCode);
       _setState(BikeProviderState.loaded);
-    } catch (e) {
+    } on Exception catch (e) {
       _setState(BikeProviderState.error, error: e.toString());
     }
   }
@@ -119,7 +119,7 @@ class BikeProvider extends ChangeNotifier {
   /// Selecciona una bicicleta como actual
   void selectBike(BikeEntity bike) {
     _currentBike = bike;
-    // Diferir la notificación para evitar llamadas durante el build
+    // Diferir la notificaciÃ³n para evitar llamadas durante el build
     scheduleMicrotask(() {
       notifyListeners();
     });
@@ -159,7 +159,7 @@ class BikeProvider extends ChangeNotifier {
   /// Valida el paso actual del formulario y devuelve el mensaje de error si falla
   String? validateCurrentStepWithMessage() {
     switch (_currentStep) {
-      case 0: // Datos básicos
+      case 0: // Datos bÃ¡sicos
         // Marca
         final brand = _registrationData['brand']?.toString().trim() ?? '';
         if (brand.isEmpty) {
@@ -168,7 +168,7 @@ class BikeProvider extends ChangeNotifier {
         if (brand.length < 2) {
           return 'bike_brand_min_chars';
         }
-        if (!RegExp(r'^[a-zA-ZáéíóúÁÉÍÓÚñÑ0-9\s\-]+$').hasMatch(brand)) {
+        if (!RegExp(r'^[a-zA-ZÃ¡Ã©Ã­Ã³ÃºÃÃ‰ÃÃ“ÃšÃ±Ã‘0-9\s\-]+$').hasMatch(brand)) {
           return 'bike_brand_invalid_chars';
         }
 
@@ -181,7 +181,7 @@ class BikeProvider extends ChangeNotifier {
           return 'bike_model_min_chars';
         }
 
-        // Año
+        // AÃ±o
         final year = _registrationData['year'];
         final currentYear = DateTime.now().year;
         if (year == null || year is! int) {
@@ -199,7 +199,7 @@ class BikeProvider extends ChangeNotifier {
         if (color.length < 3) {
           return 'bike_color_hint';
         }
-        if (!RegExp(r'^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s\/\-]+$').hasMatch(color)) {
+        if (!RegExp(r'^[a-zA-ZÃ¡Ã©Ã­Ã³ÃºÃÃ‰ÃÃ“ÃšÃ±Ã‘\s\/\-]+$').hasMatch(color)) {
           return 'bike_color_invalid';
         }
 
@@ -220,7 +220,7 @@ class BikeProvider extends ChangeNotifier {
           return 'bike_type_required';
         }
 
-        // Número de serie
+        // NÃºmero de serie
         final frameSerial =
             _registrationData['frameSerial']?.toString().trim() ?? '';
         if (frameSerial.isEmpty) {
@@ -242,7 +242,7 @@ class BikeProvider extends ChangeNotifier {
           return 'bike_city_hint';
         }
 
-        return null; // Todos los campos están completos
+        return null; // Todos los campos estÃ¡n completos
 
       case 1: // Fotos
         if (_registrationData['mainPhoto']?.toString().trim().isEmpty ?? true) {
@@ -253,7 +253,7 @@ class BikeProvider extends ChangeNotifier {
       case 2: // Propiedad/Compra (opcional)
         return null; // Los campos de este paso son opcionales
 
-      case 3: // Revisión y confirmación
+      case 3: // RevisiÃ³n y confirmaciÃ³n
         return null;
 
       default:
@@ -261,7 +261,7 @@ class BikeProvider extends ChangeNotifier {
     }
   }
 
-  /// Valida el paso actual del formulario (versión booleana)
+  /// Valida el paso actual del formulario (versiÃ³n booleana)
   bool validateCurrentStep() {
     return validateCurrentStepWithMessage() == null;
   }
@@ -290,7 +290,7 @@ class BikeProvider extends ChangeNotifier {
         }
       }
 
-      // Subir foto del número de serie (opcional)
+      // Subir foto del nÃºmero de serie (opcional)
       String? serialPhotoUrl;
       final serialPhotoPath = _registrationData['serialPhoto']?.toString();
       if (serialPhotoPath != null && serialPhotoPath.isNotEmpty) {
@@ -346,7 +346,7 @@ class BikeProvider extends ChangeNotifier {
         size: _registrationData['size'],
         type: _registrationData['type'],
         frameSerial: _registrationData['frameSerial'],
-        mainPhoto: mainPhotoUrl!, // Ya está subida
+        mainPhoto: mainPhotoUrl!, // Ya estÃ¡ subida
         city: _registrationData['city'],
         serialPhoto: serialPhotoUrl, // URL o null
         neighborhood: _registrationData['neighborhood'],
@@ -357,19 +357,19 @@ class BikeProvider extends ChangeNotifier {
         featuredComponents: _registrationData['featuredComponents'],
       );
 
-      // Añadir a la lista de bicicletas del usuario
+      // AÃ±adir a la lista de bicicletas del usuario
       _userBikes.add(bike);
       _currentBike = bike;
 
       _setState(BikeProviderState.loaded);
       return bike;
-    } catch (e) {
+    } on Exception catch (e) {
       _setState(BikeProviderState.error, error: e.toString());
       return null;
     }
   }
 
-  // ========== Gestión de robos ==========
+  // ========== GestiÃ³n de robos ==========
 
   /// Reporta el robo de una bicicleta
   Future<bool> reportTheft({
@@ -405,13 +405,13 @@ class BikeProvider extends ChangeNotifier {
 
       _setState(BikeProviderState.loaded);
       return true;
-    } catch (e) {
+    } on Exception catch (e) {
       _setState(BikeProviderState.error, error: e.toString());
       return false;
     }
   }
 
-  // ========== Gestión de transferencias ==========
+  // ========== GestiÃ³n de transferencias ==========
 
   /// Marca una bicicleta robada como recuperada
   Future<bool> markAsRecovered({
@@ -439,7 +439,7 @@ class BikeProvider extends ChangeNotifier {
 
       _setState(BikeProviderState.loaded);
       return true;
-    } catch (e) {
+    } on Exception catch (e) {
       _setState(BikeProviderState.error, error: e.toString());
       return false;
     }
@@ -466,13 +466,13 @@ class BikeProvider extends ChangeNotifier {
 
       _setState(BikeProviderState.loaded);
       return true;
-    } catch (e) {
+    } on Exception catch (e) {
       _setState(BikeProviderState.error, error: e.toString());
       return false;
     }
   }
 
-  /// Obtiene información pública de una bicicleta por código QR
+  /// Obtiene informaciÃ³n pÃºblica de una bicicleta por cÃ³digo QR
   Future<void> getBikeByQRCode(String qrCode) async {
     try {
       _setState(BikeProviderState.loading);
@@ -481,13 +481,13 @@ class BikeProvider extends ChangeNotifier {
       _publicBike = bike;
 
       _setState(BikeProviderState.loaded);
-    } catch (e) {
+    } on Exception catch (e) {
       _setState(BikeProviderState.error, error: e.toString());
       rethrow;
     }
   }
 
-  // ========== Eliminación de bicicletas ==========
+  // ========== EliminaciÃ³n de bicicletas ==========
 
   /// Elimina una bicicleta del usuario
   Future<bool> deleteBike(String bikeId) async {
@@ -499,21 +499,21 @@ class BikeProvider extends ChangeNotifier {
       // Remover de la lista local
       _userBikes.removeWhere((bike) => bike.id == bikeId);
 
-      // Si la bicicleta eliminada era la actual, limpiar la selección
+      // Si la bicicleta eliminada era la actual, limpiar la selecciÃ³n
       if (_currentBike?.id == bikeId) {
         _currentBike = null;
       }
 
       _setState(BikeProviderState.loaded);
       return true;
-    } catch (e) {
-      debugPrint('❌ BikeProvider: Error eliminando bicicleta: $e');
+    } on Exception catch (e) {
+      debugPrint('âŒ BikeProvider: Error eliminando bicicleta: $e');
       _setState(BikeProviderState.error, error: e.toString());
       return false;
     }
   }
 
-  /// Limpia la selección actual
+  /// Limpia la selecciÃ³n actual
   void clearSelection() {
     _currentBike = null;
     _publicBike = null;
@@ -522,7 +522,7 @@ class BikeProvider extends ChangeNotifier {
 
   // ========== Utilidades ==========
 
-  /// Obtiene estadísticas rápidas de las bicicletas del usuario
+  /// Obtiene estadÃ­sticas rÃ¡pidas de las bicicletas del usuario
   Map<String, int> getUserBikeStats() {
     if (_userBikes.isEmpty) {
       return {'total': 0, 'active': 0, 'stolen': 0, 'verified': 0};
@@ -556,3 +556,4 @@ class BikeProvider extends ChangeNotifier {
     }).toList();
   }
 }
+

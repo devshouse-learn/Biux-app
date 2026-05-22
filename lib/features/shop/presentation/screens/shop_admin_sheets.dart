@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:biux/core/design_system/locale_notifier.dart';
 import 'package:biux/features/shop/presentation/providers/shop_provider.dart';
@@ -52,9 +52,9 @@ ProductEntity _copyProductWith(
 class ShopAdminSheets {
   ShopAdminSheets._();
 
-  // ═══════════════════════════════════════════════════
-  // GESTIÓN DE PRODUCTOS - FUNCIONAL
-  // ═══════════════════════════════════════════════════
+  // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+  // GESTIÃ“N DE PRODUCTOS - FUNCIONAL
+  // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
   static void showManageProductsSheet(BuildContext context) {
     final shopProvider = Provider.of<ShopProvider>(context, listen: false);
 
@@ -66,9 +66,9 @@ class ShopAdminSheets {
     );
   }
 
-  // ═══════════════════════════════════════════════════
-  // GESTIÓN DE VENDEDORES - FUNCIONAL
-  // ═══════════════════════════════════════════════════
+  // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+  // GESTIÃ“N DE VENDEDORES - FUNCIONAL
+  // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
   static void showManageSellersSheet(BuildContext context) {
     showModalBottomSheet(
       context: context,
@@ -78,9 +78,9 @@ class ShopAdminSheets {
     );
   }
 
-  // ═══════════════════════════════════════════════════
+  // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
   // REPORTES - FUNCIONAL
-  // ═══════════════════════════════════════════════════
+  // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
   static void showReportsSheet(BuildContext context) {
     final shopProvider = Provider.of<ShopProvider>(context, listen: false);
 
@@ -92,9 +92,9 @@ class ShopAdminSheets {
     );
   }
 
-  // ═══════════════════════════════════════════════════
+  // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
   // SOLICITUDES - FUNCIONAL
-  // ═══════════════════════════════════════════════════
+  // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
   static void showRequestsSheet(BuildContext context) {
     showModalBottomSheet(
       context: context,
@@ -104,9 +104,9 @@ class ShopAdminSheets {
     );
   }
 
-  // ═══════════════════════════════════════════════════
-  // ESTADÍSTICAS - FUNCIONAL
-  // ═══════════════════════════════════════════════════
+  // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+  // ESTADÃSTICAS - FUNCIONAL
+  // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
   static void showStatsSheet(BuildContext context) {
     final shopProvider = Provider.of<ShopProvider>(context, listen: false);
 
@@ -118,9 +118,9 @@ class ShopAdminSheets {
     );
   }
 
-  // ═══════════════════════════════════════════════════
+  // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
   // CENTRO DE SEGURIDAD - FUNCIONAL
-  // ═══════════════════════════════════════════════════
+  // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
   static void showSecuritySheet(BuildContext context) {
     showModalBottomSheet(
       context: context,
@@ -131,9 +131,9 @@ class ShopAdminSheets {
   }
 }
 
-// ═══════════════════════════════════════════════════════
-// WIDGET: GESTIÓN DE PRODUCTOS
-// ═══════════════════════════════════════════════════════
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+// WIDGET: GESTIÃ“N DE PRODUCTOS
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 class _ManageProductsSheet extends StatefulWidget {
   final ShopProvider shopProvider;
   const _ManageProductsSheet({required this.shopProvider});
@@ -257,7 +257,7 @@ class _ManageProductsSheetState extends State<_ManageProductsSheet> {
 
                       const SizedBox(height: 16),
 
-                      // Actualización rápida de precios
+                      // ActualizaciÃ³n rÃ¡pida de precios
                       _buildPriceUpdateCard(products),
                     ],
                   ),
@@ -294,7 +294,7 @@ class _ManageProductsSheetState extends State<_ManageProductsSheet> {
           style: TextStyle(fontWeight: FontWeight.w600),
         ),
         subtitle: Text(
-          '\$${product.price.toStringAsFixed(2)} · Stock: ${product.stock}',
+          '\$${product.price.toStringAsFixed(2)} Â· Stock: ${product.stock}',
         ),
         trailing: Row(
           mainAxisSize: MainAxisSize.min,
@@ -500,7 +500,7 @@ class _ManageProductsSheetState extends State<_ManageProductsSheet> {
                           }
                           _selectedProductId = null;
                           _priceController.clear();
-                        } catch (e) {
+                        } on Exception catch (e) {
                           if (mounted) {
                             ScaffoldMessenger.of(context).showSnackBar(
                               SnackBar(
@@ -544,9 +544,9 @@ class _ManageProductsSheetState extends State<_ManageProductsSheet> {
   }
 }
 
-// ═══════════════════════════════════════════════════════
-// WIDGET: GESTIÓN DE VENDEDORES
-// ═══════════════════════════════════════════════════════
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+// WIDGET: GESTIÃ“N DE VENDEDORES
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 class _ManageSellersSheet extends StatefulWidget {
   const _ManageSellersSheet();
 
@@ -745,7 +745,7 @@ class _ManageSellersSheetState extends State<_ManageSellersSheet> {
                             s['name'],
                             style: const TextStyle(fontWeight: FontWeight.w600),
                           ),
-                          subtitle: Text('${s['role']} · ${s['email']}'),
+                          subtitle: Text('${s['role']} Â· ${s['email']}'),
                           trailing: IconButton(
                             icon: const Icon(Icons.delete, color: Colors.red),
                             onPressed: () => _removeSeller(s),
@@ -928,9 +928,9 @@ class _ManageSellersSheetState extends State<_ManageSellersSheet> {
   }
 }
 
-// ═══════════════════════════════════════════════════════
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 // WIDGET: REPORTES
-// ═══════════════════════════════════════════════════════
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 class _ReportsSheet extends StatefulWidget {
   final ShopProvider shopProvider;
   const _ReportsSheet({required this.shopProvider});
@@ -1221,10 +1221,10 @@ class _ReportsSheetState extends State<_ReportsSheet> {
         case 'inventario':
           final total = products.fold<int>(0, (s, p) => s + p.stock);
           report =
-              '📦 ${l.t('admin_total_inventory')}: $total ${l.t('admin_units_in')} ${products.length} ${l.t('admin_products_label')}.\n'
-              '✅ ${l.t('admin_active')}: ${products.where((p) => p.isActive).length}\n'
-              '❌ ${l.t('admin_inactive')}: ${products.where((p) => !p.isActive).length}\n'
-              '⚠️ ${l.t('admin_out_of_stock')}: ${products.where((p) => p.stock <= 0).length}';
+              'ðŸ“¦ ${l.t('admin_total_inventory')}: $total ${l.t('admin_units_in')} ${products.length} ${l.t('admin_products_label')}.\n'
+              'âœ… ${l.t('admin_active')}: ${products.where((p) => p.isActive).length}\n'
+              'âŒ ${l.t('admin_inactive')}: ${products.where((p) => !p.isActive).length}\n'
+              'âš ï¸ ${l.t('admin_out_of_stock')}: ${products.where((p) => p.stock <= 0).length}';
           break;
         case 'precios':
           final min = products.isEmpty
@@ -1234,7 +1234,7 @@ class _ReportsSheetState extends State<_ReportsSheet> {
               ? 0.0
               : products.map((p) => p.price).reduce((a, b) => a > b ? a : b);
           report =
-              '💰 ${l.t('admin_price_list')}:\n'
+              'ðŸ’° ${l.t('admin_price_list')}:\n'
               '${l.t('admin_min_price')}: \$${min.toStringAsFixed(2)}\n'
               '${l.t('admin_max_price')}: \$${max.toStringAsFixed(2)}\n'
               '${l.t('admin_products_label')}: ${products.length}';
@@ -1242,21 +1242,21 @@ class _ReportsSheetState extends State<_ReportsSheet> {
         case 'agotados':
           final outOfStock = products.where((p) => p.stock <= 0).toList();
           report =
-              '⚠️ ${l.t('admin_out_of_stock_products')}: ${outOfStock.length}\n';
+              'âš ï¸ ${l.t('admin_out_of_stock_products')}: ${outOfStock.length}\n';
           for (var p in outOfStock.take(10)) {
-            report += '  • ${p.name}\n';
+            report += '  â€¢ ${p.name}\n';
           }
           if (outOfStock.isEmpty)
-            report += '  ${l.t('admin_no_out_of_stock')} 🎉';
+            report += '  ${l.t('admin_no_out_of_stock')} ðŸŽ‰';
           break;
         case 'categorias':
           final categories = <String, int>{};
           for (var p in products) {
             categories[p.category] = (categories[p.category] ?? 0) + 1;
           }
-          report = '📊 ${l.t('admin_products_by_category')}:\n';
+          report = 'ðŸ“Š ${l.t('admin_products_by_category')}:\n';
           categories.forEach(
-            (k, v) => report += '  • $k: $v ${l.t('admin_products_label')}\n',
+            (k, v) => report += '  â€¢ $k: $v ${l.t('admin_products_label')}\n',
           );
           break;
         default:
@@ -1267,15 +1267,15 @@ class _ReportsSheetState extends State<_ReportsSheet> {
         _isGenerating = false;
       });
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('${l.t('admin_report_generated_success')} ✅')),
+        SnackBar(content: Text('${l.t('admin_report_generated_success')} âœ…')),
       );
     });
   }
 }
 
-// ═══════════════════════════════════════════════════════
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 // WIDGET: SOLICITUDES
-// ═══════════════════════════════════════════════════════
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 class _RequestsSheet extends StatefulWidget {
   const _RequestsSheet();
 
@@ -1615,7 +1615,7 @@ class _RequestsSheetState extends State<_RequestsSheet> {
       _requestDescController.clear();
     });
     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('${l.t('admin_request_created')} ✅')),
+      SnackBar(content: Text('${l.t('admin_request_created')} âœ…')),
     );
   }
 
@@ -1667,9 +1667,9 @@ class _RequestsSheetState extends State<_RequestsSheet> {
   }
 }
 
-// ═══════════════════════════════════════════════════════
-// WIDGET: ESTADÍSTICAS
-// ═══════════════════════════════════════════════════════
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+// WIDGET: ESTADÃSTICAS
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 class _StatsSheet extends StatefulWidget {
   final ShopProvider shopProvider;
   const _StatsSheet({required this.shopProvider});
@@ -1846,9 +1846,9 @@ class _StatsSheetState extends State<_StatsSheet> {
                                   child: Padding(
                                     padding: const EdgeInsets.all(12),
                                     child: Text(
-                                      '📊 ${l.t('admin_in_this_period')}:\n'
-                                      '• ${inRange.length} ${l.t('admin_products_created')}\n'
-                                      '• ${l.t('admin_total_value')}: \$${inRange.fold<double>(0, (s, p) => s + p.price).toStringAsFixed(2)}',
+                                      'ðŸ“Š ${l.t('admin_in_this_period')}:\n'
+                                      'â€¢ ${inRange.length} ${l.t('admin_products_created')}\n'
+                                      'â€¢ ${l.t('admin_total_value')}: \$${inRange.fold<double>(0, (s, p) => s + p.price).toStringAsFixed(2)}',
                                       style: const TextStyle(fontSize: 14),
                                     ),
                                   ),
@@ -1862,7 +1862,7 @@ class _StatsSheetState extends State<_StatsSheet> {
                   ),
                   SizedBox(height: 16),
 
-                  // Distribución por categoría
+                  // DistribuciÃ³n por categorÃ­a
                   Text(
                     l.t('admin_distribution_by_category'),
                     style: const TextStyle(
@@ -1919,9 +1919,9 @@ class _StatsSheetState extends State<_StatsSheet> {
   }
 }
 
-// ═══════════════════════════════════════════════════════
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 // WIDGET: CENTRO DE SEGURIDAD
-// ═══════════════════════════════════════════════════════
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 class _SecuritySheet extends StatefulWidget {
   const _SecuritySheet();
 
@@ -2053,7 +2053,7 @@ class _SecuritySheetState extends State<_SecuritySheet> {
                             ScaffoldMessenger.of(context).showSnackBar(
                               SnackBar(
                                 content: Text(
-                                  '2FA ${v ? '${l.t('admin_enabled')} ✅' : '${l.t('admin_disabled')} ❌'}',
+                                  '2FA ${v ? '${l.t('admin_enabled')} âœ…' : '${l.t('admin_disabled')} âŒ'}',
                                 ),
                               ),
                             );
@@ -2070,7 +2070,7 @@ class _SecuritySheetState extends State<_SecuritySheet> {
                             ScaffoldMessenger.of(context).showSnackBar(
                               SnackBar(
                                 content: Text(
-                                  '${l.t('admin_notifications')} ${v ? '${l.t('admin_enabled')} ✅' : '${l.t('admin_disabled')} ❌'}',
+                                  '${l.t('admin_notifications')} ${v ? '${l.t('admin_enabled')} âœ…' : '${l.t('admin_disabled')} âŒ'}',
                                 ),
                               ),
                             );
@@ -2087,7 +2087,7 @@ class _SecuritySheetState extends State<_SecuritySheet> {
                             ScaffoldMessenger.of(context).showSnackBar(
                               SnackBar(
                                 content: Text(
-                                  'Log ${v ? '${l.t('admin_enabled')} ✅' : '${l.t('admin_disabled')} ❌'}',
+                                  'Log ${v ? '${l.t('admin_enabled')} âœ…' : '${l.t('admin_disabled')} âŒ'}',
                                 ),
                               ),
                             );
@@ -2104,7 +2104,7 @@ class _SecuritySheetState extends State<_SecuritySheet> {
                             ScaffoldMessenger.of(context).showSnackBar(
                               SnackBar(
                                 content: Text(
-                                  '${l.t('admin_lock')} ${v ? '${l.t('admin_enabled')} ✅' : '${l.t('admin_disabled')} ❌'}',
+                                  '${l.t('admin_lock')} ${v ? '${l.t('admin_enabled')} âœ…' : '${l.t('admin_disabled')} âŒ'}',
                                 ),
                               ),
                             );
@@ -2116,7 +2116,7 @@ class _SecuritySheetState extends State<_SecuritySheet> {
                   ),
                   SizedBox(height: 16),
 
-                  // Cambiar contraseña funcional
+                  // Cambiar contraseÃ±a funcional
                   Card(
                     elevation: 2,
                     shape: RoundedRectangleBorder(
@@ -2239,7 +2239,7 @@ class _SecuritySheetState extends State<_SecuritySheet> {
                   ),
                   SizedBox(height: 16),
 
-                  // Sesión activa
+                  // SesiÃ³n activa
                   Text(
                     l.t('admin_active_sessions'),
                     style: TextStyle(
@@ -2287,7 +2287,7 @@ class _SecuritySheetState extends State<_SecuritySheet> {
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(
                             content: Text(
-                              '${l.t('admin_all_remote_sessions_closed')} ✅',
+                              '${l.t('admin_all_remote_sessions_closed')} âœ…',
                             ),
                           ),
                         );
@@ -2348,15 +2348,15 @@ class _SecuritySheetState extends State<_SecuritySheet> {
       _newPasswordController.clear();
       _confirmPasswordController.clear();
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('${l.t('admin_password_updated_success')} ✅')),
+        SnackBar(content: Text('${l.t('admin_password_updated_success')} âœ…')),
       );
     });
   }
 }
 
-// ═══════════════════════════════════════════════════════
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 // HELPERS COMPARTIDOS
-// ═══════════════════════════════════════════════════════
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 class _StatData {
   final String label;
   final String value;
@@ -2482,3 +2482,4 @@ Widget _buildPlaceholderImage() {
     child: const Icon(Icons.shopping_bag),
   );
 }
+

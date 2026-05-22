@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:biux/core/design_system/color_tokens.dart';
@@ -699,15 +699,15 @@ class _AdminAlertsScreenState extends State<AdminAlertsScreen>
     final ts = data['timestamp'] as Timestamp?;
     final date = ts != null
         ? DateFormat('dd/MM/yy h:mm a').format(ts.toDate())
-        : '—';
+        : 'â€”';
     final bike = data['bikeData'] as Map<String, dynamic>? ?? {};
     final seller = data['sellerName'] ?? 'Desconocido';
     final sellerUid = data['sellerUid'] ?? '';
-    final serial = bike['frameSerial'] ?? '—';
-    final brand = bike['brand'] ?? '—';
-    final model = bike['model'] ?? '—';
-    final color = bike['color'] ?? '—';
-    final city = bike['city'] ?? '—';
+    final serial = bike['frameSerial'] ?? 'â€”';
+    final brand = bike['brand'] ?? 'â€”';
+    final model = bike['model'] ?? 'â€”';
+    final color = bike['color'] ?? 'â€”';
+    final city = bike['city'] ?? 'â€”';
     final isSel = _selectedAlerts.contains(id);
 
     return Card(
@@ -1310,7 +1310,7 @@ class _AdminAlertsScreenState extends State<AdminAlertsScreen>
             final blockedAt = d['blockedAt'] as Timestamp?;
             final dateStr = blockedAt != null
                 ? DateFormat('dd/MM/yy h:mm a').format(blockedAt.toDate())
-                : '—';
+                : 'â€”';
 
             return Card(
               margin: const EdgeInsets.only(bottom: 10),
@@ -1508,27 +1508,27 @@ class _AdminAlertsScreenState extends State<AdminAlertsScreen>
                             ? DateFormat(
                                 'dd/MM/yyyy HH:mm:ss',
                               ).format(ts.toDate())
-                            : '—',
+                            : 'â€”',
                       ),
                     ]),
                     SizedBox(height: 16),
                     _detailSection('Vendedor', [
                       _detailRow(
                         l.t('name_label'),
-                        data['sellerName']?.toString() ?? '—',
+                        data['sellerName']?.toString() ?? 'â€”',
                       ),
-                      _detailRow('UID', data['sellerUid']?.toString() ?? '—'),
+                      _detailRow('UID', data['sellerUid']?.toString() ?? 'â€”'),
                     ]),
                     const SizedBox(height: 16),
                     _detailSection('Bicicleta', [
                       _detailRow(
                         'Serial',
-                        bike['frameSerial']?.toString() ?? '—',
+                        bike['frameSerial']?.toString() ?? 'â€”',
                       ),
-                      _detailRow('Marca', bike['brand']?.toString() ?? '—'),
-                      _detailRow('Modelo', bike['model']?.toString() ?? '—'),
-                      _detailRow('Color', bike['color']?.toString() ?? '—'),
-                      _detailRow('Ciudad', bike['city']?.toString() ?? '—'),
+                      _detailRow('Marca', bike['brand']?.toString() ?? 'â€”'),
+                      _detailRow('Modelo', bike['model']?.toString() ?? 'â€”'),
+                      _detailRow('Color', bike['color']?.toString() ?? 'â€”'),
+                      _detailRow('Ciudad', bike['city']?.toString() ?? 'â€”'),
                       if (bike['year'] != null)
                         _detailRow('Ano', bike['year'].toString()),
                     ]),
@@ -1684,7 +1684,7 @@ class _AdminAlertsScreenState extends State<AdminAlertsScreen>
             backgroundColor: Colors.green,
           ),
         );
-    } catch (e) {
+    } on FirebaseException catch (e) {
       if (mounted)
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
@@ -1736,7 +1736,7 @@ class _AdminAlertsScreenState extends State<AdminAlertsScreen>
             backgroundColor: Colors.green,
           ),
         );
-    } catch (e) {
+    } on FirebaseException catch (e) {
       if (mounted)
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
@@ -1760,7 +1760,7 @@ class _AdminAlertsScreenState extends State<AdminAlertsScreen>
             backgroundColor: Colors.green,
           ),
         );
-    } catch (e) {
+    } on FirebaseException catch (e) {
       if (mounted)
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
@@ -1820,7 +1820,7 @@ class _AdminAlertsScreenState extends State<AdminAlertsScreen>
             backgroundColor: Colors.green,
           ),
         );
-    } catch (e) {
+    } on FirebaseException catch (e) {
       if (mounted)
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
@@ -1877,7 +1877,7 @@ class _AdminAlertsScreenState extends State<AdminAlertsScreen>
         cityFilter: _selectedCity,
         dateRange: dateRange,
       );
-    } catch (e) {
+    } on FirebaseException catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
@@ -1917,3 +1917,4 @@ class _AdminAlertsScreenState extends State<AdminAlertsScreen>
     return query.limit(200);
   }
 }
+

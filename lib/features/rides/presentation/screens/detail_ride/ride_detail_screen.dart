@@ -1,4 +1,4 @@
-import 'package:biux/features/maps/data/models/meeting_point.dart';
+﻿import 'package:biux/features/maps/data/models/meeting_point.dart';
 import 'package:biux/features/maps/presentation/providers/meeting_point_provider.dart';
 import 'package:biux/features/rides/data/models/ride_model.dart';
 import 'package:biux/features/rides/presentation/providers/ride_provider.dart';
@@ -55,7 +55,7 @@ class _RideDetailScreenState extends State<RideDetailScreen>
         listen: false,
       ).startListening();
 
-      // Si viene desde notificación, abrir comentarios automáticamente
+      // Si viene desde notificaciÃ³n, abrir comentarios automÃ¡ticamente
       if (widget.openComments) {
         _openComments();
       }
@@ -141,7 +141,7 @@ class _RideDetailScreenState extends State<RideDetailScreen>
                     },
                   ),
                   actions: [
-                    // Botón de editar (solo para el creador)
+                    // BotÃ³n de editar (solo para el creador)
                     if (ride.createdBy == rideProvider.currentUserId &&
                         ride.status != RideStatus.cancelled &&
                         ride.status != RideStatus.completed)
@@ -241,7 +241,7 @@ class _RideDetailScreenState extends State<RideDetailScreen>
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Banner de cancelación
+          // Banner de cancelaciÃ³n
           if (ride.status == RideStatus.cancelled)
             Container(
               width: double.infinity,
@@ -286,11 +286,11 @@ class _RideDetailScreenState extends State<RideDetailScreen>
               ),
             ),
 
-          // Información del grupo organizador
+          // InformaciÃ³n del grupo organizador
           GroupInfoWidget(ride: ride),
           SizedBox(height: 16),
 
-          // Información básica
+          // InformaciÃ³n bÃ¡sica
           BasicInfoWidget(ride: ride),
           SizedBox(height: 16),
 
@@ -319,11 +319,11 @@ class _RideDetailScreenState extends State<RideDetailScreen>
           RideSocialActions(rideId: ride.id, rideOwnerId: ride.createdBy),
           SizedBox(height: 24),
 
-          // Participantes + botón de asistencia
+          // Participantes + botÃ³n de asistencia
           ParticipantsSectionWidget(ride: ride),
           SizedBox(height: 24),
 
-          // Botón de compartir
+          // BotÃ³n de compartir
           SizedBox(
             width: double.infinity,
             child: OutlinedButton.icon(
@@ -338,7 +338,7 @@ class _RideDetailScreenState extends State<RideDetailScreen>
             ),
           ),
 
-          // Si es el creador, botón de cancelar
+          // Si es el creador, botÃ³n de cancelar
           if (ride.createdBy == rideProvider.currentUserId &&
               ride.status != RideStatus.cancelled &&
               ride.status != RideStatus.completed) ...[
@@ -483,7 +483,7 @@ class _RideDetailScreenState extends State<RideDetailScreen>
   Future<void> _shareRide(BuildContext context, RideModel ride) async {
     final l = Provider.of<LocaleNotifier>(context, listen: false);
     try {
-      // Obtener información del grupo
+      // Obtener informaciÃ³n del grupo
       final provider = Provider.of<RideProvider>(context, listen: false);
       final groupInfo = await provider.getGroupInfo(ride.groupId);
       final groupName = groupInfo?['name'] ?? l.t('a_cycling_group');
@@ -510,13 +510,13 @@ class _RideDetailScreenState extends State<RideDetailScreen>
               ShareParams(files: [XFile(file.path)], text: shareText),
             );
 
-            // Limpiar archivo temporal después de compartir
+            // Limpiar archivo temporal despuÃ©s de compartir
             await file.delete();
           } else {
             // Si falla la descarga, compartir solo texto
             await SharePlus.instance.share(ShareParams(text: shareText));
           }
-        } catch (e) {
+        } on SocketException catch (e) {
           // Si hay error con la imagen, compartir solo texto
           debugPrint('Error compartiendo imagen: $e');
           await SharePlus.instance.share(ShareParams(text: shareText));
@@ -525,7 +525,7 @@ class _RideDetailScreenState extends State<RideDetailScreen>
         // Sin imagen, compartir solo texto
         await SharePlus.instance.share(ShareParams(text: shareText));
       }
-    } catch (e) {
+    } on SocketException catch (e) {
       debugPrint('Error al compartir: $e');
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -663,7 +663,7 @@ class GroupInfoWidget extends StatelessWidget {
                                 width: 50,
                                 height: 50,
                                 imageType:
-                                    'avatar', // Cache de larga duración para logos
+                                    'avatar', // Cache de larga duraciÃ³n para logos
                                 fit: BoxFit.cover,
                               ),
                             )
@@ -710,7 +710,7 @@ class GroupInfoWidget extends StatelessWidget {
                                 style: Theme.of(context).textTheme.bodySmall,
                               ),
                             ],
-                            // Mostrar líder de la rodada
+                            // Mostrar lÃ­der de la rodada
                             SizedBox(height: 8),
                             Row(
                               children: [
@@ -1034,7 +1034,7 @@ class ParticipantsSectionWidget extends StatelessWidget {
               style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
             SizedBox(height: 16),
-            // ⭐ Botón de asistencia - visible para todos
+            // â­ BotÃ³n de asistencia - visible para todos
             RideAttendanceButton(ride: ride),
             SizedBox(height: 20),
             Row(
@@ -1156,3 +1156,4 @@ class InfoRowWidget extends StatelessWidget {
     );
   }
 }
+

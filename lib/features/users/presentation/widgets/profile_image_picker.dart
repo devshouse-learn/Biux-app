@@ -1,4 +1,4 @@
-import 'dart:io';
+﻿import 'dart:io';
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
@@ -72,7 +72,7 @@ class _ProfileImagePickerState extends State<ProfileImagePicker> {
             ),
           ),
 
-        // Botón de edición
+        // BotÃ³n de ediciÃ³n
         Positioned(
           bottom: 0,
           right: 0,
@@ -281,7 +281,7 @@ class _ProfileImagePickerState extends State<ProfileImagePicker> {
           widget.onImageSelected(croppedFile);
         }
       }
-    } catch (e) {
+    } on Exception catch (e) {
       debugPrint('Error seleccionando imagen: $e');
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -310,7 +310,7 @@ class _ProfileImagePickerState extends State<ProfileImagePicker> {
       final img.Image? originalImage = img.decodeImage(imageBytes);
       if (originalImage == null) return null;
 
-      // Determinar el tamaño cuadrado (el menor entre ancho y alto)
+      // Determinar el tamaÃ±o cuadrado (el menor entre ancho y alto)
       final int squareSize = originalImage.width < originalImage.height
           ? originalImage.width
           : originalImage.height;
@@ -328,7 +328,7 @@ class _ProfileImagePickerState extends State<ProfileImagePicker> {
         height: squareSize,
       );
 
-      // Redimensionar para optimizar tamaño
+      // Redimensionar para optimizar tamaÃ±o
       final img.Image resizedImage = img.copyResize(
         croppedImage,
         width: 512,
@@ -350,7 +350,7 @@ class _ProfileImagePickerState extends State<ProfileImagePicker> {
       await croppedFile.writeAsBytes(encodedBytes);
 
       return croppedFile;
-    } catch (e) {
+    } on Exception catch (e) {
       debugPrint('Error recortando imagen: $e');
       return null;
     }
@@ -360,6 +360,7 @@ class _ProfileImagePickerState extends State<ProfileImagePicker> {
     setState(() {
       _selectedImage = null;
     });
-    // Aquí podrías llamar un callback para eliminar la imagen del servidor
+    // AquÃ­ podrÃ­as llamar un callback para eliminar la imagen del servidor
   }
 }
+

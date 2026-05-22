@@ -1,4 +1,4 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
+﻿import 'package:cloud_firestore/cloud_firestore.dart';
 
 class CyclingStatsDatasource {
   final FirebaseFirestore _firestore;
@@ -110,7 +110,7 @@ class CyclingStatsDatasource {
         .get();
     final stats = snapshot.docs.map((d) => {'id': d.id, ...d.data()}).toList();
 
-    // Obtener nombres reales de la colección 'usuarios'
+    // Obtener nombres reales de la colecciÃ³n 'usuarios'
     final userIds = stats.map((s) => s['id'] as String).toList();
     if (userIds.isEmpty) return stats;
 
@@ -190,8 +190,9 @@ class CyclingStatsDatasource {
           .limit(50)
           .get();
       return snap.docs.map((d) => {'id': d.id, ...d.data()}).toList();
-    } catch (e) {
+    } on FirebaseException catch (e) {
       return [];
     }
   }
 }
+

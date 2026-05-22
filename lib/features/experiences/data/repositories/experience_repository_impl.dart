@@ -1,4 +1,4 @@
-import 'dart:io';
+﻿import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
@@ -10,7 +10,7 @@ import 'package:biux/features/experiences/data/models/experience_model.dart';
 import 'package:biux/features/users/domain/entities/user_entity.dart';
 import "package:flutter/foundation.dart";
 
-/// Implementación del repository para experiencias usando Firebase
+/// ImplementaciÃ³n del repository para experiencias usando Firebase
 class ExperienceRepositoryImpl implements ExperienceRepository {
   final FirebaseFirestore _firestore;
   final FirebaseAuth _auth;
@@ -47,8 +47,8 @@ class ExperienceRepositoryImpl implements ExperienceRepository {
             firebaseUser.photoURL ??
             '',
       );
-    } catch (e) {
-      // Si hay error obteniendo desde Firestore, usar datos básicos de Firebase Auth
+    } on FirebaseException catch (e) {
+      // Si hay error obteniendo desde Firestore, usar datos bÃ¡sicos de Firebase Auth
       return UserModel(
         id: firebaseUser.uid,
         fullName: firebaseUser.displayName ?? 'Usuario',
@@ -87,7 +87,7 @@ class ExperienceRepositoryImpl implements ExperienceRepository {
             }).toEntity(),
           )
           .toList();
-    } catch (e) {
+    } on FirebaseException catch (e) {
       throw Exception('Error obteniendo experiencias del usuario: $e');
     }
   }
@@ -114,7 +114,7 @@ class ExperienceRepositoryImpl implements ExperienceRepository {
         );
       }
       return results;
-    } catch (e) {
+    } on FirebaseException catch (e) {
       return [];
     }
   }
@@ -128,7 +128,7 @@ class ExperienceRepositoryImpl implements ExperienceRepository {
           .get();
 
       if (!doc.exists) {
-        debugPrint('⚠️ REPO: Experiencia no encontrada: $experienceId');
+        debugPrint('âš ï¸ REPO: Experiencia no encontrada: $experienceId');
         return null;
       }
 
@@ -136,8 +136,8 @@ class ExperienceRepositoryImpl implements ExperienceRepository {
         ...doc.data()!,
         'id': doc.id,
       }).toEntity();
-    } catch (e) {
-      debugPrint('❌ REPO: Error obteniendo experiencia por ID: $e');
+    } on FirebaseException catch (e) {
+      debugPrint('âŒ REPO: Error obteniendo experiencia por ID: $e');
       throw Exception('Error obteniendo experiencia: $e');
     }
   }
@@ -159,7 +159,7 @@ class ExperienceRepositoryImpl implements ExperienceRepository {
             }).toEntity(),
           )
           .toList();
-    } catch (e) {
+    } on FirebaseException catch (e) {
       throw Exception('Error obteniendo experiencias de la rodada: $e');
     }
   }
@@ -168,10 +168,10 @@ class ExperienceRepositoryImpl implements ExperienceRepository {
   Future<List<ExperienceEntity>> getFollowingExperiences(String userId) async {
     try {
       debugPrint(
-        '🔍 REPO: Obteniendo experiencias de usuarios seguidos para: $userId',
+        'ðŸ” REPO: Obteniendo experiencias de usuarios seguidos para: $userId',
       );
 
-      // Primero intentar obtener de subcolección
+      // Primero intentar obtener de subcolecciÃ³n
       final followingSnapshot = await _firestore
           .collection('users')
           .doc(userId)
@@ -182,12 +182,12 @@ class ExperienceRepositoryImpl implements ExperienceRepository {
           .map((doc) => doc.id)
           .toList();
       debugPrint(
-        '🔍 REPO: Usuarios seguidos en subcolección: ${followingIds.length}',
+        'ðŸ” REPO: Usuarios seguidos en subcolecciÃ³n: ${followingIds.length}',
       );
 
-      // Si no hay en subcolección, intentar desde el documento principal
+      // Si no hay en subcolecciÃ³n, intentar desde el documento principal
       if (followingIds.isEmpty) {
-        debugPrint('🔍 REPO: Buscando en documento principal del usuario...');
+        debugPrint('ðŸ” REPO: Buscando en documento principal del usuario...');
         final userDoc = await _firestore.collection('users').doc(userId).get();
 
         if (userDoc.exists) {
@@ -198,17 +198,17 @@ class ExperienceRepositoryImpl implements ExperienceRepository {
             final followingMap = userData['following'] as Map;
             followingIds = followingMap.keys.cast<String>().toList();
             debugPrint(
-              '🔍 REPO: Usuarios seguidos en documento principal: ${followingIds.length}',
+              'ðŸ” REPO: Usuarios seguidos en documento principal: ${followingIds.length}',
             );
-            debugPrint('🔍 REPO: Following map: $followingMap');
+            debugPrint('ðŸ” REPO: Following map: $followingMap');
           }
         }
       }
 
-      debugPrint('🔍 REPO: Total IDs de usuarios seguidos: $followingIds');
+      debugPrint('ðŸ” REPO: Total IDs de usuarios seguidos: $followingIds');
 
       if (followingIds.isEmpty) {
-        debugPrint('⚠️ REPO: No hay usuarios seguidos, retornando lista vacía');
+        debugPrint('âš ï¸ REPO: No hay usuarios seguidos, retornando lista vacÃ­a');
         return [];
       }
 
@@ -221,7 +221,7 @@ class ExperienceRepositoryImpl implements ExperienceRepository {
           .get();
 
       debugPrint(
-        '🔍 REPO: Experiencias de seguidos encontradas: ${snapshot.docs.length}',
+        'ðŸ” REPO: Experiencias de seguidos encontradas: ${snapshot.docs.length}',
       );
 
       return snapshot.docs
@@ -232,8 +232,8 @@ class ExperienceRepositoryImpl implements ExperienceRepository {
             }).toEntity(),
           )
           .toList();
-    } catch (e) {
-      debugPrint('❌ REPO: Error obteniendo experiencias de seguidores: $e');
+    } on FirebaseException catch (e) {
+      debugPrint('âŒ REPO: Error obteniendo experiencias de seguidores: $e');
       throw Exception('Error obteniendo experiencias de seguidores: $e');
     }
   }
@@ -264,7 +264,7 @@ class ExperienceRepositoryImpl implements ExperienceRepository {
         throw Exception('Usuario no autenticado');
       }
 
-      // Crear ID único para la experiencia
+      // Crear ID Ãºnico para la experiencia
       final experienceId = _firestore.collection('experiences').doc().id;
 
       // Subir archivos multimedia
@@ -273,7 +273,7 @@ class ExperienceRepositoryImpl implements ExperienceRepository {
       for (int i = 0; i < request.mediaFiles.length; i++) {
         final mediaFile = request.mediaFiles[i];
 
-        // Generar ID único para el archivo
+        // Generar ID Ãºnico para el archivo
         final mediaId = '${experienceId}_media_$i';
 
         // Subir archivo y obtener URL
@@ -286,7 +286,7 @@ class ExperienceRepositoryImpl implements ExperienceRepository {
         // Generar thumbnail para videos
         String? thumbnailUrl;
         if (mediaFile.mediaType == MediaType.video) {
-          // IMPLEMENTADO (STUB): Implementar generación de thumbnail
+          // IMPLEMENTADO (STUB): Implementar generaciÃ³n de thumbnail
           thumbnailUrl = url; // Por ahora usar la misma URL
         }
 
@@ -328,7 +328,7 @@ class ExperienceRepositoryImpl implements ExperienceRepository {
           .set(experienceModel.toJson());
 
       return experienceModel.toEntity();
-    } catch (e) {
+    } on FirebaseException catch (e) {
       throw Exception('Error creando experiencia: $e');
     }
   }
@@ -370,7 +370,7 @@ class ExperienceRepositoryImpl implements ExperienceRepository {
         throw Exception('No tienes permisos para eliminar esta experiencia');
       }
 
-      // Eliminar documento de Firestore primero (para que desaparezca de la UI rápido)
+      // Eliminar documento de Firestore primero (para que desaparezca de la UI rÃ¡pido)
       await _firestore.collection('experiences').doc(actualDocId).delete();
 
       // Eliminar archivos multimedia del storage en paralelo (en segundo plano)
@@ -385,7 +385,7 @@ class ExperienceRepositoryImpl implements ExperienceRepository {
         }
       });
       await Future.wait(deleteFutures);
-    } catch (e) {
+    } on FirebaseException catch (e) {
       throw Exception('Error eliminando experiencia: $e');
     }
   }
@@ -415,10 +415,10 @@ class ExperienceRepositoryImpl implements ExperienceRepository {
       );
 
       if (mediaIndex < 0 || mediaIndex >= mediaList.length) {
-        throw Exception('Índice de media inválido');
+        throw Exception('Ãndice de media invÃ¡lido');
       }
 
-      // Si es el último media, eliminar toda la experiencia
+      // Si es el Ãºltimo media, eliminar toda la experiencia
       if (mediaList.length == 1) {
         await deleteExperience(experienceId);
         return true; // true = experiencia eliminada completamente
@@ -431,7 +431,7 @@ class ExperienceRepositoryImpl implements ExperienceRepository {
           mediaToRemove['url'] as String,
         );
         await ref.delete();
-      } catch (e) {
+      } on FirebaseException catch (e) {
         debugPrint('Error: ' + e.toString());
       }
 
@@ -441,8 +441,8 @@ class ExperienceRepositoryImpl implements ExperienceRepository {
         'media': mediaList,
       });
 
-      return false; // false = solo se eliminó una foto
-    } catch (e) {
+      return false; // false = solo se eliminÃ³ una foto
+    } on FirebaseException catch (e) {
       throw Exception('Error eliminando media: $e');
     }
   }
@@ -501,7 +501,7 @@ class ExperienceRepositoryImpl implements ExperienceRepository {
               try {
                 final ref = FirebaseStorage.instance.refFromURL(oldUrl);
                 await ref.delete();
-              } catch (e) {
+              } on FirebaseException catch (e) {
                 debugPrint('Error eliminando archivo antiguo: $e');
               }
             }
@@ -546,7 +546,7 @@ class ExperienceRepositoryImpl implements ExperienceRepository {
           .collection('experiences')
           .doc(experienceId)
           .update(updateData);
-    } catch (e) {
+    } on FirebaseException catch (e) {
       throw Exception('Error actualizando experiencia: $e');
     }
   }
@@ -572,8 +572,8 @@ class ExperienceRepositoryImpl implements ExperienceRepository {
       await _firestore.collection('experiences').doc(experienceId).update({
         'reactions': FieldValue.arrayUnion([reactionData]),
       });
-    } catch (e) {
-      throw Exception('Error agregando reacción: $e');
+    } on FirebaseException catch (e) {
+      throw Exception('Error agregando reacciÃ³n: $e');
     }
   }
 
@@ -585,7 +585,7 @@ class ExperienceRepositoryImpl implements ExperienceRepository {
         throw Exception('Usuario no autenticado');
       }
 
-      // Obtener la experiencia para encontrar la reacción del usuario
+      // Obtener la experiencia para encontrar la reacciÃ³n del usuario
       final doc = await _firestore
           .collection('experiences')
           .doc(experienceId)
@@ -597,14 +597,14 @@ class ExperienceRepositoryImpl implements ExperienceRepository {
       final data = doc.data()!;
       final reactions = List.from(data['reactions'] ?? []);
 
-      // Remover la reacción del usuario actual
+      // Remover la reacciÃ³n del usuario actual
       reactions.removeWhere((reaction) => reaction['user']['id'] == user.uid);
 
       await _firestore.collection('experiences').doc(experienceId).update({
         'reactions': reactions,
       });
-    } catch (e) {
-      throw Exception('Error removiendo reacción: $e');
+    } on FirebaseException catch (e) {
+      throw Exception('Error removiendo reacciÃ³n: $e');
     }
   }
 
@@ -614,7 +614,7 @@ class ExperienceRepositoryImpl implements ExperienceRepository {
       await _firestore.collection('experiences').doc(experienceId).update({
         'views': FieldValue.increment(1),
       });
-    } catch (e) {
+    } on FirebaseException catch (e) {
       throw Exception('Error marcando como vista: $e');
     }
   }
@@ -627,7 +627,7 @@ class ExperienceRepositoryImpl implements ExperienceRepository {
         'viewers': FieldValue.arrayUnion([viewerMap]),
         'views': FieldValue.increment(1),
       });
-    } catch (e) {
+    } on FirebaseException catch (e) {
       throw Exception('Error agregando viewer: $e');
     }
   }
@@ -705,7 +705,7 @@ class ExperienceRepositoryImpl implements ExperienceRepository {
       data['originalStoryId'] = original.id;
 
       await _firestore.collection('experiences').doc(newId).set(data);
-    } catch (e) {
+    } on FirebaseException catch (e) {
       throw Exception('Error reposteando experiencia: $e');
     }
   }
@@ -727,7 +727,7 @@ class ExperienceRepositoryImpl implements ExperienceRepository {
         }
       }
       return result;
-    } catch (e) {
+    } on FirebaseException catch (e) {
       debugPrint('Error obteniendo reposts del usuario: $e');
       return {};
     }
@@ -795,22 +795,22 @@ class ExperienceRepositoryImpl implements ExperienceRepository {
       if (mediaType == MediaType.image && processedFile.path != filePath) {
         try {
           await processedFile.delete();
-        } catch (e) {
+        } on FirebaseException catch (e) {
           // Ignorar errores de limpieza
           debugPrint('Error limpiando archivo temporal: $e');
         }
       }
 
       return downloadUrl;
-    } catch (e) {
+    } on FirebaseException catch (e) {
       throw Exception('Error subiendo archivo: $e');
     }
   }
 
-  /// Optimiza una imagen para reducir su tamaño manteniendo calidad
+  /// Optimiza una imagen para reducir su tamaÃ±o manteniendo calidad
   Future<File> _optimizeImage(File originalFile) async {
     try {
-      // Obtener el tamaño del archivo original
+      // Obtener el tamaÃ±o del archivo original
       final originalBytes = await originalFile.readAsBytes();
       final originalSize = originalBytes.length;
 
@@ -824,19 +824,19 @@ class ExperienceRepositoryImpl implements ExperienceRepository {
       final timestamp = DateTime.now().millisecondsSinceEpoch;
       final optimizedPath = '${tempDir.path}/optimized_$timestamp.jpg';
 
-      // Configuración de compresión conservadora para mantener calidad
+      // ConfiguraciÃ³n de compresiÃ³n conservadora para mantener calidad
       int quality = 92;
       int? targetWidth;
       int? targetHeight;
 
-      // Ajustar calidad según el tamaño del archivo
+      // Ajustar calidad segÃºn el tamaÃ±o del archivo
       if (originalSize > 10 * 1024 * 1024) {
-        // Archivos > 10MB: compresión moderada
+        // Archivos > 10MB: compresiÃ³n moderada
         quality = 85;
         targetWidth = 1920;
         targetHeight = 2400;
       } else if (originalSize > 5 * 1024 * 1024) {
-        // Archivos > 5MB: compresión ligera
+        // Archivos > 5MB: compresiÃ³n ligera
         quality = 90;
         targetWidth = 2048;
         targetHeight = 2560;
@@ -852,7 +852,7 @@ class ExperienceRepositoryImpl implements ExperienceRepository {
       );
 
       if (compressedBytes == null) {
-        // Si falla la compresión, usar archivo original
+        // Si falla la compresiÃ³n, usar archivo original
         return originalFile;
       }
 
@@ -860,25 +860,26 @@ class ExperienceRepositoryImpl implements ExperienceRepository {
       final optimizedFile = File(optimizedPath);
       await optimizedFile.writeAsBytes(compressedBytes);
 
-      // Verificar que la optimización fue efectiva
+      // Verificar que la optimizaciÃ³n fue efectiva
       final optimizedSize = compressedBytes.length;
       final compressionRatio = (1 - (optimizedSize / originalSize)) * 100;
 
       debugPrint(
-        'Imagen optimizada: ${originalSize ~/ 1024}KB → ${optimizedSize ~/ 1024}KB (${compressionRatio.toStringAsFixed(1)}% reducción)',
+        'Imagen optimizada: ${originalSize ~/ 1024}KB â†’ ${optimizedSize ~/ 1024}KB (${compressionRatio.toStringAsFixed(1)}% reducciÃ³n)',
       );
 
-      // Si la compresión redujo menos del 10%, usar original
+      // Si la compresiÃ³n redujo menos del 10%, usar original
       if (compressionRatio < 10) {
         await optimizedFile.delete();
         return originalFile;
       }
 
       return optimizedFile;
-    } catch (e) {
+    } on FirebaseException catch (e) {
       debugPrint('Error optimizando imagen: $e');
       // En caso de error, usar archivo original
       return originalFile;
     }
   }
 }
+

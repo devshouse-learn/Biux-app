@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:provider/provider.dart';
 import 'package:go_router/go_router.dart';
@@ -8,14 +8,14 @@ import 'package:biux/features/shop/domain/entities/product_entity.dart';
 import 'package:biux/features/shop/domain/entities/category_entity.dart';
 import 'package:biux/features/shop/presentation/providers/shop_provider.dart';
 import 'package:biux/features/shop/data/datasources/media_upload_service.dart';
-// import 'package:biux/features/shop/presentation/widgets/product_form_modal.dart'; // import gestionado: se usa dinámicamente desde helpers
+// import 'package:biux/features/shop/presentation/widgets/product_form_modal.dart'; // import gestionado: se usa dinÃ¡micamente desde helpers
 import 'package:biux/core/design_system/locale_notifier.dart';
 import 'package:biux/features/users/presentation/providers/user_provider.dart';
 import 'package:biux/core/design_system/color_tokens.dart';
 import 'package:biux/features/shop/data/datasources/stolen_bike_verification_datasource.dart';
 import 'package:biux/features/bikes/data/repositories/bike_repository_impl.dart';
 
-/// Pantalla de administración de productos (solo para admins)
+/// Pantalla de administraciÃ³n de productos (solo para admins)
 class AdminShopScreen extends StatefulWidget {
   const AdminShopScreen({Key? key}) : super(key: key);
 
@@ -113,17 +113,17 @@ class _AdminShopScreenState extends State<AdminShopScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'Esta acción eliminará PERMANENTEMENTE todos los productos que no tengan imágenes.',
+              'Esta acciÃ³n eliminarÃ¡ PERMANENTEMENTE todos los productos que no tengan imÃ¡genes.',
               style: TextStyle(fontWeight: FontWeight.bold),
             ),
             SizedBox(height: 12),
             Text('Esto incluye:'),
             SizedBox(height: 8),
-            Text('• Productos con array de imágenes vacío'),
-            Text('• Productos con imágenes en blanco'),
+            Text('â€¢ Productos con array de imÃ¡genes vacÃ­o'),
+            Text('â€¢ Productos con imÃ¡genes en blanco'),
             SizedBox(height: 12),
             Text(
-              '⚠️ Esta acción NO se puede deshacer.',
+              'âš ï¸ Esta acciÃ³n NO se puede deshacer.',
               style: TextStyle(color: Colors.red, fontWeight: FontWeight.bold),
             ),
           ],
@@ -154,7 +154,7 @@ class _AdminShopScreenState extends State<AdminShopScreen> {
                           ),
                         ),
                         const SizedBox(width: 16),
-                        const Text('Limpiando productos sin imágenes...'),
+                        const Text('Limpiando productos sin imÃ¡genes...'),
                       ],
                     ),
                     duration: const Duration(seconds: 30),
@@ -187,8 +187,8 @@ class _AdminShopScreenState extends State<AdminShopScreen> {
                           Expanded(
                             child: Text(
                               deletedCount > 0
-                                  ? '✅ $deletedCount producto(s) eliminado(s)'
-                                  : '✨ No se encontraron productos sin imágenes',
+                                  ? 'âœ… $deletedCount producto(s) eliminado(s)'
+                                  : 'âœ¨ No se encontraron productos sin imÃ¡genes',
                             ),
                           ),
                         ],
@@ -276,10 +276,10 @@ class _AdminShopScreenState extends State<AdminShopScreen> {
         ),
         backgroundColor: ColorTokens.primary30,
         actions: [
-          // Botón para limpiar productos sin imágenes
+          // BotÃ³n para limpiar productos sin imÃ¡genes
           IconButton(
             icon: const Icon(Icons.cleaning_services, color: Colors.white),
-            tooltip: 'Limpiar productos sin imágenes',
+            tooltip: 'Limpiar productos sin imÃ¡genes',
             onPressed: () => _showCleanupDialog(context),
           ),
         ],
@@ -289,12 +289,12 @@ class _AdminShopScreenState extends State<AdminShopScreen> {
           final userProvider = context.watch<UserProvider>();
           final currentUser = userProvider.user;
 
-          // ⚠️ VALIDACIÓN DE PERMISOS: Solo admins pueden acceder
+          // âš ï¸ VALIDACIÃ“N DE PERMISOS: Solo admins pueden acceder
           if (currentUser == null) {
             return _buildAccessDenied(
               context,
-              'Sesión no iniciada',
-              'Debes iniciar sesión para acceder a esta sección.',
+              'SesiÃ³n no iniciada',
+              'Debes iniciar sesiÃ³n para acceder a esta secciÃ³n.',
               Icons.login,
             );
           }
@@ -315,7 +315,7 @@ class _AdminShopScreenState extends State<AdminShopScreen> {
               .where((p) => p.sellerId == currentUser.uid)
               .toList();
 
-          // Aplicar búsqueda
+          // Aplicar bÃºsqueda
           if (_searchQuery.isNotEmpty) {
             myProducts = myProducts.where((p) {
               return p.name.toLowerCase().contains(
@@ -620,13 +620,13 @@ class _ProductFormModalState extends State<ProductFormModal> {
   }
 
   Future<void> _pickImageFromCamera() async {
-    debugPrint('📸 Intentando abrir cámara...');
+    debugPrint('ðŸ“¸ Intentando abrir cÃ¡mara...');
     final image = await _mediaService.pickImageFromCamera();
     if (image != null) {
-      debugPrint('✅ Imagen capturada, subiendo...');
+      debugPrint('âœ… Imagen capturada, subiendo...');
       await _uploadImage(image);
     } else {
-      debugPrint('⚠️ No se capturó imagen');
+      debugPrint('âš ï¸ No se capturÃ³ imagen');
       if (mounted) {
         if (context.mounted)
           ScaffoldMessenger.of(context).showSnackBar(
@@ -640,17 +640,17 @@ class _ProductFormModalState extends State<ProductFormModal> {
   }
 
   Future<void> _pickImageFromGallery() async {
-    debugPrint('🖼️ Abriendo selector de imágenes...');
+    debugPrint('ðŸ–¼ï¸ Abriendo selector de imÃ¡genes...');
     try {
       final image = await _mediaService.pickImageFromGallery();
       if (image != null) {
-        debugPrint('✅ Imagen seleccionada: ${image.name}, subiendo...');
+        debugPrint('âœ… Imagen seleccionada: ${image.name}, subiendo...');
         await _uploadImage(image);
       } else {
-        debugPrint('⚠️ No se seleccionó ninguna imagen');
+        debugPrint('âš ï¸ No se seleccionÃ³ ninguna imagen');
       }
-    } catch (e) {
-      debugPrint('❌ Error en _pickImageFromGallery: $e');
+    } on FirebaseException catch (e) {
+      debugPrint('âŒ Error en _pickImageFromGallery: $e');
       if (mounted) {
         if (context.mounted)
           ScaffoldMessenger.of(context).showSnackBar(
@@ -664,27 +664,27 @@ class _ProductFormModalState extends State<ProductFormModal> {
   }
 
   Future<void> _pickMultipleImages() async {
-    debugPrint('🖼️ Abriendo selector múltiple...');
+    debugPrint('ðŸ–¼ï¸ Abriendo selector mÃºltiple...');
     try {
       final images = await _mediaService.pickMultipleImages();
-      debugPrint('📸 ${images.length} imágenes seleccionadas');
+      debugPrint('ðŸ“¸ ${images.length} imÃ¡genes seleccionadas');
 
       if (images.isEmpty) {
-        debugPrint('⚠️ No se seleccionaron imágenes');
+        debugPrint('âš ï¸ No se seleccionaron imÃ¡genes');
         return;
       }
 
       for (final image in images) {
-        debugPrint('📤 Subiendo ${image.name}...');
+        debugPrint('ðŸ“¤ Subiendo ${image.name}...');
         await _uploadImage(image);
       }
-    } catch (e) {
-      debugPrint('❌ Error en _pickMultipleImages: $e');
+    } on FirebaseException catch (e) {
+      debugPrint('âŒ Error en _pickMultipleImages: $e');
       if (mounted) {
         if (context.mounted)
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Text('Error al seleccionar imágenes: $e'),
+              content: Text('Error al seleccionar imÃ¡genes: $e'),
               backgroundColor: Colors.red,
             ),
           );
@@ -748,13 +748,13 @@ class _ProductFormModalState extends State<ProductFormModal> {
   }
 
   Future<void> _uploadVideo(XFile video) async {
-    // Validar duración
+    // Validar duraciÃ³n
     final isValid = await _mediaService.validateVideoDuration(video.path);
     if (!isValid) {
       if (context.mounted)
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content: Text('El video debe durar máximo 30 segundos'),
+            content: Text('El video debe durar mÃ¡ximo 30 segundos'),
             backgroundColor: Colors.red,
           ),
         );
@@ -819,7 +819,7 @@ class _ProductFormModalState extends State<ProductFormModal> {
       builder: (context) => SafeArea(
         child: Wrap(
           children: [
-            // 🌐 En WEB: Solo mostrar opciones de galería (cámara no funciona en web)
+            // ðŸŒ En WEB: Solo mostrar opciones de galerÃ­a (cÃ¡mara no funciona en web)
             if (!kIsWeb) ...[
               ListTile(
                 leading: const Icon(Icons.camera_alt, color: Colors.blue),
@@ -840,7 +840,7 @@ class _ProductFormModalState extends State<ProductFormModal> {
             ),
             ListTile(
               leading: const Icon(Icons.photo_library, color: Colors.purple),
-              title: const Text('Seleccionar múltiples imágenes'),
+              title: const Text('Seleccionar mÃºltiples imÃ¡genes'),
               onTap: () {
                 Navigator.pop(context);
                 _pickMultipleImages();
@@ -850,7 +850,7 @@ class _ProductFormModalState extends State<ProductFormModal> {
             if (!kIsWeb) ...[
               ListTile(
                 leading: const Icon(Icons.videocam, color: Colors.red),
-                title: const Text('Grabar video (máx 30s)'),
+                title: const Text('Grabar video (mÃ¡x 30s)'),
                 onTap: () {
                   Navigator.pop(context);
                   _pickVideoFromCamera();
@@ -872,7 +872,7 @@ class _ProductFormModalState extends State<ProductFormModal> {
   }
 
   Future<void> _verifyBikeNotStolen() async {
-    // Validar que se haya ingresado el número de serie
+    // Validar que se haya ingresado el nÃºmero de serie
     if (_bikeFrameSerialController.text.trim().isEmpty) {
       if (context.mounted)
         ScaffoldMessenger.of(context).showSnackBar(
@@ -883,7 +883,7 @@ class _ProductFormModalState extends State<ProductFormModal> {
                 const SizedBox(width: 12),
                 Expanded(
                   child: Text(
-                    'Debes ingresar el número de serie para verificar',
+                    'Debes ingresar el nÃºmero de serie para verificar',
                     style: TextStyle(fontWeight: FontWeight.w600),
                   ),
                 ),
@@ -903,13 +903,13 @@ class _ProductFormModalState extends State<ProductFormModal> {
 
     try {
       final l = Provider.of<LocaleNotifier>(context, listen: false);
-      // Crear instancia del servicio de verificación
+      // Crear instancia del servicio de verificaciÃ³n
       final bikeRepo = BikeRepositoryImpl();
       final verificationService = StolenBikeVerificationService(
         bikeRepository: bikeRepo,
       );
 
-      // Obtener información del usuario actual (vendedor)
+      // Obtener informaciÃ³n del usuario actual (vendedor)
       final currentUser = context.read<UserProvider>().user;
       final currentFirebaseUser = FirebaseAuth.instance.currentUser;
 
@@ -925,7 +925,7 @@ class _ProductFormModalState extends State<ProductFormModal> {
         color: _bikeColorController.text.trim().isEmpty
             ? null
             : _bikeColorController.text.trim(),
-        // 🚨 NUEVO: Pasar información del vendedor para notificaciones
+        // ðŸš¨ NUEVO: Pasar informaciÃ³n del vendedor para notificaciones
         sellerUid: currentFirebaseUser?.uid,
         sellerName:
             currentUser?.name ??
@@ -939,7 +939,7 @@ class _ProductFormModalState extends State<ProductFormModal> {
       });
 
       if (result.isStolen) {
-        // ⚠️ BICICLETA ROBADA DETECTADA
+        // âš ï¸ BICICLETA ROBADA DETECTADA
         showDialog(
           context: context,
           barrierDismissible: false,
@@ -955,7 +955,7 @@ class _ProductFormModalState extends State<ProductFormModal> {
                 const SizedBox(width: 12),
                 Expanded(
                   child: Text(
-                    '⚠️ ALERTA DE ROBO',
+                    'âš ï¸ ALERTA DE ROBO',
                     style: TextStyle(
                       color: ColorTokens.error50,
                       fontWeight: FontWeight.bold,
@@ -1039,7 +1039,7 @@ class _ProductFormModalState extends State<ProductFormModal> {
           ),
         );
       } else {
-        // ✅ Bicicleta verificada
+        // âœ… Bicicleta verificada
         if (context.mounted)
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
@@ -1060,7 +1060,7 @@ class _ProductFormModalState extends State<ProductFormModal> {
             ),
           );
       }
-    } catch (e) {
+    } on FirebaseException catch (e) {
       setState(() {
         _isVerifying = false;
         _verificationResult = null;
@@ -1080,7 +1080,7 @@ class _ProductFormModalState extends State<ProductFormModal> {
     final l = Provider.of<LocaleNotifier>(context, listen: false);
     if (!_formKey.currentState!.validate()) return;
 
-    // Validación obligatoria de imágenes
+    // ValidaciÃ³n obligatoria de imÃ¡genes
     if (_imageUrls.isEmpty) {
       if (context.mounted)
         ScaffoldMessenger.of(context).showSnackBar(
@@ -1091,7 +1091,7 @@ class _ProductFormModalState extends State<ProductFormModal> {
                 const SizedBox(width: 12),
                 Expanded(
                   child: Text(
-                    '¡Debes agregar al menos una foto del producto!',
+                    'Â¡Debes agregar al menos una foto del producto!',
                     style: TextStyle(fontWeight: FontWeight.w600, fontSize: 15),
                   ),
                 ),
@@ -1108,7 +1108,7 @@ class _ProductFormModalState extends State<ProductFormModal> {
       return;
     }
 
-    // Validación para bicicletas: deben estar verificadas
+    // ValidaciÃ³n para bicicletas: deben estar verificadas
     if (_isBicycle) {
       if (_bikeFrameSerialController.text.trim().isEmpty) {
         if (context.mounted)
@@ -1120,7 +1120,7 @@ class _ProductFormModalState extends State<ProductFormModal> {
                   const SizedBox(width: 12),
                   Expanded(
                     child: Text(
-                      '¡El número de serie es obligatorio para bicicletas!',
+                      'Â¡El nÃºmero de serie es obligatorio para bicicletas!',
                       style: TextStyle(
                         fontWeight: FontWeight.w600,
                         fontSize: 15,
@@ -1146,7 +1146,7 @@ class _ProductFormModalState extends State<ProductFormModal> {
                   const SizedBox(width: 12),
                   Expanded(
                     child: Text(
-                      '¡Debes verificar que la bicicleta NO esté reportada como robada!',
+                      'Â¡Debes verificar que la bicicleta NO estÃ© reportada como robada!',
                       style: TextStyle(
                         fontWeight: FontWeight.w600,
                         fontSize: 15,
@@ -1291,7 +1291,7 @@ class _ProductFormModalState extends State<ProductFormModal> {
               ),
               const SizedBox(height: 20),
 
-              // Título
+              // TÃ­tulo
               Text(
                 widget.product == null ? 'Crear Producto' : 'Editar Producto',
                 style: TextStyle(
@@ -1336,12 +1336,12 @@ class _ProductFormModalState extends State<ProductFormModal> {
               ),
               const SizedBox(height: 16),
 
-              // Descripción corta
+              // DescripciÃ³n corta
               TextFormField(
                 controller: _descriptionController,
                 style: TextStyle(color: ColorTokens.neutral20),
                 decoration: InputDecoration(
-                  labelText: 'Descripción corta *',
+                  labelText: 'DescripciÃ³n corta *',
                   labelStyle: TextStyle(color: ColorTokens.neutral60),
                   filled: true,
                   fillColor: ColorTokens.neutral100,
@@ -1364,19 +1364,19 @@ class _ProductFormModalState extends State<ProductFormModal> {
                 maxLines: 2,
                 validator: (value) {
                   if (value == null || value.isEmpty) {
-                    return 'Ingresa una descripción';
+                    return 'Ingresa una descripciÃ³n';
                   }
                   return null;
                 },
               ),
               const SizedBox(height: 16),
 
-              // Descripción larga
+              // DescripciÃ³n larga
               TextFormField(
                 controller: _longDescriptionController,
                 style: TextStyle(color: ColorTokens.neutral20),
                 decoration: InputDecoration(
-                  labelText: 'Descripción detallada (opcional)',
+                  labelText: 'DescripciÃ³n detallada (opcional)',
                   labelStyle: TextStyle(color: ColorTokens.neutral60),
                   hintText: l.t('description_hint'),
                   hintStyle: TextStyle(color: ColorTokens.neutral70),
@@ -1438,7 +1438,7 @@ class _ProductFormModalState extends State<ProductFormModal> {
                           return 'Ingresa el precio';
                         }
                         if (double.tryParse(value) == null) {
-                          return 'Precio inválido';
+                          return 'Precio invÃ¡lido';
                         }
                         return null;
                       },
@@ -1476,7 +1476,7 @@ class _ProductFormModalState extends State<ProductFormModal> {
                           return 'Ingresa el stock';
                         }
                         if (int.tryParse(value) == null) {
-                          return 'Stock inválido';
+                          return 'Stock invÃ¡lido';
                         }
                         return null;
                       },
@@ -1520,12 +1520,12 @@ class _ProductFormModalState extends State<ProductFormModal> {
               ),
               const SizedBox(height: 16),
 
-              // Categoría
+              // CategorÃ­a
               DropdownButtonFormField<String>(
                 initialValue: _selectedCategory,
                 style: TextStyle(color: ColorTokens.neutral20),
                 decoration: InputDecoration(
-                  labelText: 'Categoría *',
+                  labelText: 'CategorÃ­a *',
                   labelStyle: TextStyle(color: ColorTokens.neutral60),
                   filled: true,
                   fillColor: ColorTokens.neutral100,
@@ -1565,7 +1565,7 @@ class _ProductFormModalState extends State<ProductFormModal> {
               ),
               const SizedBox(height: 16),
 
-              // ============ SECCIÓN DE VERIFICACIÓN ANTI-ROBO ============
+              // ============ SECCIÃ“N DE VERIFICACIÃ“N ANTI-ROBO ============
               Container(
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
@@ -1608,7 +1608,7 @@ class _ProductFormModalState extends State<ProductFormModal> {
                     ),
                     const SizedBox(height: 12),
 
-                    // Checkbox: ¿Es una bicicleta completa?
+                    // Checkbox: Â¿Es una bicicleta completa?
                     CheckboxListTile(
                       value: _isBicycle,
                       onChanged: (value) {
@@ -1620,7 +1620,7 @@ class _ProductFormModalState extends State<ProductFormModal> {
                         });
                       },
                       title: Text(
-                        '¿Este producto es una bicicleta completa?',
+                        'Â¿Este producto es una bicicleta completa?',
                         style: TextStyle(
                           fontWeight: FontWeight.w600,
                           color: ColorTokens.neutral30,
@@ -1670,12 +1670,12 @@ class _ProductFormModalState extends State<ProductFormModal> {
                       ),
                       const SizedBox(height: 16),
 
-                      // Número de Serie (OBLIGATORIO)
+                      // NÃºmero de Serie (OBLIGATORIO)
                       TextFormField(
                         controller: _bikeFrameSerialController,
                         style: TextStyle(color: ColorTokens.neutral20),
                         decoration: InputDecoration(
-                          labelText: 'Número de Serie / Chasis *',
+                          labelText: 'NÃºmero de Serie / Chasis *',
                           labelStyle: TextStyle(color: ColorTokens.neutral60),
                           hintText: l.t('serial_hint'),
                           hintStyle: TextStyle(color: ColorTokens.neutral70),
@@ -1692,7 +1692,7 @@ class _ProductFormModalState extends State<ProductFormModal> {
                         validator: _isBicycle
                             ? (value) {
                                 if (value == null || value.trim().isEmpty) {
-                                  return 'Número de serie obligatorio para bicicletas';
+                                  return 'NÃºmero de serie obligatorio para bicicletas';
                                 }
                                 return null;
                               }
@@ -1759,12 +1759,12 @@ class _ProductFormModalState extends State<ProductFormModal> {
                       ),
                       const SizedBox(height: 12),
 
-                      // Año
+                      // AÃ±o
                       TextFormField(
                         controller: _bikeYearController,
                         style: TextStyle(color: ColorTokens.neutral20),
                         decoration: InputDecoration(
-                          labelText: 'Año (opcional)',
+                          labelText: 'AÃ±o (opcional)',
                           labelStyle: TextStyle(color: ColorTokens.neutral60),
                           hintText: '2024',
                           filled: true,
@@ -1777,7 +1777,7 @@ class _ProductFormModalState extends State<ProductFormModal> {
                       ),
                       const SizedBox(height: 16),
 
-                      // Botón de Verificación
+                      // BotÃ³n de VerificaciÃ³n
                       SizedBox(
                         width: double.infinity,
                         child: ElevatedButton.icon(
@@ -1804,9 +1804,9 @@ class _ProductFormModalState extends State<ProductFormModal> {
                             _isVerifying
                                 ? 'Verificando contra base de robos...'
                                 : _verificationResult == true
-                                ? '✓ Verificado: NO está robada'
+                                ? 'âœ“ Verificado: NO estÃ¡ robada'
                                 : _verificationResult == false
-                                ? '✗ ROBADA - No se puede publicar'
+                                ? 'âœ— ROBADA - No se puede publicar'
                                 : 'Verificar contra Base de Robos',
                             style: TextStyle(fontWeight: FontWeight.bold),
                           ),
@@ -1856,7 +1856,7 @@ class _ProductFormModalState extends State<ProductFormModal> {
                                 child: Text(
                                   _verificationResult == true
                                       ? 'Bicicleta verificada. Puede publicarse en la tienda.'
-                                      : 'Esta bicicleta está reportada como robada y NO puede publicarse.',
+                                      : 'Esta bicicleta estÃ¡ reportada como robada y NO puede publicarse.',
                                   style: TextStyle(
                                     fontSize: 13,
                                     fontWeight: FontWeight.w600,
@@ -1923,7 +1923,7 @@ class _ProductFormModalState extends State<ProductFormModal> {
               ),
               const SizedBox(height: 16),
 
-              // Título de sección de multimedia (obligatorio)
+              // TÃ­tulo de secciÃ³n de multimedia (obligatorio)
               Row(
                 children: [
                   Text(
@@ -1956,7 +1956,7 @@ class _ProductFormModalState extends State<ProductFormModal> {
               ),
               const SizedBox(height: 8),
 
-              // Botón agregar multimedia
+              // BotÃ³n agregar multimedia
               OutlinedButton.icon(
                 onPressed: _isUploading ? null : _showMediaOptions,
                 icon: Icon(
@@ -1968,7 +1968,7 @@ class _ProductFormModalState extends State<ProductFormModal> {
                 label: Text(
                   _imageUrls.isEmpty
                       ? 'Agregar Fotos (Requerido)'
-                      : 'Agregar Más Fotos/Video',
+                      : 'Agregar MÃ¡s Fotos/Video',
                   style: TextStyle(
                     color: _imageUrls.isEmpty
                         ? ColorTokens.error50
@@ -2011,10 +2011,10 @@ class _ProductFormModalState extends State<ProductFormModal> {
 
               const SizedBox(height: 16),
 
-              // Lista de imágenes
+              // Lista de imÃ¡genes
               if (_imageUrls.isNotEmpty) ...[
                 Text(
-                  'Imágenes',
+                  'ImÃ¡genes',
                   style: TextStyle(
                     fontWeight: FontWeight.w600,
                     color: ColorTokens.neutral30,
@@ -2194,3 +2194,4 @@ class _ProductFormModalState extends State<ProductFormModal> {
     );
   }
 }
+

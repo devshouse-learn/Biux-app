@@ -1,11 +1,11 @@
-import 'dart:io';
+﻿import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:video_player/video_player.dart';
 import 'package:biux/core/design_system/color_tokens.dart';
 import 'package:biux/core/design_system/locale_notifier.dart';
 
-/// Diálogo para previsualizar videos antes de agregarlos
+/// DiÃ¡logo para previsualizar videos antes de agregarlos
 class VideoPreviewDialog extends StatefulWidget {
   final File videoFile;
   final String? title;
@@ -52,7 +52,7 @@ class _VideoPreviewDialogState extends State<VideoPreviewDialog> {
         _controller.play();
         _controller.setLooping(true);
       }
-    } catch (e) {
+    } on Exception catch (e) {
       if (mounted) {
         setState(() {
           _hasError = true;
@@ -128,7 +128,7 @@ class _VideoPreviewDialogState extends State<VideoPreviewDialog> {
               ),
             ),
 
-            // Controls y información del video
+            // Controls y informaciÃ³n del video
             if (_isInitialized) _buildVideoInfo(),
 
             // Action buttons
@@ -316,7 +316,7 @@ class _VideoPreviewDialogState extends State<VideoPreviewDialog> {
   }
 }
 
-/// Función helper para mostrar el diálogo de vista previa
+/// FunciÃ³n helper para mostrar el diÃ¡logo de vista previa
 Future<bool?> showVideoPreviewDialog({
   required BuildContext context,
   required File videoFile,
@@ -333,3 +333,4 @@ Future<bool?> showVideoPreviewDialog({
     ),
   );
 }
+

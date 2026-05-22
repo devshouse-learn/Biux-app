@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -130,7 +130,7 @@ class _ActivityCommentsScreenState extends State<ActivityCommentsScreen> {
           _isLoading = false;
         });
       }
-    } catch (e) {
+    } on FirebaseException catch (e) {
       developer.log(
         'Error general en comentarios: $e',
         name: 'ActivityComments',
@@ -348,7 +348,7 @@ class _ActivityCommentsScreenState extends State<ActivityCommentsScreen> {
 
   String _formatTimeAgo(DateTime date) {
     final diff = DateTime.now().difference(date);
-    if (diff.inDays > 365) return 'Hace ${diff.inDays ~/ 365} año(s)';
+    if (diff.inDays > 365) return 'Hace ${diff.inDays ~/ 365} aÃ±o(s)';
     if (diff.inDays > 30) return 'Hace ${diff.inDays ~/ 30} mes(es)';
     if (diff.inDays > 0) return 'Hace ${diff.inDays}d';
     if (diff.inHours > 0) return 'Hace ${diff.inHours}h';
@@ -380,3 +380,4 @@ class _CommentItem {
     this.postAuthorId,
   });
 }
+

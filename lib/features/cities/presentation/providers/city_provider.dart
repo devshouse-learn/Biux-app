@@ -1,4 +1,4 @@
-import 'dart:convert';
+﻿import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -10,7 +10,7 @@ class CityProvider extends ChangeNotifier {
   final CityRepository _repository = CityRepository();
   static const String _cacheKey = 'cached_cities';
   static const String _cacheTimeKey = 'cities_cache_time';
-  static const int _cacheValidityHours = 24; // Caché válido por 24 horas
+  static const int _cacheValidityHours = 24; // CachÃ© vÃ¡lido por 24 horas
 
   List<CityModel> _cities = [];
   CityModel? _selectedCity;
@@ -23,7 +23,7 @@ class CityProvider extends ChangeNotifier {
   bool get isLoading => _isLoading;
   String? get error => _error;
 
-  // Cargar ciudades con sistema de caché
+  // Cargar ciudades con sistema de cachÃ©
   Future<void> loadCities({bool forceRefresh = false}) async {
     if (_isLoading) return;
 
@@ -31,31 +31,31 @@ class CityProvider extends ChangeNotifier {
     _clearError();
 
     try {
-      // Intentar cargar desde caché primero
+      // Intentar cargar desde cachÃ© primero
       if (!forceRefresh) {
         final cachedCities = await _loadFromCache();
         if (cachedCities.isNotEmpty) {
           _cities = cachedCities;
           _setLoading(false);
-          debugPrint('✅ Ciudades cargadas desde caché: ${_cities.length}');
+          debugPrint('âœ… Ciudades cargadas desde cachÃ©: ${_cities.length}');
           return;
         }
       }
 
-      // Si no hay caché válido, cargar desde Firestore
-      debugPrint('🔄 Cargando ciudades desde Firestore...');
+      // Si no hay cachÃ© vÃ¡lido, cargar desde Firestore
+      debugPrint('ðŸ”„ Cargando ciudades desde Firestore...');
       final cities = await _repository.getCities();
 
       if (cities.isNotEmpty) {
         _cities = cities;
         await _saveToCache(cities);
-        debugPrint('✅ Ciudades cargadas desde Firestore: ${_cities.length}');
+        debugPrint('âœ… Ciudades cargadas desde Firestore: ${_cities.length}');
       } else {
         _setError('No se pudieron cargar las ciudades');
       }
-    } catch (e) {
+    } on Exception catch (e) {
       _setError('Error al cargar ciudades: ${e.toString()}');
-      debugPrint('❌ Error cargando ciudades: $e');
+      debugPrint('âŒ Error cargando ciudades: $e');
     }
 
     _setLoading(false);
@@ -67,14 +67,14 @@ class CityProvider extends ChangeNotifier {
       // Verificar si ya existen ciudades en Firestore
       final exist = await _repository.citiesExist();
       if (!exist) {
-        debugPrint('🏙️ Creando ciudades iniciales...');
+        debugPrint('ðŸ™ï¸ Creando ciudades iniciales...');
         await _createInitialCities();
       }
 
       // Cargar ciudades
       await loadCities();
-    } catch (e) {
-      debugPrint('❌ Error inicializando ciudades: $e');
+    } on Exception catch (e) {
+      debugPrint('âŒ Error inicializando ciudades: $e');
       _setError('Error al inicializar ciudades');
     }
   }
@@ -84,21 +84,21 @@ class CityProvider extends ChangeNotifier {
     final initialCities = [
       CityModel(
         id: '',
-        name: 'Ibagué',
+        name: 'IbaguÃ©',
         department: 'Tolima',
         isCapital: true,
         priority: 0, // Siempre primera
       ),
       CityModel(
         id: '',
-        name: 'Bogotá',
+        name: 'BogotÃ¡',
         department: 'Cundinamarca',
         isCapital: true,
         priority: 1,
       ),
       CityModel(
         id: '',
-        name: 'Medellín',
+        name: 'MedellÃ­n',
         department: 'Antioquia',
         isCapital: true,
         priority: 2,
@@ -113,14 +113,14 @@ class CityProvider extends ChangeNotifier {
       CityModel(
         id: '',
         name: 'Barranquilla',
-        department: 'Atlántico',
+        department: 'AtlÃ¡ntico',
         isCapital: true,
         priority: 4,
       ),
       CityModel(
         id: '',
         name: 'Cartagena',
-        department: 'Bolívar',
+        department: 'BolÃ­var',
         isCapital: true,
         priority: 5,
       ),
@@ -148,7 +148,7 @@ class CityProvider extends ChangeNotifier {
       CityModel(
         id: '',
         name: 'Armenia',
-        department: 'Quindío',
+        department: 'QuindÃ­o',
         isCapital: true,
         priority: 9,
       ),
@@ -156,20 +156,20 @@ class CityProvider extends ChangeNotifier {
 
     final success = await _repository.createCities(initialCities);
     if (success) {
-      debugPrint('✅ Ciudades iniciales creadas exitosamente');
+      debugPrint('âœ… Ciudades iniciales creadas exitosamente');
     } else {
       throw Exception('Error creando ciudades iniciales');
     }
   }
 
-  // Cargar ciudades desde caché local
+  // Cargar ciudades desde cachÃ© local
   Future<List<CityModel>> _loadFromCache() async {
     try {
       final prefs = await SharedPreferences.getInstance();
       final cacheTime = prefs.getInt(_cacheTimeKey) ?? 0;
       final currentTime = DateTime.now().millisecondsSinceEpoch;
 
-      // Verificar si el caché es válido (menos de 24 horas)
+      // Verificar si el cachÃ© es vÃ¡lido (menos de 24 horas)
       if (currentTime - cacheTime < (_cacheValidityHours * 60 * 60 * 1000)) {
         final cachedData = prefs.getString(_cacheKey);
         if (cachedData != null) {
@@ -186,13 +186,13 @@ class CityProvider extends ChangeNotifier {
       }
 
       return [];
-    } catch (e) {
-      debugPrint('❌ Error cargando caché de ciudades: $e');
+    } on Exception catch (e) {
+      debugPrint('âŒ Error cargando cachÃ© de ciudades: $e');
       return [];
     }
   }
 
-  // Guardar ciudades en caché local
+  // Guardar ciudades en cachÃ© local
   Future<void> _saveToCache(List<CityModel> cities) async {
     try {
       final prefs = await SharedPreferences.getInstance();
@@ -203,9 +203,9 @@ class CityProvider extends ChangeNotifier {
       await prefs.setString(_cacheKey, json.encode(jsonList));
       await prefs.setInt(_cacheTimeKey, DateTime.now().millisecondsSinceEpoch);
 
-      debugPrint('💾 Ciudades guardadas en caché');
-    } catch (e) {
-      debugPrint('❌ Error guardando caché de ciudades: $e');
+      debugPrint('ðŸ’¾ Ciudades guardadas en cachÃ©');
+    } on Exception catch (e) {
+      debugPrint('âŒ Error guardando cachÃ© de ciudades: $e');
     }
   }
 
@@ -215,19 +215,19 @@ class CityProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  // Limpiar caché
+  // Limpiar cachÃ©
   Future<void> clearCache() async {
     try {
       final prefs = await SharedPreferences.getInstance();
       await prefs.remove(_cacheKey);
       await prefs.remove(_cacheTimeKey);
-      debugPrint('🗑️ Caché de ciudades limpiado');
-    } catch (e) {
-      debugPrint('❌ Error limpiando caché: $e');
+      debugPrint('ðŸ—‘ï¸ CachÃ© de ciudades limpiado');
+    } on Exception catch (e) {
+      debugPrint('âŒ Error limpiando cachÃ©: $e');
     }
   }
 
-  // Métodos privados
+  // MÃ©todos privados
   void _setLoading(bool loading) {
     _isLoading = loading;
     notifyListeners();
@@ -243,3 +243,4 @@ class CityProvider extends ChangeNotifier {
     notifyListeners();
   }
 }
+

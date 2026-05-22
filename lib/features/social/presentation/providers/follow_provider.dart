@@ -1,4 +1,4 @@
-import 'package:flutter/foundation.dart';
+﻿import 'package:flutter/foundation.dart';
 import 'package:biux/features/social/data/datasources/follow_datasource.dart';
 
 class FollowProvider extends ChangeNotifier {
@@ -42,7 +42,7 @@ class FollowProvider extends ChangeNotifier {
       } else {
         await _ds.followUser(currentUid, targetUid);
       }
-    } catch (e) {
+    } on Exception catch (e) {
       // Revert on error
       _followingCache[targetUid] = wasFollowing;
       if (wasFollowing) {
@@ -61,7 +61,7 @@ class FollowProvider extends ChangeNotifier {
     try {
       _followersList = await _ds.getFollowers(uid);
       _followersCount = _followersList.length;
-    } catch (e) {
+    } on Exception catch (e) {
       debugPrint('Error loading followers: $e');
     }
     _loading = false;
@@ -74,10 +74,11 @@ class FollowProvider extends ChangeNotifier {
     try {
       _followingList = await _ds.getFollowing(uid);
       _followingCount = _followingList.length;
-    } catch (e) {
+    } on Exception catch (e) {
       debugPrint('Error loading following: $e');
     }
     _loading = false;
     notifyListeners();
   }
 }
+

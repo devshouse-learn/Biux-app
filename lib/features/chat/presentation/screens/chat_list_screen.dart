@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -44,7 +44,7 @@ class _ChatListScreenState extends State<ChatListScreen>
   }
 
   Future<void> _initChat() async {
-    // Esperar a que Firebase Auth tenga usuario si aún no lo tiene
+    // Esperar a que Firebase Auth tenga usuario si aÃºn no lo tiene
     var uid = FirebaseAuth.instance.currentUser?.uid;
     if (uid == null || uid.isEmpty) {
       // Esperar al primer evento de auth
@@ -393,25 +393,25 @@ class _ChatListScreenState extends State<ChatListScreen>
                               lastMsgRaw['content'] as String? ?? '';
                           switch (type) {
                             case 'voice':
-                              lastMsg = '🎤 Audio';
+                              lastMsg = 'ðŸŽ¤ Audio';
                               break;
                             case 'image':
-                              lastMsg = '📷 Imagen';
+                              lastMsg = 'ðŸ“· Imagen';
                               break;
                             case 'video':
-                              lastMsg = '🎬 Video';
+                              lastMsg = 'ðŸŽ¬ Video';
                               break;
                             case 'location':
-                              lastMsg = '📍 Ubicación';
+                              lastMsg = 'ðŸ“ UbicaciÃ³n';
                               break;
                             case 'gif':
-                              lastMsg = '🎞️ GIF';
+                              lastMsg = 'ðŸŽžï¸ GIF';
                               break;
                             case 'file':
-                              lastMsg = '📎 Archivo';
+                              lastMsg = 'ðŸ“Ž Archivo';
                               break;
                             case 'deleted':
-                              lastMsg = '🚫 Mensaje eliminado';
+                              lastMsg = 'ðŸš« Mensaje eliminado';
                               break;
                             default:
                               lastMsg = content;
@@ -433,7 +433,7 @@ class _ChatListScreenState extends State<ChatListScreen>
                               ? Future.value({})
                               : _getUserData(otherUid),
                           builder: (context, userSnap) {
-                            // No renderizar hasta que la data del usuario esté lista
+                            // No renderizar hasta que la data del usuario estÃ© lista
                             if (!isGroup &&
                                 userSnap.connectionState !=
                                     ConnectionState.done) {
@@ -548,7 +548,7 @@ class _ChatListScreenState extends State<ChatListScreen>
                                                 Expanded(
                                                   child: Text(
                                                     lastMsg.isEmpty
-                                                        ? 'Sin mensajes aún'
+                                                        ? 'Sin mensajes aÃºn'
                                                         : lastMsg,
                                                     maxLines: 1,
                                                     overflow:
@@ -1030,7 +1030,7 @@ class _ChatListScreenState extends State<ChatListScreen>
           ),
         );
       }
-    } catch (e) {
+    } on FirebaseException catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
@@ -1042,3 +1042,4 @@ class _ChatListScreenState extends State<ChatListScreen>
     }
   }
 }
+

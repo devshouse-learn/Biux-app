@@ -1,18 +1,18 @@
-import 'dart:async';
+﻿import 'dart:async';
 import 'dart:io';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:biux/core/services/image_compression_service.dart';
 
 /// Servicio optimizado para Firebase Storage que reduce costos significativamente
-/// - Comprime imágenes antes de subir
-/// - Usa CDN de Firebase automáticamente
-/// - Implementa estrategias de caché inteligente
+/// - Comprime imÃ¡genes antes de subir
+/// - Usa CDN de Firebase automÃ¡ticamente
+/// - Implementa estrategias de cachÃ© inteligente
 /// - Optimiza metadatos para reducir transferencias
 class OptimizedStorageService {
   static final FirebaseStorage _storage = FirebaseStorage.instance;
 
-  /// Sube imagen de usuario con compresión optimizada
+  /// Sube imagen de usuario con compresiÃ³n optimizada
   /// Esto puede reducir los costos de almacenamiento hasta en 80%
   static Future<String?> uploadUserImage({
     required String userId,
@@ -21,7 +21,7 @@ class OptimizedStorageService {
     VoidCallback? onProgress,
   }) async {
     try {
-      // Comprimir según el tipo de imagen
+      // Comprimir segÃºn el tipo de imagen
       File? compressedFile;
       switch (imageType) {
         case 'avatar':
@@ -52,10 +52,10 @@ class OptimizedStorageService {
       final fileName = '${imageType}_${timestamp}.jpg';
       final ref = _storage.ref().child('users/$userId/images/$fileName');
 
-      // Configurar metadatos para optimizar CDN y caché
+      // Configurar metadatos para optimizar CDN y cachÃ©
       final metadata = SettableMetadata(
         contentType: 'image/jpeg',
-        cacheControl: 'public, max-age=31536000', // 1 año de caché
+        cacheControl: 'public, max-age=31536000', // 1 aÃ±o de cachÃ©
         customMetadata: {
           'compressed': 'true',
           'originalSize': '${await imageFile.length()}',
@@ -87,13 +87,13 @@ class OptimizedStorageService {
 
       // Retornar URL optimizada para CDN
       return _optimizeCdnUrl(downloadUrl);
-    } catch (e) {
+    } on FirebaseException catch (e) {
       debugPrint('Error subiendo imagen de usuario: $e');
       return null;
     }
   }
 
-  /// Sube imagen de grupo con compresión y múltiples tamaños
+  /// Sube imagen de grupo con compresiÃ³n y mÃºltiples tamaÃ±os
   static Future<Map<String, String>?> uploadGroupImage({
     required String groupId,
     required File imageFile,
@@ -147,13 +147,13 @@ class OptimizedStorageService {
       await _cleanupTempFiles([compressedFile, thumbnailFile]);
 
       return results;
-    } catch (e) {
+    } on FirebaseException catch (e) {
       debugPrint('Error subiendo imagen de grupo: $e');
       return null;
     }
   }
 
-  /// Sube imagen de rodada con optimización máxima
+  /// Sube imagen de rodada con optimizaciÃ³n mÃ¡xima
   static Future<String?> uploadRideImage({
     required String rideId,
     required File imageFile,
@@ -171,7 +171,7 @@ class OptimizedStorageService {
 
       final metadata = SettableMetadata(
         contentType: 'image/jpeg',
-        cacheControl: 'public, max-age=2592000', // 30 días para rodadas
+        cacheControl: 'public, max-age=2592000', // 30 dÃ­as para rodadas
         customMetadata: {
           'compressed': 'true',
           'rideId': rideId,
@@ -185,20 +185,20 @@ class OptimizedStorageService {
 
       await _cleanupTempFiles([compressedFile]);
       return _optimizeCdnUrl(downloadUrl);
-    } catch (e) {
+    } on FirebaseException catch (e) {
       debugPrint('Error subiendo imagen de rodada: $e');
       return null;
     }
   }
 
-  /// Sube historia con compresión extrema (duración temporal)
+  /// Sube historia con compresiÃ³n extrema (duraciÃ³n temporal)
   static Future<String?> uploadStoryImage({
     required String userId,
     required File imageFile,
     VoidCallback? onProgress,
   }) async {
     try {
-      // Compresión más agresiva para historias (temporales)
+      // CompresiÃ³n mÃ¡s agresiva para historias (temporales)
       final compressedFile = await ImageCompressionService.compressThumbnail(
         imageFile,
       );
@@ -226,13 +226,13 @@ class OptimizedStorageService {
 
       await _cleanupTempFiles([compressedFile]);
       return _optimizeCdnUrl(downloadUrl);
-    } catch (e) {
+    } on FirebaseException catch (e) {
       debugPrint('Error subiendo historia: $e');
       return null;
     }
   }
 
-  /// Sube imagen de bicicleta con compresión optimizada
+  /// Sube imagen de bicicleta con compresiÃ³n optimizada
   static Future<String?> uploadBikeImage({
     required String userId,
     required String bikeId,
@@ -241,7 +241,7 @@ class OptimizedStorageService {
     VoidCallback? onProgress,
   }) async {
     try {
-      // Comprimir según el tipo de imagen
+      // Comprimir segÃºn el tipo de imagen
       File? compressedFile;
       if (imageType == 'main') {
         // Foto principal: alta calidad
@@ -249,7 +249,7 @@ class OptimizedStorageService {
           imageFile,
         );
       } else if (imageType == 'serial') {
-        // Foto del número de serie: priorizar nitidez
+        // Foto del nÃºmero de serie: priorizar nitidez
         compressedFile = await ImageCompressionService.compressImageFile(
           imageFile,
         );
@@ -259,7 +259,7 @@ class OptimizedStorageService {
           imageFile,
         );
       } else {
-        // Fotos adicionales: compresión estándar
+        // Fotos adicionales: compresiÃ³n estÃ¡ndar
         compressedFile = await ImageCompressionService.compressImageFile(
           imageFile,
         );
@@ -274,7 +274,7 @@ class OptimizedStorageService {
       final metadata = SettableMetadata(
         contentType: 'image/jpeg',
         cacheControl:
-            'public, max-age=31536000', // 1 año de caché (datos permanentes)
+            'public, max-age=31536000', // 1 aÃ±o de cachÃ© (datos permanentes)
         customMetadata: {
           'compressed': 'true',
           'userId': userId,
@@ -300,23 +300,23 @@ class OptimizedStorageService {
 
       await _cleanupTempFiles([compressedFile]);
       return _optimizeCdnUrl(downloadUrl);
-    } catch (e) {
+    } on FirebaseException catch (e) {
       debugPrint('Error subiendo imagen de bicicleta: $e');
       return null;
     }
   }
 
-  /// Optimiza URL para usar CDN de Firebase de manera más eficiente
+  /// Optimiza URL para usar CDN de Firebase de manera mÃ¡s eficiente
   static String _optimizeCdnUrl(String originalUrl) {
-    // Firebase Storage automáticamente usa CDN, pero podemos optimizar
-    // agregando parámetros para caché y compresión adicional
+    // Firebase Storage automÃ¡ticamente usa CDN, pero podemos optimizar
+    // agregando parÃ¡metros para cachÃ© y compresiÃ³n adicional
     if (originalUrl.contains('firebasestorage.googleapis.com')) {
       return '$originalUrl&alt=media'; // Optimiza transferencia
     }
     return originalUrl;
   }
 
-  /// Genera URLs optimizadas con parámetros de transformación
+  /// Genera URLs optimizadas con parÃ¡metros de transformaciÃ³n
   static String getOptimizedImageUrl(
     String baseUrl, {
     int? maxWidth,
@@ -326,7 +326,7 @@ class OptimizedStorageService {
     final uri = Uri.parse(baseUrl);
     final params = Map<String, String>.from(uri.queryParameters);
 
-    // Agregar parámetros de optimización si están disponibles
+    // Agregar parÃ¡metros de optimizaciÃ³n si estÃ¡n disponibles
     if (maxWidth != null) params['w'] = maxWidth.toString();
     if (maxHeight != null) params['h'] = maxHeight.toString();
     if (quality != null) params['q'] = quality.toString();
@@ -334,13 +334,13 @@ class OptimizedStorageService {
     return uri.replace(queryParameters: params).toString();
   }
 
-  /// Elimina imágenes para liberar espacio y reducir costos
+  /// Elimina imÃ¡genes para liberar espacio y reducir costos
   static Future<bool> deleteImage(String imageUrl) async {
     try {
       final ref = _storage.refFromURL(imageUrl);
       await ref.delete();
       return true;
-    } catch (e) {
+    } on FirebaseException catch (e) {
       debugPrint('Error eliminando imagen: $e');
       return false;
     }
@@ -353,13 +353,13 @@ class OptimizedStorageService {
         if (await file.exists()) {
           await file.delete();
         }
-      } catch (e) {
+      } on FirebaseException catch (e) {
         debugPrint('Error limpiando archivo temporal: $e');
       }
     }
   }
 
-  /// Obtiene estadísticas de almacenamiento para monitorear costos
+  /// Obtiene estadÃ­sticas de almacenamiento para monitorear costos
   static Future<Map<String, dynamic>> getStorageStats(String userId) async {
     try {
       final userRef = _storage.ref().child('users/$userId');
@@ -379,13 +379,13 @@ class OptimizedStorageService {
         'totalSizeMB': (totalSize / (1024 * 1024)).toStringAsFixed(2),
         'estimatedMonthlyCost': _calculateEstimatedCost(totalSize),
       };
-    } catch (e) {
-      debugPrint('Error obteniendo estadísticas: $e');
+    } on FirebaseException catch (e) {
+      debugPrint('Error obteniendo estadÃ­sticas: $e');
       return {};
     }
   }
 
-  /// Sube contenido de experiencias (imágenes y videos) con optimización específica
+  /// Sube contenido de experiencias (imÃ¡genes y videos) con optimizaciÃ³n especÃ­fica
   static Future<Map<String, String>?> uploadExperienceMedia({
     required String userId,
     required File mediaFile,
@@ -399,7 +399,7 @@ class OptimizedStorageService {
       final results = <String, String>{};
 
       if (mediaType == 'image') {
-        // Para imágenes: compresión optimizada para experiencias
+        // Para imÃ¡genes: compresiÃ³n optimizada para experiencias
         final compressedFile = await ImageCompressionService.compressImageFile(
           mediaFile,
         );
@@ -413,13 +413,13 @@ class OptimizedStorageService {
         final metadata = SettableMetadata(
           contentType: 'image/jpeg',
           cacheControl: experienceType == 'ride'
-              ? 'public, max-age=2592000' // 30 días para rodadas
-              : 'public, max-age=604800', // 7 días para experiencias normales
+              ? 'public, max-age=2592000' // 30 dÃ­as para rodadas
+              : 'public, max-age=604800', // 7 dÃ­as para experiencias normales
           customMetadata: {
             'compressed': 'true',
             'mediaType': 'image',
             'experienceType': experienceType,
-            'duration': '15', // 15 segundos por defecto para imágenes
+            'duration': '15', // 15 segundos por defecto para imÃ¡genes
             'userId': userId,
             'experienceId': experienceId ?? '',
           },
@@ -444,12 +444,12 @@ class OptimizedStorageService {
         final metadata = SettableMetadata(
           contentType: 'video/mp4',
           cacheControl: experienceType == 'ride'
-              ? 'public, max-age=2592000' // 30 días para rodadas
-              : 'public, max-age=604800', // 7 días para experiencias normales
+              ? 'public, max-age=2592000' // 30 dÃ­as para rodadas
+              : 'public, max-age=604800', // 7 dÃ­as para experiencias normales
           customMetadata: {
             'mediaType': 'video',
             'experienceType': experienceType,
-            'maxDuration': '30', // 30 segundos máximo
+            'maxDuration': '30', // 30 segundos mÃ¡ximo
             'userId': userId,
             'experienceId': experienceId ?? '',
           },
@@ -471,17 +471,17 @@ class OptimizedStorageService {
 
         results['url'] = _optimizeCdnUrl(downloadUrl);
         results['type'] = 'video';
-        results['duration'] = '30'; // Por defecto, se puede ajustar después
+        results['duration'] = '30'; // Por defecto, se puede ajustar despuÃ©s
       }
 
       return results;
-    } catch (e) {
+    } on FirebaseException catch (e) {
       debugPrint('Error subiendo contenido de experiencia: $e');
       return null;
     }
   }
 
-  /// Mueve una imagen temporal a su ubicación final
+  /// Mueve una imagen temporal a su ubicaciÃ³n final
   static Future<String?> moveTemporaryRideImage({
     required String tempImageUrl,
     required String rideId,
@@ -494,14 +494,14 @@ class OptimizedStorageService {
       final tempData = await tempRef.getData();
       if (tempData == null) return null;
 
-      // Crear nueva referencia en la ubicación correcta
+      // Crear nueva referencia en la ubicaciÃ³n correcta
       final timestamp = DateTime.now().millisecondsSinceEpoch;
       final fileName = 'ride_${timestamp}.jpg';
       final newRef = _storage.ref().child('rides/$rideId/images/$fileName');
 
       final metadata = SettableMetadata(
         contentType: 'image/jpeg',
-        cacheControl: 'public, max-age=2592000', // 30 días para rodadas
+        cacheControl: 'public, max-age=2592000', // 30 dÃ­as para rodadas
         customMetadata: {
           'compressed': 'true',
           'rideId': rideId,
@@ -510,7 +510,7 @@ class OptimizedStorageService {
         },
       );
 
-      // Subir a la nueva ubicación
+      // Subir a la nueva ubicaciÃ³n
       final uploadTask = newRef.putData(tempData, metadata);
       final snapshot = await uploadTask;
       final newDownloadUrl = await snapshot.ref.getDownloadURL();
@@ -518,12 +518,12 @@ class OptimizedStorageService {
       // Eliminar la imagen temporal
       try {
         await tempRef.delete();
-      } catch (e) {
+      } on FirebaseException catch (e) {
         debugPrint('Advertencia: No se pudo eliminar imagen temporal: $e');
       }
 
       return _optimizeCdnUrl(newDownloadUrl);
-    } catch (e) {
+    } on FirebaseException catch (e) {
       debugPrint('Error moviendo imagen temporal: $e');
       return null;
     }
@@ -537,3 +537,4 @@ class OptimizedStorageService {
     return gb * costPerGBPerMonth;
   }
 }
+

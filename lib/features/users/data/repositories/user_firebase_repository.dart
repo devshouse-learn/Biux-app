@@ -1,4 +1,4 @@
-import 'dart:async';
+﻿import 'dart:async';
 import 'package:biux/core/config/strings.dart';
 import 'package:biux/core/models/common/response.dart';
 import 'package:biux/features/members/data/models/user_membership.dart';
@@ -25,7 +25,7 @@ class UserFirebaseRepository extends UserRepositoryAbstract {
           .where('id', isEqualTo: userMembership.id)
           .get();
       return UserMembership.fromJsonMap(response.docs.first.data());
-    } catch (e) {
+    } on FirebaseException catch (e) {
       return UserMembership();
     }
   }
@@ -40,7 +40,7 @@ class UserFirebaseRepository extends UserRepositoryAbstract {
       return result.docs
           .map((e) => UserMembership.fromJsonMap(e.data()))
           .toList();
-    } catch (e) {
+    } on FirebaseException catch (e) {
       return List.empty();
     }
   }
@@ -54,7 +54,7 @@ class UserFirebaseRepository extends UserRepositoryAbstract {
           .where('userId', isEqualTo: id)
           .get();
       return UserMembership.fromJsonMap(result.docs.first.data());
-    } catch (e) {
+    } on FirebaseException catch (e) {
       return UserMembership();
     }
   }
@@ -67,7 +67,7 @@ class UserFirebaseRepository extends UserRepositoryAbstract {
           .where('user', isEqualTo: nUsername)
           .get();
       return BiuxUser.fromJsonMap(result.docs.first.data());
-    } catch (e) {
+    } on FirebaseException catch (e) {
       return BiuxUser();
     }
   }
@@ -80,7 +80,7 @@ class UserFirebaseRepository extends UserRepositoryAbstract {
           .where('userName', isEqualTo: username)
           .get();
       return BiuxUser.fromJsonMap(result.docs.first.data());
-    } catch (e) {
+    } on FirebaseException catch (e) {
       return BiuxUser();
     }
   }
@@ -92,7 +92,7 @@ class UserFirebaseRepository extends UserRepositoryAbstract {
           .where('id', isEqualTo: id)
           .get();
       return BiuxUser.fromJsonMap(result.docs.first.data());
-    } catch (e) {
+    } on FirebaseException catch (e) {
       return BiuxUser();
     }
   }
@@ -105,7 +105,7 @@ class UserFirebaseRepository extends UserRepositoryAbstract {
           .where('stateMembership', isEqualTo: true)
           .get();
       return result.docs.map((e) => BiuxUser.fromJsonMap(e.data())).toList();
-    } catch (e) {
+    } on FirebaseException catch (e) {
       return List.empty();
     }
   }
@@ -115,7 +115,7 @@ class UserFirebaseRepository extends UserRepositoryAbstract {
     try {
       final result = await firestore.collection(collection).get();
       return result.docs.map((e) => BiuxUser.fromJsonMap(e.data())).toList();
-    } catch (e) {
+    } on FirebaseException catch (e) {
       return List.empty();
     }
   }
@@ -128,7 +128,7 @@ class UserFirebaseRepository extends UserRepositoryAbstract {
           .where('email', isEqualTo: email)
           .get();
       return BiuxUser.fromJsonMap(result.docs.first.data());
-    } catch (e) {
+    } on FirebaseException catch (e) {
       return BiuxUser();
     }
   }
@@ -141,7 +141,7 @@ class UserFirebaseRepository extends UserRepositoryAbstract {
           .where('facebook', isEqualTo: facebook)
           .get();
       return BiuxUser.fromJsonMap(result.docs.first.data());
-    } catch (e) {
+    } on FirebaseException catch (e) {
       return BiuxUser();
     }
   }
@@ -158,7 +158,7 @@ class UserFirebaseRepository extends UserRepositoryAbstract {
       } else {
         return true;
       }
-    } catch (e) {
+    } on FirebaseException catch (e) {
       return false;
     }
   }
@@ -200,12 +200,12 @@ class UserFirebaseRepository extends UserRepositoryAbstract {
   @override
   Future<BiuxUser> updateUser(BiuxUser user) async {
     try {
-      debugPrint('📝 Guardando datos en Firestore:');
+      debugPrint('ðŸ“ Guardando datos en Firestore:');
       debugPrint('   - ID: ${user.id}');
       debugPrint('   - Nombre: ${user.fullName}');
-      debugPrint('   - Teléfono: ${user.whatsapp}');
+      debugPrint('   - TelÃ©fono: ${user.whatsapp}');
       debugPrint('   - Ciudad: ${user.cityId.name}');
-      debugPrint('   - Descripción: ${user.description}');
+      debugPrint('   - DescripciÃ³n: ${user.description}');
 
       await firestore.collection(collection).doc(user.id).update({
         AppStrings.fullName: user.fullName,
@@ -214,12 +214,12 @@ class UserFirebaseRepository extends UserRepositoryAbstract {
         AppStrings.description: user.description,
       });
 
-      debugPrint('✅ Datos guardados en Firestore correctamente');
+      debugPrint('âœ… Datos guardados en Firestore correctamente');
       final response = await this.getUserId(user.id);
-      debugPrint('✅ Datos recuperados: ${response.fullName}');
+      debugPrint('âœ… Datos recuperados: ${response.fullName}');
       return response;
-    } catch (e) {
-      debugPrint('❌ Error al actualizar en Firestore: $e');
+    } on FirebaseException catch (e) {
+      debugPrint('âŒ Error al actualizar en Firestore: $e');
       rethrow; // Propagar el error para que se capture en la pantalla
     }
   }
@@ -231,7 +231,7 @@ class UserFirebaseRepository extends UserRepositoryAbstract {
           .where('id', isEqualTo: id)
           .get();
       return BiuxUser.fromJsonMap(response.docs.first.data());
-    } catch (e) {
+    } on FirebaseException catch (e) {
       return BiuxUser();
     }
   }
@@ -249,7 +249,7 @@ class UserFirebaseRepository extends UserRepositoryAbstract {
       });
       final response = await this.getUserId(id);
       return response;
-    } catch (e) {
+    } on FirebaseException catch (e) {
       debugPrint('Error: ' + e.toString());
     }
   }
@@ -269,10 +269,10 @@ class UserFirebaseRepository extends UserRepositoryAbstract {
         await firestore.collection(collection).doc(id).update({
           'profileCover': downloadUrl,
         });
-        debugPrint('✅ profileCover actualizado en Firestore: $downloadUrl');
+        debugPrint('âœ… profileCover actualizado en Firestore: $downloadUrl');
       }
-    } catch (e) {
-      debugPrint('❌ Error al subir foto de portada: $e');
+    } on FirebaseException catch (e) {
+      debugPrint('âŒ Error al subir foto de portada: $e');
     }
   }
 
@@ -282,8 +282,9 @@ class UserFirebaseRepository extends UserRepositoryAbstract {
       // LocalStorage().saveUserEmail(user.email);
       // LocalStorage().saveUserId(user.id);
       return ResponseRepo(status: true, message: '', statusCode: 200);
-    } catch (e) {
+    } on FirebaseException catch (e) {
       return ResponseRepo(status: false, message: '', statusCode: 500);
     }
   }
 }
+

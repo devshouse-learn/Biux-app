@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:go_router/go_router.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -9,8 +9,8 @@ import 'package:biux/core/design_system/locale_notifier.dart';
 import 'package:biux/shared/widgets/common/post_card.dart';
 import 'package:firebase_database/firebase_database.dart';
 
-/// Pantalla estilo Instagram para ver publicaciones con galería
-/// Permite: ver imágenes en grande, darle like, y comentar
+/// Pantalla estilo Instagram para ver publicaciones con galerÃ­a
+/// Permite: ver imÃ¡genes en grande, darle like, y comentar
 class PostDetailScreen extends StatefulWidget {
   final String postId;
 
@@ -56,11 +56,11 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
           }
         });
       }
-    } catch (e) {
+    } on FirebaseException catch (e) {
       if (mounted) {
         setState(() {
           _isLoading = false;
-          _error = 'Error cargando la publicación: $e';
+          _error = 'Error cargando la publicaciÃ³n: $e';
         });
       }
     }
@@ -88,22 +88,22 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
       return 'hace ${difference.inMinutes} minuto${difference.inMinutes != 1 ? 's' : ''}';
     }
 
-    // Menos de un día
+    // Menos de un dÃ­a
     if (difference.inHours < 24) {
       return 'hace ${difference.inHours} hora${difference.inHours != 1 ? 's' : ''}';
     }
 
-    // Menos de 7 días
+    // Menos de 7 dÃ­as
     if (difference.inDays < 7) {
-      return 'hace ${difference.inDays} día${difference.inDays != 1 ? 's' : ''}';
+      return 'hace ${difference.inDays} dÃ­a${difference.inDays != 1 ? 's' : ''}';
     }
 
-    // Más de 7 días - mostrar formato DD-MM
+    // MÃ¡s de 7 dÃ­as - mostrar formato DD-MM
     if (createdAt.year == now.year) {
       return '${createdAt.day.toString().padLeft(2, '0')}-${createdAt.month.toString().padLeft(2, '0')}';
     }
 
-    // Diferente año - mostrar DD-MM-YYYY
+    // Diferente aÃ±o - mostrar DD-MM-YYYY
     return '${createdAt.day.toString().padLeft(2, '0')}-${createdAt.month.toString().padLeft(2, '0')}-${createdAt.year}';
   }
 
@@ -328,7 +328,7 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
     );
   }
 
-  /// Construye el botón de opciones (menú de tres puntos)
+  /// Construye el botÃ³n de opciones (menÃº de tres puntos)
   Widget _buildPostOptions(BuildContext context, ExperienceEntity experience) {
     return PopupMenuButton<String>(
       color: Colors.grey[800],
@@ -372,7 +372,7 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
     );
   }
 
-  /// Muestra diálogo de confirmación para eliminar el post
+  /// Muestra diÃ¡logo de confirmaciÃ³n para eliminar el post
   void _showDeletePostConfirmation(
     BuildContext context,
     ExperienceEntity experience,
@@ -412,14 +412,14 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
     try {
       final database = FirebaseDatabase.instance;
 
-      // Intentar primero marcar como eliminado (actualización)
+      // Intentar primero marcar como eliminado (actualizaciÃ³n)
       try {
         await database.ref('experiences/${experience.id}').update({
           'isDeleted': true,
           'deletedAt': DateTime.now().millisecondsSinceEpoch,
         });
       } catch (updateError) {
-        // Si falla la actualización, intentar eliminación directa
+        // Si falla la actualizaciÃ³n, intentar eliminaciÃ³n directa
         if (updateError.toString().contains('Permission denied')) {
           await database.ref('experiences/${experience.id}').remove();
         } else {
@@ -427,7 +427,7 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
         }
       }
 
-      // Mostrar éxito
+      // Mostrar Ã©xito
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
@@ -437,13 +437,13 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
           ),
         );
 
-        // Navegar de vuelta después de 1 segundo
+        // Navegar de vuelta despuÃ©s de 1 segundo
         await Future.delayed(const Duration(seconds: 1));
         if (context.mounted) {
           Navigator.pop(context);
         }
       }
-    } catch (e) {
+    } on FirebaseException catch (e) {
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
@@ -509,3 +509,4 @@ class _RepostBannerDetail extends StatelessWidget {
     );
   }
 }
+

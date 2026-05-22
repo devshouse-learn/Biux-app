@@ -1,4 +1,4 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
+﻿import 'package:cloud_firestore/cloud_firestore.dart';
 
 import 'package:biux/features/users/data/models/user_model.dart';
 import "package:flutter/foundation.dart";
@@ -15,7 +15,7 @@ class UserRepository {
         return UserModel.fromMap(doc.data()!);
       }
       return null;
-    } catch (e) {
+    } on FirebaseException catch (e) {
       debugPrint('Error obteniendo usuario: $e');
       return null;
     }
@@ -26,7 +26,7 @@ class UserRepository {
     try {
       await _firestore.collection(_collection).doc(user.uid).set(user.toMap());
       return true;
-    } catch (e) {
+    } on FirebaseException catch (e) {
       debugPrint('Error guardando usuario: $e');
       return false;
     }
@@ -37,7 +37,7 @@ class UserRepository {
     try {
       await _firestore.collection(_collection).doc(uid).update(updates);
       return true;
-    } catch (e) {
+    } on FirebaseException catch (e) {
       debugPrint('Error actualizando usuario: $e');
       return false;
     }
@@ -48,18 +48,18 @@ class UserRepository {
     try {
       final doc = await _firestore.collection(_collection).doc(uid).get();
       return doc.exists;
-    } catch (e) {
+    } on FirebaseException catch (e) {
       debugPrint('Error verificando usuario: $e');
       return false;
     }
   }
 
-  // Obtener múltiples usuarios por IDs
+  // Obtener mÃºltiples usuarios por IDs
   Future<List<UserModel>> getUsersByIds(List<String> uids) async {
     try {
       List<UserModel> users = [];
 
-      // Firestore permite máximo 30 elementos en whereIn
+      // Firestore permite mÃ¡ximo 30 elementos en whereIn
       List<List<String>> chunks = [];
       for (int i = 0; i < uids.length; i += 30) {
         chunks.add(
@@ -77,9 +77,10 @@ class UserRepository {
       }
 
       return users;
-    } catch (e) {
-      debugPrint('Error obteniendo usuarios múltiples: $e');
+    } on FirebaseException catch (e) {
+      debugPrint('Error obteniendo usuarios mÃºltiples: $e');
       return [];
     }
   }
 }
+

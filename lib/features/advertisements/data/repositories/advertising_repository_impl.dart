@@ -1,12 +1,12 @@
-import 'dart:async';
+﻿import 'dart:async';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:biux/features/advertisements/data/models/advertising.dart';
 import 'package:biux/features/advertisements/data/repositories/advertising_repository.dart';
 import 'package:biux/core/services/app_logger.dart';
 
-/// Implementación del repositorio de publicidades usando Firestore.
+/// ImplementaciÃ³n del repositorio de publicidades usando Firestore.
 ///
-/// Colección: `publicidades`
+/// ColecciÃ³n: `publicidades`
 class AdvertisingRepositoryImpl {
   final AdvertisingRepository _repository = AdvertisingRepository();
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
@@ -28,9 +28,9 @@ class AdvertisingRepositoryImpl {
             },
           )
           .toList();
-    } catch (e) {
+    } on FirebaseException catch (e) {
       AppLogger.warning(
-        'Error obteniendo publicidades, retornando lista vacía',
+        'Error obteniendo publicidades, retornando lista vacÃ­a',
         tag: 'AdvertisingRepoImpl',
         error: e,
       );
@@ -45,7 +45,7 @@ class AdvertisingRepositoryImpl {
       if (ads.isEmpty) return null;
       ads.shuffle();
       return ads.first;
-    } catch (e) {
+    } on FirebaseException catch (e) {
       AppLogger.warning(
         'Error obteniendo anuncio aleatorio',
         tag: 'AdvertisingRepoImpl',
@@ -55,14 +55,14 @@ class AdvertisingRepositoryImpl {
     }
   }
 
-  /// Registra una visualización de anuncio.
+  /// Registra una visualizaciÃ³n de anuncio.
   Future<void> recordImpression(String adId) async {
     try {
       final docRef = _firestore.collection(_collection).doc(adId);
       await docRef.update({'impressions': FieldValue.increment(1)});
-    } catch (e) {
+    } on FirebaseException catch (e) {
       AppLogger.error(
-        'Error registrando impresión',
+        'Error registrando impresiÃ³n',
         tag: 'AdvertisingRepoImpl',
         error: e,
       );
@@ -88,7 +88,7 @@ class AdvertisingRepositoryImpl {
         'money': currentMoney - costOpen,
         'updatedAt': FieldValue.serverTimestamp(),
       });
-    } catch (e) {
+    } on FirebaseException catch (e) {
       AppLogger.error(
         'Error registrando clic',
         tag: 'AdvertisingRepoImpl',
@@ -97,3 +97,4 @@ class AdvertisingRepositoryImpl {
     }
   }
 }
+

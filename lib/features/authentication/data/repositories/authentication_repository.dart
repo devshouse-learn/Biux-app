@@ -1,4 +1,4 @@
-import 'dart:async';
+﻿import 'dart:async';
 import 'package:biux/core/services/local_storage.dart';
 import 'package:biux/core/models/common/response.dart';
 import 'package:biux/features/authentication/domain/entities/auth_entity.dart';
@@ -161,7 +161,7 @@ class AuthenticationRepository implements AuthRepositoryInterface {
           'Error sending OTP: ${response.statusCode} - ${response.body}',
         );
       }
-    } catch (e) {
+    } on FirebaseException catch (e) {
       throw Exception('Error sending OTP: $e');
     }
   }
@@ -205,8 +205,9 @@ class AuthenticationRepository implements AuthRepositoryInterface {
           'Error validating OTP: ${response.statusCode} - ${response.body}',
         );
       }
-    } catch (e) {
+    } on FirebaseException catch (e) {
       throw Exception('OTP validation failed: $e');
     }
   }
 }
+

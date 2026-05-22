@@ -1,4 +1,4 @@
-import 'package:biux/features/shop/presentation/screens/add_product_screen.dart';
+﻿import 'package:biux/features/shop/presentation/screens/add_product_screen.dart';
 import 'package:biux/core/services/app_logger.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -138,68 +138,68 @@ final GlobalKey<NavigatorState> _rootNavigatorKey = GlobalKey<NavigatorState>();
 final AuthNotifier _authNotifier = AuthNotifier();
 
 /// Convierte URLs de dominio personalizado a rutas internas
-/// Ej: https://biux.devshouse.org/ride/123 → /rides/123
+/// Ej: https://biux.devshouse.org/ride/123 â†’ /rides/123
 String? _convertDeepLinkToRoute(String location) {
-  AppLogger.debug('🔗 Intentando convertir deep link: $location');
+  AppLogger.debug('ðŸ”— Intentando convertir deep link: $location');
 
   try {
     final uri = Uri.parse(location);
 
     // Manejar dominio personalizado
     if (uri.scheme == 'https' && uri.host == 'biux.devshouse.org') {
-      AppLogger.debug('🔗 Detectado app link de biux.devshouse.org');
-      AppLogger.debug('🔗 Path: ${uri.path}, Segments: ${uri.pathSegments}');
+      AppLogger.debug('ðŸ”— Detectado app link de biux.devshouse.org');
+      AppLogger.debug('ðŸ”— Path: ${uri.path}, Segments: ${uri.pathSegments}');
 
-      // https://biux.devshouse.org/ride/{rideId} → /rides/{rideId}
+      // https://biux.devshouse.org/ride/{rideId} â†’ /rides/{rideId}
       if (uri.path.startsWith('/ride/')) {
         final rideId = uri.pathSegments.length > 1 ? uri.pathSegments[1] : null;
         if (rideId != null && rideId.isNotEmpty) {
           final newRoute = '/rides/$rideId';
-          AppLogger.info('✅ Ruta convertida: $location → $newRoute');
+          AppLogger.info('âœ… Ruta convertida: $location â†’ $newRoute');
           return newRoute;
         }
       }
 
-      // https://biux.devshouse.org/rides/{rideId} → /rides/{rideId}
+      // https://biux.devshouse.org/rides/{rideId} â†’ /rides/{rideId}
       if (uri.path.startsWith('/rides/')) {
         final rideId = uri.pathSegments.length > 1 ? uri.pathSegments[1] : null;
         if (rideId != null && rideId.isNotEmpty) {
           final newRoute = '/rides/$rideId';
-          AppLogger.info('✅ Ruta convertida: $location → $newRoute');
+          AppLogger.info('âœ… Ruta convertida: $location â†’ $newRoute');
           return newRoute;
         }
       }
 
-      // https://biux.devshouse.org/posts/{postId} → /stories
+      // https://biux.devshouse.org/posts/{postId} â†’ /stories
       if (uri.path.startsWith('/posts/')) {
-        AppLogger.info('✅ Ruta convertida: $location → /stories');
+        AppLogger.info('âœ… Ruta convertida: $location â†’ /stories');
         return '/stories';
       }
 
-      // https://biux.devshouse.org/stories/{storyId} → /stories
+      // https://biux.devshouse.org/stories/{storyId} â†’ /stories
       if (uri.path.startsWith('/stories/')) {
-        AppLogger.info('✅ Ruta convertida: $location → /stories');
+        AppLogger.info('âœ… Ruta convertida: $location â†’ /stories');
         return '/stories';
       }
 
-      // https://biux.devshouse.org/group/{groupId} → /groups/{groupId}
+      // https://biux.devshouse.org/group/{groupId} â†’ /groups/{groupId}
       if (uri.path.startsWith('/group/')) {
         final groupId = uri.pathSegments.length > 1
             ? uri.pathSegments[1]
             : null;
         if (groupId != null && groupId.isNotEmpty) {
           final newRoute = '/groups/$groupId';
-          AppLogger.info('✅ Ruta convertida: $location → $newRoute');
+          AppLogger.info('âœ… Ruta convertida: $location â†’ $newRoute');
           return newRoute;
         }
       }
 
-      // https://biux.devshouse.org/user/{userId} → /user-profile/{userId}
+      // https://biux.devshouse.org/user/{userId} â†’ /user-profile/{userId}
       if (uri.path.startsWith('/user/')) {
         final userId = uri.pathSegments.length > 1 ? uri.pathSegments[1] : null;
         if (userId != null && userId.isNotEmpty) {
           final newRoute = '/user-profile/$userId';
-          AppLogger.info('✅ Ruta convertida: $location → $newRoute');
+          AppLogger.info('âœ… Ruta convertida: $location â†’ $newRoute');
           return newRoute;
         }
       }
@@ -207,7 +207,7 @@ String? _convertDeepLinkToRoute(String location) {
 
     // Manejar esquema biux://
     if (uri.scheme == 'biux') {
-      AppLogger.debug('🔗 Detectado deep link con esquema biux://');
+      AppLogger.debug('ðŸ”— Detectado deep link con esquema biux://');
 
       // biux://ride/{rideId}
       if (uri.host == 'ride') {
@@ -216,7 +216,7 @@ String? _convertDeepLinkToRoute(String location) {
             : null;
         if (rideId != null && rideId.isNotEmpty) {
           final newRoute = '/rides/$rideId';
-          AppLogger.info('✅ Ruta convertida: $location → $newRoute');
+          AppLogger.info('âœ… Ruta convertida: $location â†’ $newRoute');
           return newRoute;
         }
       }
@@ -228,7 +228,7 @@ String? _convertDeepLinkToRoute(String location) {
             : null;
         if (groupId != null && groupId.isNotEmpty) {
           final newRoute = '/groups/$groupId';
-          AppLogger.info('✅ Ruta convertida: $location → $newRoute');
+          AppLogger.info('âœ… Ruta convertida: $location â†’ $newRoute');
           return newRoute;
         }
       }
@@ -240,35 +240,35 @@ String? _convertDeepLinkToRoute(String location) {
             : null;
         if (userId != null && userId.isNotEmpty) {
           final newRoute = '/user-profile/$userId';
-          AppLogger.info('✅ Ruta convertida: $location → $newRoute');
+          AppLogger.info('âœ… Ruta convertida: $location â†’ $newRoute');
           return newRoute;
         }
       }
     }
-  } catch (e) {
-    AppLogger.error('❌ Error al procesar deep link: $e');
+  } on FirebaseException catch (e) {
+    AppLogger.error('âŒ Error al procesar deep link: $e');
   }
 
   return null;
 }
 
-// Guard de autenticación (función global)
+// Guard de autenticaciÃ³n (funciÃ³n global)
 String? _guard(BuildContext context, GoRouterState state) {
   final bool isLoggedIn = _authNotifier.isLoggedIn;
   final User? user = _authNotifier.user;
   final String location = state.uri.toString();
 
   AppLogger.debug(
-    '🔍 Router Guard - Location: $location, isLoggedIn: $isLoggedIn, uid: ${user?.uid}',
+    'ðŸ” Router Guard - Location: $location, isLoggedIn: $isLoggedIn, uid: ${user?.uid}',
   );
 
-  // EN WEB: Permitir acceso sin autenticación
+  // EN WEB: Permitir acceso sin autenticaciÃ³n
   if (kIsWeb) {
-    AppLogger.debug('🌐 WEB: Permitiendo acceso sin autenticación');
+    AppLogger.debug('ðŸŒ WEB: Permitiendo acceso sin autenticaciÃ³n');
 
-    // Si está en root, redirigir a las rutas
+    // Si estÃ¡ en root, redirigir a las rutas
     if (location == '/') {
-      AppLogger.debug('📍 Root en web, redirigiendo a rutas');
+      AppLogger.debug('ðŸ“ Root en web, redirigiendo a rutas');
       return '/roads';
     }
 
@@ -281,21 +281,21 @@ String? _guard(BuildContext context, GoRouterState state) {
   final convertedRoute = _convertDeepLinkToRoute(location);
   if (convertedRoute != null) {
     effectiveLocation = convertedRoute;
-    AppLogger.debug('🔗 Deep link convertido: $location → $effectiveLocation');
+    AppLogger.debug('ðŸ”— Deep link convertido: $location â†’ $effectiveLocation');
   }
 
-  // Si está en la ruta root '/', decidir dónde ir según autenticación
+  // Si estÃ¡ en la ruta root '/', decidir dÃ³nde ir segÃºn autenticaciÃ³n
   if (effectiveLocation == '/') {
     if (isLoggedIn) {
-      AppLogger.debug('📍 Usuario logueado en root, redirigiendo a inicio');
+      AppLogger.debug('ðŸ“ Usuario logueado en root, redirigiendo a inicio');
       return '/stories';
     } else {
-      AppLogger.debug('📍 Usuario no logueado en root, redirigiendo al login');
+      AppLogger.debug('ðŸ“ Usuario no logueado en root, redirigiendo al login');
       return AppRoutes.login;
     }
   }
 
-  // Rutas públicas (no requieren autenticación)
+  // Rutas pÃºblicas (no requieren autenticaciÃ³n)
   final List<String> publicRoutes = [
     AppRoutes.splash,
     AppRoutes.login,
@@ -304,35 +304,35 @@ String? _guard(BuildContext context, GoRouterState state) {
 
   final bool isPublicRoute = publicRoutes.contains(effectiveLocation);
 
-  // Si está en una ruta pública
+  // Si estÃ¡ en una ruta pÃºblica
   if (isPublicRoute) {
-    // Si está logueado y trata de ir al login, redirigir a experiencias
+    // Si estÃ¡ logueado y trata de ir al login, redirigir a experiencias
     if (isLoggedIn && effectiveLocation == AppRoutes.login) {
       AppLogger.debug(
-        '📍 Usuario logueado intentando ir al login, redirigiendo a experiencias',
+        'ðŸ“ Usuario logueado intentando ir al login, redirigiendo a experiencias',
       );
       return '/stories';
     }
-    // Permitir acceso a rutas públicas
+    // Permitir acceso a rutas pÃºblicas
     return null;
   }
 
-  // Para rutas privadas, verificar autenticación
+  // Para rutas privadas, verificar autenticaciÃ³n
   if (!isLoggedIn) {
-    AppLogger.debug('🚫 Usuario no autenticado, redirigiendo al login');
+    AppLogger.debug('ðŸš« Usuario no autenticado, redirigiendo al login');
     return AppRoutes.login;
   }
 
   // Usuario autenticado accediendo a ruta privada
-  // Si hubo conversión de deep link, redirigir a la ruta convertida
+  // Si hubo conversiÃ³n de deep link, redirigir a la ruta convertida
   if (convertedRoute != null) {
     AppLogger.debug(
-      '✅ Usuario autenticado, redirigiendo a ruta convertida: $convertedRoute',
+      'âœ… Usuario autenticado, redirigiendo a ruta convertida: $convertedRoute',
     );
     return convertedRoute;
   }
 
-  AppLogger.info('✅ Usuario autenticado, permitiendo acceso');
+  AppLogger.info('âœ… Usuario autenticado, permitiendo acceso');
   return null;
 }
 
@@ -446,7 +446,7 @@ final GoRouter _router = GoRouter(
               name: AppRoutes.groupCreateName,
               builder: (context, state) => GroupCreateScreen(),
             ),
-            // Ver grupo específico
+            // Ver grupo especÃ­fico
             GoRoute(
               path: ':groupId',
               name: AppRoutes.viewGroupName,
@@ -508,7 +508,7 @@ final GoRouter _router = GoRouter(
               path: 'create',
               name: AppRoutes.storyCreateName,
               builder: (context, state) {
-                // Determinar tipo de experiencia desde parámetros
+                // Determinar tipo de experiencia desde parÃ¡metros
                 final typeParam = state.uri.queryParameters['type'];
                 final rideId = state.uri.queryParameters['rideId'];
                 final experienceType = typeParam == 'ride'
@@ -533,7 +533,7 @@ final GoRouter _router = GoRouter(
                 );
               },
             ),
-            // Ver historia específica — redirigir a detalle de post
+            // Ver historia especÃ­fica â€” redirigir a detalle de post
             GoRoute(
               path: ':storyId',
               name: AppRoutes.viewStoryName,
@@ -545,7 +545,7 @@ final GoRouter _router = GoRouter(
           ],
         ),
 
-        // Editar publicación/experiencia
+        // Editar publicaciÃ³n/experiencia
         GoRoute(
           path: '/edit-post/:postId',
           name: 'editPost',
@@ -588,7 +588,7 @@ final GoRouter _router = GoRouter(
           ],
         ),
 
-        // Rodadas (Rides) - esta es la ruta correcta para la pestaña de rodadas
+        // Rodadas (Rides) - esta es la ruta correcta para la pestaÃ±a de rodadas
         GoRoute(
           path: '/rides',
           name: 'ridesList',
@@ -644,7 +644,7 @@ final GoRouter _router = GoRouter(
           },
         ),
 
-        // Información pública de bicicleta (acceso por QR)
+        // InformaciÃ³n pÃºblica de bicicleta (acceso por QR)
         GoRoute(
           path: AppRoutes.publicBikeInfo,
           name: AppRoutes.publicBikeInfoName,
@@ -694,8 +694,8 @@ final GoRouter _router = GoRouter(
           },
         ),
 
-        // ⚠️ IMPORTANTE: Las rutas específicas DEBEN ir ANTES de /shop/:id
-        // para evitar que el parámetro :id capture 'cart', 'favorites', 'orders', etc.
+        // âš ï¸ IMPORTANTE: Las rutas especÃ­ficas DEBEN ir ANTES de /shop/:id
+        // para evitar que el parÃ¡metro :id capture 'cart', 'favorites', 'orders', etc.
 
         // Carrito de compras
         GoRoute(
@@ -718,7 +718,7 @@ final GoRouter _router = GoRouter(
           builder: (context, state) => const MyOrdersScreen(),
         ),
 
-        // Panel de administración (solo admins)
+        // Panel de administraciÃ³n (solo admins)
         GoRoute(
           path: '/shop/admin',
           name: 'adminShop',
@@ -730,7 +730,7 @@ final GoRouter _router = GoRouter(
           },
         ),
 
-        // Gestión de vendedores (solo admins) - DEBE IR ANTES DE /shop/:id
+        // GestiÃ³n de vendedores (solo admins) - DEBE IR ANTES DE /shop/:id
         GoRoute(
           path: '/shop/manage-sellers',
           name: 'manageSellers',
@@ -778,7 +778,7 @@ final GoRouter _router = GoRouter(
           },
         ),
 
-        // Código QR de bicicleta verificada - DEBE IR ANTES DE /shop/:id
+        // CÃ³digo QR de bicicleta verificada - DEBE IR ANTES DE /shop/:id
         GoRoute(
           path: '/shop/bike-qr/:productId',
           name: 'bikeQR',
@@ -798,9 +798,9 @@ final GoRouter _router = GoRouter(
           },
         ),
 
-        // ⚠️ Detalle de producto movido FUERA del ShellRoute (ver abajo)
+        // âš ï¸ Detalle de producto movido FUERA del ShellRoute (ver abajo)
 
-        // Escáner QR
+        // EscÃ¡ner QR
         GoRoute(
           path: '/shop/qr-scanner',
           name: 'qrScanner',
@@ -867,7 +867,7 @@ final GoRouter _router = GoRouter(
           },
         ),
 
-        // Panel de administración (solo admins)
+        // Panel de administraciÃ³n (solo admins)
         GoRoute(
           path: '/store/admin-dashboard',
           name: 'storeAdminDashboard',
@@ -916,7 +916,7 @@ final GoRouter _router = GoRouter(
       builder: (context, state) => UserSearchScreen(),
     ),
 
-    // Perfil de usuario específico
+    // Perfil de usuario especÃ­fico
     GoRoute(
       path: AppRoutes.userProfile,
       name: AppRoutes.userProfileName,
@@ -926,7 +926,7 @@ final GoRouter _router = GoRouter(
       },
     ),
 
-    // Búsqueda global
+    // BÃºsqueda global
     GoRoute(
       path: '/search',
       name: 'globalSearch',
@@ -939,7 +939,7 @@ final GoRouter _router = GoRouter(
       name: AppRoutes.chatDetailName,
       builder: (context, state) {
         final chatId = state.pathParameters['chatId']!;
-        // Crear ChatEntity mínimo con el id para navegación directa
+        // Crear ChatEntity mÃ­nimo con el id para navegaciÃ³n directa
         return ChatScreen.fromId(chatId: chatId);
       },
     ),
@@ -972,7 +972,7 @@ final GoRouter _router = GoRouter(
       builder: (context, state) => const MyRecommendationsScreen(),
     ),
 
-    // Cycling Stats (Mis estadísticas)
+    // Cycling Stats (Mis estadÃ­sticas)
     GoRoute(
       path: AppRoutes.cyclingStats,
       name: AppRoutes.cyclingStatsName,
@@ -1051,7 +1051,7 @@ final GoRouter _router = GoRouter(
       builder: (context, state) => const StolenBikesScreen(),
     ),
 
-    // Education (Educación vial)
+    // Education (EducaciÃ³n vial)
     GoRoute(
       path: AppRoutes.education,
       name: AppRoutes.educationName,
@@ -1078,7 +1078,7 @@ final GoRouter _router = GoRouter(
       builder: (context, state) => const AccidentsListScreen(),
     ),
 
-    // Configuración de notificaciones
+    // ConfiguraciÃ³n de notificaciones
     GoRoute(
       path: AppRoutes.notificationSettings,
       name: AppRoutes.notificationSettingsName,
@@ -1092,7 +1092,7 @@ final GoRouter _router = GoRouter(
       builder: (context, state) => const HelpScreen(),
     ),
 
-    // Configuración de Cuenta (fuera del ShellRoute para ocultar bottom nav)
+    // ConfiguraciÃ³n de Cuenta (fuera del ShellRoute para ocultar bottom nav)
     GoRoute(
       path: AppRoutes.accountSettings,
       name: AppRoutes.accountSettingsName,
@@ -1223,7 +1223,7 @@ class AppRouter {
   }
 }
 
-// Extensiones para facilitar la navegación
+// Extensiones para facilitar la navegaciÃ³n
 extension AppRouterExtension on BuildContext {
   void goToLogin() => go(AppRoutes.login);
   void goToMap() => go(AppRoutes.map);
@@ -1244,13 +1244,13 @@ extension AppRouterExtension on BuildContext {
   void goToCreateRoad(String groupId) =>
       go('${AppRoutes.roadsList}/create/$groupId');
 
-  // Navegación de bicicletas
+  // NavegaciÃ³n de bicicletas
   void goToMyBikes() => go(AppRoutes.myBikes);
   void goToBikeRegistration() => go(AppRoutes.bikeRegistration);
   void goToBikeDetail(String bikeId) => go('/bikes/$bikeId');
   void goToPublicBikeInfo(String qrCode) => go('/bikes/public/$qrCode');
 
-  // Navegación social
+  // NavegaciÃ³n social
   void goToNotifications() => push('/notifications');
   void goToPostComments(String postId, String ownerId) =>
       go('/posts/$postId/comments?ownerId=$ownerId');
@@ -1279,3 +1279,4 @@ extension AppRouterExtension on BuildContext {
   void goToRideAttendees(String rideId, String ownerId) =>
       go('/rides/$rideId/attendees?ownerId=$ownerId');
 }
+

@@ -1,4 +1,4 @@
-import 'dart:convert';
+﻿import 'dart:convert';
 import 'package:http/http.dart' as http;
 
 class PaymentsRepository {
@@ -22,8 +22,9 @@ class PaymentsRepository {
       // return json.decode(uriResponse.body);
       final decodeData = json.decode(uriResponse.body);
       return decodeData['url'];
-    } catch (e) {
+    } on SocketException catch (e) {
       return '';
     }
   }
 }
+

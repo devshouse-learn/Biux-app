@@ -1,4 +1,4 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
+﻿import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:biux/features/promotions/data/models/promotion_request_model.dart';
 
@@ -37,7 +37,7 @@ class PromotionsProvider with ChangeNotifier {
         _verifiedPromoters.add(doc.id);
       }
       notifyListeners();
-    } catch (e) {
+    } on FirebaseException catch (e) {
       debugPrint('Error loading verified promoters: \$e');
     }
   }
@@ -59,7 +59,7 @@ class PromotionsProvider with ChangeNotifier {
         'requestedAt': FieldValue.serverTimestamp(),
       });
       return true;
-    } catch (e) {
+    } on FirebaseException catch (e) {
       debugPrint('Error requesting promoter status: \$e');
       return false;
     }
@@ -80,7 +80,7 @@ class PromotionsProvider with ChangeNotifier {
         'status': 'approved',
       });
       return true;
-    } catch (e) {
+    } on FirebaseException catch (e) {
       debugPrint('Error approving promoter: \$e');
       return false;
     }
@@ -93,7 +93,7 @@ class PromotionsProvider with ChangeNotifier {
       _verifiedPromoters.remove(uid);
       notifyListeners();
       return true;
-    } catch (e) {
+    } on FirebaseException catch (e) {
       debugPrint('Error revoking promoter: \$e');
       return false;
     }
@@ -140,7 +140,7 @@ class PromotionsProvider with ChangeNotifier {
         _requests[idx].id = docRef.id;
         notifyListeners();
       }
-    } catch (e) {
+    } on FirebaseException catch (e) {
       debugPrint('PromotionsProvider._saveRequest failed: \$e\n\$st');
     }
   }
@@ -183,7 +183,7 @@ class PromotionsProvider with ChangeNotifier {
         _requests.add(model);
       }
       notifyListeners();
-    } catch (e) {
+    } on FirebaseException catch (e) {
       debugPrint('PromotionsProvider.fetchRequests failed: \$e\n\$st');
     }
   }
@@ -205,7 +205,7 @@ class PromotionsProvider with ChangeNotifier {
         'attendees': FieldValue.arrayUnion([userId]),
       });
       return true;
-    } catch (e) {
+    } on FirebaseException catch (e) {
       event.attendees.remove(userId);
       notifyListeners();
       debugPrint('Error registering to event: \$e');
@@ -229,7 +229,7 @@ class PromotionsProvider with ChangeNotifier {
         'attendees': FieldValue.arrayRemove([userId]),
       });
       return true;
-    } catch (e) {
+    } on FirebaseException catch (e) {
       event.attendees.add(userId);
       notifyListeners();
       debugPrint('Error unregistering from event: \$e');
@@ -246,7 +246,7 @@ class PromotionsProvider with ChangeNotifier {
     try {
       await _col.doc(id).update({'status': 'approved'});
       return true;
-    } catch (e) {
+    } on FirebaseException catch (e) {
       debugPrint('PromotionsProvider.approve failed: \$e');
       return false;
     }
@@ -261,9 +261,10 @@ class PromotionsProvider with ChangeNotifier {
     try {
       await _col.doc(id).update({'status': 'rejected'});
       return true;
-    } catch (e) {
+    } on FirebaseException catch (e) {
       debugPrint('PromotionsProvider.reject failed: \$e');
       return false;
     }
   }
 }
+

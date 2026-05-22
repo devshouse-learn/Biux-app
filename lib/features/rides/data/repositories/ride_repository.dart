@@ -1,4 +1,4 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
+﻿import 'package:cloud_firestore/cloud_firestore.dart';
 
 import 'package:biux/features/rides/data/models/ride_model.dart';
 import "package:flutter/foundation.dart";
@@ -13,13 +13,13 @@ class RideRepository {
           .collection('rides')
           .add(ride.toFirestore());
       return docRef.id;
-    } catch (e) {
+    } on FirebaseException catch (e) {
       debugPrint('Error creating ride: $e');
       return null;
     }
   }
 
-  // Obtener rodadas de un grupo específico
+  // Obtener rodadas de un grupo especÃ­fico
   Stream<List<RideModel>> getGroupRides(String groupId) {
     return _firestore
         .collection('rides')
@@ -46,7 +46,7 @@ class RideRepository {
         );
   }
 
-  // Obtener una rodada específica
+  // Obtener una rodada especÃ­fica
   Future<RideModel?> getRideById(String rideId) async {
     try {
       final doc = await _firestore.collection('rides').doc(rideId).get();
@@ -54,7 +54,7 @@ class RideRepository {
         return RideModel.fromFirestore(doc.data()!, doc.id);
       }
       return null;
-    } catch (e) {
+    } on FirebaseException catch (e) {
       debugPrint('Error getting ride: $e');
       return null;
     }
@@ -70,7 +70,7 @@ class RideRepository {
         ]), // Remover de "tal vez"
       });
       return true;
-    } catch (e) {
+    } on FirebaseException catch (e) {
       debugPrint('Error joining ride: $e');
       return false;
     }
@@ -86,7 +86,7 @@ class RideRepository {
         ]), // Remover de confirmados
       });
       return true;
-    } catch (e) {
+    } on FirebaseException catch (e) {
       debugPrint('Error marking maybe join ride: $e');
       return false;
     }
@@ -100,7 +100,7 @@ class RideRepository {
         'maybeParticipants': FieldValue.arrayRemove([userId]),
       });
       return true;
-    } catch (e) {
+    } on FirebaseException catch (e) {
       debugPrint('Error leaving ride: $e');
       return false;
     }
@@ -111,7 +111,7 @@ class RideRepository {
     try {
       await _firestore.collection('rides').doc(rideId).update(updates);
       return true;
-    } catch (e) {
+    } on FirebaseException catch (e) {
       debugPrint('Error updating ride: $e');
       return false;
     }
@@ -124,7 +124,7 @@ class RideRepository {
         'status': RideStatus.cancelled.name,
       });
       return true;
-    } catch (e) {
+    } on FirebaseException catch (e) {
       debugPrint('Error cancelling ride: $e');
       return false;
     }
@@ -135,7 +135,7 @@ class RideRepository {
     try {
       await _firestore.collection('rides').doc(rideId).delete();
       return true;
-    } catch (e) {
+    } on FirebaseException catch (e) {
       debugPrint('Error deleting ride: $e');
       return false;
     }
@@ -155,7 +155,7 @@ class RideRepository {
         );
   }
 
-  // Obtener próximas rodadas (todas)
+  // Obtener prÃ³ximas rodadas (todas)
   Stream<List<RideModel>> getUpcomingRides() {
     final now = DateTime.now();
     return _firestore
@@ -172,3 +172,4 @@ class RideRepository {
         );
   }
 }
+

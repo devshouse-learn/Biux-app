@@ -1,4 +1,4 @@
-import 'dart:async';
+﻿import 'dart:async';
 
 import 'package:biux/features/maps/data/models/meeting_point.dart';
 import 'package:biux/features/maps/data/repositories/meeting_point_repository.dart';
@@ -54,7 +54,7 @@ class MeetingPointProvider extends ChangeNotifier {
       notifyListeners();
 
       return point;
-    } catch (e) {
+    } on Exception catch (e) {
       _isLoading = false;
       _error = e.toString();
       notifyListeners();
@@ -68,3 +68,4 @@ class MeetingPointProvider extends ChangeNotifier {
     super.dispose();
   }
 }
+

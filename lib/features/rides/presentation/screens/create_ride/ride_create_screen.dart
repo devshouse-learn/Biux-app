@@ -1,4 +1,4 @@
-import 'package:biux/features/maps/data/models/meeting_point.dart';
+﻿import 'package:biux/features/maps/data/models/meeting_point.dart';
 import 'package:biux/features/maps/presentation/providers/meeting_point_provider.dart';
 import 'package:biux/features/rides/data/models/ride_model.dart';
 import 'package:biux/features/rides/presentation/providers/ride_provider.dart';
@@ -15,7 +15,7 @@ import 'package:biux/core/design_system/locale_notifier.dart';
 
 class RideCreateScreen extends StatefulWidget {
   final String groupId;
-  final RideModel? rideToEdit; // Rodada a editar (null = modo creación)
+  final RideModel? rideToEdit; // Rodada a editar (null = modo creaciÃ³n)
 
   const RideCreateScreen({Key? key, required this.groupId, this.rideToEdit})
     : super(key: key);
@@ -58,7 +58,7 @@ class _RideCreateScreenState extends State<RideCreateScreen> {
         wp.loadWeather();
       }
 
-      // Si es modo edición, pre-cargar los datos
+      // Si es modo ediciÃ³n, pre-cargar los datos
       if (widget.rideToEdit != null) {
         _loadRideData(meetingPointProvider);
       }
@@ -265,7 +265,7 @@ class _RideCreateScreenState extends State<RideCreateScreen> {
                                     borderRadius: BorderRadius.circular(8),
                                   ),
                                   child: Text(
-                                    safe ? '✅ Apto' : '⚠️ Precaución',
+                                    safe ? 'âœ… Apto' : 'âš ï¸ PrecauciÃ³n',
                                     style: TextStyle(
                                       fontSize: 11,
                                       fontWeight: FontWeight.w700,
@@ -282,17 +282,17 @@ class _RideCreateScreenState extends State<RideCreateScreen> {
                               runSpacing: 6,
                               children: [
                                 _weatherDataChip(
-                                  '💨',
+                                  'ðŸ’¨',
                                   '${wp.windSpeed.round()} km/h ${wp.windDirectionLabel}',
                                 ),
-                                _weatherDataChip('💧', '${wp.humidity}%'),
+                                _weatherDataChip('ðŸ’§', '${wp.humidity}%'),
                                 _weatherDataChip(
-                                  '🌡️',
-                                  'ST ${wp.feelsLike.round()}°C',
+                                  'ðŸŒ¡ï¸',
+                                  'ST ${wp.feelsLike.round()}Â°C',
                                 ),
                                 if (wp.uvIndex > 0)
                                   _weatherDataChip(
-                                    '☀️',
+                                    'â˜€ï¸',
                                     'UV ${wp.uvIndex.toStringAsFixed(1)}',
                                   ),
                               ],
@@ -325,7 +325,7 @@ class _RideCreateScreenState extends State<RideCreateScreen> {
                   ),
                   SizedBox(height: 16),
 
-                  // Kilómetros
+                  // KilÃ³metros
                   TextFormField(
                     controller: _kilometersController,
                     decoration: InputDecoration(
@@ -410,7 +410,7 @@ class _RideCreateScreenState extends State<RideCreateScreen> {
                     borderRadius: BorderRadius.circular(12),
                     imageType: 'ride',
                     currentImageUrl:
-                        _rideImageUrl, // Pre-cargar imagen en modo edición
+                        _rideImageUrl, // Pre-cargar imagen en modo ediciÃ³n
                     onImageSelected: (String? imageUrl) {
                       setState(() {
                         _rideImageUrl = imageUrl;
@@ -450,7 +450,7 @@ class _RideCreateScreenState extends State<RideCreateScreen> {
                   ),
                   SizedBox(height: 32),
 
-                  // Botón de crear/actualizar
+                  // BotÃ³n de crear/actualizar
                   if (rideProvider.isLoading)
                     Center(child: CircularProgressIndicator())
                   else
@@ -525,7 +525,7 @@ class _RideCreateScreenState extends State<RideCreateScreen> {
         ),
         SizedBox(height: 8),
 
-        // ✅ CAMPO DE TEXTO PARA NOMBRE MANUAL
+        // âœ… CAMPO DE TEXTO PARA NOMBRE MANUAL
         if (_customMeetingPointName != null)
           Container(
             width: double.infinity,
@@ -634,7 +634,7 @@ class _RideCreateScreenState extends State<RideCreateScreen> {
 
         SizedBox(height: 12),
 
-        // ✅ BOTÓN PARA AGREGAR PUNTO MANUAL
+        // âœ… BOTÃ“N PARA AGREGAR PUNTO MANUAL
         ElevatedButton.icon(
           onPressed: () => _showCustomMeetingPointDialog(),
           icon: Icon(Icons.add_location),
@@ -960,7 +960,7 @@ class _RideCreateScreenState extends State<RideCreateScreen> {
     late String meetingPointId;
 
     if (_customMeetingPointName != null) {
-      // Si hay punto personalizado, crear uno temporal con ID único
+      // Si hay punto personalizado, crear uno temporal con ID Ãºnico
       final customPointId = 'custom_${DateTime.now().millisecondsSinceEpoch}';
       meetingPointId = customPointId;
     } else {
@@ -970,7 +970,7 @@ class _RideCreateScreenState extends State<RideCreateScreen> {
 
     final bool success;
     if (widget.rideToEdit != null) {
-      // Modo edición
+      // Modo ediciÃ³n
       success = await provider.updateRide(
         rideId: widget.rideToEdit?.id ?? '',
         name: _nameController.text.trim(),
@@ -983,7 +983,7 @@ class _RideCreateScreenState extends State<RideCreateScreen> {
         imageUrl: _rideImageUrl,
       );
     } else {
-      // Modo creación
+      // Modo creaciÃ³n
       success = await provider.createRide(
         name: _nameController.text.trim(),
         groupId: widget.groupId,
@@ -1036,7 +1036,7 @@ class _RideCreateScreenState extends State<RideCreateScreen> {
           ).showSnackBar(SnackBar(content: Text(l.t('maps_app_not_found'))));
         }
       }
-    } catch (e) {
+    } on Exception catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('${l.t('error_opening_maps')}: $e')),
@@ -1099,7 +1099,7 @@ class _RideCreateScreenState extends State<RideCreateScreen> {
                           );
                         }
                       }
-                    } catch (e) {
+                    } on Exception catch (e) {
                       if (mounted) {
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(
@@ -1213,3 +1213,4 @@ class _RideCreateScreenState extends State<RideCreateScreen> {
     );
   }
 }
+

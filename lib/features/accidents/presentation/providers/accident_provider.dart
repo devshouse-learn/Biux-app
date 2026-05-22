@@ -1,4 +1,4 @@
-import 'package:flutter/foundation.dart';
+﻿import 'package:flutter/foundation.dart';
 import 'package:biux/features/accidents/data/datasources/accident_datasource.dart';
 import 'package:biux/features/accidents/domain/entities/accident_entity.dart';
 
@@ -20,7 +20,7 @@ class AccidentProvider extends ChangeNotifier {
   Future<void> report(AccidentEntity accident) async {
     try {
       await _ds.reportAccident(accident);
-    } catch (e) {
+    } on Exception catch (e) {
       debugPrint('Error reporting accident: $e');
     }
   }
@@ -33,7 +33,7 @@ class AccidentProvider extends ChangeNotifier {
       _accidents = [];
       _loading = false;
       notifyListeners();
-    } catch (e) {
+    } on Exception catch (e) {
       debugPrint('Error deleting accidents: $e');
       _loading = false;
       notifyListeners();
@@ -48,10 +48,11 @@ class AccidentProvider extends ChangeNotifier {
       _accidents = _accidents.where((a) => !a.resolved).toList();
       _loading = false;
       notifyListeners();
-    } catch (e) {
+    } on Exception catch (e) {
       debugPrint('Error deleting resolved accidents: $e');
       _loading = false;
       notifyListeners();
     }
   }
 }
+

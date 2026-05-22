@@ -1,4 +1,4 @@
-import 'package:biux/features/sites/data/models/sites.dart';
+﻿import 'package:biux/features/sites/data/models/sites.dart';
 import 'package:biux/features/sites/domain/repositories/sites_repository_abstract.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
@@ -10,7 +10,7 @@ class SitesFirebaseRepository extends SitesRepositoryAbstract {
     try {
       final result = await firestore.collection(collection).get();
       return result.docs.map((e) => Sites.fromJson(json: e.data())).toList();
-    } catch (e) {
+    } on FirebaseException catch (e) {
       return List.empty();
     }
   }
@@ -19,7 +19,7 @@ class SitesFirebaseRepository extends SitesRepositoryAbstract {
     try {
       await firestore.collection(collection).add(sites.toJson());
       return true;
-    } catch (e) {
+    } on FirebaseException catch (e) {
       return false;
     }
   }
@@ -32,8 +32,9 @@ class SitesFirebaseRepository extends SitesRepositoryAbstract {
           .where('typesSites.type', isEqualTo: 'Negocio')
           .get();
       return result.docs.map((e) => Sites.fromJson(json: e.data())).toList();
-    } catch (e) {
+    } on FirebaseException catch (e) {
       return List.empty();
     }
   }
 }
+

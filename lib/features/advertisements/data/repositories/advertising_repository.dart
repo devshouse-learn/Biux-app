@@ -1,4 +1,4 @@
-import 'dart:convert';
+﻿import 'dart:convert';
 import 'dart:io';
 import 'package:biux/features/advertisements/data/models/advertising.dart';
 import 'package:biux/core/config/api_config.dart';
@@ -26,7 +26,7 @@ class AdvertisingRepository {
       } else {
         throw Exception('Error al obtener publicidad: ${response.statusCode}');
       }
-    } catch (e) {
+    } on SocketException catch (e) {
       AppLogger.error(
         'Error obteniendo publicidad',
         tag: 'AdvertisingRepo',
@@ -64,7 +64,7 @@ class AdvertisingRepository {
         );
         return [];
       }
-    } catch (e) {
+    } on SocketException catch (e) {
       AppLogger.error(
         'Error obteniendo publicidades',
         tag: 'AdvertisingRepo',
@@ -105,7 +105,7 @@ class AdvertisingRepository {
           'Fallo al actualizar publicidad: ${response.statusCode}',
         );
       }
-    } catch (e) {
+    } on SocketException catch (e) {
       AppLogger.error(
         'Error actualizando publicidad',
         tag: 'AdvertisingRepo',
@@ -115,3 +115,4 @@ class AdvertisingRepository {
     }
   }
 }
+

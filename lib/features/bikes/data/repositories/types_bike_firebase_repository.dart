@@ -1,4 +1,4 @@
-import 'package:biux/features/bikes/data/models/type_bike.dart';
+﻿import 'package:biux/features/bikes/data/models/type_bike.dart';
 import 'package:biux/features/bikes/domain/repositories/types_bike_repository_abstract.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
@@ -10,7 +10,7 @@ class TypesBikeFirebaseRepository extends TypesBikeRepositoryAbstract {
     try {
       final result = await firestore.collection(collection).get();
       return result.docs.map((e) => TypeBike.fromJsonMap(e.data())).toList();
-    } catch (e) {
+    } on FirebaseException catch (e) {
       return List.empty();
     }
   }
@@ -23,8 +23,9 @@ class TypesBikeFirebaseRepository extends TypesBikeRepositoryAbstract {
           .where('id', isEqualTo: id)
           .get();
       return result.docs.map((e) => TypeBike.fromJsonMap(e.data())).toList();
-    } catch (e) {
+    } on FirebaseException catch (e) {
       return List.empty();
     }
   }
 }
+

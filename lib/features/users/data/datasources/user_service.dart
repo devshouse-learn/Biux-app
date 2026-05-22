@@ -1,4 +1,4 @@
-import 'dart:io';
+﻿import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -47,7 +47,7 @@ class UserService {
         tag: 'UserService',
       );
       return null;
-    } catch (e) {
+    } on FirebaseException catch (e) {
       AppLogger.error(
         'Error obteniendo datos del usuario',
         tag: 'UserService',
@@ -57,13 +57,13 @@ class UserService {
     }
   }
 
-  /// Actualizar el número de teléfono del usuario en Firestore
+  /// Actualizar el nÃºmero de telÃ©fono del usuario en Firestore
   Future<void> updatePhoneNumber(String uid, String phoneNumber) async {
     try {
       await _firestore.collection('users').doc(uid).update({
         'phoneNumber': phoneNumber,
       });
-    } catch (e) {
+    } on FirebaseException catch (e) {
       AppLogger.warning(
         'Error actualizando phoneNumber',
         tag: 'UserService',
@@ -114,7 +114,7 @@ class UserService {
               );
             },
           );
-    } catch (e) {
+    } on FirebaseException catch (e) {
       AppLogger.error(
         'Error configurando listener',
         tag: 'UserService',
@@ -137,7 +137,7 @@ class UserService {
 
     try {
       if (uid.isEmpty) {
-        AppLogger.warning('UID vacío en updateUserProfile', tag: 'UserService');
+        AppLogger.warning('UID vacÃ­o en updateUserProfile', tag: 'UserService');
         return false;
       }
 
@@ -173,7 +173,7 @@ class UserService {
 
       AppLogger.info('Perfil actualizado: $uid', tag: 'UserService');
       return true;
-    } catch (e) {
+    } on FirebaseException catch (e) {
       AppLogger.error(
         'Error en updateUserProfile',
         tag: 'UserService',
@@ -209,7 +209,7 @@ class UserService {
         return downloadUrl;
       }
       return null;
-    } catch (e) {
+    } on FirebaseException catch (e) {
       AppLogger.error('Error subiendo imagen', tag: 'UserService', error: e);
       return null;
     }
@@ -222,9 +222,9 @@ class UserService {
         'deletionRequestDate': DateTime.now().toIso8601String(),
       });
       return true;
-    } catch (e) {
+    } on FirebaseException catch (e) {
       AppLogger.error(
-        'Error solicitando eliminación',
+        'Error solicitando eliminaciÃ³n',
         tag: 'UserService',
         error: e,
       );
@@ -249,7 +249,7 @@ class UserService {
         await _firestore.collection('users').doc(uid).set(newUser.toMap());
       }
       return true;
-    } catch (e) {
+    } on FirebaseException catch (e) {
       AppLogger.error('Error creando usuario', tag: 'UserService', error: e);
       return false;
     }
@@ -263,7 +263,7 @@ class UserService {
         'updatedAt': DateTime.now().toIso8601String(),
       });
       return true;
-    } catch (e) {
+    } on FirebaseException catch (e) {
       AppLogger.error(
         'Error actualizando permiso de vendedor',
         tag: 'UserService',
@@ -280,7 +280,7 @@ class UserService {
       return snapshot.docs
           .map((doc) => UserModel.fromMap(doc.data() as Map<String, dynamic>))
           .toList();
-    } catch (e) {
+    } on FirebaseException catch (e) {
       AppLogger.error(
         'Error obteniendo usuarios',
         tag: 'UserService',
@@ -348,7 +348,7 @@ class UserService {
 
       AppLogger.info('Ahora sigues a $userIdToFollow', tag: 'UserService');
       return true;
-    } catch (e) {
+    } on FirebaseException catch (e) {
       AppLogger.error('Error siguiendo usuario', tag: 'UserService', error: e);
       return false;
     }
@@ -400,7 +400,7 @@ class UserService {
       followers.remove(currentUserId);
       int newFollowerSCount = followers.length;
 
-      // Validación: asegurar que el contador no sea negativo
+      // ValidaciÃ³n: asegurar que el contador no sea negativo
       if (newFollowerSCount < 0) newFollowerSCount = 0;
       if (newFollowingCount < 0) newFollowingCount = 0;
 
@@ -421,9 +421,10 @@ class UserService {
         tag: 'UserService',
       );
       return true;
-    } catch (e) {
+    } on FirebaseException catch (e) {
       AppLogger.error('Error dejando de seguir', tag: 'UserService', error: e);
       return false;
     }
   }
 }
+

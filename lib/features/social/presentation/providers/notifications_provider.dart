@@ -1,4 +1,4 @@
-import 'package:flutter/foundation.dart';
+﻿import 'package:flutter/foundation.dart';
 import 'package:biux/features/social/domain/entities/notification_entity.dart';
 import 'package:biux/features/social/domain/repositories/notifications_repository.dart';
 
@@ -26,7 +26,7 @@ class NotificationsProvider extends ChangeNotifier {
   bool get hasUnread => _unreadCount > 0;
 
   void _init() {
-    debugPrint('🔔 NotificationsProvider._init() para userId: $userId');
+    debugPrint('ðŸ”” NotificationsProvider._init() para userId: $userId');
 
     // Escuchar notificaciones
     _repository
@@ -34,24 +34,24 @@ class NotificationsProvider extends ChangeNotifier {
         .listen(
           (notifications) {
             debugPrint(
-              '🔔 Notificaciones recibidas: ${notifications.length} para userId: $userId',
+              'ðŸ”” Notificaciones recibidas: ${notifications.length} para userId: $userId',
             );
             for (final n in notifications) {
               debugPrint(
-                '   → tipo=${n.type.value}, de=${n.fromUserName}, msg=${n.message}',
+                '   â†’ tipo=${n.type.value}, de=${n.fromUserName}, msg=${n.message}',
               );
             }
             _notifications = notifications;
             notifyListeners();
           },
           onError: (e) {
-            debugPrint('❌ Error en stream de notificaciones: $e');
+            debugPrint('âŒ Error en stream de notificaciones: $e');
             _error = e.toString();
             notifyListeners();
           },
         );
 
-    // Escuchar contador de no leídas
+    // Escuchar contador de no leÃ­das
     _repository
         .watchUnreadCount(userId)
         .listen(
@@ -66,17 +66,17 @@ class NotificationsProvider extends ChangeNotifier {
         );
   }
 
-  /// Marca una notificación como leída
+  /// Marca una notificaciÃ³n como leÃ­da
   Future<void> markAsRead(String notificationId) async {
     try {
       await _repository.markAsRead(userId, notificationId);
-    } catch (e) {
+    } on Exception catch (e) {
       _error = 'notif_mark_read_error';
       notifyListeners();
     }
   }
 
-  /// Marca todas las notificaciones como leídas
+  /// Marca todas las notificaciones como leÃ­das
   Future<void> markAllAsRead() async {
     try {
       _isLoading = true;
@@ -86,18 +86,18 @@ class NotificationsProvider extends ChangeNotifier {
 
       _isLoading = false;
       notifyListeners();
-    } catch (e) {
+    } on Exception catch (e) {
       _error = 'notif_mark_all_read_error';
       _isLoading = false;
       notifyListeners();
     }
   }
 
-  /// Elimina una notificación
+  /// Elimina una notificaciÃ³n
   Future<void> deleteNotification(String notificationId) async {
     try {
       await _repository.deleteNotification(userId, notificationId);
-    } catch (e) {
+    } on Exception catch (e) {
       _error = 'notif_delete_error';
       notifyListeners();
     }
@@ -113,7 +113,7 @@ class NotificationsProvider extends ChangeNotifier {
 
       _isLoading = false;
       notifyListeners();
-    } catch (e) {
+    } on Exception catch (e) {
       _error = 'notif_delete_all_error';
       _isLoading = false;
       notifyListeners();
@@ -126,3 +126,4 @@ class NotificationsProvider extends ChangeNotifier {
     notifyListeners();
   }
 }
+

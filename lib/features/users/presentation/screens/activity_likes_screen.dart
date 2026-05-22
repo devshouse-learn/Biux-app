@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -154,7 +154,7 @@ class _ActivityLikesScreenState extends State<ActivityLikesScreen> {
           _isLoading = false;
         });
       }
-    } catch (e) {
+    } on FirebaseException catch (e) {
       developer.log('Error general en likes: $e', name: 'ActivityLikes');
       if (mounted) {
         setState(() {
@@ -407,7 +407,7 @@ class _ActivityLikesScreenState extends State<ActivityLikesScreen> {
           style: TextStyle(color: ColorTokens.neutral100),
         ),
         content: Text(
-          '¿Quieres quitar tu like? Desaparecerá de esta lista.',
+          'Â¿Quieres quitar tu like? DesaparecerÃ¡ de esta lista.',
           style: TextStyle(color: ColorTokens.neutral80),
         ),
         actions: [
@@ -468,3 +468,4 @@ class _LikedItem {
     this.authorId,
   });
 }
+

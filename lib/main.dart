@@ -1,4 +1,4 @@
-import 'package:biux/core/design_system/locale_notifier.dart';
+﻿import 'package:biux/core/design_system/locale_notifier.dart';
 import 'dart:core';
 import 'package:flutter/foundation.dart' show kIsWeb;
 
@@ -43,7 +43,7 @@ Future<void> _syncOfflineRides() async {
   try {
     final pending = await OfflineRideDatasource.getPending();
     if (pending.isNotEmpty) {
-      debugPrint('📡 \${pending.length} rodadas pendientes de sincronizar');
+      debugPrint('ðŸ“¡ \${pending.length} rodadas pendientes de sincronizar');
     }
   } catch (_) {}
 }
@@ -85,13 +85,13 @@ void main() async {
   await LocalStorage().init();
 
   // Inicializar servicios core de forma diferida para evitar ANR
-  // Se inicializan después del primer frame para que el splash aparezca inmediatamente
+  // Se inicializan despuÃ©s del primer frame para que el splash aparezca inmediatamente
   _initServicesAsync();
 
   // Inicializar tracking de tiempo de uso
   await ScreenTimeService.instance.initialize();
 
-  // ErrorWidget global para producción - muestra UI amigable en vez de pantalla roja
+  // ErrorWidget global para producciÃ³n - muestra UI amigable en vez de pantalla roja
   ErrorWidget.builder = (FlutterErrorDetails details) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
@@ -110,7 +110,7 @@ void main() async {
                 ),
                 const SizedBox(height: 16),
                 const Text(
-                  'Algo salió mal',
+                  'Algo saliÃ³ mal',
                   style: TextStyle(
                     color: Colors.white,
                     fontSize: 20,
@@ -119,7 +119,7 @@ void main() async {
                 ),
                 const SizedBox(height: 8),
                 Text(
-                  'Por favor reinicia la aplicación',
+                  'Por favor reinicia la aplicaciÃ³n',
                   style: TextStyle(
                     color: Colors.white.withValues(alpha: 0.7),
                     fontSize: 14,
@@ -136,12 +136,12 @@ void main() async {
   runApp(MultiProvider(providers: AppProviders.all, child: MyApp()));
 }
 
-/// Inicializa servicios pesados de forma asíncrona sin bloquear el arranque
+/// Inicializa servicios pesados de forma asÃ­ncrona sin bloquear el arranque
 Future<void> _initServicesAsync() async {
   try {
     ConnectivityService().initialize();
 
-    // Auto-sync rodadas offline cuando se restaure la conexión
+    // Auto-sync rodadas offline cuando se restaure la conexiÃ³n
     ConnectivityService().statusStream.listen((status) {
       if (status == ConnectivityStatus.online) {
         _syncOfflineRides();
@@ -155,8 +155,8 @@ Future<void> _initServicesAsync() async {
     AppUpdateService.initialize();
     // Performance monitoring
     PerformanceService.startAppLoadTrace();
-  } catch (e) {
-    debugPrint('⚠️ Error en inicialización async de servicios: $e');
+  } on FirebaseException catch (e) {
+    debugPrint('âš ï¸ Error en inicializaciÃ³n async de servicios: $e');
   }
 }
 
@@ -201,4 +201,5 @@ class MyApp extends StatelessWidget {
   }
 }
 
-// Test miércoles, 26 de noviembre de 2025, 18:59:20 -05
+// Test miÃ©rcoles, 26 de noviembre de 2025, 18:59:20 -05
+

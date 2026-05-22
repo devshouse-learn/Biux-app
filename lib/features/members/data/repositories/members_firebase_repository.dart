@@ -1,4 +1,4 @@
-import 'package:biux/features/members/data/models/member.dart';
+﻿import 'package:biux/features/members/data/models/member.dart';
 import 'package:biux/features/members/domain/repositories/members_repository_abstract.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
@@ -23,7 +23,7 @@ class MembersFirebaseRepository extends MembersRepositoryAbstract {
           .where('id', isEqualTo: memberId)
           .get();
       return Member.fromJson(response.docs.first.data());
-    } catch (e) {
+    } on FirebaseException catch (e) {
       return Member();
     }
   }
@@ -38,7 +38,7 @@ class MembersFirebaseRepository extends MembersRepositoryAbstract {
           .where('userId', isEqualTo: userId)
           .get();
       return Member.fromJson(response.docs.first.data());
-    } catch (e) {
+    } on FirebaseException catch (e) {
       return Member();
     }
   }
@@ -48,7 +48,7 @@ class MembersFirebaseRepository extends MembersRepositoryAbstract {
     try {
       final result = await firestore.collectionGroup(subcollection).get();
       return result.docs.map((e) => Member.fromJson(e.data())).toList();
-    } catch (e) {
+    } on FirebaseException catch (e) {
       return List.empty();
     }
   }
@@ -61,7 +61,7 @@ class MembersFirebaseRepository extends MembersRepositoryAbstract {
           .collection(subcollection)
           .get();
       return result.docs.map((e) => Member.fromJson(e.data())).toList();
-    } catch (e) {
+    } on FirebaseException catch (e) {
       return List.empty();
     }
   }
@@ -74,7 +74,7 @@ class MembersFirebaseRepository extends MembersRepositoryAbstract {
           .where('id', isEqualTo: groupId)
           .get();
       return result.docs.map((e) => Member.fromJson(e.data())).toList();
-    } catch (e) {
+    } on FirebaseException catch (e) {
       return List.empty();
     }
   }
@@ -105,7 +105,7 @@ class MembersFirebaseRepository extends MembersRepositoryAbstract {
         'numberMembers': numberMember + 1,
       });
       return docId;
-    } catch (e) {
+    } on FirebaseException catch (e) {
       return '';
     }
   }
@@ -122,8 +122,9 @@ class MembersFirebaseRepository extends MembersRepositoryAbstract {
         'numberMembers': numberMember - 1,
       });
       return true;
-    } catch (e) {
+    } on FirebaseException catch (e) {
       return false;
     }
   }
 }
+

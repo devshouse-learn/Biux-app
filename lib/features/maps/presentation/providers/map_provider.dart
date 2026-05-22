@@ -1,4 +1,4 @@
-import 'dart:ui' as ui;
+﻿import 'dart:ui' as ui;
 
 import 'package:biux/core/config/images.dart';
 import 'package:biux/features/maps/data/models/meeting_point.dart';
@@ -27,7 +27,7 @@ class MapState {
     this.selectedPoint,
     this.selectedRoute,
     this.isLoading = false,
-    // Coordenadas de Ibagué por defecto
+    // Coordenadas de IbaguÃ© por defecto
     this.defaultLocation = const LatLng(4.4389, -75.2322),
     this.userLocation,
   });
@@ -86,8 +86,8 @@ class MapProvider extends ChangeNotifier {
   Future<void> _loadMeetingPointIcon() async {
     if (_meetingPointIcon != null) return;
 
-    final int targetSize = 110; // Tamaño total del ícono
-    final double padding = 15.0; // Padding para el círculo blanco
+    final int targetSize = 110; // TamaÃ±o total del Ã­cono
+    final double padding = 15.0; // Padding para el cÃ­rculo blanco
 
     // Cargar la imagen original
     final ByteData data = await rootBundle.load(Images.kMeetingPoint);
@@ -102,7 +102,7 @@ class MapProvider extends ChangeNotifier {
     final pictureRecorder = ui.PictureRecorder();
     final canvas = Canvas(pictureRecorder);
 
-    // Dibujar círculo blanco
+    // Dibujar cÃ­rculo blanco
     final paint = Paint()
       ..color = Colors.white
       ..style = PaintingStyle.fill;
@@ -142,13 +142,13 @@ class MapProvider extends ChangeNotifier {
     _mapController = controller;
     await _loadMeetingPointIcon();
 
-    // Intentar obtener ubicación del usuario si ya tiene permisos
+    // Intentar obtener ubicaciÃ³n del usuario si ya tiene permisos
     if (_locationProvider != null && !_locationRequested) {
       _locationRequested = true;
       await _tryGetUserLocation();
     }
 
-    // Centrar en la ubicación del usuario si está disponible, sino en Ibagué
+    // Centrar en la ubicaciÃ³n del usuario si estÃ¡ disponible, sino en IbaguÃ©
     LatLng initialLocation = _state.userLocation ?? _state.defaultLocation;
     _mapController?.animateCamera(
       CameraUpdate.newLatLngZoom(initialLocation, 13),
@@ -157,7 +157,7 @@ class MapProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  /// Solicita permisos de ubicación cuando el usuario explícitamente lo requiere
+  /// Solicita permisos de ubicaciÃ³n cuando el usuario explÃ­citamente lo requiere
   Future<void> requestUserLocation() async {
     if (_locationProvider == null) return;
 
@@ -171,7 +171,7 @@ class MapProvider extends ChangeNotifier {
       LatLng userLatLng = LatLng(position.latitude, position.longitude);
       _state = _state.copyWith(userLocation: userLatLng, isLoading: false);
 
-      // Centrar mapa en la ubicación del usuario
+      // Centrar mapa en la ubicaciÃ³n del usuario
       _mapController?.animateCamera(CameraUpdate.newLatLngZoom(userLatLng, 15));
     } else {
       _state = _state.copyWith(isLoading: false);
@@ -180,7 +180,7 @@ class MapProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  /// Intenta obtener ubicación sin solicitar permisos si no los tiene
+  /// Intenta obtener ubicaciÃ³n sin solicitar permisos si no los tiene
   Future<void> _tryGetUserLocation() async {
     if (_locationProvider == null) return;
 
@@ -240,7 +240,7 @@ class MapProvider extends ChangeNotifier {
       );
 
       debugPrint(
-        '🗺️ Obteniendo ruta de ciclismo desde ${origin} hasta ${destination}',
+        'ðŸ—ºï¸ Obteniendo ruta de ciclismo desde ${origin} hasta ${destination}',
       );
 
       // Obtener la ruta real usando Google Directions API para ciclismo
@@ -252,7 +252,7 @@ class MapProvider extends ChangeNotifier {
 
       if (directionResult != null && directionResult.points.isNotEmpty) {
         debugPrint(
-          '✅ Ruta obtenida exitosamente con ${directionResult.points.length} puntos',
+          'âœ… Ruta obtenida exitosamente con ${directionResult.points.length} puntos',
         );
 
         final polylines = {
@@ -261,7 +261,7 @@ class MapProvider extends ChangeNotifier {
             points: directionResult.points,
             color: Colors.green, // Verde para rutas de ciclismo
             width: 6,
-            patterns: [], // Línea sólida
+            patterns: [], // LÃ­nea sÃ³lida
           ),
         };
 
@@ -277,20 +277,20 @@ class MapProvider extends ChangeNotifier {
         }
       } else {
         debugPrint(
-          '⚠️ No se pudo obtener la ruta desde la API, usando línea recta',
+          'âš ï¸ No se pudo obtener la ruta desde la API, usando lÃ­nea recta',
         );
 
-        // Si falla la API, crear una línea recta punteada
+        // Si falla la API, crear una lÃ­nea recta punteada
         final simplePolylines = {
           Polyline(
             polylineId: PolylineId(route.id),
             points: [origin, destination],
-            color: Colors.orange, // Naranja para indicar que es una estimación
+            color: Colors.orange, // Naranja para indicar que es una estimaciÃ³n
             width: 4,
             patterns: [
               PatternItem.dash(20),
               PatternItem.gap(10),
-            ], // Línea punteada
+            ], // LÃ­nea punteada
           ),
         };
 
@@ -304,8 +304,8 @@ class MapProvider extends ChangeNotifier {
           _fitRouteInViewFromPoints([origin, destination]);
         }
       }
-    } catch (e) {
-      debugPrint('💥 Error seleccionando ruta: $e');
+    } on Exception catch (e) {
+      debugPrint('ðŸ’¥ Error seleccionando ruta: $e');
       _state = _state.copyWith(isLoading: false);
     }
 
@@ -442,3 +442,4 @@ class MapProvider extends ChangeNotifier {
     super.dispose();
   }
 }
+

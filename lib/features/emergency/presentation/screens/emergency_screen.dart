@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:geolocator/geolocator.dart';
@@ -73,7 +73,7 @@ class _EmergencyScreenState extends State<EmergencyScreen> {
     );
   }
 
-  // ── SOS Button ─────────────────────────────────────────
+  // â”€â”€ SOS Button â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   Widget _buildSOS(BuildContext context, EmergencyProvider p) {
     return Container(
       width: double.infinity,
@@ -126,7 +126,7 @@ class _EmergencyScreenState extends State<EmergencyScreen> {
               ),
               child: Center(
                 child: Text(
-                  p.sosActive ? '✓' : 'SOS',
+                  p.sosActive ? 'âœ“' : 'SOS',
                   style: const TextStyle(
                     color: Colors.white,
                     fontSize: 36,
@@ -180,7 +180,7 @@ class _EmergencyScreenState extends State<EmergencyScreen> {
           ),
         );
       }
-    } catch (e) {
+    } on FirebaseException catch (e) {
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
@@ -192,9 +192,9 @@ class _EmergencyScreenState extends State<EmergencyScreen> {
     }
   }
 
-  // ══════════════════════════════════════════════════════════
-  // ── Accidentes Recientes (NUEVO) ─────────────────────────
-  // ══════════════════════════════════════════════════════════
+  // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+  // â”€â”€ Accidentes Recientes (NUEVO) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
   Widget _buildRecentAccidents(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final cardColor = isDark ? const Color(0xFF1E2A32) : Colors.white;
@@ -428,7 +428,7 @@ class _EmergencyScreenState extends State<EmergencyScreen> {
                       ),
                       const SizedBox(width: 3),
                       Text(
-                        a.userName.isNotEmpty ? a.userName : 'Anónimo',
+                        a.userName.isNotEmpty ? a.userName : 'AnÃ³nimo',
                         style: TextStyle(color: Colors.grey[500], fontSize: 11),
                       ),
                       const SizedBox(width: 8),
@@ -512,7 +512,7 @@ class _EmergencyScreenState extends State<EmergencyScreen> {
     return DateFormat('dd/MM/yy').format(date);
   }
 
-  // ── Números de Emergencia ──────────────────────────────
+  // â”€â”€ NÃºmeros de Emergencia â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   Widget _buildQuickEmergency() {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final cardColor = isDark ? const Color(0xFF1E2A32) : Colors.white;
@@ -538,35 +538,35 @@ class _EmergencyScreenState extends State<EmergencyScreen> {
           ),
           const SizedBox(height: 12),
           _eTile(
-            emoji: '🚑',
+            emoji: 'ðŸš‘',
             service: l.t('ambulance_samu'),
             description: l.t('medical_emergencies'),
             number: '123',
             color: Colors.red,
           ),
           _eTile(
-            emoji: '🚔',
+            emoji: 'ðŸš”',
             service: l.t('national_police'),
             description: l.t('security_crimes'),
             number: '112',
             color: Colors.blue,
           ),
           _eTile(
-            emoji: '🚒',
+            emoji: 'ðŸš’',
             service: l.t('firefighters'),
             description: l.t('fires_rescues'),
             number: '119',
             color: Colors.orange,
           ),
           _eTile(
-            emoji: '🏥',
+            emoji: 'ðŸ¥',
             service: l.t('red_cross'),
             description: l.t('first_aid_humanitarian'),
             number: '132',
             color: Colors.red[800]!,
           ),
           _eTile(
-            emoji: '🛡️',
+            emoji: 'ðŸ›¡ï¸',
             service: l.t('civil_defense'),
             description: l.t('natural_disasters'),
             number: '144',
@@ -584,7 +584,7 @@ class _EmergencyScreenState extends State<EmergencyScreen> {
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text('⚠️', style: TextStyle(fontSize: 18)),
+                const Text('âš ï¸', style: TextStyle(fontSize: 18)),
                 const SizedBox(width: 10),
                 Expanded(
                   child: Column(
@@ -687,7 +687,7 @@ class _EmergencyScreenState extends State<EmergencyScreen> {
     );
   }
 
-  // ── Contactos de Emergencia ────────────────────────────
+  // â”€â”€ Contactos de Emergencia â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   Widget _buildContacts(BuildContext context, EmergencyProvider p) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final cardColor = isDark ? const Color(0xFF1E2A32) : Colors.white;
@@ -773,7 +773,7 @@ class _EmergencyScreenState extends State<EmergencyScreen> {
                   style: const TextStyle(fontWeight: FontWeight.w500),
                 ),
                 subtitle: Text(
-                  '${c.phone}${c.relationship != null && c.relationship!.isNotEmpty ? " • ${c.relationship}" : ""}',
+                  '${c.phone}${c.relationship != null && c.relationship!.isNotEmpty ? " â€¢ ${c.relationship}" : ""}',
                 ),
                 trailing: Row(
                   mainAxisSize: MainAxisSize.min,
@@ -923,19 +923,19 @@ class _EmergencyScreenState extends State<EmergencyScreen> {
   }
 
   String _relIcon(String? r) => switch (r) {
-    'Mamá' => '👩',
-    'Papá' => '👨',
-    'Hermano/a' => '🧑‍🤝‍🧑',
-    'Esposo/a' => '💑',
-    'Novio/a' => '❤️',
-    'Hijo/a' => '👶',
-    'Tío/a' => '👤',
-    'Abuelo/a' => '👴',
-    'Primo/a' => '🤝',
-    'Amigo/a' => '🤗',
-    'Compañero/a' => '🚴',
-    'Vecino/a' => '🏠',
-    _ => '👤',
+    'MamÃ¡' => 'ðŸ‘©',
+    'PapÃ¡' => 'ðŸ‘¨',
+    'Hermano/a' => 'ðŸ§‘â€ðŸ¤â€ðŸ§‘',
+    'Esposo/a' => 'ðŸ’‘',
+    'Novio/a' => 'â¤ï¸',
+    'Hijo/a' => 'ðŸ‘¶',
+    'TÃ­o/a' => 'ðŸ‘¤',
+    'Abuelo/a' => 'ðŸ‘´',
+    'Primo/a' => 'ðŸ¤',
+    'Amigo/a' => 'ðŸ¤—',
+    'CompaÃ±ero/a' => 'ðŸš´',
+    'Vecino/a' => 'ðŸ ',
+    _ => 'ðŸ‘¤',
   };
 
   void _showAdd(BuildContext context) {
@@ -943,17 +943,17 @@ class _EmergencyScreenState extends State<EmergencyScreen> {
     final phoneC = TextEditingController();
     String? selRel;
     const rels = [
-      'Mamá',
-      'Papá',
+      'MamÃ¡',
+      'PapÃ¡',
       'Hermano/a',
       'Esposo/a',
       'Novio/a',
       'Hijo/a',
-      'Tío/a',
+      'TÃ­o/a',
       'Abuelo/a',
       'Primo/a',
       'Amigo/a',
-      'Compañero/a',
+      'CompaÃ±ero/a',
       'Vecino/a',
       'Otro',
     ];
@@ -991,7 +991,7 @@ class _EmergencyScreenState extends State<EmergencyScreen> {
                 TextField(
                   controller: phoneC,
                   decoration: InputDecoration(
-                    labelText: 'Teléfono',
+                    labelText: 'TelÃ©fono',
                     prefixIcon: Icon(Icons.phone),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(10),
@@ -1004,7 +1004,7 @@ class _EmergencyScreenState extends State<EmergencyScreen> {
                 DropdownButtonFormField<String>(
                   initialValue: selRel,
                   decoration: InputDecoration(
-                    labelText: 'Relación',
+                    labelText: 'RelaciÃ³n',
                     prefixIcon: Icon(Icons.family_restroom),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(10),
@@ -1069,7 +1069,7 @@ class _EmergencyScreenState extends State<EmergencyScreen> {
     );
   }
 
-  // ── Tips de Seguridad ──────────────────────────────────
+  // â”€â”€ Tips de Seguridad â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   Widget _buildTips() {
     return Container(
       padding: const EdgeInsets.all(16),
@@ -1093,10 +1093,10 @@ class _EmergencyScreenState extends State<EmergencyScreen> {
           ),
           const SizedBox(height: 12),
           _tip('Usa siempre casco y luces'),
-          _tip('Comparte tu ubicación con alguien de confianza'),
-          _tip('Lleva identificación y datos médicos'),
+          _tip('Comparte tu ubicaciÃ³n con alguien de confianza'),
+          _tip('Lleva identificaciÃ³n y datos mÃ©dicos'),
           _tip('Revisa tu bicicleta antes de salir'),
-          _tip('Respeta las señales de tránsito'),
+          _tip('Respeta las seÃ±ales de trÃ¡nsito'),
           _tip('Usa ropa reflectiva de noche'),
         ],
       ),
@@ -1116,3 +1116,4 @@ class _EmergencyScreenState extends State<EmergencyScreen> {
     );
   }
 }
+
