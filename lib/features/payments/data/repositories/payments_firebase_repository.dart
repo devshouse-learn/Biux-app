@@ -1,5 +1,4 @@
-﻿import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:biux/features/payments/domain/repositories/payments_repository_abstract.dart';
+﻿import 'package:biux/features/payments/domain/repositories/payments_repository_abstract.dart';
 import 'package:biux/features/payments/data/repositories/payments_firebase_repository_impl.dart';
 import 'package:biux/core/services/app_logger.dart';
 

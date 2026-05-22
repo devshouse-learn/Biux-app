@@ -1,5 +1,4 @@
-﻿import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_analytics/firebase_analytics.dart';
+﻿import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:biux/core/services/app_logger.dart';
 
 /// Servicio centralizado de analytics con eventos tipados.

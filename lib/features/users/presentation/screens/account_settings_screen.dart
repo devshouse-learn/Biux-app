@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:biux/core/design_system/color_tokens.dart';
 import 'package:biux/core/design_system/locale_notifier.dart';
@@ -17,6 +17,8 @@ class AccountSettingsScreen extends StatefulWidget {
 }
 
 class _AccountSettingsScreenState extends State<AccountSettingsScreen> {
+  LocaleNotifier get l => Provider.of<LocaleNotifier>(context);
+
   @override
   void initState() {
     super.initState();
@@ -48,13 +50,13 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen> {
             children: [
               _buildInfoTile(
                 icon: Icons.alternate_email,
-                title: 'Nombre de usuario',
+                title: l.t('username_label'),
                 value: user.username?.isNotEmpty == true
                     ? '@${user.username}'
-                    : user.name ?? 'Sin definir',
+                    : user.name ?? l.t('not_defined'),
                 isDark: isDark,
               ),
-              const SizedBox(height: 8),
+              SizedBox(height: 8),
               _buildInfoTile(
                 icon: Icons.email_outlined,
                 title: l.t('email_label'),
@@ -63,7 +65,7 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen> {
                     : l.t('not_linked'),
                 isDark: isDark,
               ),
-              const SizedBox(height: 8),
+              SizedBox(height: 8),
               _buildInfoTile(
                 icon: Icons.phone_android_outlined,
                 title: l.t('phone_number'),
@@ -72,7 +74,7 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen> {
                     : l.t('not_linked'),
                 isDark: isDark,
               ),
-              const SizedBox(height: 8),
+              SizedBox(height: 8),
               SettingsWidgets.buildOptionCard(
                 context: context,
                 icon: Icons.history,
@@ -121,8 +123,8 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen> {
         boxShadow: [
           BoxShadow(
             color: isDark
-                ? Colors.black.withOpacity(0.15)
-                : Colors.grey.withOpacity(0.08),
+                ? Colors.black.withValues(alpha: 0.15)
+                : Colors.grey.withValues(alpha: 0.08),
             blurRadius: 8,
             offset: const Offset(0, 2),
           ),
@@ -136,7 +138,11 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen> {
               color: isDark ? Colors.grey.shade700 : Colors.grey.shade200,
               borderRadius: BorderRadius.circular(12),
             ),
-            child: Icon(icon, color: isDark ? Colors.white : Colors.black87, size: 26),
+            child: Icon(
+              icon,
+              color: isDark ? Colors.white : Colors.black87,
+              size: 26,
+            ),
           ),
           const SizedBox(width: 16),
           Expanded(
@@ -167,88 +173,7 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen> {
     );
   }
 
-  /// Formatea el número de teléfono
-  String _formatPhoneNumber(String phoneNumber) {
-    String cleaned = phoneNumber.replaceAll(RegExp(r'[^\d]'), '');
-
-    // Si comienza con 57 (código de Colombia), remover
-    if (cleaned.startsWith('57')) {
-      cleaned = cleaned.substring(2);
-    }
-
-    // Formatear como XXX XXX XXXX
-    if (cleaned.length == 10) {
-      return '${cleaned.substring(0, 3)} ${cleaned.substring(3, 6)} ${cleaned.substring(6)}';
-    }
-
-    return phoneNumber;
-  }
-
-  void _showLogoutDialog() {
-    final l = Provider.of<LocaleNotifier>(context, listen: false);
-    showDialog(
-      context: context,
-      builder: (BuildContext dialogContext) {
-        return AlertDialog(
-          title: Text(l.t('logout')),
-          content: Text(l.t('sign_out_confirm')),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.of(dialogContext).pop();
-              },
-              child: Text(l.t('cancel')),
-            ),
-            TextButton(
-              onPressed: () async {
-                Navigator.of(dialogContext).pop();
-                final userProvider = context.read<UserProvider>();
-                await userProvider.signOut();
-                if (mounted) {
-                  context.go('/login');
-                }
-              },
-              child: Text(l.t('confirm'), style: TextStyle(color: Colors.red)),
-            ),
-          ],
-        );
-      },
-    );
-  }
-
-  void _showDeleteAccountDialog() {
-    final l = Provider.of<LocaleNotifier>(context, listen: false);
-    showDialog(
-      context: context,
-      builder: (BuildContext dialogContext) {
-        return AlertDialog(
-          title: Text(l.t('delete_account')),
-          content: Text(l.t('delete_account_confirm')),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.of(dialogContext).pop();
-              },
-              child: Text(l.t('cancel')),
-            ),
-            TextButton(
-              onPressed: () async {
-                Navigator.of(dialogContext).pop();
-                final userProvider = context.read<UserProvider>();
-                await userProvider.requestAccountDeletion();
-                if (mounted) {
-                  context.go('/login');
-                }
-              },
-              child: Text(l.t('confirm'), style: TextStyle(color: Colors.red)),
-            ),
-          ],
-        );
-      },
-    );
-  }
-
-  // ===== CAMBIAR CONTRASEÑA =====
+  // ===== CAMBIAR CONTRASEÃ‘A =====
   // ignore: unused_element
   void _showChangePasswordDialog() {
     final l = Provider.of<LocaleNotifier>(context, listen: false);
@@ -256,7 +181,7 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen> {
     final userEmail = firebaseUser?.email;
 
     if (userEmail != null && userEmail.isNotEmpty) {
-      // Tiene email vinculado → enviar reset
+      // Tiene email vinculado â†’ enviar reset
       showDialog(
         context: context,
         builder: (dialogContext) => AlertDialog(
@@ -282,7 +207,7 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen> {
                       ),
                     );
                   }
-                } catch (e) {
+                } on FirebaseException catch (e) {
                   if (mounted) {
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(
@@ -303,7 +228,7 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen> {
         ),
       );
     } else {
-      // No tiene email → pedir que vincule uno
+      // No tiene email â†’ pedir que vincule uno
       final emailController = TextEditingController();
       showDialog(
         context: context,
@@ -313,7 +238,7 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen> {
             mainAxisSize: MainAxisSize.min,
             children: [
               Text(l.t('no_email_linked')),
-              const SizedBox(height: 16),
+              SizedBox(height: 16),
               TextField(
                 controller: emailController,
                 keyboardType: TextInputType.emailAddress,
@@ -322,7 +247,7 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen> {
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(8),
                   ),
-                  prefixIcon: const Icon(Icons.email_outlined),
+                  prefixIcon: Icon(Icons.email_outlined),
                 ),
               ),
             ],
@@ -349,7 +274,7 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen> {
                       ),
                     );
                   }
-                } catch (e) {
+                } on FirebaseException catch (e) {
                   if (mounted) {
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(
@@ -379,7 +304,7 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen> {
     final firebaseUser = FirebaseAuth.instance.currentUser;
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
-    // Obtener info de la sesión
+    // Obtener info de la sesiÃ³n
     final creationTime = firebaseUser?.metadata.creationTime;
     final lastSignIn = firebaseUser?.metadata.lastSignInTime;
     final providers = firebaseUser?.providerData ?? [];
@@ -415,7 +340,7 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen> {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
-      shape: const RoundedRectangleBorder(
+      shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
       backgroundColor: isDark ? ColorTokens.primary40 : Colors.white,
@@ -436,7 +361,7 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen> {
                 ),
               ),
             ),
-            const SizedBox(height: 20),
+            SizedBox(height: 20),
             Text(
               l.t('activity_history'),
               style: TextStyle(
@@ -445,29 +370,29 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen> {
                 color: isDark ? Colors.white : Colors.black87,
               ),
             ),
-            const SizedBox(height: 20),
+            SizedBox(height: 20),
 
-            // Fecha de creación
+            // Fecha de creaciÃ³n
             _buildActivityRow(
               icon: Icons.calendar_today,
               label: l.t('account_created_date'),
               value: creationTime != null
                   ? dateFormat.format(creationTime.toLocal())
-                  : '—',
+                  : 'â€”',
               isDark: isDark,
             ),
-            const SizedBox(height: 12),
+            SizedBox(height: 12),
 
-            // Último inicio de sesión
+            // Ãšltimo inicio de sesiÃ³n
             _buildActivityRow(
               icon: Icons.access_time,
               label: l.t('last_login_date'),
               value: lastSignIn != null
                   ? dateFormat.format(lastSignIn.toLocal())
-                  : '—',
+                  : 'â€”',
               isDark: isDark,
             ),
-            const SizedBox(height: 20),
+            SizedBox(height: 20),
 
             // Proveedores de login
             Text(
@@ -586,7 +511,7 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen> {
   bool _isAccountVerified() {
     final firebaseUser = FirebaseAuth.instance.currentUser;
     if (firebaseUser == null) return false;
-    // Si tiene teléfono verificado, está verificado
+    // Si tiene telÃ©fono verificado, estÃ¡ verificado
     if (firebaseUser.phoneNumber != null &&
         firebaseUser.phoneNumber!.isNotEmpty) {
       return true;
@@ -630,7 +555,7 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen> {
                 ),
               ),
             ),
-            const SizedBox(height: 20),
+            SizedBox(height: 20),
 
             // Icono principal
             Icon(
@@ -642,7 +567,7 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen> {
                   ? Colors.green.shade400
                   : Colors.orange.shade400,
             ),
-            const SizedBox(height: 16),
+            SizedBox(height: 16),
 
             Text(
               isPhoneVerified || isEmailVerified
@@ -654,9 +579,9 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen> {
                 color: isDark ? Colors.white : Colors.black87,
               ),
             ),
-            const SizedBox(height: 20),
+            SizedBox(height: 20),
 
-            // Estado de verificación por teléfono
+            // Estado de verificaciÃ³n por telÃ©fono
             if (isPhoneVerified)
               _buildVerificationRow(
                 icon: Icons.phone_android,
@@ -666,9 +591,9 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen> {
                 isDark: isDark,
               ),
 
-            // Estado de verificación por email
+            // Estado de verificaciÃ³n por email
             if (hasEmail) ...[
-              const SizedBox(height: 12),
+              SizedBox(height: 12),
               _buildVerificationRow(
                 icon: Icons.email_outlined,
                 label: l.t('email_auth'),
@@ -678,7 +603,7 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen> {
               ),
             ],
 
-            // Botón para enviar verificación de email si no está verificado
+            // BotÃ³n para enviar verificaciÃ³n de email si no estÃ¡ verificado
             if (hasEmail && !isEmailVerified) ...[
               const SizedBox(height: 20),
               SizedBox(
@@ -696,7 +621,7 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen> {
                           ),
                         );
                       }
-                    } catch (e) {
+                    } on FirebaseException catch (e) {
                       if (mounted) {
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(
@@ -707,7 +632,7 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen> {
                       }
                     }
                   },
-                  icon: const Icon(Icons.send),
+                  icon: Icon(Icons.send),
                   label: Text(l.t('send_verification_email')),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: ColorTokens.primary30,
@@ -783,3 +708,4 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen> {
     );
   }
 }
+

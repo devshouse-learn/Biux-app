@@ -1,4 +1,4 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
+﻿import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/foundation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -18,18 +18,18 @@ class AchievementsSyncService {
 
       if (daysSinceSync >= _syncIntervalDays) {
         debugPrint(
-          '🔄 Logros: Sincronizando (ultima vez hace \${daysSinceSync.toInt()} dias)',
+          'ðŸ”„ Logros: Sincronizando (ultima vez hace \${daysSinceSync.toInt()} dias)',
         );
         await fullSync(userId);
         await prefs.setInt(_lastSyncKey, now);
-        debugPrint('✅ Logros: Sincronizacion semanal completada');
+        debugPrint('âœ… Logros: Sincronizacion semanal completada');
       } else {
         debugPrint(
-          '⏭️ Logros: No necesita sincronizar (faltan \${(_syncIntervalDays - daysSinceSync).toInt()} dias)',
+          'â­ï¸ Logros: No necesita sincronizar (faltan \${(_syncIntervalDays - daysSinceSync).toInt()} dias)',
         );
       }
-    } catch (e) {
-      debugPrint('❌ Error en sincronizacion semanal de logros: \$e');
+    } on FirebaseException catch (e) {
+      debugPrint('âŒ Error en sincronizacion semanal de logros: \$e');
     }
   }
 
@@ -66,7 +66,7 @@ class AchievementsSyncService {
           rideDates.add(DateTime.fromMillisecondsSinceEpoch(startMs));
         }
       }
-    } catch (e) {
+    } on FirebaseException catch (e) {
       debugPrint('Error obteniendo historial de rodadas: \$e');
     }
 
@@ -81,7 +81,9 @@ class AchievementsSyncService {
           .where('members', arrayContains: userId)
           .get();
       groupCount = groupSnap.docs.length;
-    } catch (_) {}
+    } on FirebaseException catch (e) {
+      debugPrint('Error: ' + e.toString());
+    }
 
     // 4. Detectar logros especiales
     bool hasNightRide = false;
@@ -195,7 +197,7 @@ class AchievementsSyncService {
         .set(updates, SetOptions(merge: true));
 
     debugPrint(
-      '📊 Sync completo: \${accumKm.toStringAsFixed(1)} km, \$totalRides rodadas, max \${bestMaxSpeed.toStringAsFixed(1)} km/h, racha \$streak dias, \$groupCount grupos',
+      'ðŸ“Š Sync completo: \${accumKm.toStringAsFixed(1)} km, \$totalRides rodadas, max \${bestMaxSpeed.toStringAsFixed(1)} km/h, racha \$streak dias, \$groupCount grupos',
     );
   }
 
@@ -252,3 +254,4 @@ class AchievementsSyncService {
     return streak;
   }
 }
+
