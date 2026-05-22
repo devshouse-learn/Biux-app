@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:biux/core/design_system/locale_notifier.dart';
 import 'package:biux/features/store/domain/entities/product_entity.dart';
@@ -257,16 +257,16 @@ class _SellerDashboardScreenState extends State<SellerDashboardScreen> {
         title: const Text('Agregar Producto'),
         content: SingleChildScrollView(
           child: Text(
-            'Formulario de creación de producto.\n\n'
-            'Aquí implementarías un formulario completo con:\n'
-            '• Nombre\n'
-            '• Descripción\n'
-            '• Precio\n'
-            '• Categoría\n'
-            '• Stock\n'
-            '• Imágenes\n'
-            '• Especificaciones\n\n'
-            'Por ahora es una versión demo.',
+            'Formulario de creaciÃ³n de producto.\n\n'
+            'AquÃ­ implementarÃ­as un formulario completo con:\n'
+            'â€¢ Nombre\n'
+            'â€¢ DescripciÃ³n\n'
+            'â€¢ Precio\n'
+            'â€¢ CategorÃ­a\n'
+            'â€¢ Stock\n'
+            'â€¢ ImÃ¡genes\n'
+            'â€¢ Especificaciones\n\n'
+            'Por ahora es una versiÃ³n demo.',
             style: TextStyle(fontSize: 14),
           ),
         ),
@@ -277,7 +277,7 @@ class _SellerDashboardScreenState extends State<SellerDashboardScreen> {
           ),
           ElevatedButton(
             onPressed: () {
-              // IMPLEMENTADO (STUB): Implementar creación real
+              // IMPLEMENTADO (STUB): Implementar creaciÃ³n real
               Navigator.pop(context);
               ScaffoldMessenger.of(context).showSnackBar(
                 const SnackBar(content: Text('Funcionalidad en desarrollo')),
@@ -298,9 +298,9 @@ class _SellerDashboardScreenState extends State<SellerDashboardScreen> {
         content: SingleChildScrollView(
           child: Text(
             'Editando: ${product.nombre}\n\n'
-            'Formulario de edición de producto.\n\n'
-            'Aquí implementarías un formulario prellenado con los datos actuales del producto.\n\n'
-            'Por ahora es una versión demo.',
+            'Formulario de ediciÃ³n de producto.\n\n'
+            'AquÃ­ implementarÃ­as un formulario prellenado con los datos actuales del producto.\n\n'
+            'Por ahora es una versiÃ³n demo.',
             style: TextStyle(fontSize: 14),
           ),
         ),
@@ -311,7 +311,7 @@ class _SellerDashboardScreenState extends State<SellerDashboardScreen> {
           ),
           ElevatedButton(
             onPressed: () {
-              // IMPLEMENTADO (STUB): Implementar edición real
+              // IMPLEMENTADO (STUB): Implementar ediciÃ³n real
               Navigator.pop(context);
               ScaffoldMessenger.of(context).showSnackBar(
                 const SnackBar(content: Text('Funcionalidad en desarrollo')),
@@ -368,7 +368,7 @@ class _SellerDashboardScreenState extends State<SellerDashboardScreen> {
                     ),
                   );
                 }
-              } catch (e) {
+              } on Exception catch (e) {
                 if (mounted) {
                   Navigator.pop(context);
                   ScaffoldMessenger.of(context).showSnackBar(
@@ -388,3 +388,4 @@ class _SellerDashboardScreenState extends State<SellerDashboardScreen> {
     );
   }
 }
+

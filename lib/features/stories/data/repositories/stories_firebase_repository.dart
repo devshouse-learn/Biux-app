@@ -1,4 +1,4 @@
-import 'dart:io';
+﻿import 'dart:io';
 
 import 'package:biux/core/config/strings.dart';
 import 'package:biux/features/stories/data/models/story.dart';
@@ -24,7 +24,7 @@ class StoriesFirebaseRepository extends StoriesRepositoryAbstract {
       final listImages = await uploadStory(id: result.id, listFile: listFile);
 
       if (listImages.isEmpty) {
-        // Si no se subieron imágenes, eliminar el documento
+        // Si no se subieron imÃ¡genes, eliminar el documento
         await firestore.collection(collection).doc(result.id).delete();
         return false;
       }
@@ -44,7 +44,7 @@ class StoriesFirebaseRepository extends StoriesRepositoryAbstract {
       );
 
       return updateResult;
-    } catch (e) {
+    } on FirebaseException catch (e) {
       debugPrint('Error en createStory: $e');
       return false;
     }
@@ -53,7 +53,7 @@ class StoriesFirebaseRepository extends StoriesRepositoryAbstract {
   Future deleteStory(String id) async {
     try {
       await firestore.collection(collection).doc(id).delete();
-    } catch (e) {
+    } on FirebaseException catch (e) {
       debugPrint('Error: ' + e.toString());
     }
   }
@@ -66,7 +66,7 @@ class StoriesFirebaseRepository extends StoriesRepositoryAbstract {
           .orderBy('creationDate', descending: true)
           .get();
       return result.docs.map((e) => Story.fromJson(e.data(), e.id)).toList();
-    } catch (e) {
+    } on FirebaseException catch (e) {
       return [];
     }
   }
@@ -114,7 +114,7 @@ class StoriesFirebaseRepository extends StoriesRepositoryAbstract {
       String downloadUrl = await (await uploadTask).ref.getDownloadURL();
       debugPrint('Imagen subida exitosamente: $nameUrl -> $downloadUrl');
       return downloadUrl;
-    } catch (e) {
+    } on FirebaseException catch (e) {
       debugPrint('Error subiendo imagen $nameUrl: $e');
       return '';
     }
@@ -143,7 +143,7 @@ class StoriesFirebaseRepository extends StoriesRepositoryAbstract {
           .doc(id)
           .update(story.toJson());
       return true;
-    } catch (e) {
+    } on FirebaseException catch (e) {
       return false;
     }
   }
@@ -155,8 +155,9 @@ class StoriesFirebaseRepository extends StoriesRepositoryAbstract {
           .where('user.id', isEqualTo: id)
           .get();
       return response.docs.map((e) => Story.fromJson(e.data(), e.id)).toList();
-    } catch (e) {
+    } on FirebaseException catch (e) {
       return List.empty();
     }
   }
 }
+

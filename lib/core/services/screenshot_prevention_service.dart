@@ -1,4 +1,4 @@
-import 'package:flutter/foundation.dart';
+﻿import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:biux/core/services/app_logger.dart';
 
@@ -13,8 +13,8 @@ import 'package:biux/core/services/app_logger.dart';
 /// ScreenshotPreventionService.disable();
 /// ```
 ///
-/// Requiere código nativo en Android (ScreenshotPlugin.kt)
-/// y configuración en iOS (info.plist no aplica, se usa UIScreen).
+/// Requiere cÃ³digo nativo en Android (ScreenshotPlugin.kt)
+/// y configuraciÃ³n en iOS (info.plist no aplica, se usa UIScreen).
 class ScreenshotPreventionService {
   ScreenshotPreventionService._();
 
@@ -23,7 +23,7 @@ class ScreenshotPreventionService {
 
   static bool get isEnabled => _isEnabled;
 
-  /// Activa la prevención de capturas de pantalla
+  /// Activa la prevenciÃ³n de capturas de pantalla
   static Future<void> enable() async {
     if (_isEnabled) return;
     if (kIsWeb) return;
@@ -37,7 +37,7 @@ class ScreenshotPreventionService {
         'Screenshot prevention enabled: $_isEnabled',
         tag: 'Screenshot',
       );
-    } catch (e) {
+    } on Exception catch (e) {
       AppLogger.error(
         'Error enabling screenshot prevention',
         error: e,
@@ -46,7 +46,7 @@ class ScreenshotPreventionService {
     }
   }
 
-  /// Desactiva la prevención de capturas de pantalla
+  /// Desactiva la prevenciÃ³n de capturas de pantalla
   static Future<void> disable() async {
     if (!_isEnabled) return;
     if (kIsWeb) return;
@@ -57,7 +57,7 @@ class ScreenshotPreventionService {
       );
       _isEnabled = !(result ?? false);
       AppLogger.info('Screenshot prevention disabled', tag: 'Screenshot');
-    } catch (e) {
+    } on Exception catch (e) {
       AppLogger.error(
         'Error disabling screenshot prevention',
         error: e,
@@ -66,3 +66,4 @@ class ScreenshotPreventionService {
     }
   }
 }
+

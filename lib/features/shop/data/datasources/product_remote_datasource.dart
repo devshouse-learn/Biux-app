@@ -1,4 +1,4 @@
-import 'dart:async';
+﻿import 'dart:async';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:biux/features/shop/data/models/product_model.dart';
 import 'package:biux/features/shop/data/datasources/mock_products.dart';
@@ -21,7 +21,7 @@ class ProductRemoteDataSource {
         .toList();
   }
 
-  /// Obtener productos por categoría
+  /// Obtener productos por categorÃ­a
   Future<List<ProductModel>> getProductsByCategory(String category) async {
     try {
       final snapshot = await _firestore
@@ -34,8 +34,8 @@ class ProductRemoteDataSource {
       return snapshot.docs
           .map((doc) => ProductModel.fromFirestore(doc))
           .toList();
-    } catch (e) {
-      throw Exception('Error al obtener productos por categoría: $e');
+    } on FirebaseException catch (e) {
+      throw Exception('Error al obtener productos por categorÃ­a: $e');
     }
   }
 
@@ -49,12 +49,12 @@ class ProductRemoteDataSource {
       }
 
       return ProductModel.fromFirestore(doc);
-    } catch (e) {
+    } on FirebaseException catch (e) {
       throw Exception('Error al obtener producto: $e');
     }
   }
 
-  /// Buscar productos por nombre o descripción
+  /// Buscar productos por nombre o descripciÃ³n
   Future<List<ProductModel>> searchProducts(String query) async {
     try {
       final snapshot = await _firestore
@@ -72,7 +72,7 @@ class ProductRemoteDataSource {
                 product.description.toLowerCase().contains(lowercaseQuery),
           )
           .toList();
-    } catch (e) {
+    } on FirebaseException catch (e) {
       throw Exception('Error al buscar productos: $e');
     }
   }
@@ -85,7 +85,7 @@ class ProductRemoteDataSource {
           .add(product.toFirestore());
 
       return docRef.id;
-    } catch (e) {
+    } on FirebaseException catch (e) {
       throw Exception('Error al crear producto: $e');
     }
   }
@@ -97,7 +97,7 @@ class ProductRemoteDataSource {
           .collection(_collection)
           .doc(product.id)
           .update(product.toFirestore());
-    } catch (e) {
+    } on FirebaseException catch (e) {
       throw Exception('Error al actualizar producto: $e');
     }
   }
@@ -109,7 +109,7 @@ class ProductRemoteDataSource {
       await _firestore.collection(_collection).doc(id).update({
         'isActive': false,
       });
-    } catch (e) {
+    } on FirebaseException catch (e) {
       throw Exception('Error al eliminar producto: $e');
     }
   }
@@ -120,7 +120,7 @@ class ProductRemoteDataSource {
       await _firestore.collection(_collection).doc(productId).update({
         'stock': newStock,
       });
-    } catch (e) {
+    } on FirebaseException catch (e) {
       throw Exception('Error al actualizar stock: $e');
     }
   }
@@ -144,7 +144,7 @@ class ProductRemoteDataSource {
           'likedByUsers': FieldValue.arrayUnion([userId]),
         });
       }
-    } catch (e) {
+    } on FirebaseException catch (e) {
       throw Exception('Error al dar me gusta: \$e');
     }
   }
@@ -161,8 +161,9 @@ class ProductRemoteDataSource {
       return snapshot.docs
           .map((doc) => ProductModel.fromFirestore(doc))
           .toList();
-    } catch (e) {
+    } on FirebaseException catch (e) {
       throw Exception('Error al obtener productos del vendedor: $e');
     }
   }
 }
+

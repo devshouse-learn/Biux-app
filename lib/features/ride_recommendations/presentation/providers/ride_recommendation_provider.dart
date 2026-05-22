@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:biux/features/ride_recommendations/domain/entities/ride_recommendation_entity.dart';
@@ -31,7 +31,7 @@ class RideRecommendationProvider extends ChangeNotifier {
       _received = await _repo.getMyRecommendations(uid);
       _sent = await _repo.getSentRecommendations(uid);
       _error = null;
-    } catch (e) {
+    } on FirebaseException catch (e) {
       _error = e.toString();
     } finally {
       _loading = false;
@@ -72,7 +72,7 @@ class RideRecommendationProvider extends ChangeNotifier {
         );
       }).toList();
       notifyListeners();
-    } catch (e) {
+    } on FirebaseException catch (e) {
       _error = e.toString();
       notifyListeners();
     }
@@ -127,7 +127,7 @@ class RideRecommendationProvider extends ChangeNotifier {
       _loading = false;
       notifyListeners();
       return true;
-    } catch (e) {
+    } on FirebaseException catch (e) {
       _error = e.toString();
       _loading = false;
       notifyListeners();
@@ -150,3 +150,4 @@ class RideRecommendationProvider extends ChangeNotifier {
     notifyListeners();
   }
 }
+

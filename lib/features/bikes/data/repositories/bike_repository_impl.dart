@@ -1,4 +1,4 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
+﻿import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:biux/features/bikes/domain/entities/bike_entity.dart';
 import 'package:biux/features/bikes/domain/entities/bike_enums.dart';
 import 'package:biux/features/bikes/domain/entities/bike_theft_entity.dart';
@@ -11,7 +11,7 @@ import 'package:biux/features/bikes/data/models/bike_theft_model.dart';
 import 'package:biux/features/bikes/data/models/bike_transfer_model.dart';
 import "package:flutter/foundation.dart";
 
-/// Implementación del repositorio de bicicletas con Firebase Firestore
+/// ImplementaciÃ³n del repositorio de bicicletas con Firebase Firestore
 class BikeRepositoryImpl implements BikeRepository {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
@@ -31,7 +31,7 @@ class BikeRepositoryImpl implements BikeRepository {
       await docRef.set(bikeWithId.toJson());
 
       return bikeWithId.toEntity();
-    } catch (e) {
+    } on FirebaseException catch (e) {
       throw Exception('Error al registrar bicicleta: $e');
     }
   }
@@ -39,7 +39,7 @@ class BikeRepositoryImpl implements BikeRepository {
   @override
   Future<List<BikeEntity>> getUserBikes(String userId) async {
     try {
-      debugPrint('📦 Repository: Buscando bicicletas con ownerId: "$userId"');
+      debugPrint('ðŸ“¦ Repository: Buscando bicicletas con ownerId: "$userId"');
 
       final querySnapshot = await _firestore
           .collection(_bikesCollection)
@@ -48,12 +48,12 @@ class BikeRepositoryImpl implements BikeRepository {
           .get();
 
       debugPrint(
-        '📦 Repository: Query devolvió ${querySnapshot.docs.length} documentos',
+        'ðŸ“¦ Repository: Query devolviÃ³ ${querySnapshot.docs.length} documentos',
       );
 
       if (querySnapshot.docs.isNotEmpty) {
         final firstDoc = querySnapshot.docs.first.data();
-        debugPrint('📦 Primer documento - ownerId: "${firstDoc['ownerId']}"');
+        debugPrint('ðŸ“¦ Primer documento - ownerId: "${firstDoc['ownerId']}"');
       }
 
       // TEMPORAL: Verificar si hay bicis con ownerId "current-user-id"
@@ -63,7 +63,7 @@ class BikeRepositoryImpl implements BikeRepository {
           .get();
 
       debugPrint(
-        '📦 Total de bicis en Firestore: ${allBikesSnapshot.docs.length}',
+        'ðŸ“¦ Total de bicis en Firestore: ${allBikesSnapshot.docs.length}',
       );
 
       int placeholderCount = 0;
@@ -72,25 +72,25 @@ class BikeRepositoryImpl implements BikeRepository {
         if (data['ownerId'] == 'current-user-id') {
           placeholderCount++;
           debugPrint(
-            '⚠️ Encontrada bici con placeholder - ID: ${doc.id}, Marca: ${data['brand']} ${data['model']}',
+            'âš ï¸ Encontrada bici con placeholder - ID: ${doc.id}, Marca: ${data['brand']} ${data['model']}',
           );
         }
       }
 
       if (placeholderCount > 0) {
         debugPrint(
-          '⚠️ TOTAL de bicis con placeholder "current-user-id": $placeholderCount',
+          'âš ï¸ TOTAL de bicis con placeholder "current-user-id": $placeholderCount',
         );
         debugPrint(
-          '💡 Estas bicis necesitan actualizar su ownerId a: "$userId"',
+          'ðŸ’¡ Estas bicis necesitan actualizar su ownerId a: "$userId"',
         );
       }
 
       return querySnapshot.docs
           .map((doc) => BikeModel.fromJson(doc.data()).toEntity())
           .toList();
-    } catch (e) {
-      debugPrint('❌ Repository: Error obteniendo bicicletas: $e');
+    } on FirebaseException catch (e) {
+      debugPrint('âŒ Repository: Error obteniendo bicicletas: $e');
       throw Exception('Error al obtener bicicletas del usuario: $e');
     }
   }
@@ -106,7 +106,7 @@ class BikeRepositoryImpl implements BikeRepository {
       if (!doc.exists) return null;
 
       return BikeModel.fromJson(doc.data()!).toEntity();
-    } catch (e) {
+    } on FirebaseException catch (e) {
       throw Exception('Error al obtener bicicleta: $e');
     }
   }
@@ -123,7 +123,7 @@ class BikeRepositoryImpl implements BikeRepository {
       if (querySnapshot.docs.isEmpty) return null;
 
       return BikeModel.fromJson(querySnapshot.docs.first.data()).toEntity();
-    } catch (e) {
+    } on FirebaseException catch (e) {
       throw Exception('Error al buscar bicicleta por QR: $e');
     }
   }
@@ -138,7 +138,7 @@ class BikeRepositoryImpl implements BikeRepository {
           .update(bikeModel.toJson());
 
       return bike;
-    } catch (e) {
+    } on FirebaseException catch (e) {
       throw Exception('Error al actualizar bicicleta: $e');
     }
   }
@@ -147,14 +147,14 @@ class BikeRepositoryImpl implements BikeRepository {
   Future<void> deleteBike(String bikeId) async {
     try {
       await _firestore.collection(_bikesCollection).doc(bikeId).delete();
-    } catch (e) {
+    } on FirebaseException catch (e) {
       throw Exception('Error al eliminar bicicleta: $e');
     }
   }
 
   @override
   Future<String> generateUniqueQR() async {
-    // Generar código QR único basado en timestamp y random
+    // Generar cÃ³digo QR Ãºnico basado en timestamp y random
     final timestamp = DateTime.now().millisecondsSinceEpoch;
     final random = DateTime.now().microsecondsSinceEpoch % 10000;
     return 'BIUX-$timestamp-$random';
@@ -178,7 +178,7 @@ class BikeRepositoryImpl implements BikeRepository {
       });
 
       return BikeTheftModel.fromJson(theftData).toEntity();
-    } catch (e) {
+    } on FirebaseException catch (e) {
       throw Exception('Error al reportar robo: $e');
     }
   }
@@ -195,7 +195,7 @@ class BikeRepositoryImpl implements BikeRepository {
       if (bike == null) throw Exception('Bicicleta no encontrada');
 
       return bike;
-    } catch (e) {
+    } on FirebaseException catch (e) {
       throw Exception('Error al marcar como recuperada: $e');
     }
   }
@@ -212,7 +212,7 @@ class BikeRepositoryImpl implements BikeRepository {
       return querySnapshot.docs
           .map((doc) => BikeTheftModel.fromJson(doc.data()).toEntity())
           .toList();
-    } catch (e) {
+    } on FirebaseException catch (e) {
       throw Exception('Error al obtener reportes de robo: $e');
     }
   }
@@ -229,7 +229,7 @@ class BikeRepositoryImpl implements BikeRepository {
       return querySnapshot.docs
           .map((doc) => BikeModel.fromJson(doc.data()).toEntity())
           .toList();
-    } catch (e) {
+    } on FirebaseException catch (e) {
       throw Exception('Error al obtener bicicletas robadas: $e');
     }
   }
@@ -248,7 +248,7 @@ class BikeRepositoryImpl implements BikeRepository {
       await docRef.set(transferData);
 
       return BikeTransferModel.fromJson(transferData).toEntity();
-    } catch (e) {
+    } on FirebaseException catch (e) {
       throw Exception('Error al solicitar transferencia: $e');
     }
   }
@@ -271,7 +271,7 @@ class BikeRepositoryImpl implements BikeRepository {
           .get();
       final transfer = BikeTransferModel.fromJson(doc.data()!);
 
-      // Actualizar el dueño de la bicicleta
+      // Actualizar el dueÃ±o de la bicicleta
       await _firestore
           .collection(_bikesCollection)
           .doc(transfer.bikeId)
@@ -281,7 +281,7 @@ class BikeRepositoryImpl implements BikeRepository {
           });
 
       return transfer.toEntity();
-    } catch (e) {
+    } on FirebaseException catch (e) {
       throw Exception('Error al aceptar transferencia: $e');
     }
   }
@@ -304,7 +304,7 @@ class BikeRepositoryImpl implements BikeRepository {
           .doc(transferId)
           .get();
       return BikeTransferModel.fromJson(doc.data()!).toEntity();
-    } catch (e) {
+    } on FirebaseException catch (e) {
       throw Exception('Error al rechazar transferencia: $e');
     }
   }
@@ -325,7 +325,7 @@ class BikeRepositoryImpl implements BikeRepository {
           .doc(transferId)
           .get();
       return BikeTransferModel.fromJson(doc.data()!).toEntity();
-    } catch (e) {
+    } on FirebaseException catch (e) {
       throw Exception('Error al cancelar transferencia: $e');
     }
   }
@@ -343,7 +343,7 @@ class BikeRepositoryImpl implements BikeRepository {
       return querySnapshot.docs
           .map((doc) => BikeTransferModel.fromJson(doc.data()).toEntity())
           .toList();
-    } catch (e) {
+    } on FirebaseException catch (e) {
       throw Exception('Error al obtener transferencias pendientes: $e');
     }
   }
@@ -360,7 +360,7 @@ class BikeRepositoryImpl implements BikeRepository {
       return querySnapshot.docs
           .map((doc) => BikeTransferModel.fromJson(doc.data()).toEntity())
           .toList();
-    } catch (e) {
+    } on FirebaseException catch (e) {
       throw Exception('Error al obtener historial de transferencias: $e');
     }
   }
@@ -386,7 +386,7 @@ class BikeRepositoryImpl implements BikeRepository {
       });
 
       return verification;
-    } catch (e) {
+    } on FirebaseException catch (e) {
       throw Exception('Error al verificar bicicleta: $e');
     }
   }
@@ -419,7 +419,7 @@ class BikeRepositoryImpl implements BikeRepository {
           isActive: data['isActive'] ?? true,
         );
       }).toList();
-    } catch (e) {
+    } on FirebaseException catch (e) {
       throw Exception('Error al obtener verificaciones: $e');
     }
   }
@@ -443,7 +443,7 @@ class BikeRepositoryImpl implements BikeRepository {
       });
 
       return sighting;
-    } catch (e) {
+    } on FirebaseException catch (e) {
       throw Exception('Error al reportar avistamiento: $e');
     }
   }
@@ -474,7 +474,7 @@ class BikeRepositoryImpl implements BikeRepository {
           sightingDate: DateTime.parse(data['sightingDate']),
         );
       }).toList();
-    } catch (e) {
+    } on FirebaseException catch (e) {
       throw Exception('Error al obtener avistamientos: $e');
     }
   }
@@ -501,7 +501,7 @@ class BikeRepositoryImpl implements BikeRepository {
         description: data['description'],
         sightingDate: DateTime.parse(data['sightingDate']),
       );
-    } catch (e) {
+    } on FirebaseException catch (e) {
       throw Exception('Error al marcar avistamiento como notificado: $e');
     }
   }
@@ -515,7 +515,7 @@ class BikeRepositoryImpl implements BikeRepository {
           .where('verifierId', isEqualTo: storeId)
           .get();
 
-      // Obtener IDs únicos de bicicletas verificadas
+      // Obtener IDs Ãºnicos de bicicletas verificadas
       final bikeIds = verificationsSnapshot.docs
           .map((doc) => doc.data()['bikeId'] as String)
           .toSet()
@@ -531,7 +531,7 @@ class BikeRepositoryImpl implements BikeRepository {
       }
 
       return bikes;
-    } catch (e) {
+    } on FirebaseException catch (e) {
       throw Exception('Error al obtener bicicletas verificadas: $e');
     }
   }
@@ -561,8 +561,8 @@ class BikeRepositoryImpl implements BikeRepository {
       }
 
       return stats;
-    } catch (e) {
-      throw Exception('Error al obtener estadísticas de usuario: $e');
+    } on FirebaseException catch (e) {
+      throw Exception('Error al obtener estadÃ­sticas de usuario: $e');
     }
   }
 
@@ -603,8 +603,9 @@ class BikeRepositoryImpl implements BikeRepository {
             ).toEntity(),
           )
           .toList();
-    } catch (e) {
+    } on FirebaseException catch (e) {
       throw Exception('Error al buscar bicicletas: $e');
     }
   }
 }
+

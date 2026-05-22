@@ -1,10 +1,10 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:biux/core/design_system/locale_notifier.dart';
 import 'package:biux/core/services/notification_service.dart';
 
-/// Widget que escucha las notificaciones push y navega según el tipo
+/// Widget que escucha las notificaciones push y navega segÃºn el tipo
 class BiuxNotificationListener extends StatefulWidget {
   final Widget child;
 
@@ -33,14 +33,14 @@ class _BiuxNotificationListenerState extends State<BiuxNotificationListener> {
 
       final isOpened = data['opened'] == true;
       if (!isOpened) {
-        // Notificación recibida pero no tocada - mostrar snackbar
+        // NotificaciÃ³n recibida pero no tocada - mostrar snackbar
         try {
           _showNotificationSnackbar(data);
-        } catch (e) {
-          debugPrint('⚠️ Error mostrando snackbar de notificación: $e');
+        } on Exception catch (e) {
+          debugPrint('âš ï¸ Error mostrando snackbar de notificaciÃ³n: $e');
         }
       } else {
-        // Notificación tocada - navegar
+        // NotificaciÃ³n tocada - navegar
         _handleNotificationTap(data);
       }
     });
@@ -57,7 +57,7 @@ class _BiuxNotificationListenerState extends State<BiuxNotificationListener> {
     final scaffoldMessenger = ScaffoldMessenger.maybeOf(context);
     if (scaffoldMessenger == null) {
       debugPrint(
-        '⚠️ No hay ScaffoldMessenger disponible para mostrar notificación',
+        'âš ï¸ No hay ScaffoldMessenger disponible para mostrar notificaciÃ³n',
       );
       return;
     }
@@ -98,7 +98,7 @@ class _BiuxNotificationListenerState extends State<BiuxNotificationListener> {
     final targetId = data['targetId'] as String?;
     final targetType = data['targetType'] as String?;
 
-    debugPrint('🔔 Navegando por notificación');
+    debugPrint('ðŸ”” Navegando por notificaciÃ³n');
     debugPrint('   Type: $type');
     debugPrint('   TargetId: $targetId');
     debugPrint('   TargetType: $targetType');
@@ -128,7 +128,7 @@ class _BiuxNotificationListenerState extends State<BiuxNotificationListener> {
         }
         break;
 
-      // Likes en comentarios (ir al post/ride donde está el comentario)
+      // Likes en comentarios (ir al post/ride donde estÃ¡ el comentario)
       case 'like_comment':
         if (targetId != null) {
           // targetType puede ser 'post' o 'ride'
@@ -211,7 +211,7 @@ class _BiuxNotificationListenerState extends State<BiuxNotificationListener> {
 
       default:
         // Tipo desconocido, ir a notificaciones
-        debugPrint('⚠️ Tipo de notificación desconocido: $type');
+        debugPrint('âš ï¸ Tipo de notificaciÃ³n desconocido: $type');
         context.push('/notifications');
     }
   }
@@ -221,3 +221,4 @@ class _BiuxNotificationListenerState extends State<BiuxNotificationListener> {
     return widget.child;
   }
 }
+

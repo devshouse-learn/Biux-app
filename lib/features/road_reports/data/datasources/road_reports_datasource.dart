@@ -1,4 +1,4 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
+﻿import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/foundation.dart';
 
 class RoadReportsDatasource {
@@ -13,7 +13,7 @@ class RoadReportsDatasource {
           .limit(100)
           .get();
       return s.docs.map((d) => {'id': d.id, ...d.data()}).toList();
-    } catch (e) {
+    } on FirebaseException catch (e) {
       debugPrint('Error con indice compuesto, intentando sin orderBy: $e');
       try {
         final s = await _fs
@@ -59,7 +59,7 @@ class RoadReportsDatasource {
         'createdAt': FieldValue.serverTimestamp(),
       });
       debugPrint('Reporte creado exitosamente');
-    } catch (e) {
+    } on FirebaseException catch (e) {
       debugPrint('Error creando reporte: $e');
       rethrow;
     }
@@ -86,7 +86,7 @@ class RoadReportsDatasource {
         return false;
       }
 
-      // Agregar confirmacion con arrayUnion (atómico, evita duplicados)
+      // Agregar confirmacion con arrayUnion (atÃ³mico, evita duplicados)
       await docRef.update({
         'confirmations': FieldValue.increment(1),
         'confirmedBy': FieldValue.arrayUnion([userId]),
@@ -94,7 +94,7 @@ class RoadReportsDatasource {
 
       debugPrint('Reporte $reportId confirmado por $userId');
       return true;
-    } catch (e) {
+    } on FirebaseException catch (e) {
       debugPrint('Error confirmando reporte: $e');
       return false;
     }
@@ -103,9 +103,10 @@ class RoadReportsDatasource {
   Future<void> dismissReport(String id) async {
     try {
       await _fs.collection('road_reports').doc(id).update({'isActive': false});
-    } catch (e) {
+    } on FirebaseException catch (e) {
       debugPrint('Error desactivando reporte: $e');
       rethrow;
     }
   }
 }
+

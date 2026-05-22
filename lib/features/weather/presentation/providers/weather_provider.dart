@@ -285,7 +285,7 @@ class WeatherProvider extends ChangeNotifier {
       } else {
         _error = "Error al obtener el clima (c\u00f3digo ${res.statusCode})";
       }
-    } catch (e) {
+    } on SocketException catch (e) {
       _error = "Error: $e";
     }
 
@@ -384,3 +384,4 @@ class WeatherProvider extends ChangeNotifier {
     return {"main": "Clear", "description": "Despejado", "emoji": "\u{1f321}\ufe0f"};
   }
 }
+

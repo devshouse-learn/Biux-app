@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:go_router/go_router.dart';
@@ -86,7 +86,7 @@ class _AddProductScreenState extends State<AddProductScreen> {
         child: ListView(
           padding: const EdgeInsets.all(16),
           children: [
-            // === INFORMACIÓN BÁSICA ===
+            // === INFORMACIÃ“N BÃSICA ===
             _buildSectionHeader(
               l.t('product_info_section'),
               Icons.info_outline,
@@ -122,7 +122,7 @@ class _AddProductScreenState extends State<AddProductScreen> {
 
             SizedBox(height: 24),
 
-            // === CATEGORÍA ===
+            // === CATEGORÃA ===
             _buildSectionHeader(l.t('category_label'), Icons.category_outlined),
             SizedBox(height: 12),
             _buildCategorySelector(),
@@ -194,7 +194,7 @@ class _AddProductScreenState extends State<AddProductScreen> {
 
             SizedBox(height: 24),
 
-            // === IMÁGENES (OBLIGATORIO) ===
+            // === IMÃGENES (OBLIGATORIO) ===
             _buildSectionHeader(l.t('images_required'), Icons.image_outlined),
             SizedBox(height: 4),
             Text(
@@ -212,7 +212,7 @@ class _AddProductScreenState extends State<AddProductScreen> {
 
             const SizedBox(height: 24),
 
-            // === SECCIÓN BICICLETA ===
+            // === SECCIÃ“N BICICLETA ===
             _buildBicycleSection(l),
 
             const SizedBox(height: 32),
@@ -358,7 +358,7 @@ class _AddProductScreenState extends State<AddProductScreen> {
   Widget _buildImagePicker(LocaleNotifier l) {
     return Column(
       children: [
-        // Preview de imágenes seleccionadas
+        // Preview de imÃ¡genes seleccionadas
         if (_selectedImages.isNotEmpty)
           SizedBox(
             height: 120,
@@ -411,7 +411,7 @@ class _AddProductScreenState extends State<AddProductScreen> {
             ),
           ),
         if (_selectedImages.isNotEmpty) const SizedBox(height: 12),
-        // Botón para agregar imágenes
+        // BotÃ³n para agregar imÃ¡genes
         InkWell(
           onTap: _pickImages,
           borderRadius: BorderRadius.circular(12),
@@ -445,7 +445,7 @@ class _AddProductScreenState extends State<AddProductScreen> {
                 SizedBox(height: 8),
                 Text(
                   _selectedImages.isEmpty
-                      ? '📷 ${l.t('tap_add_photos')}'
+                      ? 'ðŸ“· ${l.t('tap_add_photos')}'
                       : '${l.t('add_more_images')} (${_selectedImages.length}/5)',
                   style: TextStyle(
                     color: _selectedImages.isEmpty
@@ -463,7 +463,7 @@ class _AddProductScreenState extends State<AddProductScreen> {
     );
   }
 
-  // ===== SECCIÓN BICICLETA CON VERIFICACIÓN ANTIRROBO =====
+  // ===== SECCIÃ“N BICICLETA CON VERIFICACIÃ“N ANTIRROBO =====
 
   Widget _buildBicycleSection(LocaleNotifier l) {
     return Column(
@@ -524,7 +524,7 @@ class _AddProductScreenState extends State<AddProductScreen> {
         if (_isBicycle) ...[
           const SizedBox(height: 16),
 
-          // Warning de verificación
+          // Warning de verificaciÃ³n
           Container(
             padding: const EdgeInsets.all(14),
             decoration: BoxDecoration(
@@ -615,7 +615,7 @@ class _AddProductScreenState extends State<AddProductScreen> {
 
           const SizedBox(height: 16),
 
-          // Botón de verificación antirrobo
+          // BotÃ³n de verificaciÃ³n antirrobo
           _buildStolenCheckButton(l),
         ],
       ],
@@ -732,12 +732,12 @@ class _AddProductScreenState extends State<AddProductScreen> {
     );
   }
 
-  // ===== BOTONES DE ACCIÓN =====
+  // ===== BOTONES DE ACCIÃ“N =====
 
   Widget _buildActionButtons(LocaleNotifier l) {
     return Column(
       children: [
-        // Botón Agregar
+        // BotÃ³n Agregar
         SizedBox(
           width: double.infinity,
           height: 52,
@@ -768,7 +768,7 @@ class _AddProductScreenState extends State<AddProductScreen> {
           ),
         ),
         const SizedBox(height: 12),
-        // Botón Cancelar
+        // BotÃ³n Cancelar
         SizedBox(
           width: double.infinity,
           height: 48,
@@ -881,7 +881,7 @@ class _AddProductScreenState extends State<AddProductScreen> {
 
     setState(() => _isCheckingStolen = true);
 
-    // Simular verificación (en producción consultar base de datos de robadas)
+    // Simular verificaciÃ³n (en producciÃ³n consultar base de datos de robadas)
     await Future.delayed(const Duration(seconds: 2));
 
     // Verificar contra la lista de bicicletas robadas
@@ -905,7 +905,7 @@ class _AddProductScreenState extends State<AddProductScreen> {
     if (!_isStolenCheckPassed) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('⚠️ ${l.t('bike_stolen_cannot_publish')}'),
+          content: Text('âš ï¸ ${l.t('bike_stolen_cannot_publish')}'),
           backgroundColor: ColorTokens.error50,
           duration: const Duration(seconds: 4),
         ),
@@ -973,8 +973,8 @@ class _AddProductScreenState extends State<AddProductScreen> {
           .where((t) => t.isNotEmpty)
           .toList();
 
-      // Subir imágenes a Firebase Storage y obtener URLs
-      // Si no hay imágenes reales, no permitir publicar
+      // Subir imÃ¡genes a Firebase Storage y obtener URLs
+      // Si no hay imÃ¡genes reales, no permitir publicar
       if (_selectedImages.isEmpty && _imageUrls.isEmpty) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
@@ -1045,7 +1045,7 @@ class _AddProductScreenState extends State<AddProductScreen> {
       if (success) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('✅ ${l.t('product_published_success')}'),
+            content: Text('âœ… ${l.t('product_published_success')}'),
             backgroundColor: ColorTokens.success40,
           ),
         );
@@ -1058,7 +1058,7 @@ class _AddProductScreenState extends State<AddProductScreen> {
           ),
         );
       }
-    } catch (e) {
+    } on FirebaseException catch (e) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
@@ -1071,3 +1071,4 @@ class _AddProductScreenState extends State<AddProductScreen> {
     }
   }
 }
+

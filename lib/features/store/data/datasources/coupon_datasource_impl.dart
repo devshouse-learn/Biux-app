@@ -1,10 +1,10 @@
-import 'dart:async';
+﻿import 'dart:async';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:biux/core/services/app_logger.dart';
 import 'package:biux/features/store/domain/entities/coupon_entity.dart';
 import 'package:biux/features/store/data/datasources/coupon_datasource.dart';
 
-/// Implementación de CouponDatasource con soporte Firebase.
+/// ImplementaciÃ³n de CouponDatasource con soporte Firebase.
 /// Intenta obtener cupones de Firestore; si falla, usa los cupones
 /// locales de CouponDataSource como fallback.
 class CouponDatasourceImpl {
@@ -36,7 +36,7 @@ class CouponDatasourceImpl {
           };
         }).toList();
       }
-    } catch (e) {
+    } on FirebaseException catch (e) {
       AppLogger.warning(
         'Error obteniendo cupones de Firestore, usando locales',
         tag: 'CouponDatasourceImpl',
@@ -60,7 +60,7 @@ class CouponDatasourceImpl {
         .toList();
   }
 
-  /// Valida un cupón verificando primero en Firestore, luego localmente.
+  /// Valida un cupÃ³n verificando primero en Firestore, luego localmente.
   Future<CouponEntity?> validateCoupon(String code) async {
     try {
       final snapshot = await _firestore
@@ -88,15 +88,15 @@ class CouponDatasourceImpl {
         );
         return coupon.isValid ? coupon : null;
       }
-    } catch (e) {
+    } on FirebaseException catch (e) {
       AppLogger.warning(
-        'Error validando cupón en Firestore, usando local',
+        'Error validando cupÃ³n en Firestore, usando local',
         tag: 'CouponDatasourceImpl',
         error: e,
       );
     }
 
-    // Fallback: validación local
+    // Fallback: validaciÃ³n local
     final localCoupon = _localSource.getCouponByCode(code);
     if (localCoupon != null && localCoupon.isValid) {
       return localCoupon;
@@ -104,7 +104,7 @@ class CouponDatasourceImpl {
     return null;
   }
 
-  /// Registra el uso de un cupón (incrementa contador).
+  /// Registra el uso de un cupÃ³n (incrementa contador).
   Future<void> recordCouponUsage(String code, String userId) async {
     try {
       final snapshot = await _firestore
@@ -120,12 +120,13 @@ class CouponDatasourceImpl {
           'usedBy': FieldValue.arrayUnion([userId]),
         });
       }
-    } catch (e) {
+    } on FirebaseException catch (e) {
       AppLogger.warning(
-        'Error registrando uso de cupón',
+        'Error registrando uso de cupÃ³n',
         tag: 'CouponDatasourceImpl',
         error: e,
       );
     }
   }
 }
+

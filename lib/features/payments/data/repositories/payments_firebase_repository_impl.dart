@@ -1,4 +1,4 @@
-import 'dart:async';
+﻿import 'dart:async';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:biux/core/services/app_logger.dart';
 
@@ -43,7 +43,7 @@ class PaymentsFirebaseRepositoryImpl {
       );
 
       return paymentData;
-    } catch (e) {
+    } on FirebaseException catch (e) {
       AppLogger.error(
         'Error creando payment intent',
         tag: 'PaymentsRepo',
@@ -64,7 +64,7 @@ class PaymentsFirebaseRepositoryImpl {
 
       AppLogger.info('Payment confirmado: $paymentId', tag: 'PaymentsRepo');
       return true;
-    } catch (e) {
+    } on FirebaseException catch (e) {
       AppLogger.error(
         'Error confirmando payment',
         tag: 'PaymentsRepo',
@@ -86,7 +86,7 @@ class PaymentsFirebaseRepositoryImpl {
 
       AppLogger.info('Payment cancelado: $paymentId', tag: 'PaymentsRepo');
       return true;
-    } catch (e) {
+    } on FirebaseException catch (e) {
       AppLogger.error(
         'Error cancelando payment',
         tag: 'PaymentsRepo',
@@ -106,7 +106,7 @@ class PaymentsFirebaseRepositoryImpl {
           .get();
 
       return snapshot.docs.map((doc) => {'id': doc.id, ...doc.data()}).toList();
-    } catch (e) {
+    } on FirebaseException catch (e) {
       AppLogger.error(
         'Error obteniendo pagos del usuario',
         tag: 'PaymentsRepo',
@@ -123,7 +123,7 @@ class PaymentsFirebaseRepositoryImpl {
 
       if (!doc.exists) return null;
       return {'id': doc.id, ...doc.data()!};
-    } catch (e) {
+    } on FirebaseException catch (e) {
       AppLogger.error(
         'Error obteniendo payment',
         tag: 'PaymentsRepo',
@@ -133,3 +133,4 @@ class PaymentsFirebaseRepositoryImpl {
     }
   }
 }
+

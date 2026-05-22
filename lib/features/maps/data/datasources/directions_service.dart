@@ -1,4 +1,4 @@
-import 'dart:convert';
+﻿import 'dart:convert';
 
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:http/http.dart' as http;
@@ -31,13 +31,13 @@ class DirectionsService {
           final route = data['routes'][0];
           final polylinePoints = route['overview_polyline']['points'];
 
-          // Decodificar la polyline usando nuestra implementación
+          // Decodificar la polyline usando nuestra implementaciÃ³n
           final List<LatLng> decoded = _decodePolyline(polylinePoints);
 
           return decoded;
         }
       }
-    } catch (e) {
+    } on SocketException catch (e) {
       debugPrint('Error getting directions: $e');
     }
 
@@ -56,7 +56,7 @@ class DirectionsService {
         'mode=$travelMode&'
         'key=$_apiKey';
 
-    debugPrint('🚴‍♂️ Requesting bicycling route from Google API...');
+    debugPrint('ðŸš´â€â™‚ï¸ Requesting bicycling route from Google API...');
     debugPrint('URL: $url');
 
     try {
@@ -65,16 +65,16 @@ class DirectionsService {
           .timeout(
             Duration(seconds: 10), // Timeout de 10 segundos
             onTimeout: () {
-              debugPrint('⏰ Timeout en la petición a Google Directions API');
+              debugPrint('â° Timeout en la peticiÃ³n a Google Directions API');
               throw Exception('Timeout');
             },
           );
 
-      debugPrint('📡 Response status: ${response.statusCode}');
+      debugPrint('ðŸ“¡ Response status: ${response.statusCode}');
 
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
-        debugPrint('📊 API Response status: ${data['status']}');
+        debugPrint('ðŸ“Š API Response status: ${data['status']}');
 
         if (data['status'] == 'OK' && data['routes'].isNotEmpty) {
           final route = data['routes'][0];
@@ -82,14 +82,14 @@ class DirectionsService {
           final polylinePoints = route['overview_polyline']['points'];
 
           debugPrint(
-            '✅ Route found! Polyline length: ${polylinePoints.length}',
+            'âœ… Route found! Polyline length: ${polylinePoints.length}',
           );
           debugPrint(
-            '📏 Distance: ${leg['distance']['text']}, Duration: ${leg['duration']['text']}',
+            'ðŸ“ Distance: ${leg['distance']['text']}, Duration: ${leg['duration']['text']}',
           );
 
           final List<LatLng> points = _decodePolyline(polylinePoints);
-          debugPrint('🗺️ Decoded ${points.length} points for the route');
+          debugPrint('ðŸ—ºï¸ Decoded ${points.length} points for the route');
 
           return DirectionResult(
             points: points,
@@ -99,23 +99,23 @@ class DirectionsService {
             durationValue: leg['duration']['value'],
           );
         } else {
-          debugPrint('❌ API Error: ${data['status']}');
+          debugPrint('âŒ API Error: ${data['status']}');
           if (data['error_message'] != null) {
             debugPrint('Error message: ${data['error_message']}');
           }
         }
       } else {
-        debugPrint('❌ HTTP Error: ${response.statusCode}');
+        debugPrint('âŒ HTTP Error: ${response.statusCode}');
         debugPrint('Response body: ${response.body}');
       }
-    } catch (e) {
-      debugPrint('💥 Exception in getDirectionsWithDetails: $e');
+    } on SocketException catch (e) {
+      debugPrint('ðŸ’¥ Exception in getDirectionsWithDetails: $e');
     }
 
     return null;
   }
 
-  // Implementación manual de decodificación de polylines de Google
+  // ImplementaciÃ³n manual de decodificaciÃ³n de polylines de Google
   static List<LatLng> _decodePolyline(String encoded) {
     List<LatLng> polyline = [];
     int index = 0;
@@ -171,3 +171,4 @@ class DirectionResult {
     required this.durationValue,
   });
 }
+

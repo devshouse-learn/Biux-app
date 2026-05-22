@@ -1,24 +1,24 @@
-import 'dart:io';
+﻿import 'dart:io';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/foundation.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:video_player/video_player.dart';
 
-/// Servicio para subir imágenes y videos a Firebase Storage
+/// Servicio para subir imÃ¡genes y videos a Firebase Storage
 /// Optimizado para funcionar en Web y Mobile
 class MediaUploadService {
   final FirebaseStorage _storage = FirebaseStorage.instance;
   final ImagePicker _picker = ImagePicker();
 
-  /// Seleccionar imagen de la cámara (solo mobile)
+  /// Seleccionar imagen de la cÃ¡mara (solo mobile)
   Future<XFile?> pickImageFromCamera() async {
     if (kIsWeb) {
-      debugPrint('⚠️ Cámara no disponible en Web');
+      debugPrint('âš ï¸ CÃ¡mara no disponible en Web');
       return null;
     }
 
     try {
-      debugPrint('📸 Abriendo cámara...');
+      debugPrint('ðŸ“¸ Abriendo cÃ¡mara...');
       final image = await _picker.pickImage(
         source: ImageSource.camera,
         maxWidth: 1920,
@@ -27,19 +27,19 @@ class MediaUploadService {
       );
 
       if (image != null) {
-        debugPrint('✅ Foto tomada: ${image.name}');
+        debugPrint('âœ… Foto tomada: ${image.name}');
       }
       return image;
-    } catch (e) {
-      debugPrint('❌ Error al tomar foto: $e');
+    } on FirebaseException catch (e) {
+      debugPrint('âŒ Error al tomar foto: $e');
       return null;
     }
   }
 
-  /// Seleccionar imagen de la galería (web y mobile)
+  /// Seleccionar imagen de la galerÃ­a (web y mobile)
   Future<XFile?> pickImageFromGallery() async {
     try {
-      debugPrint('�️ Abriendo selector de imágenes...');
+      debugPrint('ï¿½ï¸ Abriendo selector de imÃ¡genes...');
 
       final image = await _picker.pickImage(
         source: ImageSource.gallery,
@@ -50,24 +50,24 @@ class MediaUploadService {
 
       if (image != null) {
         debugPrint(
-          '✅ Imagen seleccionada: ${image.name} (${await image.length()} bytes)',
+          'âœ… Imagen seleccionada: ${image.name} (${await image.length()} bytes)',
         );
         return image;
       } else {
-        debugPrint('⚠️ No se seleccionó ninguna imagen');
+        debugPrint('âš ï¸ No se seleccionÃ³ ninguna imagen');
         return null;
       }
     } catch (e, stackTrace) {
-      debugPrint('❌ Error al seleccionar imagen: $e');
+      debugPrint('âŒ Error al seleccionar imagen: $e');
       debugPrint('Stack trace: $stackTrace');
       return null;
     }
   }
 
-  /// Seleccionar múltiples imágenes de la galería (web y mobile)
+  /// Seleccionar mÃºltiples imÃ¡genes de la galerÃ­a (web y mobile)
   Future<List<XFile>> pickMultipleImages() async {
     try {
-      debugPrint('�️ Abriendo selector múltiple...');
+      debugPrint('ï¿½ï¸ Abriendo selector mÃºltiple...');
 
       final images = await _picker.pickMultiImage(
         maxWidth: 1920,
@@ -75,7 +75,7 @@ class MediaUploadService {
         imageQuality: 85,
       );
 
-      debugPrint('✅ ${images.length} imágenes seleccionadas');
+      debugPrint('âœ… ${images.length} imÃ¡genes seleccionadas');
       for (var img in images) {
         final size = await img.length();
         debugPrint('  - ${img.name}: $size bytes');
@@ -83,40 +83,40 @@ class MediaUploadService {
 
       return images;
     } catch (e, stackTrace) {
-      debugPrint('❌ Error al seleccionar múltiples imágenes: $e');
+      debugPrint('âŒ Error al seleccionar mÃºltiples imÃ¡genes: $e');
       debugPrint('Stack trace: $stackTrace');
       return [];
     }
   }
 
-  /// Seleccionar video de la cámara (solo mobile)
+  /// Seleccionar video de la cÃ¡mara (solo mobile)
   Future<XFile?> pickVideoFromCamera() async {
     if (kIsWeb) {
-      debugPrint('⚠️ Grabar video no disponible en Web');
+      debugPrint('âš ï¸ Grabar video no disponible en Web');
       return null;
     }
 
     try {
-      debugPrint('🎥 Abriendo cámara de video...');
+      debugPrint('ðŸŽ¥ Abriendo cÃ¡mara de video...');
       final video = await _picker.pickVideo(
         source: ImageSource.camera,
         maxDuration: const Duration(seconds: 30),
       );
 
       if (video != null) {
-        debugPrint('✅ Video grabado: ${video.name}');
+        debugPrint('âœ… Video grabado: ${video.name}');
       }
       return video;
-    } catch (e) {
-      debugPrint('❌ Error al grabar video: $e');
+    } on FirebaseException catch (e) {
+      debugPrint('âŒ Error al grabar video: $e');
       return null;
     }
   }
 
-  /// Seleccionar video de la galería (web y mobile)
+  /// Seleccionar video de la galerÃ­a (web y mobile)
   Future<XFile?> pickVideoFromGallery() async {
     try {
-      debugPrint('🎥 Abriendo selector de videos...');
+      debugPrint('ðŸŽ¥ Abriendo selector de videos...');
 
       final video = await _picker.pickVideo(
         source: ImageSource.gallery,
@@ -124,24 +124,24 @@ class MediaUploadService {
       );
 
       if (video != null) {
-        debugPrint('✅ Video seleccionado: ${video.name}');
+        debugPrint('âœ… Video seleccionado: ${video.name}');
       } else {
-        debugPrint('⚠️ No se seleccionó ningún video');
+        debugPrint('âš ï¸ No se seleccionÃ³ ningÃºn video');
       }
       return video;
     } catch (e, stackTrace) {
-      debugPrint('❌ Error al seleccionar video: $e');
+      debugPrint('âŒ Error al seleccionar video: $e');
       debugPrint('Stack trace: $stackTrace');
       return null;
     }
   }
 
-  /// Validar duración del video (máximo 30 segundos)
+  /// Validar duraciÃ³n del video (mÃ¡ximo 30 segundos)
   Future<bool> validateVideoDuration(String videoPath) async {
     if (kIsWeb) {
-      // En web no podemos validar fácilmente, asumimos válido
+      // En web no podemos validar fÃ¡cilmente, asumimos vÃ¡lido
       debugPrint(
-        '⚠️ Validación de duración no disponible en Web (asumiendo válido)',
+        'âš ï¸ ValidaciÃ³n de duraciÃ³n no disponible en Web (asumiendo vÃ¡lido)',
       );
       return true;
     }
@@ -154,11 +154,11 @@ class MediaUploadService {
 
       final isValid = duration.inSeconds <= 30;
       debugPrint(
-        '⏱️ Duración del video: ${duration.inSeconds}s - Válido: $isValid',
+        'â±ï¸ DuraciÃ³n del video: ${duration.inSeconds}s - VÃ¡lido: $isValid',
       );
       return isValid;
-    } catch (e) {
-      debugPrint('❌ Error al validar duración del video: $e');
+    } on FirebaseException catch (e) {
+      debugPrint('âŒ Error al validar duraciÃ³n del video: $e');
       return false;
     }
   }
@@ -186,7 +186,7 @@ class MediaUploadService {
       final downloadUrl = await snapshot.ref.getDownloadURL();
 
       return downloadUrl;
-    } catch (e) {
+    } on FirebaseException catch (e) {
       debugPrint('Error al subir imagen: $e');
       return null;
     }
@@ -199,7 +199,7 @@ class MediaUploadService {
     Function(double)? onProgress,
   }) async {
     try {
-      // Validar duración antes de subir
+      // Validar duraciÃ³n antes de subir
       final isValid = await validateVideoDuration(videoFile.path);
       if (!isValid) {
         debugPrint('Video excede los 30 segundos');
@@ -222,7 +222,7 @@ class MediaUploadService {
       final downloadUrl = await snapshot.ref.getDownloadURL();
 
       return downloadUrl;
-    } catch (e) {
+    } on FirebaseException catch (e) {
       debugPrint('Error al subir video: $e');
       return null;
     }
@@ -234,7 +234,7 @@ class MediaUploadService {
       final ref = _storage.refFromURL(imageUrl);
       await ref.delete();
       return true;
-    } catch (e) {
+    } on FirebaseException catch (e) {
       debugPrint('Error al eliminar imagen: $e');
       return false;
     }
@@ -246,7 +246,7 @@ class MediaUploadService {
       final ref = _storage.refFromURL(videoUrl);
       await ref.delete();
       return true;
-    } catch (e) {
+    } on FirebaseException catch (e) {
       debugPrint('Error al eliminar video: $e');
       return false;
     }
@@ -255,7 +255,7 @@ class MediaUploadService {
   /// Limpiar todos los medios de un producto
   Future<void> cleanupProductMedia(String productId) async {
     try {
-      // Eliminar imágenes
+      // Eliminar imÃ¡genes
       final imagesRef = _storage.ref().child('products/$productId/images');
       final imagesList = await imagesRef.listAll();
       for (var item in imagesList.items) {
@@ -268,8 +268,9 @@ class MediaUploadService {
       for (var item in videosList.items) {
         await item.delete();
       }
-    } catch (e) {
+    } on FirebaseException catch (e) {
       debugPrint('Error al limpiar medios: $e');
     }
   }
 }
+

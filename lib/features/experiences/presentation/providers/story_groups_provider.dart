@@ -1,4 +1,4 @@
-import 'package:flutter/foundation.dart';
+﻿import 'package:flutter/foundation.dart';
 import 'package:biux/features/experiences/domain/entities/user_story_group_entity.dart';
 import 'package:biux/features/experiences/domain/entities/experience_entity.dart';
 import 'package:biux/features/experiences/domain/usecases/group_stories_by_user_usecase.dart';
@@ -6,7 +6,7 @@ import 'package:biux/features/experiences/data/datasources/story_views_local_dat
 import 'package:biux/features/experiences/domain/repositories/experience_repository.dart';
 
 /// Provider para gestionar historias agrupadas por usuario (estilo Instagram)
-/// Maneja el estado de visualización de manera local para evitar consumo de red
+/// Maneja el estado de visualizaciÃ³n de manera local para evitar consumo de red
 class StoryGroupsProvider with ChangeNotifier {
   final ExperienceRepository _repository;
   final GroupStoriesByUserUseCase _groupStoriesUseCase;
@@ -45,7 +45,7 @@ class StoryGroupsProvider with ChangeNotifier {
         currentUserId,
       );
 
-      // Filtrar y agrupar solo historias recientes (últimas 24 horas)
+      // Filtrar y agrupar solo historias recientes (Ãºltimas 24 horas)
       final storyGroups = await _groupStoriesUseCase.callForRecentStories(
         experiences,
         timeLimit: const Duration(hours: 24),
@@ -54,7 +54,7 @@ class StoryGroupsProvider with ChangeNotifier {
       _storyGroups = storyGroups;
       _isLoading = false;
       notifyListeners();
-    } catch (e) {
+    } on Exception catch (e) {
       _error = 'Error al cargar historias: $e';
       _isLoading = false;
       notifyListeners();
@@ -62,13 +62,13 @@ class StoryGroupsProvider with ChangeNotifier {
   }
 
   /// Agrupa experiencias existentes sin cargar de red
-  /// Útil para agrupar experiencias que ya están en memoria
+  /// Ãštil para agrupar experiencias que ya estÃ¡n en memoria
   Future<void> groupExistingStories(List<ExperienceEntity> experiences) async {
     _isLoading = true;
     notifyListeners();
 
     try {
-      // Filtrar y agrupar historias recientes (últimas 24 horas)
+      // Filtrar y agrupar historias recientes (Ãºltimas 24 horas)
       final storyGroups = await _groupStoriesUseCase.callForRecentStories(
         experiences,
         timeLimit: const Duration(hours: 24),
@@ -77,7 +77,7 @@ class StoryGroupsProvider with ChangeNotifier {
       _storyGroups = storyGroups;
       _isLoading = false;
       notifyListeners();
-    } catch (e) {
+    } on Exception catch (e) {
       _error = 'Error al agrupar historias: $e';
       _isLoading = false;
       notifyListeners();
@@ -105,28 +105,28 @@ class StoryGroupsProvider with ChangeNotifier {
     await _refreshGroupsViewStatus();
   }
 
-  /// Verifica si una historia específica fue vista
+  /// Verifica si una historia especÃ­fica fue vista
   Future<bool> isStoryViewed(String storyId) async {
     return await _viewsService.isStoryViewed(storyId);
   }
 
-  /// Obtiene el grupo de historias de un usuario específico
+  /// Obtiene el grupo de historias de un usuario especÃ­fico
   UserStoryGroupEntity? getGroupByUserId(String userId) {
     try {
       return _storyGroups.firstWhere((group) => group.userId == userId);
-    } catch (e) {
+    } on Exception catch (e) {
       return null;
     }
   }
 
-  /// Refresca el estado de visualización de los grupos sin recargar de red
+  /// Refresca el estado de visualizaciÃ³n de los grupos sin recargar de red
   Future<void> _refreshGroupsViewStatus() async {
     if (_storyGroups.isEmpty) return;
 
     final updatedGroups = <UserStoryGroupEntity>[];
 
     for (final group in _storyGroups) {
-      // Verificar estado de visualización de cada historia del grupo
+      // Verificar estado de visualizaciÃ³n de cada historia del grupo
       final storyIds = group.stories.map((s) => s.id).toList();
       final viewedStatus = await _viewsService.areStoriesViewed(storyIds);
 
@@ -163,13 +163,13 @@ class StoryGroupsProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  /// Limpia todas las vistas locales (útil para logout o debugging)
+  /// Limpia todas las vistas locales (Ãºtil para logout o debugging)
   Future<void> clearAllViews() async {
     await _viewsService.clearAllViews();
     await _refreshGroupsViewStatus();
   }
 
-  /// Limpia las vistas expiradas (automático cada 6 horas)
+  /// Limpia las vistas expiradas (automÃ¡tico cada 6 horas)
   Future<void> cleanupExpiredViews() async {
     await _viewsService.cleanupExpiredViews();
     await _refreshGroupsViewStatus();
@@ -243,7 +243,7 @@ class StoryGroupsProvider with ChangeNotifier {
         final updatedGroup = group.copyWith(stories: updatedStories);
         updatedGroups.add(updatedGroup);
       }
-      // Si no quedan historias, el grupo se elimina automáticamente
+      // Si no quedan historias, el grupo se elimina automÃ¡ticamente
     }
 
     _storyGroups = updatedGroups;
@@ -264,3 +264,4 @@ class StoryGroupsProvider with ChangeNotifier {
     notifyListeners();
   }
 }
+

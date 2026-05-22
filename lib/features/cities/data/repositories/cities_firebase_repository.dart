@@ -1,4 +1,4 @@
-import 'package:biux/features/cities/data/models/city.dart';
+﻿import 'package:biux/features/cities/data/models/city.dart';
 import 'package:biux/features/cities/domain/repositories/cities_repository_abstract.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
@@ -14,7 +14,7 @@ class CitiesFirebaseRepository extends CitiesRepositoryAbstract {
           .orderBy("name", descending: false)
           .get();
       return result.docs.map((e) => City.fromJson(json: e.data())).toList();
-    } catch (e) {
+    } on FirebaseException catch (e) {
       return List.empty();
     }
   }
@@ -27,7 +27,7 @@ class CitiesFirebaseRepository extends CitiesRepositoryAbstract {
           .where('id', isEqualTo: cityId)
           .get();
       return City.fromJson(json: response.docs.first.data());
-    } catch (e) {
+    } on FirebaseException catch (e) {
       return City();
     }
   }
@@ -40,8 +40,9 @@ class CitiesFirebaseRepository extends CitiesRepositoryAbstract {
           .where('id', isEqualTo: id)
           .get();
       return City.fromJson(json: result.docs.first.data());
-    } catch (e) {
+    } on FirebaseException catch (e) {
       return City();
     }
   }
 }
+

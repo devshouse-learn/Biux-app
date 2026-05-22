@@ -1,4 +1,4 @@
-import 'package:biux/features/stories/data/models/reaction_story.dart';
+﻿import 'package:biux/features/stories/data/models/reaction_story.dart';
 import 'package:biux/features/stories/data/models/comment_story.dart';
 import 'package:biux/features/users/data/models/user.dart';
 
@@ -15,7 +15,7 @@ class Story {
   String get fileUrl1 {
     try {
       return files.first;
-    } catch (e) {
+    } on Exception catch (e) {
       return '';
     }
   }
@@ -23,7 +23,7 @@ class Story {
   String get fileUrl2 {
     try {
       return files[1];
-    } catch (e) {
+    } on Exception catch (e) {
       return '';
     }
   }
@@ -31,7 +31,7 @@ class Story {
   String get fileUrl3 {
     try {
       return files[2];
-    } catch (e) {
+    } on Exception catch (e) {
       return '';
     }
   }
@@ -81,3 +81,4 @@ class Story {
     'isAdvertisement': isAdvertisement,
   };
 }
+

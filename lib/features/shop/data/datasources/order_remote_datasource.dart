@@ -1,8 +1,8 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
+﻿import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:biux/features/shop/data/models/order_model.dart';
 import 'package:biux/features/shop/domain/entities/order_entity.dart';
 
-/// Datasource para órdenes en Firebase Firestore
+/// Datasource para Ã³rdenes en Firebase Firestore
 class OrderRemoteDataSource {
   final FirebaseFirestore _firestore;
   static const String _collection = 'orders';
@@ -18,12 +18,12 @@ class OrderRemoteDataSource {
           .add(order.toFirestore());
 
       return docRef.id;
-    } catch (e) {
+    } on FirebaseException catch (e) {
       throw Exception('Error al crear orden: $e');
     }
   }
 
-  /// Obtener órdenes del usuario
+  /// Obtener Ã³rdenes del usuario
   Future<List<OrderModel>> getUserOrders(String userId) async {
     try {
       final snapshot = await _firestore
@@ -33,12 +33,12 @@ class OrderRemoteDataSource {
           .get();
 
       return snapshot.docs.map((doc) => OrderModel.fromFirestore(doc)).toList();
-    } catch (e) {
-      throw Exception('Error al obtener órdenes del usuario: $e');
+    } on FirebaseException catch (e) {
+      throw Exception('Error al obtener Ã³rdenes del usuario: $e');
     }
   }
 
-  /// Obtener todas las órdenes (solo admins)
+  /// Obtener todas las Ã³rdenes (solo admins)
   Future<List<OrderModel>> getAllOrders() async {
     try {
       final snapshot = await _firestore
@@ -47,8 +47,8 @@ class OrderRemoteDataSource {
           .get();
 
       return snapshot.docs.map((doc) => OrderModel.fromFirestore(doc)).toList();
-    } catch (e) {
-      throw Exception('Error al obtener todas las órdenes: $e');
+    } on FirebaseException catch (e) {
+      throw Exception('Error al obtener todas las Ã³rdenes: $e');
     }
   }
 
@@ -62,7 +62,7 @@ class OrderRemoteDataSource {
       }
 
       return OrderModel.fromFirestore(doc);
-    } catch (e) {
+    } on FirebaseException catch (e) {
       throw Exception('Error al obtener orden: $e');
     }
   }
@@ -77,7 +77,7 @@ class OrderRemoteDataSource {
       }
 
       await _firestore.collection(_collection).doc(orderId).update(updateData);
-    } catch (e) {
+    } on FirebaseException catch (e) {
       throw Exception('Error al actualizar estado de orden: $e');
     }
   }
@@ -86,8 +86,9 @@ class OrderRemoteDataSource {
   Future<void> cancelOrder(String orderId) async {
     try {
       await updateOrderStatus(orderId, OrderStatus.cancelled);
-    } catch (e) {
+    } on FirebaseException catch (e) {
       throw Exception('Error al cancelar orden: $e');
     }
   }
 }
+

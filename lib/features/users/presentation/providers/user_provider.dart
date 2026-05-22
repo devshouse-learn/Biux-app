@@ -1,4 +1,4 @@
-import 'package:shared_preferences/shared_preferences.dart';
+﻿import 'package:shared_preferences/shared_preferences.dart';
 import 'package:biux/features/users/data/models/user_model.dart';
 import 'package:biux/core/services/app_logger.dart';
 import 'package:biux/features/users/data/datasources/user_service.dart';
@@ -13,7 +13,7 @@ class UserProvider extends ChangeNotifier {
   // Flag para evitar llamadas remotas en tests
   bool _skipRemoteCalls = false;
 
-  /// Constructor de producción
+  /// Constructor de producciÃ³n
   UserModel? _user;
   bool _isLoading = false;
   String? _error;
@@ -22,12 +22,12 @@ class UserProvider extends ChangeNotifier {
   bool get isLoading => _isLoading;
   String? get error => _error;
 
-  // 🔴 Constructor que auto-inicializa en web
+  // ðŸ”´ Constructor que auto-inicializa en web
   UserProvider() : _userService = UserService() {
-    AppLogger.debug('🟦 UserProvider constructor llamado');
+    AppLogger.debug('ðŸŸ¦ UserProvider constructor llamado');
     if (kIsWeb && !kReleaseMode) {
       AppLogger.debug(
-        '🌐 Es WEB - Creando usuario admin de prueba automáticamente',
+        'ðŸŒ Es WEB - Creando usuario admin de prueba automÃ¡ticamente',
       );
       _createWebTestUser();
     } else {
@@ -44,39 +44,39 @@ class UserProvider extends ChangeNotifier {
     _skipRemoteCalls = skipRemote;
   }
 
-  // 🔴 Crear usuario admin de prueba SOLO para Chrome web
+  // ðŸ”´ Crear usuario admin de prueba SOLO para Chrome web
   Future<void> _createWebTestUser() async {
-    AppLogger.debug('🟦 Creando usuario admin para CHROME web (desarrollo)...');
+    AppLogger.debug('ðŸŸ¦ Creando usuario admin para CHROME web (desarrollo)...');
     _setLoading(true);
 
     try {
-      // ⚠️ IMPORTANTE: Este usuario SOLO existe en Chrome
-      // En simuladores móviles, los usuarios deben solicitar permisos a través de Firebase
+      // âš ï¸ IMPORTANTE: Este usuario SOLO existe en Chrome
+      // En simuladores mÃ³viles, los usuarios deben solicitar permisos a travÃ©s de Firebase
       _user = UserModel(
         uid: 'web-chrome-admin-uid',
         name: 'Admin Chrome (Desarrollo)',
         email: 'admin.chrome@biux.dev',
         phoneNumber: '+1234567890',
-        isAdmin: true, // ← ADMIN SOLO EN CHROME WEB
+        isAdmin: true, // â† ADMIN SOLO EN CHROME WEB
         canSellProducts: true,
       );
 
-      AppLogger.info('✅ Usuario admin de Chrome creado (SOLO WEB)');
-      AppLogger.debug('👤 Nombre: ${_user!.name}');
-      AppLogger.debug('🛡️ Es admin: ${_user!.isAdmin}');
-      AppLogger.debug('🛒 Puede vender: ${_user!.canSellProducts}');
-      AppLogger.info('✅ Puede crear productos: ${_user!.canCreateProducts}');
+      AppLogger.info('âœ… Usuario admin de Chrome creado (SOLO WEB)');
+      AppLogger.debug('ðŸ‘¤ Nombre: ${_user!.name}');
+      AppLogger.debug('ðŸ›¡ï¸ Es admin: ${_user!.isAdmin}');
+      AppLogger.debug('ðŸ›’ Puede vender: ${_user!.canSellProducts}');
+      AppLogger.info('âœ… Puede crear productos: ${_user!.canCreateProducts}');
       AppLogger.debug('');
-      AppLogger.warning('⚠️  IMPORTANTE:');
+      AppLogger.warning('âš ï¸  IMPORTANTE:');
       AppLogger.debug('   - Este admin SOLO funciona en Chrome web');
       AppLogger.debug(
-        '   - En simuladores móviles, los usuarios deben pedir permiso',
+        '   - En simuladores mÃ³viles, los usuarios deben pedir permiso',
       );
       AppLogger.debug('');
 
-      notifyListeners(); // ← IMPORTANTE: Notificar a los listeners
-    } catch (e) {
-      AppLogger.error('❌ Error creando usuario de prueba: $e');
+      notifyListeners(); // â† IMPORTANTE: Notificar a los listeners
+    } on FirebaseException catch (e) {
+      AppLogger.error('âŒ Error creando usuario de prueba: $e');
       _error = 'user_error_creating_test';
     }
 
@@ -90,20 +90,20 @@ class UserProvider extends ChangeNotifier {
     if (uid == null) return;
 
     AppLogger.debug('');
-    AppLogger.debug('�' * 30);
-    AppLogger.debug('� SIMULADOR MÓVIL - Sistema de Permisos');
-    AppLogger.debug('📱 TU UID ES: $uid');
-    AppLogger.debug('�');
-    AppLogger.debug('📱 ⚠️  IMPORTANTE:');
-    AppLogger.debug('📱 - Por defecto, NO eres administrador');
-    AppLogger.debug('📱 - NO puedes subir productos automáticamente');
-    AppLogger.debug('📱 - Debes solicitar permisos a un administrador');
-    AppLogger.debug('📱');
-    AppLogger.debug('📱 Para solicitar permisos:');
-    AppLogger.debug('📱 1. Ve a tu perfil');
-    AppLogger.debug('📱 2. Solicita ser vendedor');
-    AppLogger.debug('📱 3. Un admin debe aprobar tu solicitud');
-    AppLogger.debug('�' * 30);
+    AppLogger.debug('ï¿½' * 30);
+    AppLogger.debug('ï¿½ SIMULADOR MÃ“VIL - Sistema de Permisos');
+    AppLogger.debug('ðŸ“± TU UID ES: $uid');
+    AppLogger.debug('ï¿½');
+    AppLogger.debug('ðŸ“± âš ï¸  IMPORTANTE:');
+    AppLogger.debug('ðŸ“± - Por defecto, NO eres administrador');
+    AppLogger.debug('ðŸ“± - NO puedes subir productos automÃ¡ticamente');
+    AppLogger.debug('ðŸ“± - Debes solicitar permisos a un administrador');
+    AppLogger.debug('ðŸ“±');
+    AppLogger.debug('ðŸ“± Para solicitar permisos:');
+    AppLogger.debug('ðŸ“± 1. Ve a tu perfil');
+    AppLogger.debug('ðŸ“± 2. Solicita ser vendedor');
+    AppLogger.debug('ðŸ“± 3. Un admin debe aprobar tu solicitud');
+    AppLogger.debug('ï¿½' * 30);
     AppLogger.debug('');
 
     _setLoading(true);
@@ -114,7 +114,7 @@ class UserProvider extends ChangeNotifier {
       _user = userData;
 
       if (_user != null) {
-        // Si el phoneNumber está vacío o no parece un teléfono válido,
+        // Si el phoneNumber estÃ¡ vacÃ­o o no parece un telÃ©fono vÃ¡lido,
         // intentar recuperarlo de FirebaseAuth o del propio UID
         final storedPhone = _user!.phoneNumber;
         final isPhoneInvalid =
@@ -142,19 +142,19 @@ class UserProvider extends ChangeNotifier {
           }
         }
 
-        AppLogger.debug('👤 Usuario cargado: ${_user!.name ?? "Sin nombre"}');
-        AppLogger.debug('🛡️ Es admin: ${_user!.isAdmin}');
-        AppLogger.debug('🛒 Puede vender: ${_user!.canSellProducts}');
-        AppLogger.info('✅ Puede crear productos: ${_user!.canCreateProducts}');
+        AppLogger.debug('ðŸ‘¤ Usuario cargado: ${_user!.name ?? "Sin nombre"}');
+        AppLogger.debug('ðŸ›¡ï¸ Es admin: ${_user!.isAdmin}');
+        AppLogger.debug('ðŸ›’ Puede vender: ${_user!.canSellProducts}');
+        AppLogger.info('âœ… Puede crear productos: ${_user!.canCreateProducts}');
 
         if (!_user!.canCreateProducts) {
           AppLogger.debug('');
-          AppLogger.warning('⚠️  NO PUEDES SUBIR PRODUCTOS');
-          AppLogger.debug('   Necesitas autorización de un administrador');
+          AppLogger.warning('âš ï¸  NO PUEDES SUBIR PRODUCTOS');
+          AppLogger.debug('   Necesitas autorizaciÃ³n de un administrador');
           AppLogger.debug('');
         }
       }
-    } catch (e) {
+    } on FirebaseException catch (e) {
       _error = 'user_error_loading_data';
       AppLogger.debug('Error en loadUserData: $e');
     }
@@ -174,9 +174,9 @@ class UserProvider extends ChangeNotifier {
       _userService!.listenToUser(uid, (userData) {
         _user = userData;
         notifyListeners();
-        AppLogger.debug('🔄 Datos de usuario actualizados en tiempo real');
+        AppLogger.debug('ðŸ”„ Datos de usuario actualizados en tiempo real');
       });
-    } catch (e) {
+    } on FirebaseException catch (e) {
       AppLogger.debug('Error configurando listener: $e');
     }
   }
@@ -190,20 +190,20 @@ class UserProvider extends ChangeNotifier {
     String? coverPhotoUrl,
     DateTime? birthDate,
   }) async {
-    AppLogger.debug('🔍 ====== USER PROVIDER: updateProfile ======');
-    AppLogger.debug('📝 Nombre recibido: "$name"');
-    AppLogger.debug('📧 Email recibido: "$email"');
-    AppLogger.debug('📋 Descripción recibida: "$description"');
-    AppLogger.debug('👤 Username recibido: "$username"');
-    AppLogger.debug('🖼️ Foto de perfil recibida: "$photoUrl"');
-    AppLogger.debug('🏞️ Foto de portada recibida: "$coverPhotoUrl"');
+    AppLogger.debug('ðŸ” ====== USER PROVIDER: updateProfile ======');
+    AppLogger.debug('ðŸ“ Nombre recibido: "$name"');
+    AppLogger.debug('ðŸ“§ Email recibido: "$email"');
+    AppLogger.debug('ðŸ“‹ DescripciÃ³n recibida: "$description"');
+    AppLogger.debug('ðŸ‘¤ Username recibido: "$username"');
+    AppLogger.debug('ðŸ–¼ï¸ Foto de perfil recibida: "$photoUrl"');
+    AppLogger.debug('ðŸžï¸ Foto de portada recibida: "$coverPhotoUrl"');
 
     // SIEMPRE usar Firebase Auth como fuente de verdad
     final firebaseUser = FirebaseAuth.instance.currentUser;
 
     if (firebaseUser == null) {
       AppLogger.debug(
-        '❌ ERROR CRÍTICO: No hay usuario autenticado en Firebase Auth',
+        'âŒ ERROR CRÃTICO: No hay usuario autenticado en Firebase Auth',
       );
       _error = 'user_error_not_logged_in';
       notifyListeners();
@@ -211,9 +211,9 @@ class UserProvider extends ChangeNotifier {
     }
 
     final uid = firebaseUser.uid;
-    AppLogger.info('✅ Usuario autenticado encontrado');
-    AppLogger.debug('🆔 UID de Firebase Auth: $uid');
-    AppLogger.debug('📞 Teléfono: ${firebaseUser.phoneNumber}');
+    AppLogger.info('âœ… Usuario autenticado encontrado');
+    AppLogger.debug('ðŸ†” UID de Firebase Auth: $uid');
+    AppLogger.debug('ðŸ“ž TelÃ©fono: ${firebaseUser.phoneNumber}');
 
     // Validar que al menos uno de los campos tenga valor
     // Permitir null/empty para fotos (para poder eliminarlas)
@@ -223,13 +223,13 @@ class UserProvider extends ChangeNotifier {
         (description != null && description.isNotEmpty) ||
         (username != null && username.isNotEmpty);
 
-    // Una foto es actualización si: no es null (nuevo valor) O si es cadena vacía (eliminación)
+    // Una foto es actualizaciÃ³n si: no es null (nuevo valor) O si es cadena vacÃ­a (eliminaciÃ³n)
     bool hasPhotoUpdate = photoUrl != null || coverPhotoUrl != null;
 
     bool hasBirthDateUpdate = birthDate != null;
 
     if (!hasTextUpdate && !hasPhotoUpdate && !hasBirthDateUpdate) {
-      AppLogger.error('❌ ERROR: Todos los campos vacíos');
+      AppLogger.error('âŒ ERROR: Todos los campos vacÃ­os');
       _error = 'user_error_empty_fields';
       notifyListeners();
       return false;
@@ -240,7 +240,7 @@ class UserProvider extends ChangeNotifier {
     notifyListeners();
 
     try {
-      AppLogger.debug('📝 Iniciando actualización de perfil...');
+      AppLogger.debug('ðŸ“ Iniciando actualizaciÃ³n de perfil...');
       AppLogger.debug('   Foto de perfil: "$photoUrl"');
       AppLogger.debug('   Foto de portada: "$coverPhotoUrl"');
 
@@ -255,40 +255,40 @@ class UserProvider extends ChangeNotifier {
         birthDate: birthDate,
       );
 
-      AppLogger.debug('📊 Respuesta del servicio: $success');
+      AppLogger.debug('ðŸ“Š Respuesta del servicio: $success');
 
       if (success) {
-        AppLogger.info('✅ Actualización exitosa, recargando datos...');
+        AppLogger.info('âœ… ActualizaciÃ³n exitosa, recargando datos...');
         // Recargar datos del usuario desde Firebase
         await loadUserData();
 
-        AppLogger.info('✅ Datos recargados:');
+        AppLogger.info('âœ… Datos recargados:');
         AppLogger.debug('   Nombre actual: ${_user?.name}');
         AppLogger.debug('   Email actual: ${_user?.email}');
         AppLogger.debug('   Username actual: ${_user?.username}');
-        AppLogger.debug('   Descripción actual: ${_user?.description}');
+        AppLogger.debug('   DescripciÃ³n actual: ${_user?.description}');
         AppLogger.debug('   Foto de perfil actual: ${_user?.photoUrl}');
         AppLogger.debug('   Foto de portada actual: ${_user?.coverPhotoUrl}');
 
         _error = null;
       } else {
-        AppLogger.error('❌ El servicio retornó false');
+        AppLogger.error('âŒ El servicio retornÃ³ false');
         _error = 'user_error_update_profile';
       }
 
       _setLoading(false);
       notifyListeners();
       AppLogger.debug(
-        '🔍 ====== FIN updateProfile (${success ? "ÉXITO" : "ERROR"}) ======\n',
+        'ðŸ” ====== FIN updateProfile (${success ? "Ã‰XITO" : "ERROR"}) ======\n',
       );
       return success;
-    } catch (e) {
-      AppLogger.error('❌ EXCEPCIÓN en updateProfile: $e');
+    } on FirebaseException catch (e) {
+      AppLogger.error('âŒ EXCEPCIÃ“N en updateProfile: $e');
       AppLogger.debug('   Tipo: ${e.runtimeType}');
       _error = 'user_error_update_profile';
       _setLoading(false);
       notifyListeners();
-      AppLogger.debug('🔍 ====== FIN updateProfile (EXCEPCIÓN) ======\n');
+      AppLogger.debug('ðŸ” ====== FIN updateProfile (EXCEPCIÃ“N) ======\n');
       return false;
     }
   }
@@ -310,7 +310,7 @@ class UserProvider extends ChangeNotifier {
 
       _setLoading(false);
       return false;
-    } catch (e) {
+    } on FirebaseException catch (e) {
       _error = 'user_error_upload_image';
       _setLoading(false);
       return false;
@@ -335,7 +335,7 @@ class UserProvider extends ChangeNotifier {
 
       _setLoading(false);
       return success;
-    } catch (e) {
+    } on FirebaseException catch (e) {
       _error = 'user_error_request_deletion';
       _setLoading(false);
       return false;
@@ -375,7 +375,7 @@ class UserProvider extends ChangeNotifier {
       _setLoading(false);
       notifyListeners();
       return success;
-    } catch (e) {
+    } on FirebaseException catch (e) {
       _error = 'user_error_authorize_seller';
       _setLoading(false);
       notifyListeners();
@@ -383,7 +383,7 @@ class UserProvider extends ChangeNotifier {
     }
   }
 
-  /// Revocar autorización de vendedor (solo administradores)
+  /// Revocar autorizaciÃ³n de vendedor (solo administradores)
   Future<bool> revokeSellerPermission(String userId) async {
     if (_user == null || !_user!.isAdmin) {
       _error = 'user_error_admin_only_revoke';
@@ -405,7 +405,7 @@ class UserProvider extends ChangeNotifier {
       _setLoading(false);
       notifyListeners();
       return success;
-    } catch (e) {
+    } on FirebaseException catch (e) {
       _error = 'user_error_revoke_permission';
       _setLoading(false);
       notifyListeners();
@@ -424,7 +424,7 @@ class UserProvider extends ChangeNotifier {
 
     try {
       return await _userService!.getAllUsers();
-    } catch (e) {
+    } on FirebaseException catch (e) {
       _error = 'user_error_load_users';
       notifyListeners();
       return [];
@@ -443,7 +443,7 @@ class UserProvider extends ChangeNotifier {
 
     final currentUserId = currentUser.uid;
     AppLogger.debug(
-      '📱 followUser: currentUserId=$currentUserId, userIdToFollow=$userIdToFollow',
+      'ðŸ“± followUser: currentUserId=$currentUserId, userIdToFollow=$userIdToFollow',
     );
 
     _setLoading(true);
@@ -456,7 +456,7 @@ class UserProvider extends ChangeNotifier {
       );
 
       if (success) {
-        // Crear notificación de follow para el usuario seguido
+        // Crear notificaciÃ³n de follow para el usuario seguido
         try {
           final notificationsRepo = NotificationsRepositoryImpl();
           await notificationsRepo.createNotification(
@@ -466,18 +466,18 @@ class UserProvider extends ChangeNotifier {
             fromUserName: _user?.name ?? _user?.username ?? 'Usuario',
             fromUserPhoto: _user?.photoUrl,
           );
-          AppLogger.info('🔔 Notificación de follow enviada a $userIdToFollow');
-        } catch (e) {
-          // No bloquear el follow si falla la notificación
+          AppLogger.info('ðŸ”” NotificaciÃ³n de follow enviada a $userIdToFollow');
+        } on FirebaseException catch (e) {
+          // No bloquear el follow si falla la notificaciÃ³n
           AppLogger.warning(
-            'No se pudo crear notificación de follow: $e',
+            'No se pudo crear notificaciÃ³n de follow: $e',
             tag: 'UserProvider',
           );
         }
 
         // Actualizar la lista de seguidos localmente
         await loadUserData();
-        AppLogger.info('✅ Ya sigues a $userIdToFollow');
+        AppLogger.info('âœ… Ya sigues a $userIdToFollow');
       } else {
         _error = 'user_error_follow';
       }
@@ -485,7 +485,7 @@ class UserProvider extends ChangeNotifier {
       _setLoading(false);
       notifyListeners();
       return success;
-    } catch (e) {
+    } on FirebaseException catch (e) {
       _error = 'user_error_follow';
       _setLoading(false);
       notifyListeners();
@@ -505,7 +505,7 @@ class UserProvider extends ChangeNotifier {
 
     final currentUserId = currentUser.uid;
     AppLogger.debug(
-      '📱 unfollowUser: currentUserId=$currentUserId, userIdToUnfollow=$userIdToUnfollow',
+      'ðŸ“± unfollowUser: currentUserId=$currentUserId, userIdToUnfollow=$userIdToUnfollow',
     );
 
     _setLoading(true);
@@ -520,7 +520,7 @@ class UserProvider extends ChangeNotifier {
       if (success) {
         // Actualizar la lista de seguidos localmente
         await loadUserData();
-        AppLogger.info('✅ Dejaste de seguir a $userIdToUnfollow');
+        AppLogger.info('âœ… Dejaste de seguir a $userIdToUnfollow');
       } else {
         _error = 'user_error_unfollow';
       }
@@ -528,7 +528,7 @@ class UserProvider extends ChangeNotifier {
       _setLoading(false);
       notifyListeners();
       return success;
-    } catch (e) {
+    } on FirebaseException catch (e) {
       _error = 'user_error_unfollow';
       _setLoading(false);
       notifyListeners();
@@ -572,13 +572,13 @@ class UserProvider extends ChangeNotifier {
     if (!(_user!.username?.isNotEmpty ?? false))
       missing.add('Nombre de usuario');
     if (!(_user!.photoUrl?.isNotEmpty ?? false)) missing.add('Foto de perfil');
-    if (!(_user!.description?.isNotEmpty ?? false)) missing.add('Biografía');
+    if (!(_user!.description?.isNotEmpty ?? false)) missing.add('BiografÃ­a');
     return missing;
   }
 
   bool get isProfileComplete => profileCompletionPercent >= 80;
 
-  /// URL pública del perfil para compartir
+  /// URL pÃºblica del perfil para compartir
   String get publicProfileUrl {
     final username = _user?.username ?? _user?.uid ?? '';
     return 'https://biux.app/u/$username';
@@ -586,10 +586,10 @@ class UserProvider extends ChangeNotifier {
 
   String get shareProfileText {
     final name = _user?.name ?? 'Ciclista';
-    return '¡Sígueme en Biux! �� $name\n$publicProfileUrl';
+    return 'Â¡SÃ­gueme en Biux! ï¿½ï¿½ $name\n$publicProfileUrl';
   }
 
-  /// Guarda el UID del usuario en caché para acceso rápido al arranque
+  /// Guarda el UID del usuario en cachÃ© para acceso rÃ¡pido al arranque
   // ignore: unused_element
   Future<void> _cacheUserLocally(String uid) async {
     try {
@@ -600,15 +600,16 @@ class UserProvider extends ChangeNotifier {
     } catch (_) {}
   }
 
-  /// Carga datos básicos del caché local para arranque rápido
+  /// Carga datos bÃ¡sicos del cachÃ© local para arranque rÃ¡pido
   Future<void> loadFromCache() async {
     try {
       final prefs = await SharedPreferences.getInstance();
       final uid = prefs.getString('cached_uid');
       if (uid != null && _user == null) {
-        // Datos mínimos mientras carga Firestore
+        // Datos mÃ­nimos mientras carga Firestore
         notifyListeners();
       }
     } catch (_) {}
   }
 }
+

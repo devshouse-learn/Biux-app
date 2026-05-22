@@ -1,4 +1,4 @@
-import 'dart:io';
+﻿import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -30,7 +30,7 @@ class _IdentityVerificationScreenState
   final List<String> _docTypes = [
     'INE / Credencial de elector',
     'Pasaporte',
-    'Cédula profesional',
+    'CÃ©dula profesional',
     'Licencia de conducir',
   ];
 
@@ -96,7 +96,7 @@ class _IdentityVerificationScreenState
         _uploading = false;
         _uploaded = true;
       });
-    } catch (e) {
+    } on FirebaseException catch (e) {
       setState(() => _uploading = false);
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -114,7 +114,7 @@ class _IdentityVerificationScreenState
         backgroundColor: ColorTokens.primary30,
         foregroundColor: Colors.white,
         title: const Text(
-          'Verificación de identidad',
+          'VerificaciÃ³n de identidad',
           style: TextStyle(fontWeight: FontWeight.bold),
         ),
         automaticallyImplyLeading: false,
@@ -181,8 +181,8 @@ class _IdentityVerificationScreenState
               const SizedBox(width: 10),
               Expanded(
                 child: Text(
-                  'Tus documentos están protegidos con cifrado y solo serán '
-                  'usados para verificar tu identidad. No serán compartidos con terceros.',
+                  'Tus documentos estÃ¡n protegidos con cifrado y solo serÃ¡n '
+                  'usados para verificar tu identidad. No serÃ¡n compartidos con terceros.',
                   style: TextStyle(
                     fontSize: 12,
                     color: Colors.blue[800],
@@ -261,7 +261,7 @@ class _IdentityVerificationScreenState
                   )
                 : const Icon(Icons.upload_rounded),
             label: Text(
-              _uploading ? 'Subiendo...' : 'Enviar para verificación',
+              _uploading ? 'Subiendo...' : 'Enviar para verificaciÃ³n',
               style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w700),
             ),
             style: ElevatedButton.styleFrom(
@@ -281,7 +281,7 @@ class _IdentityVerificationScreenState
           child: TextButton(
             onPressed: () => context.go('/stories'),
             child: const Text(
-              'Verificar más tarde (acceso limitado)',
+              'Verificar mÃ¡s tarde (acceso limitado)',
               style: TextStyle(color: Colors.grey, fontSize: 13),
             ),
           ),
@@ -401,7 +401,7 @@ class _IdentityVerificationScreenState
         ),
         const SizedBox(height: 24),
         const Text(
-          '¡Documentos enviados!',
+          'Â¡Documentos enviados!',
           style: TextStyle(fontSize: 22, fontWeight: FontWeight.w800),
         ),
         const SizedBox(height: 12),
@@ -413,7 +413,7 @@ class _IdentityVerificationScreenState
           ),
           child: const Text(
             'Revisaremos tus documentos en 24-48 horas. '
-            'Mientras tanto puedes usar Biux con acceso básico.',
+            'Mientras tanto puedes usar Biux con acceso bÃ¡sico.',
             style: TextStyle(fontSize: 14, height: 1.6),
             textAlign: TextAlign.center,
           ),
@@ -441,3 +441,4 @@ class _IdentityVerificationScreenState
     );
   }
 }
+

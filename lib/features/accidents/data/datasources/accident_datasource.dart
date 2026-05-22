@@ -29,4 +29,25 @@ class AccidentDatasource {
   Future<void> resolveAccident(String id) async {
     await _fs.collection(_col).doc(id).update({'resolved': true});
   }
+
+  Future<void> deleteAllAccidents() async {
+    final snapshot = await _fs.collection(_col).get();
+    final batch = _fs.batch();
+    for (final doc in snapshot.docs) {
+      batch.delete(doc.reference);
+    }
+    await batch.commit();
+  }
+
+  Future<void> deleteResolvedAccidents() async {
+    final snapshot = await _fs
+        .collection(_col)
+        .where('resolved', isEqualTo: true)
+        .get();
+    final batch = _fs.batch();
+    for (final doc in snapshot.docs) {
+      batch.delete(doc.reference);
+    }
+    await batch.commit();
+  }
 }

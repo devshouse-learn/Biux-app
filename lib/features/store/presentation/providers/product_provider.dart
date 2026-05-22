@@ -1,4 +1,4 @@
-import 'package:flutter/foundation.dart';
+﻿import 'package:flutter/foundation.dart';
 import 'package:biux/features/store/domain/entities/product_entity.dart';
 import 'package:biux/features/store/domain/usecases/create_product_usecase.dart';
 import 'package:biux/features/store/domain/usecases/get_products_usecase.dart';
@@ -6,7 +6,7 @@ import 'package:biux/features/store/domain/usecases/update_product_usecase.dart'
 import 'package:biux/features/store/domain/usecases/delete_product_usecase.dart';
 import 'package:biux/features/users/domain/entities/user_entity.dart';
 
-/// Provider para gestión de productos con control de roles y permisos
+/// Provider para gestiÃ³n de productos con control de roles y permisos
 class ProductProvider with ChangeNotifier {
   final GetAllProductsUseCase _getAllProductsUseCase;
   final GetProductsByCategoryUseCase _getProductsByCategoryUseCase;
@@ -58,7 +58,7 @@ class ProductProvider with ChangeNotifier {
 
     try {
       _products = await _getAllProductsUseCase();
-    } catch (e) {
+    } on Exception catch (e) {
       _error = e.toString();
     } finally {
       _isLoading = false;
@@ -66,7 +66,7 @@ class ProductProvider with ChangeNotifier {
     }
   }
 
-  /// Cargar productos por categoría
+  /// Cargar productos por categorÃ­a
   Future<void> loadProductsByCategory(ProductCategory category) async {
     _isLoading = true;
     _error = null;
@@ -75,7 +75,7 @@ class ProductProvider with ChangeNotifier {
 
     try {
       _products = await _getProductsByCategoryUseCase(category);
-    } catch (e) {
+    } on Exception catch (e) {
       _error = e.toString();
     } finally {
       _isLoading = false;
@@ -91,7 +91,7 @@ class ProductProvider with ChangeNotifier {
 
     try {
       _products = await _getProductsBySellerUseCase(sellerId);
-    } catch (e) {
+    } on Exception catch (e) {
       _error = e.toString();
     } finally {
       _isLoading = false;
@@ -104,7 +104,7 @@ class ProductProvider with ChangeNotifier {
     try {
       _featuredProducts = await _getFeaturedProductsUseCase();
       notifyListeners();
-    } catch (e) {
+    } on Exception catch (e) {
       _error = e.toString();
       notifyListeners();
     }
@@ -120,7 +120,7 @@ class ProductProvider with ChangeNotifier {
 
     try {
       _products = await _searchProductsUseCase(query);
-    } catch (e) {
+    } on Exception catch (e) {
       _error = e.toString();
     } finally {
       _isLoading = false;
@@ -145,7 +145,7 @@ class ProductProvider with ChangeNotifier {
     try {
       await _createProductUseCase(product);
       await loadAllProducts(); // Recargar productos
-    } catch (e) {
+    } on Exception catch (e) {
       _error = e.toString();
       rethrow;
     } finally {
@@ -155,7 +155,7 @@ class ProductProvider with ChangeNotifier {
   }
 
   /// Actualizar un producto existente
-  /// Requiere que el usuario sea el vendedor dueño o administrador
+  /// Requiere que el usuario sea el vendedor dueÃ±o o administrador
   Future<void> updateProduct(
     ProductEntity product,
     UserEntity currentUser,
@@ -171,7 +171,7 @@ class ProductProvider with ChangeNotifier {
     try {
       await _updateProductUseCase(product);
       await loadAllProducts(); // Recargar productos
-    } catch (e) {
+    } on Exception catch (e) {
       _error = e.toString();
       rethrow;
     } finally {
@@ -181,7 +181,7 @@ class ProductProvider with ChangeNotifier {
   }
 
   /// Eliminar un producto
-  /// Requiere que el usuario sea el vendedor dueño o administrador
+  /// Requiere que el usuario sea el vendedor dueÃ±o o administrador
   Future<void> deleteProduct(
     String productId,
     ProductEntity product,
@@ -198,7 +198,7 @@ class ProductProvider with ChangeNotifier {
     try {
       await _deleteProductUseCase(productId);
       _products.removeWhere((p) => p.id == productId);
-    } catch (e) {
+    } on Exception catch (e) {
       _error = e.toString();
       rethrow;
     } finally {
@@ -222,7 +222,7 @@ class ProductProvider with ChangeNotifier {
     return false;
   }
 
-  /// Limpiar filtros y búsqueda
+  /// Limpiar filtros y bÃºsqueda
   void clearFilters() {
     _selectedCategory = null;
     _searchQuery = '';
@@ -235,3 +235,4 @@ class ProductProvider with ChangeNotifier {
     notifyListeners();
   }
 }
+

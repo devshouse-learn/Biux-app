@@ -1,10 +1,10 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:biux/features/users/domain/entities/user_entity.dart';
 import 'package:biux/features/store/presentation/providers/product_provider.dart';
 import 'package:biux/core/design_system/locale_notifier.dart';
 
-/// Panel de administración para gestionar usuarios, vendedores y productos
+/// Panel de administraciÃ³n para gestionar usuarios, vendedores y productos
 class AdminDashboardScreen extends StatefulWidget {
   final UserEntity currentUser;
 
@@ -63,7 +63,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen>
     );
   }
 
-  // Tab 1: Gestión de usuarios
+  // Tab 1: GestiÃ³n de usuarios
   Widget _buildUsersTab() {
     final l = Provider.of<LocaleNotifier>(context);
     return ListView(
@@ -100,7 +100,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen>
     );
   }
 
-  // Tab 2: Gestión de vendedores
+  // Tab 2: GestiÃ³n de vendedores
   Widget _buildSellersTab() {
     final l = Provider.of<LocaleNotifier>(context);
     return ListView(
@@ -157,7 +157,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen>
     );
   }
 
-  // Tab 3: Gestión de productos
+  // Tab 3: GestiÃ³n de productos
   Widget _buildProductsTab() {
     final l = Provider.of<LocaleNotifier>(context);
     return Consumer<ProductProvider>(
@@ -268,7 +268,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen>
                             ),
                             subtitle: Text(
                               '${l.t('seller')}: ${product.vendedorNombre ?? l.t('unknown')}\n'
-                              '\$${product.precio.toStringAsFixed(2)} • Stock: ${product.stock}',
+                              '\$${product.precio.toStringAsFixed(2)} â€¢ Stock: ${product.stock}',
                             ),
                             trailing: Row(
                               mainAxisSize: MainAxisSize.min,
@@ -391,7 +391,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen>
           ),
           ElevatedButton(
             onPressed: () {
-              // IMPLEMENTADO (STUB): Implementar autorización real
+              // IMPLEMENTADO (STUB): Implementar autorizaciÃ³n real
               Navigator.pop(context);
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(
@@ -434,7 +434,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen>
           ),
           ElevatedButton(
             onPressed: () {
-              // IMPLEMENTADO (STUB): Implementar revocación real
+              // IMPLEMENTADO (STUB): Implementar revocaciÃ³n real
               Navigator.pop(context);
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(
@@ -485,7 +485,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen>
                     ),
                   );
                 }
-              } catch (e) {
+              } on Exception catch (e) {
                 if (mounted) {
                   Navigator.pop(context);
                   ScaffoldMessenger.of(context).showSnackBar(
@@ -505,3 +505,4 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen>
     );
   }
 }
+

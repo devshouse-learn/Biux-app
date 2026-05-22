@@ -7,8 +7,17 @@ class AchievementsDatasource {
     : _firestore = firestore ?? FirebaseFirestore.instance;
 
   Future<Map<String, dynamic>> getUserAchievements(String userId) async {
-    final doc = await _firestore.collection('achievements').doc(userId).get();
-    return doc.exists ? doc.data()! : {};
+    final snapshot = await _firestore
+        .collection('users')
+        .doc(userId)
+        .collection('achievements')
+        .get();
+
+    final data = <String, dynamic>{};
+    for (final doc in snapshot.docs) {
+      data[doc.id] = doc.data();
+    }
+    return data;
   }
 
   Future<void> saveAchievements(
@@ -16,18 +25,22 @@ class AchievementsDatasource {
     Map<String, dynamic> data,
   ) async {
     await _firestore
+        .collection('users')
+        .doc(userId)
         .collection('achievements')
         .doc(userId)
         .set(data, SetOptions(merge: true));
   }
 
   Future<void> unlockAchievement(String userId, String achievementId) async {
-    await _firestore.collection('achievements').doc(userId).set({
-      achievementId: {
-        'unlocked': true,
-        'unlockedAt': FieldValue.serverTimestamp(),
-      },
-    }, SetOptions(merge: true));
+    await _firestore
+        .collection('users')
+        .doc(userId)
+        .collection('achievements')
+        .doc(achievementId)
+        .set({
+          'unlockedAt': FieldValue.serverTimestamp(),
+        }, SetOptions(merge: true));
   }
 
   Future<void> updateProgress(
@@ -35,8 +48,13 @@ class AchievementsDatasource {
     String achievementId,
     double value,
   ) async {
-    await _firestore.collection('achievements').doc(userId).set({
-      achievementId: {'currentValue': value},
-    }, SetOptions(merge: true));
+    await _firestore
+        .collection('users')
+        .doc(userId)
+        .collection('achievements')
+        .doc(achievementId)
+        .set({
+          'currentValue': value,
+        }, SetOptions(merge: true));
   }
 }

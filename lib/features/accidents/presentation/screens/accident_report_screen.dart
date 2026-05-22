@@ -1,4 +1,4 @@
-import 'dart:io';
+﻿import 'dart:io';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -28,7 +28,7 @@ class _AccidentReportScreenState extends State<AccidentReportScreen>
 
   late TabController _tabController;
 
-  // ── Form state ──────────────────────────────────────
+  // â”€â”€ Form state â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   final _descCtrl = TextEditingController();
   String _severity = 'minor';
   bool _submitting = false;
@@ -37,7 +37,7 @@ class _AccidentReportScreenState extends State<AccidentReportScreen>
   final List<File> _photos = [];
   final ImagePicker _picker = ImagePicker();
 
-  // ── List/Map state ──────────────────────────────────
+  // â”€â”€ List/Map state â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   Position? _myPosition;
 
   @override
@@ -54,9 +54,9 @@ class _AccidentReportScreenState extends State<AccidentReportScreen>
     super.dispose();
   }
 
-  // ═══════════════════════════════════════════════════════
-  // ── Location helpers ────────────────────────────────
-  // ═══════════════════════════════════════════════════════
+  // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+  // â”€â”€ Location helpers â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
   Future<void> _getAutoLocation() async {
     try {
       bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
@@ -88,7 +88,7 @@ class _AccidentReportScreenState extends State<AccidentReportScreen>
       } else {
         setState(() => _loadingLocation = false);
       }
-    } catch (e) {
+    } on FirebaseException catch (e) {
       debugPrint('Error getting location: $e');
       setState(() => _loadingLocation = false);
     }
@@ -151,9 +151,9 @@ class _AccidentReportScreenState extends State<AccidentReportScreen>
     }
   }
 
-  // ═══════════════════════════════════════════════════════
-  // ── Photo helpers ───────────────────────────────────
-  // ═══════════════════════════════════════════════════════
+  // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+  // â”€â”€ Photo helpers â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
   Future<void> _addPhoto(ImageSource source) async {
     final _ = Provider.of<LocaleNotifier>(context, listen: false);
     try {
@@ -175,7 +175,7 @@ class _AccidentReportScreenState extends State<AccidentReportScreen>
       if (xfile != null) {
         setState(() => _photos.add(File(xfile.path)));
       }
-    } catch (e) {
+    } on FirebaseException catch (e) {
       debugPrint('Error picking image: $e');
     }
   }
@@ -216,9 +216,9 @@ class _AccidentReportScreenState extends State<AccidentReportScreen>
     );
   }
 
-  // ═══════════════════════════════════════════════════════
-  // ── Upload & Submit ─────────────────────────────────
-  // ═══════════════════════════════════════════════════════
+  // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+  // â”€â”€ Upload & Submit â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
   Future<List<String>> _uploadPhotos(String accidentId) async {
     final List<String> urls = [];
     for (int i = 0; i < _photos.length; i++) {
@@ -297,7 +297,7 @@ class _AccidentReportScreenState extends State<AccidentReportScreen>
           ),
         );
       }
-    } catch (e) {
+    } on FirebaseException catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
@@ -326,9 +326,9 @@ class _AccidentReportScreenState extends State<AccidentReportScreen>
     }
   }
 
-  // ═══════════════════════════════════════════════════════
-  // ── BUILD ───────────────────────────────────────────
-  // ═══════════════════════════════════════════════════════
+  // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+  // â”€â”€ BUILD â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -361,9 +361,9 @@ class _AccidentReportScreenState extends State<AccidentReportScreen>
     );
   }
 
-  // ═══════════════════════════════════════════════════════
-  // ── TAB 1: REPORTES (todos los usuarios) ────────────
-  // ═══════════════════════════════════════════════════════
+  // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+  // â”€â”€ TAB 1: REPORTES (todos los usuarios) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
   Widget _buildReportsTab(LocaleNotifier l) {
     return StreamBuilder<QuerySnapshot>(
       stream: FirebaseFirestore.instance
@@ -467,7 +467,7 @@ class _AccidentReportScreenState extends State<AccidentReportScreen>
             physics: const AlwaysScrollableScrollPhysics(),
             padding: const EdgeInsets.only(top: 8, bottom: 80),
             children: [
-              // ── Header con contador ────────────────
+              // â”€â”€ Header con contador â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
               Padding(
                 padding: const EdgeInsets.symmetric(
                   horizontal: 16,
@@ -550,7 +550,7 @@ class _AccidentReportScreenState extends State<AccidentReportScreen>
                 ),
               ),
 
-              // ── Accidentes activos ─────────────────
+              // â”€â”€ Accidentes activos â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
               if (active.isNotEmpty) ...[
                 Padding(
                   padding: const EdgeInsets.symmetric(
@@ -570,7 +570,7 @@ class _AccidentReportScreenState extends State<AccidentReportScreen>
                 ...active.map((a) => _accidentCard(a, l: l)),
               ],
 
-              // ── Accidentes resueltos ───────────────
+              // â”€â”€ Accidentes resueltos â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
               if (resolved.isNotEmpty) ...[
                 Padding(
                   padding: const EdgeInsets.fromLTRB(16, 16, 16, 4),
@@ -767,9 +767,9 @@ class _AccidentReportScreenState extends State<AccidentReportScreen>
     );
   }
 
-  // ═══════════════════════════════════════════════════════
-  // ── TAB 2: MAPA ─────────────────────────────────────
-  // ═══════════════════════════════════════════════════════
+  // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+  // â”€â”€ TAB 2: MAPA â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
   Widget _buildMapTab(LocaleNotifier l) {
     return StreamBuilder<QuerySnapshot>(
       stream: FirebaseFirestore.instance
@@ -895,9 +895,9 @@ class _AccidentReportScreenState extends State<AccidentReportScreen>
     );
   }
 
-  // ═══════════════════════════════════════════════════════
-  // ── TAB 3: FORMULARIO DE REPORTE ────────────────────
-  // ═══════════════════════════════════════════════════════
+  // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+  // â”€â”€ TAB 3: FORMULARIO DE REPORTE â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
   Widget _buildReportForm(LocaleNotifier l) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     return SingleChildScrollView(
@@ -905,7 +905,7 @@ class _AccidentReportScreenState extends State<AccidentReportScreen>
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // ── Banner info ─────────────────────────────
+          // â”€â”€ Banner info â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
           Container(
             width: double.infinity,
             padding: const EdgeInsets.all(12),
@@ -938,7 +938,7 @@ class _AccidentReportScreenState extends State<AccidentReportScreen>
 
           SizedBox(height: 20),
 
-          // ── Ubicación ─────────────────────────────
+          // â”€â”€ UbicaciÃ³n â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
           Text(
             l.t('accident_location_section'),
             style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
@@ -1045,7 +1045,7 @@ class _AccidentReportScreenState extends State<AccidentReportScreen>
 
           SizedBox(height: 20),
 
-          // ── Gravedad ──────────────────────────────
+          // â”€â”€ Gravedad â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
           Text(
             l.t('severity_section'),
             style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
@@ -1078,7 +1078,7 @@ class _AccidentReportScreenState extends State<AccidentReportScreen>
 
           SizedBox(height: 20),
 
-          // ── Descripción ───────────────────────────
+          // â”€â”€ DescripciÃ³n â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
           Text(
             l.t('description_section'),
             style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
@@ -1099,7 +1099,7 @@ class _AccidentReportScreenState extends State<AccidentReportScreen>
 
           SizedBox(height: 20),
 
-          // ── Fotos ─────────────────────────────────
+          // â”€â”€ Fotos â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
           Text(
             l.t('photos_optional_section'),
             style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
@@ -1190,7 +1190,7 @@ class _AccidentReportScreenState extends State<AccidentReportScreen>
 
           const SizedBox(height: 24),
 
-          // ── Botón enviar ──────────────────────────
+          // â”€â”€ BotÃ³n enviar â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
           SizedBox(
             width: double.infinity,
             height: 52,
@@ -1293,3 +1293,4 @@ class _AccidentReportScreenState extends State<AccidentReportScreen>
     );
   }
 }
+

@@ -1,4 +1,4 @@
-import 'package:flutter/foundation.dart';
+﻿import 'package:flutter/foundation.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:biux/features/achievements/domain/entities/achievement_entity.dart';
 import 'package:biux/features/achievements/data/datasources/achievements_datasource.dart';
@@ -47,14 +47,14 @@ class AchievementsProvider with ChangeNotifier {
         }
         return a;
       }).toList();
-    } catch (e) {
+    } on FirebaseException catch (e) {
       debugPrint('Error loading achievements: \$e');
     }
     _isLoading = false;
     notifyListeners();
   }
 
-  /// Llamar al terminar una rodada para actualizar logros automáticamente
+  /// Llamar al terminar una rodada para actualizar logros automÃ¡ticamente
   Future<void> onRideCompleted({
     required String userId,
     required double km,
@@ -122,7 +122,7 @@ class AchievementsProvider with ChangeNotifier {
           }, SetOptions(merge: true));
         }
         await batch.commit();
-      } catch (e) {
+      } on FirebaseException catch (e) {
         debugPrint('Error saving achievements: \$e');
       }
     }
@@ -135,21 +135,21 @@ class AchievementsProvider with ChangeNotifier {
     notifyListeners();
     try {
       await AchievementsSyncService.syncIfNeeded(userId);
-    } catch (e) {
+    } on FirebaseException catch (e) {
       debugPrint('Sync error: $e');
     }
     _isSyncing = false;
     notifyListeners();
   }
 
-  /// Fuerza sincronización completa — llamado desde UI
+  /// Fuerza sincronizaciÃ³n completa â€” llamado desde UI
   Future<void> forceSync(String userId) async {
     _isSyncing = true;
     notifyListeners();
     try {
       await AchievementsSyncService.fullSync(userId);
       await loadAchievements(userId);
-    } catch (e) {
+    } on FirebaseException catch (e) {
       debugPrint('forceSync error: $e');
     }
     _isSyncing = false;
@@ -159,7 +159,7 @@ class AchievementsProvider with ChangeNotifier {
   /// Callback para mostrar overlay cuando se desbloquea un logro
   Function(String achievementId)? onAchievementUnlocked;
 
-  /// Verificar y desbloquear logros según estadísticas
+  /// Verificar y desbloquear logros segÃºn estadÃ­sticas
   Future<void> checkAndUnlock({
     required String userId,
     required Map<String, dynamic> stats,
@@ -176,3 +176,4 @@ class AchievementsProvider with ChangeNotifier {
     }
   }
 }
+

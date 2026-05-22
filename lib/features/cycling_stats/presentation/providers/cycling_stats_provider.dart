@@ -1,4 +1,4 @@
-import 'package:flutter/foundation.dart';
+﻿import 'package:flutter/foundation.dart';
 import 'package:biux/features/cycling_stats/domain/entities/cycling_stats_entity.dart';
 import 'package:biux/features/cycling_stats/data/datasources/cycling_stats_datasource.dart';
 
@@ -69,7 +69,7 @@ class CyclingStatsProvider with ChangeNotifier {
         );
       }
       _lastUpdated = DateTime.now();
-    } catch (e) {
+    } on Exception catch (e) {
       _error = 'stats_error_load';
     }
 
@@ -85,7 +85,7 @@ class CyclingStatsProvider with ChangeNotifier {
       await loadStats(userId);
       await loadLeaderboard();
       _lastUpdated = DateTime.now();
-    } catch (e) {
+    } on Exception catch (e) {
       _error = 'stats_error_refresh';
     }
 
@@ -111,7 +111,7 @@ class CyclingStatsProvider with ChangeNotifier {
         minutes: minutes,
       );
       await loadStats(userId);
-    } catch (e) {
+    } on Exception catch (e) {
       _error = 'stats_error_add_ride';
       notifyListeners();
     }
@@ -121,7 +121,7 @@ class CyclingStatsProvider with ChangeNotifier {
     try {
       _leaderboard = await _datasource.getLeaderboard();
       notifyListeners();
-    } catch (e) {
+    } on Exception catch (e) {
       _error = 'stats_error_leaderboard';
       notifyListeners();
     }
@@ -131,17 +131,17 @@ class CyclingStatsProvider with ChangeNotifier {
     try {
       _friendsLeaderboard = await _datasource.getLeaderboardForUsers(friendIds);
       notifyListeners();
-    } catch (e) {
+    } on Exception catch (e) {
       _error = 'stats_error_leaderboard';
       notifyListeners();
     }
   }
 
-  // Progreso semanal (Ãºltimas 8 semanas)
+  // Progreso semanal (ÃƒÂºltimas 8 semanas)
   List<Map<String, dynamic>> _weeklyProgress = [];
   List<Map<String, dynamic>> get weeklyProgress => _weeklyProgress;
 
-  /// RÃ©cords personales
+  /// RÃƒÂ©cords personales
   Map<String, dynamic> get personalRecords {
     if (_stats == null) return {};
     return {
@@ -194,8 +194,9 @@ class CyclingStatsProvider with ChangeNotifier {
         );
       }
       notifyListeners();
-    } catch (e) {
+    } on Exception catch (e) {
       debugPrint('Error cargando heatmap: $e');
     }
   }
 }
+

@@ -1,4 +1,4 @@
-/// Entidad de Categoría de productos de ciclismo
+﻿/// Entidad de CategorÃ­a de productos de ciclismo
 class CategoryEntity {
   final String id;
   final String name;
@@ -27,9 +27,9 @@ class CategoryEntity {
   }
 }
 
-/// Categorías predefinidas para productos de ciclismo Biux
+/// CategorÃ­as predefinidas para productos de ciclismo Biux
 class ProductCategories {
-  // Categorías principales
+  // CategorÃ­as principales
   static const String all = 'todos';
   static const String jerseys = 'jerseys';
   static const String shorts = 'culotes';
@@ -39,7 +39,7 @@ class ProductCategories {
   static const String shoes = 'zapatos';
   static const String accessories = 'accesorios';
 
-  // Nuevas categorías específicas para ciclistas
+  // Nuevas categorÃ­as especÃ­ficas para ciclistas
   static const String bikes = 'bicicletas';
   static const String components = 'componentes';
   static const String nutrition = 'nutricion';
@@ -51,35 +51,35 @@ class ProductCategories {
 
   static List<CategoryEntity> getAll() {
     return [
-      CategoryEntity(id: all, name: 'Todos', icon: '🛍️'),
-      CategoryEntity(id: bikes, name: 'Bicicletas', icon: '🚴'),
-      CategoryEntity(id: jerseys, name: 'Jerseys', icon: '👕'),
-      CategoryEntity(id: shorts, name: 'Culotes', icon: '🩳'),
-      CategoryEntity(id: helmets, name: 'Cascos', icon: '🪖'),
-      CategoryEntity(id: gloves, name: 'Guantes', icon: '🧤'),
-      CategoryEntity(id: glasses, name: 'Gafas', icon: '🕶️'),
-      CategoryEntity(id: shoes, name: 'Calzado', icon: '👟'),
-      CategoryEntity(id: components, name: 'Componentes', icon: '⚙️'),
-      CategoryEntity(id: electronics, name: 'Electrónica', icon: '📱'),
-      CategoryEntity(id: nutrition, name: 'Nutrición', icon: '🍎'),
-      CategoryEntity(id: hydration, name: 'Hidratación', icon: '💧'),
-      CategoryEntity(id: safety, name: 'Seguridad', icon: '🦺'),
-      CategoryEntity(id: maintenance, name: 'Mantenimiento', icon: '🔧'),
-      CategoryEntity(id: storage, name: 'Almacenamiento', icon: '🎒'),
-      CategoryEntity(id: accessories, name: 'Accesorios', icon: '✨'),
+      CategoryEntity(id: all, name: 'Todos', icon: 'ðŸ›ï¸'),
+      CategoryEntity(id: bikes, name: 'Bicicletas', icon: 'ðŸš´'),
+      CategoryEntity(id: jerseys, name: 'Jerseys', icon: 'ðŸ‘•'),
+      CategoryEntity(id: shorts, name: 'Culotes', icon: 'ðŸ©³'),
+      CategoryEntity(id: helmets, name: 'Cascos', icon: 'ðŸª–'),
+      CategoryEntity(id: gloves, name: 'Guantes', icon: 'ðŸ§¤'),
+      CategoryEntity(id: glasses, name: 'Gafas', icon: 'ðŸ•¶ï¸'),
+      CategoryEntity(id: shoes, name: 'Calzado', icon: 'ðŸ‘Ÿ'),
+      CategoryEntity(id: components, name: 'Componentes', icon: 'âš™ï¸'),
+      CategoryEntity(id: electronics, name: 'ElectrÃ³nica', icon: 'ðŸ“±'),
+      CategoryEntity(id: nutrition, name: 'NutriciÃ³n', icon: 'ðŸŽ'),
+      CategoryEntity(id: hydration, name: 'HidrataciÃ³n', icon: 'ðŸ’§'),
+      CategoryEntity(id: safety, name: 'Seguridad', icon: 'ðŸ¦º'),
+      CategoryEntity(id: maintenance, name: 'Mantenimiento', icon: 'ðŸ”§'),
+      CategoryEntity(id: storage, name: 'Almacenamiento', icon: 'ðŸŽ’'),
+      CategoryEntity(id: accessories, name: 'Accesorios', icon: 'âœ¨'),
     ];
   }
 
   static List<CategoryEntity> getMainCategories() {
-    // Categorías principales que se muestran en el Tab
+    // CategorÃ­as principales que se muestran en el Tab
     return [
-      CategoryEntity(id: bikes, name: 'Bicicletas', icon: '�'),
-      CategoryEntity(id: jerseys, name: 'Jerseys', icon: '👕'),
-      CategoryEntity(id: shorts, name: 'Culotes', icon: '🩳'),
-      CategoryEntity(id: helmets, name: 'Cascos', icon: '🪖'),
-      CategoryEntity(id: shoes, name: 'Calzado', icon: '👟'),
-      CategoryEntity(id: components, name: 'Componentes', icon: '⚙️'),
-      CategoryEntity(id: accessories, name: 'Más', icon: '✨'),
+      CategoryEntity(id: bikes, name: 'Bicicletas', icon: 'ï¿½'),
+      CategoryEntity(id: jerseys, name: 'Jerseys', icon: 'ðŸ‘•'),
+      CategoryEntity(id: shorts, name: 'Culotes', icon: 'ðŸ©³'),
+      CategoryEntity(id: helmets, name: 'Cascos', icon: 'ðŸª–'),
+      CategoryEntity(id: shoes, name: 'Calzado', icon: 'ðŸ‘Ÿ'),
+      CategoryEntity(id: components, name: 'Componentes', icon: 'âš™ï¸'),
+      CategoryEntity(id: accessories, name: 'MÃ¡s', icon: 'âœ¨'),
     ];
   }
 
@@ -94,8 +94,9 @@ class ProductCategories {
   static CategoryEntity? getCategoryById(String id) {
     try {
       return getAll().firstWhere((cat) => cat.id == id);
-    } catch (e) {
+    } on Exception catch (e) {
       return null;
     }
   }
 }
+

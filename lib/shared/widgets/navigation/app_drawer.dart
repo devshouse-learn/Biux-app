@@ -1,4 +1,4 @@
-import 'dart:async';
+﻿import 'dart:async';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -265,7 +265,7 @@ class _AppDrawerState extends State<AppDrawer> {
                       ),
                     ),
                     const SizedBox(height: 4),
-                    // Email/Teléfono
+                    // Email/TelÃ©fono
                     Text(
                       user?.email ?? cu?.phoneNumber ?? '',
                       style: TextStyle(
@@ -276,7 +276,7 @@ class _AppDrawerState extends State<AppDrawer> {
 
                     const SizedBox(height: 14),
 
-                    // ── Botón SOS compacto ──
+                    // â”€â”€ BotÃ³n SOS compacto â”€â”€
                     GestureDetector(
                       onLongPressStart: (_) => _startSosHold(),
                       onLongPressEnd: (_) => _cancelSosHold(),
@@ -753,7 +753,7 @@ class _AppDrawerState extends State<AppDrawer> {
       } catch (_) {}
       await FirebaseAuth.instance.signOut();
       await Future.delayed(const Duration(milliseconds: 100));
-    } catch (e) {
+    } on FirebaseException catch (e) {
       if (mounted) {
         Navigator.of(context).pop();
         ScaffoldMessenger.of(context).showSnackBar(
@@ -766,3 +766,4 @@ class _AppDrawerState extends State<AppDrawer> {
     }
   }
 }
+

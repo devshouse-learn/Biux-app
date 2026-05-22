@@ -1,4 +1,4 @@
-import 'package:flutter/foundation.dart';
+﻿import 'package:flutter/foundation.dart';
 import 'package:biux/features/road_reports/domain/entities/road_report_entity.dart';
 import 'package:biux/features/road_reports/data/datasources/road_reports_datasource.dart';
 
@@ -40,7 +40,7 @@ class RoadReportsProvider with ChangeNotifier {
           isActive: m['isActive'] ?? true,
         );
       }).toList();
-    } catch (e) {
+    } on Exception catch (e) {
       debugPrint('Error cargando reportes: $e');
       _error = e.toString();
     }
@@ -80,3 +80,4 @@ class RoadReportsProvider with ChangeNotifier {
     await loadReports();
   }
 }
+

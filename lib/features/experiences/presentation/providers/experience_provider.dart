@@ -1,4 +1,4 @@
-import 'package:flutter_riverpod/flutter_riverpod.dart';
+﻿import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:biux/features/experiences/domain/entities/experience_entity.dart';
 import 'package:biux/features/experiences/domain/repositories/experience_repository.dart';
 import 'package:biux/features/experiences/data/repositories/experience_repository_impl.dart';
@@ -88,7 +88,7 @@ class ExperienceNotifier extends StateNotifier<ExperienceState> {
     try {
       final experiences = await _repository.getUserExperiences(userId);
       state = state.copyWith(userExperiences: experiences, isLoading: false);
-    } catch (e) {
+    } on Exception catch (e) {
       state = state.copyWith(error: e.toString(), isLoading: false);
     }
   }
@@ -100,7 +100,7 @@ class ExperienceNotifier extends StateNotifier<ExperienceState> {
     try {
       final experiences = await _repository.getRideExperiences(rideId);
       state = state.copyWith(rideExperiences: experiences, isLoading: false);
-    } catch (e) {
+    } on Exception catch (e) {
       state = state.copyWith(error: e.toString(), isLoading: false);
     }
   }
@@ -112,7 +112,7 @@ class ExperienceNotifier extends StateNotifier<ExperienceState> {
     try {
       final experiences = await _repository.getFollowingExperiences(userId);
       state = state.copyWith(experiences: experiences, isLoading: false);
-    } catch (e) {
+    } on Exception catch (e) {
       state = state.copyWith(error: e.toString(), isLoading: false);
     }
   }
@@ -137,7 +137,7 @@ class ExperienceNotifier extends StateNotifier<ExperienceState> {
           isLoading: false,
         );
       }
-    } catch (e) {
+    } on Exception catch (e) {
       state = state.copyWith(error: e.toString(), isLoading: false);
     }
   }
@@ -159,13 +159,13 @@ class ExperienceNotifier extends StateNotifier<ExperienceState> {
             .where((e) => e.id != experienceId)
             .toList(),
       );
-    } catch (e) {
+    } on Exception catch (e) {
       state = state.copyWith(error: e.toString());
     }
   }
 
   /// Eliminar un media individual de una experiencia.
-  /// Si es el último media, elimina la experiencia completa.
+  /// Si es el Ãºltimo media, elimina la experiencia completa.
   Future<bool> removeMediaFromExperience(
     String experienceId,
     int mediaIndex,
@@ -211,28 +211,28 @@ class ExperienceNotifier extends StateNotifier<ExperienceState> {
             .toList(),
       );
       return false;
-    } catch (e) {
+    } on Exception catch (e) {
       state = state.copyWith(error: e.toString());
       return false;
     }
   }
 
-  /// Agregar reacción
+  /// Agregar reacciÃ³n
   Future<void> addReaction(String experienceId, ReactionType reaction) async {
     try {
       await _repository.addReaction(experienceId, reaction);
       // IMPLEMENTADO (STUB): Actualizar la experiencia en el estado local
-    } catch (e) {
+    } on Exception catch (e) {
       state = state.copyWith(error: e.toString());
     }
   }
 
-  /// Remover reacción
+  /// Remover reacciÃ³n
   Future<void> removeReaction(String experienceId) async {
     try {
       await _repository.removeReaction(experienceId);
       // IMPLEMENTADO (STUB): Actualizar la experiencia en el estado local
-    } catch (e) {
+    } on Exception catch (e) {
       state = state.copyWith(error: e.toString());
     }
   }
@@ -242,7 +242,7 @@ class ExperienceNotifier extends StateNotifier<ExperienceState> {
     try {
       await _repository.markAsViewed(experienceId);
       // IMPLEMENTADO (STUB): Actualizar las vistas en el estado local
-    } catch (e) {
+    } on Exception catch (e) {
       // Error silencioso para marcar vistas
       debugPrint('Error marcando como vista: $e');
     }
@@ -253,3 +253,4 @@ class ExperienceNotifier extends StateNotifier<ExperienceState> {
     state = state.copyWith(error: null);
   }
 }
+

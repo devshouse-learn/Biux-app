@@ -1,9 +1,9 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
+﻿import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:biux/features/store/data/models/product_model.dart';
 import 'package:biux/features/store/domain/entities/product_entity.dart';
 import 'package:biux/features/store/domain/repositories/product_repository.dart';
 
-/// Implementación del repositorio de productos usando Firestore
+/// ImplementaciÃ³n del repositorio de productos usando Firestore
 class ProductRepositoryImpl implements ProductRepository {
   final FirebaseFirestore _firestore;
   final String _collection = 'productos';
@@ -13,7 +13,7 @@ class ProductRepositoryImpl implements ProductRepository {
   @override
   Future<List<ProductEntity>> getAllProducts() async {
     try {
-      // Usar solo orderBy para evitar problemas de índice compuesto
+      // Usar solo orderBy para evitar problemas de Ã­ndice compuesto
       final snapshot = await _firestore
           .collection(_collection)
           .orderBy('fechaCreacion', descending: true)
@@ -24,7 +24,7 @@ class ProductRepositoryImpl implements ProductRepository {
           .map((doc) => ProductModel.fromJson({...doc.data(), 'id': doc.id}))
           .where((product) => product.activo)
           .toList();
-    } catch (e) {
+    } on FirebaseException catch (e) {
       throw Exception('Error al obtener productos: $e');
     }
   }
@@ -50,8 +50,8 @@ class ProductRepositoryImpl implements ProductRepository {
       products.sort((a, b) => b.fechaCreacion.compareTo(a.fechaCreacion));
 
       return products;
-    } catch (e) {
-      throw Exception('Error al obtener productos por categoría: $e');
+    } on FirebaseException catch (e) {
+      throw Exception('Error al obtener productos por categorÃ­a: $e');
     }
   }
 
@@ -67,7 +67,7 @@ class ProductRepositoryImpl implements ProductRepository {
       return snapshot.docs
           .map((doc) => ProductModel.fromJson({...doc.data(), 'id': doc.id}))
           .toList();
-    } catch (e) {
+    } on FirebaseException catch (e) {
       throw Exception('Error al obtener productos del vendedor: $e');
     }
   }
@@ -92,7 +92,7 @@ class ProductRepositoryImpl implements ProductRepository {
       products.sort((a, b) => b.fechaCreacion.compareTo(a.fechaCreacion));
 
       return products;
-    } catch (e) {
+    } on FirebaseException catch (e) {
       throw Exception('Error al obtener productos destacados: $e');
     }
   }
@@ -105,7 +105,7 @@ class ProductRepositoryImpl implements ProductRepository {
       // Obtener todos los productos
       final snapshot = await _firestore.collection(_collection).get();
 
-      // Búsqueda en memoria (Firestore no soporta búsqueda de texto completa nativa)
+      // BÃºsqueda en memoria (Firestore no soporta bÃºsqueda de texto completa nativa)
       final filtered = snapshot.docs
           .where((doc) {
             final data = doc.data();
@@ -138,7 +138,7 @@ class ProductRepositoryImpl implements ProductRepository {
       });
 
       return filtered;
-    } catch (e) {
+    } on FirebaseException catch (e) {
       throw Exception('Error al buscar productos: $e');
     }
   }
@@ -153,7 +153,7 @@ class ProductRepositoryImpl implements ProductRepository {
       }
 
       return ProductModel.fromJson({...doc.data()!, 'id': doc.id});
-    } catch (e) {
+    } on FirebaseException catch (e) {
       throw Exception('Error al obtener producto: $e');
     }
   }
@@ -166,7 +166,7 @@ class ProductRepositoryImpl implements ProductRepository {
       data.remove('id'); // Firestore genera el ID
 
       await _firestore.collection(_collection).add(data);
-    } catch (e) {
+    } on FirebaseException catch (e) {
       throw Exception('Error al crear producto: $e');
     }
   }
@@ -181,7 +181,7 @@ class ProductRepositoryImpl implements ProductRepository {
       data.remove('id');
 
       await _firestore.collection(_collection).doc(product.id).update(data);
-    } catch (e) {
+    } on FirebaseException catch (e) {
       throw Exception('Error al actualizar producto: $e');
     }
   }
@@ -190,7 +190,7 @@ class ProductRepositoryImpl implements ProductRepository {
   Future<void> deleteProduct(String productId) async {
     try {
       await _firestore.collection(_collection).doc(productId).delete();
-    } catch (e) {
+    } on FirebaseException catch (e) {
       throw Exception('Error al eliminar producto: $e');
     }
   }
@@ -202,7 +202,7 @@ class ProductRepositoryImpl implements ProductRepository {
         'stock': newStock,
         'fechaActualizacion': DateTime.now().toIso8601String(),
       });
-    } catch (e) {
+    } on FirebaseException catch (e) {
       throw Exception('Error al actualizar stock: $e');
     }
   }
@@ -214,7 +214,7 @@ class ProductRepositoryImpl implements ProductRepository {
         'destacado': featured,
         'fechaActualizacion': DateTime.now().toIso8601String(),
       });
-    } catch (e) {
+    } on FirebaseException catch (e) {
       throw Exception('Error al actualizar producto destacado: $e');
     }
   }
@@ -226,8 +226,9 @@ class ProductRepositoryImpl implements ProductRepository {
         'activo': active,
         'fechaActualizacion': DateTime.now().toIso8601String(),
       });
-    } catch (e) {
+    } on FirebaseException catch (e) {
       throw Exception('Error al actualizar estado del producto: $e');
     }
   }
 }
+

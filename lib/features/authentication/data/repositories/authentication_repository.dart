@@ -1,3 +1,4 @@
+﻿import 'dart:async';
 import 'package:biux/core/services/local_storage.dart';
 import 'package:biux/core/models/common/response.dart';
 import 'package:biux/features/authentication/domain/entities/auth_entity.dart';
@@ -5,9 +6,13 @@ import 'package:biux/features/authentication/domain/repositories/auth_repository
 import 'package:biux/features/users/data/models/user.dart';
 import 'package:biux/features/users/data/repositories/user_firebase_repository.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
+import 'package:biux/core/config/api_config.dart';
 
 class AuthenticationRepository implements AuthRepositoryInterface {
   final FirebaseAuth _auth = FirebaseAuth.instance;
+  String? _verificationId;
 
   bool get isLoggedIn {
     if (_auth.currentUser != null) {
@@ -135,15 +140,74 @@ class AuthenticationRepository implements AuthRepositoryInterface {
 
   @override
   Future<bool> sendOTP(String phoneNumber) async {
-    // Firebase Phone Auth - Implementación stub
-    // Nota: Requiere configuración adicional en Firebase Console
-    // y permisos especiales para Android 12+
-    return false;
+    try {
+      final response = await http.post(
+        Uri.parse(ApiConfig.sendOtp),
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode({
+          'phoneNumber': phoneNumber,
+        }),
+      ).timeout(
+        const Duration(seconds: 30),
+        onTimeout: () => throw Exception('Timeout sending OTP'),
+      );
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        final data = jsonDecode(response.body);
+        _verificationId = data['verificationId'] ?? data['id'] ?? phoneNumber;
+        return true;
+      } else {
+        throw Exception(
+          'Error sending OTP: ${response.statusCode} - ${response.body}',
+        );
+      }
+    } on FirebaseException catch (e) {
+      throw Exception('Error sending OTP: $e');
+    }
   }
 
   @override
   Future<AuthEntity> validateOTP(String phoneNumber, String code) async {
-    // Firebase Phone Auth - Implementación stub
-    throw UnimplementedError('OTP validation not yet implemented');
+    try {
+      if (_verificationId == null || _verificationId!.isEmpty) {
+        throw Exception('Verification ID not found');
+      }
+
+      final response = await http.post(
+        Uri.parse(ApiConfig.validateOtp),
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode({
+          'phoneNumber': phoneNumber,
+          'code': code,
+          'verificationId': _verificationId,
+        }),
+      ).timeout(
+        const Duration(seconds: 30),
+        onTimeout: () => throw Exception('Timeout validating OTP'),
+      );
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        final data = jsonDecode(response.body);
+        final token = data['token'] ?? data['customToken'];
+        final uid = data['uid'] ?? data['userId'];
+
+        if (token == null || uid == null) {
+          throw Exception('Invalid response: missing token or uid');
+        }
+
+        return AuthEntity(
+          uid: uid,
+          token: token,
+          phoneNumber: phoneNumber,
+        );
+      } else {
+        throw Exception(
+          'Error validating OTP: ${response.statusCode} - ${response.body}',
+        );
+      }
+    } on FirebaseException catch (e) {
+      throw Exception('OTP validation failed: $e');
+    }
   }
 }
+

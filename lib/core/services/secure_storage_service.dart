@@ -1,4 +1,4 @@
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+﻿import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:biux/core/services/app_logger.dart';
 
 /// Servicio de almacenamiento seguro usando Keychain (iOS) y EncryptedSharedPreferences (Android).
@@ -19,9 +19,9 @@ class SecureStorageService {
   static const _keyBiometricEnabled = 'biometric_enabled';
   static const _keyPinCode = 'pin_code';
 
-  // ══════════════════════════════════════════
-  // Tokens de autenticación
-  // ══════════════════════════════════════════
+  // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+  // Tokens de autenticaciÃ³n
+  // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 
   static Future<void> saveAuthToken(String token) async {
     await _write(_keyAuthToken, token);
@@ -39,9 +39,9 @@ class SecureStorageService {
     return _read(_keyRefreshToken);
   }
 
-  // ══════════════════════════════════════════
+  // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
   // Datos de usuario
-  // ══════════════════════════════════════════
+  // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 
   static Future<void> saveUserId(String userId) async {
     await _write(_keyUserId, userId);
@@ -51,9 +51,9 @@ class SecureStorageService {
     return _read(_keyUserId);
   }
 
-  // ══════════════════════════════════════════
-  // Seguridad biométrica
-  // ══════════════════════════════════════════
+  // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+  // Seguridad biomÃ©trica
+  // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 
   static Future<void> setBiometricEnabled(bool enabled) async {
     await _write(_keyBiometricEnabled, enabled.toString());
@@ -72,9 +72,9 @@ class SecureStorageService {
     return _read(_keyPinCode);
   }
 
-  // ══════════════════════════════════════════
-  // Genéricos
-  // ══════════════════════════════════════════
+  // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+  // GenÃ©ricos
+  // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 
   static Future<void> saveValue(String key, String value) async {
     await _write(key, value);
@@ -87,7 +87,7 @@ class SecureStorageService {
   static Future<void> deleteValue(String key) async {
     try {
       await _storage.delete(key: key);
-    } catch (e) {
+    } on Exception catch (e) {
       AppLogger.error(
         'Error eliminando valor seguro',
         error: e,
@@ -101,7 +101,7 @@ class SecureStorageService {
     try {
       await _storage.deleteAll();
       AppLogger.info('Secure storage limpiado', tag: 'SecureStorage');
-    } catch (e) {
+    } on Exception catch (e) {
       AppLogger.error(
         'Error limpiando secure storage',
         error: e,
@@ -110,14 +110,14 @@ class SecureStorageService {
     }
   }
 
-  // ══════════════════════════════════════════
+  // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
   // Helpers privados
-  // ══════════════════════════════════════════
+  // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 
   static Future<void> _write(String key, String value) async {
     try {
       await _storage.write(key: key, value: value);
-    } catch (e) {
+    } on Exception catch (e) {
       AppLogger.error(
         'Error escribiendo valor seguro: $key',
         error: e,
@@ -129,7 +129,7 @@ class SecureStorageService {
   static Future<String?> _read(String key) async {
     try {
       return await _storage.read(key: key);
-    } catch (e) {
+    } on Exception catch (e) {
       AppLogger.error(
         'Error leyendo valor seguro: $key',
         error: e,
@@ -139,3 +139,4 @@ class SecureStorageService {
     }
   }
 }
+

@@ -1,9 +1,9 @@
-import 'dart:async';
+﻿import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-/// Provider para manejar la edición del nombre de usuario
+/// Provider para manejar la ediciÃ³n del nombre de usuario
 class EditUsernameProvider extends ChangeNotifier {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   final FirebaseAuth _auth = FirebaseAuth.instance;
@@ -36,7 +36,7 @@ class EditUsernameProvider extends ChangeNotifier {
         _currentUsername = data?['username'] ?? '';
         notifyListeners();
       }
-    } catch (e) {
+    } on FirebaseException catch (e) {
       debugPrint('Error cargando username actual: $e');
     }
   }
@@ -46,7 +46,7 @@ class EditUsernameProvider extends ChangeNotifier {
     // Cancelar timer anterior
     _debounceTimer?.cancel();
 
-    // Limpiar estado si el username está vacío
+    // Limpiar estado si el username estÃ¡ vacÃ­o
     if (username.isEmpty) {
       _usernameAvailable = null;
       _availabilityMessage = '';
@@ -83,7 +83,7 @@ class EditUsernameProvider extends ChangeNotifier {
     return regex.hasMatch(username);
   }
 
-  /// Realizar verificación real en Firestore
+  /// Realizar verificaciÃ³n real en Firestore
   Future<void> _performUsernameCheck(String username) async {
     _isCheckingAvailability = true;
     _availabilityMessage = 'username_checking';
@@ -104,7 +104,7 @@ class EditUsernameProvider extends ChangeNotifier {
         _usernameAvailable = false;
         _availabilityMessage = 'username_not_available';
       }
-    } catch (e) {
+    } on FirebaseException catch (e) {
       debugPrint('Error verificando disponibilidad: $e');
       _usernameAvailable = null;
       _availabilityMessage = 'username_check_error';
@@ -127,7 +127,7 @@ class EditUsernameProvider extends ChangeNotifier {
         return false;
       }
 
-      // Verificar una vez más que está disponible
+      // Verificar una vez mÃ¡s que estÃ¡ disponible
       if (newUsername != _currentUsername) {
         final querySnapshot = await _firestore
             .collection('users')
@@ -148,7 +148,7 @@ class EditUsernameProvider extends ChangeNotifier {
 
       _currentUsername = newUsername;
       return true;
-    } catch (e) {
+    } on FirebaseException catch (e) {
       debugPrint('Error actualizando username: $e');
       _error = 'username_update_error';
       return false;
@@ -164,3 +164,4 @@ class EditUsernameProvider extends ChangeNotifier {
     super.dispose();
   }
 }
+

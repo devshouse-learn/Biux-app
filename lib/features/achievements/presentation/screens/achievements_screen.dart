@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:biux/core/design_system/color_tokens.dart';
@@ -25,14 +25,14 @@ class _AchievementsScreenState extends State<AchievementsScreen>
   late TabController _tabCtrl;
 
   List<Map<String, String>> get _categories => [
-    {'id': 'all', 'label': l.t('all'), 'icon': '🏆'},
-    {'id': 'distance', 'label': l.t('distance'), 'icon': '🚴'},
-    {'id': 'rides', 'label': l.t('rides'), 'icon': '🏁'},
-    {'id': 'speed', 'label': l.t('speed'), 'icon': '🚀'},
-    {'id': 'streak', 'label': l.t('streak'), 'icon': '🔥'},
-    {'id': 'social', 'label': 'Social', 'icon': '👥'},
-    {'id': 'special', 'label': l.t('special'), 'icon': '⭐'},
-    {'id': 'aventura', 'label': l.t('adventure'), 'icon': '🏔️'},
+    {'id': 'all', 'label': l.t('all'), 'icon': 'ðŸ†'},
+    {'id': 'distance', 'label': l.t('distance'), 'icon': 'ðŸš´'},
+    {'id': 'rides', 'label': l.t('rides'), 'icon': 'ðŸ'},
+    {'id': 'speed', 'label': l.t('speed'), 'icon': 'ðŸš€'},
+    {'id': 'streak', 'label': l.t('streak'), 'icon': 'ðŸ”¥'},
+    {'id': 'social', 'label': 'Social', 'icon': 'ðŸ‘¥'},
+    {'id': 'special', 'label': l.t('special'), 'icon': 'â­'},
+    {'id': 'aventura', 'label': l.t('adventure'), 'icon': 'ðŸ”ï¸'},
   ];
 
   @override
@@ -209,49 +209,49 @@ class _AchievementsScreenState extends State<AchievementsScreen>
                               ),
                             ),
                             SizedBox(height: 8),
-                            // Stats rapidos — fila 1
+                            // Stats rapidos â€” fila 1
                             Row(
                               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                               children: [
                                 _statBadge(
-                                  '🚴',
+                                  'ðŸš´',
                                   '${_countByCategory(provider, 'distance')}',
                                   l.t('distance'),
                                 ),
                                 _statBadge(
-                                  '🏁',
+                                  'ðŸ',
                                   '${_countByCategory(provider, 'rides')}',
                                   l.t('rides'),
                                 ),
                                 _statBadge(
-                                  '🚀',
+                                  'ðŸš€',
                                   '${_countByCategory(provider, 'speed')}',
                                   l.t('speed'),
                                 ),
                                 _statBadge(
-                                  '🔥',
+                                  'ðŸ”¥',
                                   '${_countByCategory(provider, 'streak')}',
                                   l.t('streak'),
                                 ),
                               ],
                             ),
                             const SizedBox(height: 6),
-                            // Stats rapidos — fila 2
+                            // Stats rapidos â€” fila 2
                             Row(
                               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                               children: [
                                 _statBadge(
-                                  '👥',
+                                  'ðŸ‘¥',
                                   '${_countByCategory(provider, 'social')}',
                                   'Social',
                                 ),
                                 _statBadge(
-                                  '⭐',
+                                  'â­',
                                   '${_countByCategory(provider, 'special')}',
                                   l.t('special'),
                                 ),
                                 _statBadge(
-                                  '🏔️',
+                                  'ðŸ”ï¸',
                                   '${_countByCategory(provider, 'aventura')}',
                                   l.t('adventure'),
                                 ),
@@ -368,7 +368,7 @@ class _AchievementsScreenState extends State<AchievementsScreen>
                             ),
                             const SizedBox(height: 12),
                             Text(
-                              'No hay logros en esta categoría',
+                              'No hay logros en esta categorÃ­a',
                               style: TextStyle(
                                 color:
                                     Theme.of(context).brightness ==
@@ -690,13 +690,13 @@ class _AchievementsScreenState extends State<AchievementsScreen>
                       const SizedBox(height: 4),
                       Text(
                         a.isUnlocked
-                            ? '¡Todos los niveles completados! 🏆'
-                            : 'Desliza para ver todos los niveles 👉',
+                            ? 'Â¡Todos los niveles completados! ðŸ†'
+                            : 'Desliza para ver todos los niveles ðŸ‘‰',
                         style: TextStyle(fontSize: 11, color: Colors.grey[500]),
                       ),
                     ],
                     SizedBox(height: 4),
-                    // Paginas deslizables — una por nivel
+                    // Paginas deslizables â€” una por nivel
                     Expanded(
                       child: PageView.builder(
                         controller: pageCtrl,
@@ -743,13 +743,13 @@ class _AchievementsScreenState extends State<AchievementsScreen>
                                   ),
                                   child: Center(
                                     child: Text(
-                                      levelUnlocked ? level.icon : '🔒',
+                                      levelUnlocked ? level.icon : 'ðŸ”’',
                                       style: const TextStyle(fontSize: 48),
                                     ),
                                   ),
                                 ),
                                 const SizedBox(height: 12),
-                                // Etiqueta del nivel (Bronce, Plata, Oro…)
+                                // Etiqueta del nivel (Bronce, Plata, Oroâ€¦)
                                 Container(
                                   padding: const EdgeInsets.symmetric(
                                     horizontal: 14,
@@ -912,7 +912,7 @@ class _AchievementsScreenState extends State<AchievementsScreen>
                                                 CrossAxisAlignment.start,
                                             children: [
                                               Text(
-                                                '¡Nivel $tierName desbloqueado!',
+                                                'Â¡Nivel $tierName desbloqueado!',
                                                 style: const TextStyle(
                                                   fontWeight: FontWeight.w700,
                                                   color: Colors.green,
@@ -943,7 +943,7 @@ class _AchievementsScreenState extends State<AchievementsScreen>
                                           SharePlus.instance.share(
                                             ShareParams(
                                               text:
-                                                  'Desbloqueé el nivel $tierName de "${l.t(a.title)}" (${level.icon}) en Biux - App para Ciclistas.',
+                                                  'DesbloqueÃ© el nivel $tierName de "${l.t(a.title)}" (${level.icon}) en Biux - App para Ciclistas.',
                                             ),
                                           );
                                         },
@@ -1059,11 +1059,11 @@ class _AchievementsScreenState extends State<AchievementsScreen>
   String _getLevelHint(AchievementEntity a, AchievementLevel level) {
     final remaining = (level.targetValue - a.currentValue);
     final unit = _unitLabel(a.category);
-    if (remaining <= 0) return '¡Casi lo tienes!';
+    if (remaining <= 0) return 'Â¡Casi lo tienes!';
     final rem = remaining % 1 == 0
         ? remaining.toInt().toString()
         : remaining.toStringAsFixed(1);
-    return unit.isEmpty ? 'Te faltan $rem más' : 'Te faltan $rem $unit';
+    return unit.isEmpty ? 'Te faltan $rem mÃ¡s' : 'Te faltan $rem $unit';
   }
 
   String _unitLabel(String cat) => switch (cat) {
@@ -1077,14 +1077,14 @@ class _AchievementsScreenState extends State<AchievementsScreen>
   };
 
   String _categoryLabel(String cat) => switch (cat) {
-    'distance' => '🚴 ${l.t('distance')}',
-    'rides' => '🏁 ${l.t('rides')}',
-    'speed' => '🚀 ${l.t('speed')}',
-    'streak' => '🔥 ${l.t('streak')}',
-    'social' => '👥 Social',
-    'special' => '⭐ ${l.t('special')}',
-    'aventura' => '🏔️ ${l.t('adventure')}',
-    _ => '🏆 ${l.t('general')}',
+    'distance' => 'ðŸš´ ${l.t('distance')}',
+    'rides' => 'ðŸ ${l.t('rides')}',
+    'speed' => 'ðŸš€ ${l.t('speed')}',
+    'streak' => 'ðŸ”¥ ${l.t('streak')}',
+    'social' => 'ðŸ‘¥ Social',
+    'special' => 'â­ ${l.t('special')}',
+    'aventura' => 'ðŸ”ï¸ ${l.t('adventure')}',
+    _ => 'ðŸ† ${l.t('general')}',
   };
 
   void _shareAchievements(AchievementsProvider provider) {
@@ -1094,7 +1094,7 @@ class _AchievementsScreenState extends State<AchievementsScreen>
         .map((a) => '${a.icon} ${a.title}')
         .join('\n');
     final text =
-        'Mis logros en Biux: $unlocked/$total desbloqueados\n\n$names\n\n¡Descarga Biux y empieza a pedalear!';
+        'Mis logros en Biux: $unlocked/$total desbloqueados\n\n$names\n\nÂ¡Descarga Biux y empieza a pedalear!';
     _showShareOptions(text);
   }
 
@@ -1285,36 +1285,36 @@ class _AchievementsScreenState extends State<AchievementsScreen>
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'Los logros se desbloquean automáticamente al cumplir los objetivos:',
+              'Los logros se desbloquean automÃ¡ticamente al cumplir los objetivos:',
               style: TextStyle(fontSize: 14),
             ),
             SizedBox(height: 12),
             Text(
-              '🚴 Distancia — Acumula kilómetros',
+              'ðŸš´ Distancia â€” Acumula kilÃ³metros',
               style: TextStyle(fontSize: 13),
             ),
             SizedBox(height: 4),
             Text(
-              '🏁 Rodadas — Completa recorridos',
+              'ðŸ Rodadas â€” Completa recorridos',
               style: TextStyle(fontSize: 13),
             ),
             SizedBox(height: 4),
             Text(
-              '🚀 Velocidad — Alcanza velocidades máximas',
+              'ðŸš€ Velocidad â€” Alcanza velocidades mÃ¡ximas',
               style: TextStyle(fontSize: 13),
             ),
             SizedBox(height: 4),
             Text(
-              '🔥 Racha — Pedalea varios días seguidos',
+              'ðŸ”¥ Racha â€” Pedalea varios dÃ­as seguidos',
               style: TextStyle(fontSize: 13),
             ),
             SizedBox(height: 4),
-            Text('👥 Social — Únete a grupos', style: TextStyle(fontSize: 13)),
+            Text('ðŸ‘¥ Social â€” Ãšnete a grupos', style: TextStyle(fontSize: 13)),
             SizedBox(height: 4),
-            Text('⭐ Especiales — Retos únicos', style: TextStyle(fontSize: 13)),
+            Text('â­ Especiales â€” Retos Ãºnicos', style: TextStyle(fontSize: 13)),
             SizedBox(height: 12),
             Text(
-              'Los logros se sincronizan automáticamente cada semana.\nTambién puedes sincronizar manualmente con el botón \ud83d\udd04',
+              'Los logros se sincronizan automÃ¡ticamente cada semana.\nTambiÃ©n puedes sincronizar manualmente con el botÃ³n \ud83d\udd04',
               style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600),
             ),
           ],
@@ -1422,7 +1422,7 @@ class _AchievementsShareInAppSheetState
         _filtered = contacts;
         _isLoading = false;
       });
-    } catch (e) {
+    } on FirebaseException catch (e) {
       setState(() => _isLoading = false);
     }
   }
@@ -1458,7 +1458,7 @@ class _AchievementsShareInAppSheetState
           ),
         );
       }
-    } catch (e) {
+    } on FirebaseException catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
@@ -1620,3 +1620,4 @@ class _AchievementsShareInAppSheetState
     );
   }
 }
+

@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import 'package:biux/features/settings/domain/entities/notification_settings_entity.dart';
 import 'package:biux/features/settings/domain/repositories/notification_settings_repository.dart';
 
@@ -16,7 +16,7 @@ class NotificationSettingsProvider extends ChangeNotifier {
   bool get isLoading => _isLoading;
   String? get error => _error;
 
-  /// Cargar configuración de notificaciones
+  /// Cargar configuraciÃ³n de notificaciones
   Future<void> loadSettings() async {
     _isLoading = true;
     _error = null;
@@ -25,8 +25,8 @@ class NotificationSettingsProvider extends ChangeNotifier {
     try {
       _settings = await _repository.getSettings();
       _error = null;
-    } catch (e) {
-      _error = 'Error al cargar configuración: $e';
+    } on Exception catch (e) {
+      _error = 'Error al cargar configuraciÃ³n: $e';
       _settings = NotificationSettingsEntity.defaults();
     } finally {
       _isLoading = false;
@@ -44,8 +44,8 @@ class NotificationSettingsProvider extends ChangeNotifier {
       _settings = _settings!.copyWith(enablePushNotifications: enabled);
       _error = null;
       notifyListeners();
-    } catch (e) {
-      _error = 'Error al actualizar configuración: $e';
+    } on Exception catch (e) {
+      _error = 'Error al actualizar configuraciÃ³n: $e';
       notifyListeners();
     }
   }
@@ -127,7 +127,7 @@ class NotificationSettingsProvider extends ChangeNotifier {
     );
   }
 
-  /// Método auxiliar para cambiar un tipo de notificación
+  /// MÃ©todo auxiliar para cambiar un tipo de notificaciÃ³n
   Future<void> _toggleType(
     String type,
     bool enabled,
@@ -140,27 +140,28 @@ class NotificationSettingsProvider extends ChangeNotifier {
       _settings = updater(_settings!);
       _error = null;
       notifyListeners();
-    } catch (e) {
-      _error = 'Error al actualizar configuración: $e';
+    } on Exception catch (e) {
+      _error = 'Error al actualizar configuraciÃ³n: $e';
       notifyListeners();
     }
   }
 
-  /// Resetear a configuración por defecto
+  /// Resetear a configuraciÃ³n por defecto
   Future<void> resetToDefaults() async {
     try {
       await _repository.resetToDefaults();
       _settings = NotificationSettingsEntity.defaults();
       _error = null;
       notifyListeners();
-    } catch (e) {
-      _error = 'Error al resetear configuración: $e';
+    } on Exception catch (e) {
+      _error = 'Error al resetear configuraciÃ³n: $e';
       notifyListeners();
     }
   }
 
-  /// Verificar si un tipo de notificación está habilitado
+  /// Verificar si un tipo de notificaciÃ³n estÃ¡ habilitado
   bool isNotificationTypeEnabled(String type) {
     return _settings?.isNotificationTypeEnabled(type) ?? false;
   }
 }
+

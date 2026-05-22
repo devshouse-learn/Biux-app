@@ -1,4 +1,4 @@
-import 'dart:async';
+﻿import 'dart:async';
 import 'dart:convert';
 import 'dart:math';
 import 'package:flutter/foundation.dart';
@@ -28,18 +28,18 @@ class RideTrackerProvider with ChangeNotifier {
   StreamSubscription<Position>? _posSub;
   Timer? _timer;
 
-  // Posición en vivo (antes y durante el tracking)
+  // PosiciÃ³n en vivo (antes y durante el tracking)
   LatLng? _livePosition;
   StreamSubscription<Position>? _livePosSub;
 
-  // Ruta planeada (origen→destino)
-  List<LatLng> _plannedRoute = []; // porción RESTANTE (la no recorrida)
+  // Ruta planeada (origenâ†’destino)
+  List<LatLng> _plannedRoute = []; // porciÃ³n RESTANTE (la no recorrida)
   List<LatLng> _fullPlannedRoute =
-      []; // ruta completa original (para recálculo)
+      []; // ruta completa original (para recÃ¡lculo)
   String? _plannedDestinationName;
   bool _routeLoading = false;
   bool _isRerouting = false; // recalculando ruta actualmente
-  static const _kOffRouteMeters = 50.0; // desvío máximo tolerado (m)
+  static const _kOffRouteMeters = 50.0; // desvÃ­o mÃ¡ximo tolerado (m)
   static const _kDirectionsApiKey = 'AIzaSyDiMK4kwhaIkuMxAcioRonPzaozDRJtO20';
 
   List<TrackPoint> get points => _points;
@@ -59,7 +59,7 @@ class RideTrackerProvider with ChangeNotifier {
   int get durationSec => _durationSec;
   int get calories => (_totalKm * 30).toInt();
 
-  /// Verdadero solo cuando la velocidad GPS indica movimiento en bicicleta (≥ 3 km/h).
+  /// Verdadero solo cuando la velocidad GPS indica movimiento en bicicleta (â‰¥ 3 km/h).
   bool get isMoving => _currentSpeed >= 3.0;
 
   double get avgSpeed {
@@ -75,8 +75,8 @@ class RideTrackerProvider with ChangeNotifier {
     return '${hh.toString().padLeft(2, "0")}:${mm.toString().padLeft(2, "0")}:${ss.toString().padLeft(2, "0")}';
   }
 
-  // ─── POSICIÓN EN VIVO (avant tracking) ────────────────────
-  /// Pide permiso GPS y empieza a escuchar la posición en tiempo real.
+  // â”€â”€â”€ POSICIÃ“N EN VIVO (avant tracking) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  /// Pide permiso GPS y empieza a escuchar la posiciÃ³n en tiempo real.
   Future<void> initLivePosition() async {
     if (_livePosSub != null) return; // ya iniciado
     try {
@@ -90,7 +90,7 @@ class RideTrackerProvider with ChangeNotifier {
           perm == LocationPermission.deniedForever)
         return;
 
-      // Posición inicial rápida
+      // PosiciÃ³n inicial rÃ¡pida
       final pos = await Geolocator.getCurrentPosition(
         locationSettings: const LocationSettings(
           accuracy: LocationAccuracy.high,
@@ -110,7 +110,7 @@ class RideTrackerProvider with ChangeNotifier {
             _livePosition = LatLng(p.latitude, p.longitude);
             notifyListeners();
           });
-    } catch (e) {
+    } on FirebaseException catch (e) {
       debugPrint('initLivePosition error: $e');
     }
   }
@@ -120,12 +120,12 @@ class RideTrackerProvider with ChangeNotifier {
     _livePosSub = null;
   }
 
-  // ─── RUTA PLANEADA ────────────────────────────────────────
+  // â”€â”€â”€ RUTA PLANEADA â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   void setPlannedRoute(List<LatLng> points, String destinationName) {
     _plannedRoute = List.from(points);
     _fullPlannedRoute = List.from(
       points,
-    ); // guarda la ruta completa para recálculo
+    ); // guarda la ruta completa para recÃ¡lculo
     _plannedDestinationName = destinationName;
     notifyListeners();
   }
@@ -159,7 +159,7 @@ class RideTrackerProvider with ChangeNotifier {
         notifyListeners();
         return true;
       }
-    } catch (e) {
+    } on FirebaseException catch (e) {
       debugPrint('fetchAndSetRoute error: $e');
     }
     _routeLoading = false;
@@ -167,13 +167,13 @@ class RideTrackerProvider with ChangeNotifier {
     return false;
   }
 
-  // ─── NAVEGACIÓN EN VIVO ───────────────────────────────────
+  // â”€â”€â”€ NAVEGACIÃ“N EN VIVO â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
   /// Distancia haversine en metros entre dos LatLng.
   double _distMeters(LatLng a, LatLng b) =>
       _calcDist(a.latitude, a.longitude, b.latitude, b.longitude) * 1000;
 
-  /// Devuelve el índice del punto de la ruta más cercano a [pos].
+  /// Devuelve el Ã­ndice del punto de la ruta mÃ¡s cercano a [pos].
   int _nearestRouteIndex(LatLng pos) {
     double best = double.infinity;
     int idx = 0;
@@ -187,13 +187,13 @@ class RideTrackerProvider with ChangeNotifier {
     return idx;
   }
 
-  /// Llamado cada vez que llega una posición GPS durante el tracking.
-  /// • Recorta la porción ya transitada de la ruta.
-  /// • Si el ciclista se desvía ≥ 50 m, recalcula.
+  /// Llamado cada vez que llega una posiciÃ³n GPS durante el tracking.
+  /// â€¢ Recorta la porciÃ³n ya transitada de la ruta.
+  /// â€¢ Si el ciclista se desvÃ­a â‰¥ 50 m, recalcula.
   void _updateNavigation(LatLng pos) {
     if (_plannedRoute.isEmpty || _fullPlannedRoute.isEmpty) return;
 
-    // 1. Encontrar el punto de la ruta más cercano
+    // 1. Encontrar el punto de la ruta mÃ¡s cercano
     final nearIdx = _nearestRouteIndex(pos);
     final distToRoute = _distMeters(pos, _plannedRoute[nearIdx]);
 
@@ -203,31 +203,31 @@ class RideTrackerProvider with ChangeNotifier {
       notifyListeners();
     }
 
-    // 3. Detectar desvío y recalcular
+    // 3. Detectar desvÃ­o y recalcular
     if (distToRoute > _kOffRouteMeters && !_isRerouting) {
       _rerouteFrom(pos);
     }
   }
 
-  /// Recalcula la ruta desde la posición actual hasta el destino original.
+  /// Recalcula la ruta desde la posiciÃ³n actual hasta el destino original.
   Future<void> _rerouteFrom(LatLng origin) async {
     if (_fullPlannedRoute.isEmpty || _isRerouting) return;
     _isRerouting = true;
     notifyListeners();
 
     final destination = _fullPlannedRoute.last;
-    debugPrint('🔄 Recalculando ruta desde $origin hasta $destination');
+    debugPrint('ðŸ”„ Recalculando ruta desde $origin hasta $destination');
 
     try {
       final points = await _fetchRoute(origin, destination);
       if (points != null && points.isNotEmpty) {
         _plannedRoute = points;
         _fullPlannedRoute = List.from(points);
-        debugPrint('✅ Ruta recalculada con ${points.length} puntos');
+        debugPrint('âœ… Ruta recalculada con ${points.length} puntos');
       } else {
-        debugPrint('⚠️ No se pudo recalcular ruta');
+        debugPrint('âš ï¸ No se pudo recalcular ruta');
       }
-    } catch (e) {
+    } on FirebaseException catch (e) {
       debugPrint('_rerouteFrom error: $e');
     } finally {
       _isRerouting = false;
@@ -289,8 +289,8 @@ class RideTrackerProvider with ChangeNotifier {
 
   /// Inicia tracking. Retorna null si OK, o String con error.
   Future<String?> startTracking() async {
-    // Al iniciar tracking, el live stream se torna redundante —
-    // el tracking stream lo reemplazará.
+    // Al iniciar tracking, el live stream se torna redundante â€”
+    // el tracking stream lo reemplazarÃ¡.
     _stopLivePositionStream();
 
     // Verificar permisos GPS
@@ -330,21 +330,21 @@ class RideTrackerProvider with ChangeNotifier {
     _posSub =
         Geolocator.getPositionStream(
           locationSettings: const LocationSettings(
-            // best: usa GPS + wifi + red para máxima exactitud
+            // best: usa GPS + wifi + red para mÃ¡xima exactitud
             accuracy: LocationAccuracy.best,
-            // Solo emite si el dispositivo se movió ≥ 10 m reales
-            // evita el ruido de posición estando quieto
+            // Solo emite si el dispositivo se moviÃ³ â‰¥ 10 m reales
+            // evita el ruido de posiciÃ³n estando quieto
             distanceFilter: 10,
           ),
         ).listen(
           (pos) {
             if (_isPaused) return;
 
-            // FILTRO 1: Precisión GPS insuficiente (pérdida de señal, inicio de adquisición)
+            // FILTRO 1: PrecisiÃ³n GPS insuficiente (pÃ©rdida de seÃ±al, inicio de adquisiciÃ³n)
             // Si el margen de error es > 20 m, el punto no es confiable
             if (pos.accuracy > 20.0) return;
 
-            // pos.speed viene en m/s del chipset GPS (método Doppler, muy exacto)
+            // pos.speed viene en m/s del chipset GPS (mÃ©todo Doppler, muy exacto)
             final speedKmh = pos.speed * 3.6;
 
             final pt = TrackPoint(
@@ -356,27 +356,27 @@ class RideTrackerProvider with ChangeNotifier {
             );
 
             if (_points.isNotEmpty) {
-              // FILTRO 2: Velocidad mínima para contar distancia.
-              // < 3 km/h significa que el ciclista está detenido o es ruido GPS.
-              // pos.speed ≈ 0 cuando el dispositivo está quieto (aunque GPS fluctúe).
+              // FILTRO 2: Velocidad mÃ­nima para contar distancia.
+              // < 3 km/h significa que el ciclista estÃ¡ detenido o es ruido GPS.
+              // pos.speed â‰ˆ 0 cuando el dispositivo estÃ¡ quieto (aunque GPS fluctÃºe).
               if (pos.speed >= 0.84) {
-                // 0.84 m/s ≈ 3 km/h
+                // 0.84 m/s â‰ˆ 3 km/h
                 final last = _points.last;
                 final segKm = _calcDist(last.lat, last.lng, pt.lat, pt.lng);
 
-                // FILTRO 3: Segmento mínimo de 8 m — ignora jitter residual
-                // FILTRO 4: Segmento máximo de 300 m — evita saltos por pérdida de señal
+                // FILTRO 3: Segmento mÃ­nimo de 8 m â€” ignora jitter residual
+                // FILTRO 4: Segmento mÃ¡ximo de 300 m â€” evita saltos por pÃ©rdida de seÃ±al
                 if (segKm >= 0.008 && segKm <= 0.3) {
                   _totalKm += segKm;
                 }
               }
             }
 
-            // Mostrar 0 en pantalla cuando el ciclista está detenido
+            // Mostrar 0 en pantalla cuando el ciclista estÃ¡ detenido
             _currentSpeed = pos.speed >= 0.5 ? speedKmh : 0.0;
             if (_currentSpeed > _maxSpeed) _maxSpeed = _currentSpeed;
             _points.add(pt);
-            // Actualizar navegación: consumir ruta y detectar desvíos
+            // Actualizar navegaciÃ³n: consumir ruta y detectar desvÃ­os
             _updateNavigation(LatLng(pos.latitude, pos.longitude));
             notifyListeners();
           },
@@ -398,7 +398,7 @@ class RideTrackerProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  /// Indica si la última rodada se guardó offline (pendiente de sync)
+  /// Indica si la Ãºltima rodada se guardÃ³ offline (pendiente de sync)
   bool _savedOffline = false;
   bool get savedOffline => _savedOffline;
 
@@ -468,7 +468,7 @@ class RideTrackerProvider with ChangeNotifier {
         _resetTrackingState();
         _saveBackgroundData(userId, trackId, savedPoints, savedStart);
         return true;
-      } catch (e) {
+      } on FirebaseException catch (e) {
         debugPrint('Error Firestore, guardando offline: $e');
         return _saveOffline(
           userId,
@@ -533,7 +533,7 @@ class RideTrackerProvider with ChangeNotifier {
       _resetTrackingState();
       debugPrint('Rodada guardada offline: ${offlineRide.id}');
       return true;
-    } catch (e) {
+    } on FirebaseException catch (e) {
       debugPrint('Error guardando offline: $e');
       _isSaving = false;
       notifyListeners();
@@ -596,7 +596,7 @@ class RideTrackerProvider with ChangeNotifier {
         await OfflineRideDatasource.markSynced(ride.id);
         synced++;
         debugPrint('Rodada sincronizada: ${ride.id} -> $trackId');
-      } catch (e) {
+      } on FirebaseException catch (e) {
         debugPrint('Error sincronizando ${ride.id}: $e');
       }
     }
@@ -620,7 +620,7 @@ class RideTrackerProvider with ChangeNotifier {
           );
           debugPrint('[BG] Puntos GPS guardados: ${savedPoints.length}');
         }
-      } catch (e) {
+      } on FirebaseException catch (e) {
         debugPrint('[BG] Error guardando puntos: $e');
       }
 
@@ -676,7 +676,7 @@ class RideTrackerProvider with ChangeNotifier {
           startTime,
         );
         debugPrint('[BG] Stats y logros actualizados');
-      } catch (e) {
+      } on FirebaseException catch (e) {
         debugPrint('[BG] Error actualizando stats: $e');
       }
     });
@@ -697,7 +697,7 @@ class RideTrackerProvider with ChangeNotifier {
           .where('members', arrayContains: userId)
           .get();
       groupCount = gs.docs.length;
-    } catch (e) {
+    } on FirebaseException catch (e) {
       debugPrint('Error: ' + e.toString());
     }
 
@@ -830,9 +830,9 @@ class RideTrackerProvider with ChangeNotifier {
     try {
       final data = await _ds.getUserTracks(userId);
       _history = _mapHistory(data);
-    } catch (e) {
+    } on FirebaseException catch (e) {
       debugPrint('Error loading history: $e');
-      // Fallback sin orderBy (no requiere índice compuesto)
+      // Fallback sin orderBy (no requiere Ã­ndice compuesto)
       try {
         final data = await _ds.getUserTracksSimple(userId);
         _history = _mapHistory(data);
@@ -872,7 +872,7 @@ class RideTrackerProvider with ChangeNotifier {
       await _ds.deleteTrack(trackId);
       _history.removeWhere((r) => r.id == trackId);
       notifyListeners();
-    } catch (e) {
+    } on FirebaseException catch (e) {
       debugPrint('Error deleting ride: $e');
     }
   }
@@ -885,7 +885,7 @@ class RideTrackerProvider with ChangeNotifier {
         _history[idx] = _history[idx].copyWith(name: newName);
         notifyListeners();
       }
-    } catch (e) {
+    } on FirebaseException catch (e) {
       debugPrint('Error renaming ride: $e');
     }
   }
@@ -910,7 +910,7 @@ class RideTrackerProvider with ChangeNotifier {
 
   double _rad(double d) => d * pi / 180;
 
-  /// Genera datos para story automática al terminar rodada
+  /// Genera datos para story automÃ¡tica al terminar rodada
   Map<String, dynamic> buildRideStorySummary() {
     return {
       'type': 'ride_summary',
@@ -942,8 +942,9 @@ class RideTrackerProvider with ChangeNotifier {
       }, SetOptions(merge: true));
       await batch.commit();
       _points.removeRange(0, pointsToFlush.length);
-    } catch (e) {
+    } on FirebaseException catch (e) {
       AppLogger.error('No se pudo hacer flush de puntos GPS: \$e');
     }
   }
 }
+

@@ -1,4 +1,4 @@
-import 'dart:async';
+﻿import 'dart:async';
 import 'dart:io';
 import 'dart:typed_data';
 import 'package:firebase_storage/firebase_storage.dart';
@@ -24,7 +24,7 @@ class ChatProvider extends ChangeNotifier {
   Timer? _typingTimer;
   StreamSubscription<Map<String, bool>>? _typingSub;
 
-  // IDs de mensajes optimistas pendientes de confirmación
+  // IDs de mensajes optimistas pendientes de confirmaciÃ³n
   final Set<String> _pendingOptimisticIds = {};
 
   StreamSubscription<List<ChatEntity>>? _chatsSub;
@@ -60,7 +60,7 @@ class ChatProvider extends ChangeNotifier {
         .getMessages(chatId)
         .listen(
           (list) {
-            // Detectar qué optimistic ya fueron confirmados por Firestore
+            // Detectar quÃ© optimistic ya fueron confirmados por Firestore
             // comparando contenido (ya que los IDs no coinciden)
             final confirmedTempIds = <String>{};
             for (final tempId in _pendingOptimisticIds) {
@@ -85,9 +85,9 @@ class ChatProvider extends ChangeNotifier {
             notifyListeners();
           },
           onError: (error) {
-            debugPrint('❌ Error al escuchar mensajes del chat $chatId: $error');
+            debugPrint('âŒ Error al escuchar mensajes del chat $chatId: $error');
             _error =
-                'No se pudieron cargar los mensajes. Verifica tu conexión.';
+                'No se pudieron cargar los mensajes. Verifica tu conexiÃ³n.';
             notifyListeners();
           },
         );
@@ -96,7 +96,7 @@ class ChatProvider extends ChangeNotifier {
       // Re-aplicar estado de lectura con los timestamps actualizados
       _messages = _applyReadStatus(_messages);
       notifyListeners();
-    }, onError: (e) => debugPrint('❌ Error en getChatStream $chatId: $e'));
+    }, onError: (e) => debugPrint('âŒ Error en getChatStream $chatId: $e'));
     _ds.markMessagesAsRead(chatId);
 
     // Escuchar typing de otros participantes
@@ -162,7 +162,7 @@ class ChatProvider extends ChangeNotifier {
     }
   }
 
-  // ── Optimistic insert: muestra mensaje al instante en la UI ────────────
+  // â”€â”€ Optimistic insert: muestra mensaje al instante en la UI â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   int _tempIdCounter = 0;
 
   String _nextTempId() =>
@@ -263,7 +263,7 @@ class ChatProvider extends ChangeNotifier {
         replyPreview: replyPrev,
       );
       await _ds.sendMessage(chatId: chatId, message: message);
-    } catch (e) {
+    } on FirebaseException catch (e) {
       _removeOptimistic(tempId);
       _error = 'No se pudo enviar la imagen';
       notifyListeners();
@@ -322,14 +322,14 @@ class ChatProvider extends ChangeNotifier {
         replyPreview: replyPrev,
       );
       await _ds.sendMessage(chatId: chatId, message: message);
-    } catch (e) {
+    } on FirebaseException catch (e) {
       _removeOptimistic(tempId);
       _error = 'No se pudo enviar el video';
       notifyListeners();
     }
   }
 
-  /// Envía múltiples archivos de media (imágenes, videos y/o audios) en paralelo.
+  /// EnvÃ­a mÃºltiples archivos de media (imÃ¡genes, videos y/o audios) en paralelo.
   Future<void> sendMediaFiles({
     required String chatId,
     required List<File> files,
@@ -371,7 +371,7 @@ class ChatProvider extends ChangeNotifier {
     await Future.wait(futures);
   }
 
-  /// Envía un archivo de audio almacenado (no grabación de voz).
+  /// EnvÃ­a un archivo de audio almacenado (no grabaciÃ³n de voz).
   Future<void> sendAudioFileMessage({
     required String chatId,
     required File audioFile,
@@ -426,7 +426,7 @@ class ChatProvider extends ChangeNotifier {
         replyPreview: replyPrev,
       );
       await _ds.sendMessage(chatId: chatId, message: message);
-    } catch (e) {
+    } on FirebaseException catch (e) {
       _removeOptimistic(tempId);
       _error = 'No se pudo enviar el audio';
       notifyListeners();
@@ -652,7 +652,7 @@ class ChatProvider extends ChangeNotifier {
     );
   }
 
-  /// Envío legacy con parámetros posicionales (compatibilidad)
+  /// EnvÃ­o legacy con parÃ¡metros posicionales (compatibilidad)
 
   Future<void> sendPollMessage({
     required String chatId,
@@ -673,7 +673,7 @@ class ChatProvider extends ChangeNotifier {
       senderId: currentUid,
       senderName: senderName,
       senderAvatar: senderAvatar,
-      content: '📊 $question',
+      content: 'ðŸ“Š $question',
       type: MessageType.poll,
       sentAt: DateTime.now(),
       pollQuestion: question,
@@ -756,8 +756,8 @@ class ChatProvider extends ChangeNotifier {
     });
   }
 
-  /// Aplica isRead/isDelivered en memoria según los timestamps del chat doc.
-  /// No necesita escribir en Firestore — funciona en tiempo real.
+  /// Aplica isRead/isDelivered en memoria segÃºn los timestamps del chat doc.
+  /// No necesita escribir en Firestore â€” funciona en tiempo real.
   List<MessageEntity> _applyReadStatus(List<MessageEntity> messages) {
     if (_activeChat == null) return messages;
     final uid = currentUid;
@@ -794,3 +794,4 @@ class ChatProvider extends ChangeNotifier {
     super.dispose();
   }
 }
+

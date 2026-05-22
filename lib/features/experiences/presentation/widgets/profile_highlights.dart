@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:biux/core/design_system/color_tokens.dart';
@@ -45,7 +45,7 @@ class _ProfileHighlightsState extends State<ProfileHighlights> {
           _isLoading = false;
         });
       }
-    } catch (e) {
+    } on Exception catch (e) {
       if (mounted) setState(() => _isLoading = false);
     }
   }
@@ -65,7 +65,7 @@ class _ProfileHighlightsState extends State<ProfileHighlights> {
             scrollDirection: Axis.horizontal,
             padding: EdgeInsets.symmetric(horizontal: 12),
             children: [
-              // Botón "+" para agregar nuevo highlight (solo perfil propio)
+              // BotÃ³n "+" para agregar nuevo highlight (solo perfil propio)
               if (widget.isOwnProfile)
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 4),
@@ -449,7 +449,7 @@ class _ProfileHighlightsState extends State<ProfileHighlights> {
           ),
         ),
       );
-    } catch (e) {
+    } on Exception catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
@@ -461,3 +461,4 @@ class _ProfileHighlightsState extends State<ProfileHighlights> {
     }
   }
 }
+

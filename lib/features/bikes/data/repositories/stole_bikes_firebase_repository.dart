@@ -1,4 +1,4 @@
-import 'package:biux/features/bikes/data/models/stole_bikes.dart';
+﻿import 'package:biux/features/bikes/data/models/stole_bikes.dart';
 import 'package:biux/features/bikes/domain/repositories/stole_bikes_repository_abstract.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
@@ -14,7 +14,7 @@ class StoleBikesFirebaseRepository extends StoleBikesRepositoryAbstract {
       return response.docs
           .map((doc) => StoleBikes.fromjson(doc.data()))
           .toList();
-    } catch (e) {
+    } on FirebaseException catch (e) {
       return [];
     }
   }
@@ -27,7 +27,7 @@ class StoleBikesFirebaseRepository extends StoleBikesRepositoryAbstract {
           .where('id', isEqualTo: id.toString())
           .get();
       return StoleBikes.fromjson(response.docs.first.data());
-    } catch (e) {
+    } on FirebaseException catch (e) {
       return StoleBikes();
     }
   }
@@ -43,7 +43,7 @@ class StoleBikesFirebaseRepository extends StoleBikesRepositoryAbstract {
           AppStrings.idText: docId,
         });
       });
-    } catch (e) {}
+    } on FirebaseException catch (e) {}
   }
 
   @override
@@ -53,6 +53,7 @@ class StoleBikesFirebaseRepository extends StoleBikesRepositoryAbstract {
           .collection(collection)
           .doc(stoleBikes.id)
           .update(stoleBikes.toJson());
-    } catch (e) {}
+    } on FirebaseException catch (e) {}
   }
 }
+

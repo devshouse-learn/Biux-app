@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:provider/provider.dart';
@@ -63,7 +63,7 @@ class _LocationPickerScreenState extends State<LocationPickerScreen> {
           _loading = false;
         });
       }
-    } catch (e) {
+    } on Exception catch (e) {
       setState(() {
         _selectedLocation = const LatLng(19.4326, -99.1332);
         _loading = false;
@@ -203,3 +203,4 @@ class _LocationPickerScreenState extends State<LocationPickerScreen> {
     );
   }
 }
+

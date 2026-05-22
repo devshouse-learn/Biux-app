@@ -1,4 +1,4 @@
-import 'package:flutter_riverpod/flutter_riverpod.dart';
+﻿import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:video_player/video_player.dart';
 import 'package:biux/features/experiences/domain/entities/experience_entity.dart';
@@ -6,7 +6,7 @@ import 'package:biux/features/experiences/domain/repositories/experience_reposit
 import 'package:biux/features/experiences/presentation/providers/experience_provider.dart';
 import 'package:biux/features/experiences/data/datasources/video_experience_datasource.dart';
 
-/// Estado para la creación de experiencias
+/// Estado para la creaciÃ³n de experiencias
 class ExperienceCreatorState {
   final List<MediaItem> mediaItems;
   final String description;
@@ -167,7 +167,7 @@ class MediaItem {
   }
 }
 
-/// Provider para la creación de experiencias
+/// Provider para la creaciÃ³n de experiencias
 final experienceCreatorProvider =
     StateNotifierProvider<ExperienceCreatorNotifier, ExperienceCreatorState>((
       ref,
@@ -177,7 +177,7 @@ final experienceCreatorProvider =
       return ExperienceCreatorNotifier(repository, experienceNotifier);
     });
 
-/// Notifier para la creación de experiencias
+/// Notifier para la creaciÃ³n de experiencias
 class ExperienceCreatorNotifier extends StateNotifier<ExperienceCreatorState> {
   // final ExperienceRepository _repository; // PENDIENTE: Usar si se necesita acceso directo al repository
   final ExperienceNotifier _experienceNotifier;
@@ -189,7 +189,7 @@ class ExperienceCreatorNotifier extends StateNotifier<ExperienceCreatorState> {
     this._experienceNotifier,
   ) : super(const ExperienceCreatorState());
 
-  /// Actualizar descripción
+  /// Actualizar descripciÃ³n
   void updateDescription(String description) {
     state = state.copyWith(description: description);
   }
@@ -212,7 +212,7 @@ class ExperienceCreatorNotifier extends StateNotifier<ExperienceCreatorState> {
     );
   }
 
-  /// Agregar imagen desde galería
+  /// Agregar imagen desde galerÃ­a
   Future<void> addImageFromGallery() async {
     try {
       final XFile? image = await _imagePicker.pickImage(
@@ -226,17 +226,17 @@ class ExperienceCreatorNotifier extends StateNotifier<ExperienceCreatorState> {
         final mediaItem = MediaItem(
           filePath: image.path,
           mediaType: MediaType.image,
-          duration: 15, // 15 segundos por defecto para imágenes
+          duration: 15, // 15 segundos por defecto para imÃ¡genes
         );
 
         state = state.copyWith(mediaItems: [...state.mediaItems, mediaItem]);
       }
-    } catch (e) {
+    } on Exception catch (e) {
       state = state.copyWith(error: 'Error seleccionando imagen: $e');
     }
   }
 
-  /// Tomar foto con cámara
+  /// Tomar foto con cÃ¡mara
   Future<void> takePhoto() async {
     try {
       final XFile? image = await _imagePicker.pickImage(
@@ -255,12 +255,12 @@ class ExperienceCreatorNotifier extends StateNotifier<ExperienceCreatorState> {
 
         state = state.copyWith(mediaItems: [...state.mediaItems, mediaItem]);
       }
-    } catch (e) {
+    } on Exception catch (e) {
       state = state.copyWith(error: 'Error tomando foto: $e');
     }
   }
 
-  /// Agregar video desde galería
+  /// Agregar video desde galerÃ­a
   Future<void> addVideoFromGallery() async {
     try {
       final XFile? video = await _imagePicker.pickVideo(
@@ -271,12 +271,12 @@ class ExperienceCreatorNotifier extends StateNotifier<ExperienceCreatorState> {
       if (video != null) {
         await _processVideo(video.path);
       }
-    } catch (e) {
+    } on Exception catch (e) {
       state = state.copyWith(error: 'Error seleccionando video: $e');
     }
   }
 
-  /// Grabar video con cámara
+  /// Grabar video con cÃ¡mara
   Future<void> recordVideo() async {
     try {
       final XFile? video = await _imagePicker.pickVideo(
@@ -287,12 +287,12 @@ class ExperienceCreatorNotifier extends StateNotifier<ExperienceCreatorState> {
       if (video != null) {
         await _processVideo(video.path);
       }
-    } catch (e) {
+    } on Exception catch (e) {
       state = state.copyWith(error: 'Error grabando video: $e');
     }
   }
 
-  /// Procesar video (validar duración, comprimir, generar thumbnail)
+  /// Procesar video (validar duraciÃ³n, comprimir, generar thumbnail)
   Future<void> _processVideo(String videoPath) async {
     try {
       // Marcar como procesando
@@ -307,10 +307,10 @@ class ExperienceCreatorNotifier extends StateNotifier<ExperienceCreatorState> {
 
       final xFile = XFile(videoPath);
 
-      // Validar duración del video
+      // Validar duraciÃ³n del video
       await _videoService.validateVideoDuration(xFile);
 
-      // Obtener información real del video
+      // Obtener informaciÃ³n real del video
       final videoInfo = await _videoService.getVideoInfo(xFile);
 
       final basicVideoItem = MediaItem(
@@ -328,7 +328,7 @@ class ExperienceCreatorNotifier extends StateNotifier<ExperienceCreatorState> {
       updatedItems.add(basicVideoItem);
 
       state = state.copyWith(mediaItems: updatedItems);
-    } catch (e) {
+    } on Exception catch (e) {
       // Remover item en caso de error
       state = state.copyWith(
         mediaItems: state.mediaItems
@@ -360,7 +360,7 @@ class ExperienceCreatorNotifier extends StateNotifier<ExperienceCreatorState> {
     if (!state.isTextOnly && state.mediaItems.isEmpty) {
       state = state.copyWith(
         error:
-            'error_add_media_required', // Translation key – UI should call l.t(error) to display
+            'error_add_media_required', // Translation key â€“ UI should call l.t(error) to display
       );
       return false;
     }
@@ -368,14 +368,14 @@ class ExperienceCreatorNotifier extends StateNotifier<ExperienceCreatorState> {
     if (state.description.trim().isEmpty) {
       state = state.copyWith(
         error: 'error_description_required',
-      ); // Translation key – UI should call l.t(error) to display
+      ); // Translation key â€“ UI should call l.t(error) to display
       return false;
     }
 
     if (state.experienceType == null) {
       state = state.copyWith(
         error: 'error_select_experience_type',
-      ); // Translation key – UI should call l.t(error) to display
+      ); // Translation key â€“ UI should call l.t(error) to display
       return false;
     }
 
@@ -406,10 +406,10 @@ class ExperienceCreatorNotifier extends StateNotifier<ExperienceCreatorState> {
       // Crear experiencia usando el ExperienceNotifier para actualizar las listas
       await _experienceNotifier.createExperience(request);
 
-      // Limpiar estado después de éxito
+      // Limpiar estado despuÃ©s de Ã©xito
       state = const ExperienceCreatorState();
       return true;
-    } catch (e) {
+    } on Exception catch (e) {
       state = state.copyWith(
         isUploading: false,
         error: 'Error creando experiencia: $e',
@@ -436,3 +436,4 @@ class ExperienceCreatorNotifier extends StateNotifier<ExperienceCreatorState> {
     super.dispose();
   }
 }
+

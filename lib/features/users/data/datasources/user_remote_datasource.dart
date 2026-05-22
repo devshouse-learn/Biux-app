@@ -1,4 +1,4 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
+﻿import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:biux/features/users/data/models/user_model.dart';
 import 'package:biux/features/users/domain/entities/user_entity.dart';
 import "package:flutter/foundation.dart";
@@ -41,7 +41,7 @@ class UserRemoteDataSourceImpl implements UserRemoteDataSource {
         'isDeleting': data['isDeleting'] ?? false,
         'deletionRequestDate': data['deletionRequestDate'],
       });
-    } catch (e) {
+    } on FirebaseException catch (e) {
       debugPrint('Error getting user by id: $e');
       return null;
     }
@@ -64,7 +64,7 @@ class UserRemoteDataSourceImpl implements UserRemoteDataSource {
           'deletionRequestDate': data['deletionRequestDate'],
         });
       }).toList();
-    } catch (e) {
+    } on FirebaseException catch (e) {
       debugPrint('Error getting all users: $e');
       return [];
     }
@@ -86,7 +86,7 @@ class UserRemoteDataSourceImpl implements UserRemoteDataSource {
         'isDeleting': data['isDeleting'] ?? false,
         'deletionRequestDate': data['deletionRequestDate'],
       });
-    } catch (e) {
+    } on FirebaseException catch (e) {
       debugPrint('Error creating user: $e');
       rethrow;
     }
@@ -108,7 +108,7 @@ class UserRemoteDataSourceImpl implements UserRemoteDataSource {
         'isDeleting': data['isDeleting'] ?? false,
         'deletionRequestDate': data['deletionRequestDate'],
       });
-    } catch (e) {
+    } on FirebaseException catch (e) {
       debugPrint('Error updating user: $e');
       rethrow;
     }
@@ -118,7 +118,7 @@ class UserRemoteDataSourceImpl implements UserRemoteDataSource {
   Future<void> deleteUser(String id) async {
     try {
       await _firestore.collection('usuarios').doc(id).delete();
-    } catch (e) {
+    } on FirebaseException catch (e) {
       debugPrint('Error deleting user: $e');
       rethrow;
     }
@@ -131,7 +131,7 @@ class UserRemoteDataSourceImpl implements UserRemoteDataSource {
         'userRole': newRole.toString().split('.').last,
         'isAdmin': newRole == UserRole.admin,
       });
-    } catch (e) {
+    } on FirebaseException catch (e) {
       debugPrint('Error updating user role: $e');
       rethrow;
     }
@@ -143,9 +143,10 @@ class UserRemoteDataSourceImpl implements UserRemoteDataSource {
       await _firestore.collection('usuarios').doc(userId).update({
         'autorizadoPorAdmin': autorizado,
       });
-    } catch (e) {
+    } on FirebaseException catch (e) {
       debugPrint('Error toggling admin authorization: $e');
       rethrow;
     }
   }
 }
+

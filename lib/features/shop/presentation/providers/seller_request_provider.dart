@@ -1,4 +1,4 @@
-import 'package:flutter/foundation.dart';
+﻿import 'package:flutter/foundation.dart';
 import 'package:biux/features/shop/domain/entities/seller_request_entity.dart';
 import 'package:biux/features/shop/data/datasources/seller_request_service.dart';
 
@@ -22,7 +22,7 @@ class SellerRequestProvider with ChangeNotifier {
 
   /// Inicializa los listeners de solicitudes
   void initialize() {
-    debugPrint('🔔 Inicializando SellerRequestProvider');
+    debugPrint('ðŸ”” Inicializando SellerRequestProvider');
     _listenToPendingRequests();
     _listenToAllRequests();
     _listenToPendingCount();
@@ -34,13 +34,13 @@ class SellerRequestProvider with ChangeNotifier {
       (requests) {
         _pendingRequests = requests;
         debugPrint(
-          '📋 Solicitudes pendientes actualizadas: ${requests.length}',
+          'ðŸ“‹ Solicitudes pendientes actualizadas: ${requests.length}',
         );
         notifyListeners();
       },
       onError: (error) {
         _error = error.toString();
-        debugPrint('❌ Error escuchando solicitudes pendientes: $error');
+        debugPrint('âŒ Error escuchando solicitudes pendientes: $error');
         notifyListeners();
       },
     );
@@ -51,12 +51,12 @@ class SellerRequestProvider with ChangeNotifier {
     _service.getAllRequests().listen(
       (requests) {
         _requests = requests;
-        debugPrint('📋 Todas las solicitudes actualizadas: ${requests.length}');
+        debugPrint('ðŸ“‹ Todas las solicitudes actualizadas: ${requests.length}');
         notifyListeners();
       },
       onError: (error) {
         _error = error.toString();
-        debugPrint('❌ Error escuchando todas las solicitudes: $error');
+        debugPrint('âŒ Error escuchando todas las solicitudes: $error');
         notifyListeners();
       },
     );
@@ -94,10 +94,10 @@ class SellerRequestProvider with ChangeNotifier {
       _isLoading = false;
       notifyListeners();
       return true;
-    } catch (e) {
+    } on Exception catch (e) {
       _error = e.toString();
       _isLoading = false;
-      debugPrint('❌ Error creando solicitud: $e');
+      debugPrint('âŒ Error creando solicitud: $e');
       notifyListeners();
       return false;
     }
@@ -123,10 +123,10 @@ class SellerRequestProvider with ChangeNotifier {
       _isLoading = false;
       notifyListeners();
       return true;
-    } catch (e) {
+    } on Exception catch (e) {
       _error = e.toString();
       _isLoading = false;
-      debugPrint('❌ Error aprobando solicitud: $e');
+      debugPrint('âŒ Error aprobando solicitud: $e');
       notifyListeners();
       return false;
     }
@@ -152,10 +152,10 @@ class SellerRequestProvider with ChangeNotifier {
       _isLoading = false;
       notifyListeners();
       return true;
-    } catch (e) {
+    } on Exception catch (e) {
       _error = e.toString();
       _isLoading = false;
-      debugPrint('❌ Error rechazando solicitud: $e');
+      debugPrint('âŒ Error rechazando solicitud: $e');
       notifyListeners();
       return false;
     }
@@ -166,9 +166,9 @@ class SellerRequestProvider with ChangeNotifier {
     try {
       await _service.deleteRequest(requestId);
       return true;
-    } catch (e) {
+    } on Exception catch (e) {
       _error = e.toString();
-      debugPrint('❌ Error eliminando solicitud: $e');
+      debugPrint('âŒ Error eliminando solicitud: $e');
       notifyListeners();
       return false;
     }
@@ -185,3 +185,4 @@ class SellerRequestProvider with ChangeNotifier {
     notifyListeners();
   }
 }
+

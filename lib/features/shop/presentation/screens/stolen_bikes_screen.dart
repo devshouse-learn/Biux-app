@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:biux/core/design_system/color_tokens.dart';
 import 'package:biux/core/design_system/locale_notifier.dart';
@@ -136,7 +136,7 @@ class _StolenBikesScreenState extends State<StolenBikesScreen>
         _stolenBikes = bikes;
         _isLoading = false;
       });
-    } catch (e) {
+    } on Exception catch (e) {
       setState(() => _isLoading = false);
     }
   }
@@ -201,7 +201,7 @@ class _StolenBikesScreenState extends State<StolenBikesScreen>
         _verificationResult = result;
         _isVerifying = false;
       });
-    } catch (e) {
+    } on Exception catch (e) {
       setState(() => _isVerifying = false);
       if (mounted) {
         final l = Provider.of<LocaleNotifier>(context, listen: false);
@@ -1602,3 +1602,4 @@ class _StolenBikesScreenState extends State<StolenBikesScreen>
         .length;
   }
 }
+

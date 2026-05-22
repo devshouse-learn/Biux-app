@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:geolocator/geolocator.dart';
@@ -44,7 +44,7 @@ class _AccidentsListScreenState extends State<AccidentsListScreen>
         ),
       );
       if (mounted) setState(() => _myPosition = pos);
-    } catch (e) {
+    } on FirebaseException catch (e) {
       debugPrint('Error: ' + e.toString());
     }
   }
@@ -141,7 +141,7 @@ class _AccidentsListScreenState extends State<AccidentsListScreen>
     );
   }
 
-  // ── Lista de accidentes con pull-to-refresh ─────────
+  // â”€â”€ Lista de accidentes con pull-to-refresh â”€â”€â”€â”€â”€â”€â”€â”€â”€
   Widget _buildListView(LocaleNotifier l) {
     return StreamBuilder<QuerySnapshot>(
       stream: FirebaseFirestore.instance
@@ -369,7 +369,7 @@ class _AccidentsListScreenState extends State<AccidentsListScreen>
     );
   }
 
-  // ── Mapa de accidentes ──────────────────────────────
+  // â”€â”€ Mapa de accidentes â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   Widget _buildMapView(LocaleNotifier l) {
     return StreamBuilder<QuerySnapshot>(
       stream: FirebaseFirestore.instance
@@ -436,3 +436,4 @@ class _AccidentsListScreenState extends State<AccidentsListScreen>
     );
   }
 }
+

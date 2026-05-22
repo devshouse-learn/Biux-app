@@ -5,7 +5,6 @@ import 'package:biux/shared/widgets/images/optimized_image_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
-import 'package:biux/core/config/router/app_routes.dart';
 import 'package:biux/core/design_system/color_tokens.dart';
 import 'package:biux/core/design_system/locale_notifier.dart';
 import 'package:biux/features/groups/presentation/providers/group_provider.dart';
@@ -23,8 +22,6 @@ class RideListScreen extends StatefulWidget {
 
 class _RideListScreenState extends State<RideListScreen>
     with SingleTickerProviderStateMixin {
-  LocaleNotifier get l => Provider.of<LocaleNotifier>(context);
-
   late TabController _tabController;
   final TextEditingController _searchController = TextEditingController();
   bool _showSearch = false;
@@ -62,6 +59,7 @@ class _RideListScreenState extends State<RideListScreen>
 
   @override
   Widget build(BuildContext context) {
+    final l = Provider.of<LocaleNotifier>(context);
 
     // Si viene con groupId, mostrar rodadas de ese grupo
     if (widget.groupId != null) {
@@ -71,91 +69,69 @@ class _RideListScreenState extends State<RideListScreen>
     // Vista principal: solo grupos
     return Consumer2<GroupProvider, RideProvider>(
       builder: (context, groupProvider, rideProvider, child) {
-        return Stack(
+        return Column(
           children: [
-            Column(
-              children: [
-                // ── Barra de búsqueda ──
-                if (_showSearch) _buildSearchBar(l),
+            // ── Barra de búsqueda ──
+            if (_showSearch) _buildSearchBar(l),
 
-                // ── Tabs: Mis Grupos / Explorar ──
-                Container(
-                  decoration: BoxDecoration(
-                    border: Border(
-                      bottom: BorderSide(
-                        color: ColorTokens.neutral60.withValues(alpha: 0.2),
-                      ),
-                    ),
-                  ),
-                  child: TabBar(
-                    controller: _tabController,
-                    indicatorColor: ColorTokens.primary30,
-                    indicatorWeight: 3,
-                    labelColor: ColorTokens.primary30,
-                    unselectedLabelColor: ColorTokens.neutral60,
-                    labelStyle: const TextStyle(
-                      fontWeight: FontWeight.w700,
-                      fontSize: 14,
-                    ),
-                    unselectedLabelStyle: const TextStyle(
-                      fontWeight: FontWeight.w500,
-                      fontSize: 14,
-                    ),
-                    isScrollable: false,
-                    tabAlignment: TabAlignment.fill,
-                    tabs: [
-                      Tab(
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            const Icon(Icons.groups, size: 16),
-                            SizedBox(width: 6),
-                            Text(l.t('my_groups')),
-                          ],
-                        ),
-                      ),
-                      Tab(
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            const Icon(Icons.explore, size: 16),
-                            SizedBox(width: 6),
-                            Text(l.t('explore_more')),
-                          ],
-                        ),
-                      ),
-                    ],
+            // ── Tabs: Mis Grupos / Explorar ──
+            Container(
+              decoration: BoxDecoration(
+                border: Border(
+                  bottom: BorderSide(
+                    color: ColorTokens.neutral60.withValues(alpha: 0.2),
                   ),
                 ),
-
-                // ── Contenido ──
-                Expanded(
-                  child: TabBarView(
-                    controller: _tabController,
-                    children: [
-                      _buildMyGroupsList(groupProvider, rideProvider, l),
-                      _buildExploreGroupsList(groupProvider, rideProvider, l),
-                    ],
-                  ),
+              ),
+              child: TabBar(
+                controller: _tabController,
+                indicatorColor: ColorTokens.primary30,
+                indicatorWeight: 3,
+                labelColor: ColorTokens.primary30,
+                unselectedLabelColor: ColorTokens.neutral60,
+                labelStyle: const TextStyle(
+                  fontWeight: FontWeight.w700,
+                  fontSize: 14,
                 ),
-              ],
+                unselectedLabelStyle: const TextStyle(
+                  fontWeight: FontWeight.w500,
+                  fontSize: 14,
+                ),
+                isScrollable: false,
+                tabAlignment: TabAlignment.fill,
+                tabs: [
+                  Tab(
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        const Icon(Icons.groups, size: 16),
+                        const SizedBox(width: 6),
+                        Text(l.t('my_groups')),
+                      ],
+                    ),
+                  ),
+                  Tab(
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        const Icon(Icons.explore, size: 16),
+                        const SizedBox(width: 6),
+                        Text(l.t('explore_more')),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
             ),
-            // ── FAB Crear Grupo ──
-            Positioned(
-              right: 16,
-              bottom: 16,
-              child: FloatingActionButton.extended(
-                heroTag: 'createGroup',
-                onPressed: () => context.push(AppRoutes.groupCreate),
-                backgroundColor: ColorTokens.primary30,
-                icon: Icon(Icons.group_add, color: Colors.white),
-                label: Text(
-                  l.t('create_group'),
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontWeight: FontWeight.w700,
-                  ),
-                ),
+
+            // ── Contenido ──
+            Expanded(
+              child: TabBarView(
+                controller: _tabController,
+                children: [
+                  _buildMyGroupsList(groupProvider, rideProvider, l),
+                  _buildExploreGroupsList(groupProvider, rideProvider, l),
+                ],
               ),
             ),
           ],
@@ -237,19 +213,19 @@ class _RideListScreenState extends State<RideListScreen>
                           Icons.upcoming,
                           ColorTokens.primary30,
                         ),
-                        SizedBox(height: 8),
+                        const SizedBox(height: 8),
                         ...upcoming.map(
                           (ride) => _buildRideCard(ride, provider, l),
                         ),
                       ],
                       if (past.isNotEmpty) ...[
-                        SizedBox(height: 20),
+                        const SizedBox(height: 20),
                         _buildSectionHeader(
                           l.t('finished'),
                           Icons.history,
                           ColorTokens.neutral60,
                         ),
-                        SizedBox(height: 8),
+                        const SizedBox(height: 8),
                         ...past.map(
                           (ride) =>
                               _buildRideCard(ride, provider, l, isPast: true),
@@ -500,7 +476,7 @@ class _RideListScreenState extends State<RideListScreen>
                           '0',
                           ColorTokens.neutral60,
                         ),
-                        SizedBox(width: 16),
+                        const SizedBox(width: 16),
                         // Rodadas próximas
                         if (upcomingRides > 0 && !isExplore)
                           _buildGroupStat(
@@ -578,14 +554,14 @@ class _RideListScreenState extends State<RideListScreen>
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
                           ),
-                          SizedBox(height: 2),
+                          const SizedBox(height: 2),
                           Row(
                             children: [
                               _buildMiniChip(
                                 l.t(ride.difficultyDisplayName),
                                 _getDifficultyColor(ride.difficulty),
                               ),
-                              SizedBox(width: 6),
+                              const SizedBox(width: 6),
                               Text(
                                 '${ride.kilometers} km',
                                 style: TextStyle(
@@ -863,7 +839,7 @@ class _RideListScreenState extends State<RideListScreen>
               ColorTokens.success40,
               () => _joinRide(ride.id, provider),
             ),
-            SizedBox(width: 6),
+            const SizedBox(width: 6),
             _buildSmallButton(
               l.t('no_label'),
               Icons.close,
@@ -882,7 +858,7 @@ class _RideListScreenState extends State<RideListScreen>
               ColorTokens.success40,
               () => _joinRide(ride.id, provider),
             ),
-            SizedBox(width: 6),
+            const SizedBox(width: 6),
             _buildSmallButton(
               l.t('maybe'),
               Icons.help_outline,

@@ -1,4 +1,4 @@
-import 'dart:io';
+﻿import 'dart:io';
 
 import 'package:biux/core/config/strings.dart';
 import 'package:biux/core/utils/bytes_utils.dart';
@@ -26,7 +26,7 @@ class FirebaseUtils {
       UploadTask uploadTask = ref.putFile(image);
       String downloadUrl = await (await uploadTask).ref.getDownloadURL();
       return downloadUrl;
-    } catch (e) {
+    } on FirebaseException catch (e) {
       return '';
     }
   }
@@ -47,3 +47,4 @@ class FirebaseUtils {
     return image;
   }
 }
+

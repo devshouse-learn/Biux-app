@@ -1,4 +1,4 @@
-import 'package:biux/features/bikes/data/models/trademark_bike.dart';
+﻿import 'package:biux/features/bikes/data/models/trademark_bike.dart';
 import 'package:biux/features/bikes/domain/repositories/trademark_bike_repository_abstract.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
@@ -12,7 +12,7 @@ class TrademarkBikeFirebaseRepository extends TrademarkBikeRepositoryAbstract {
       return result.docs
           .map((e) => TrademarkBike.fromJsonMap(e.data()))
           .toList();
-    } catch (e) {
+    } on FirebaseException catch (e) {
       return List.empty();
     }
   }
@@ -27,7 +27,7 @@ class TrademarkBikeFirebaseRepository extends TrademarkBikeRepositoryAbstract {
       return result.docs
           .map((e) => TrademarkBike.fromJsonMap(e.data()))
           .toList();
-    } catch (e) {
+    } on FirebaseException catch (e) {
       return List.empty();
     }
   }
@@ -39,6 +39,7 @@ class TrademarkBikeFirebaseRepository extends TrademarkBikeRepositoryAbstract {
           .collection(collection)
           .doc(trademarkBike.id.toString())
           .set(trademarkBike.toJson());
-    } catch (e) {}
+    } on FirebaseException catch (e) {}
   }
 }
+
