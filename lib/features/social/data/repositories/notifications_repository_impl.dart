@@ -1,4 +1,3 @@
-import "package:flutter/foundation.dart";
 import 'package:biux/features/social/domain/entities/notification_entity.dart';
 import 'package:biux/features/social/domain/repositories/notifications_repository.dart';
 import 'package:biux/features/social/data/datasources/notifications_realtime_datasource.dart';
@@ -66,13 +65,6 @@ class NotificationsRepositoryImpl implements NotificationsRepository {
       timestamp: DateTime.now().millisecondsSinceEpoch,
       metadata: metadata,
     );
-
-    debugPrint('🔍 DEBUG - Creando notificación en repository:');
-    debugPrint('   Para userId: $userId');
-    debugPrint('   De: $fromUserName ($fromUserId)');
-    debugPrint('   Tipo: ${type.value}');
-    debugPrint('   isRead: false');
-    debugPrint('   timestamp: ${notification.timestamp}');
 
     return _datasource.createNotification(
       userId: userId,
