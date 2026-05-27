@@ -26,7 +26,7 @@ class NotificationsProvider extends ChangeNotifier {
   bool get hasUnread => _unreadCount > 0;
 
   void _init() {
-    debugPrint('ðŸ”” NotificationsProvider._init() para userId: $userId');
+    debugPrint('dŸ”” NotificationsProvider._init() para userId: $userId');
 
     // Escuchar notificaciones
     _repository
@@ -34,24 +34,24 @@ class NotificationsProvider extends ChangeNotifier {
         .listen(
           (notifications) {
             debugPrint(
-              'ðŸ”” Notificaciones recibidas: ${notifications.length} para userId: $userId',
+              'dŸ”” Notificaciones recibidas: ${notifications.length} para userId: $userId',
             );
             for (final n in notifications) {
               debugPrint(
-                '   â†’ tipo=${n.type.value}, de=${n.fromUserName}, msg=${n.message}',
+                '   a†’ tipo=${n.type.value}, de=${n.fromUserName}, msg=${n.message}',
               );
             }
             _notifications = notifications;
             notifyListeners();
           },
           onError: (e) {
-            debugPrint('âŒ Error en stream de notificaciones: $e');
+            debugPrint('aŒ Error en stream de notificaciones: $e');
             _error = e.toString();
             notifyListeners();
           },
         );
 
-    // Escuchar contador de no leÃ­das
+    // Escuchar contador de no leídas
     _repository
         .watchUnreadCount(userId)
         .listen(
@@ -66,7 +66,7 @@ class NotificationsProvider extends ChangeNotifier {
         );
   }
 
-  /// Marca una notificaciÃ³n como leÃ­da
+  /// Marca una notificación como leída
   Future<void> markAsRead(String notificationId) async {
     try {
       await _repository.markAsRead(userId, notificationId);
@@ -76,7 +76,7 @@ class NotificationsProvider extends ChangeNotifier {
     }
   }
 
-  /// Marca todas las notificaciones como leÃ­das
+  /// Marca todas las notificaciones como leídas
   Future<void> markAllAsRead() async {
     try {
       _isLoading = true;
@@ -93,7 +93,7 @@ class NotificationsProvider extends ChangeNotifier {
     }
   }
 
-  /// Elimina una notificaciÃ³n
+  /// Elimina una notificación
   Future<void> deleteNotification(String notificationId) async {
     try {
       await _repository.deleteNotification(userId, notificationId);
@@ -126,4 +126,5 @@ class NotificationsProvider extends ChangeNotifier {
     notifyListeners();
   }
 }
+
 

@@ -9,7 +9,7 @@ class AppTheme {
     brightness: Brightness.light,
     scaffoldBackgroundColor: const Color(0xFFF5F5F5),
     colorScheme: const ColorScheme.light(
-      primary: ColorTokens.primary30,
+      primary: ColorTokens.secondary50,
       onPrimary: ColorTokens.neutral100,
       secondary: ColorTokens.secondary50,
       onSecondary: ColorTokens.neutral100,
@@ -19,11 +19,11 @@ class AppTheme {
       onSurface: ColorTokens.neutral10,
     ),
     appBarTheme: const AppBarTheme(
-      backgroundColor: ColorTokens.primary30,
-      foregroundColor: ColorTokens.neutral100,
+      backgroundColor: ColorTokens.neutral100,
+      foregroundColor: ColorTokens.neutral10,
       elevation: 0,
       centerTitle: true,
-      iconTheme: IconThemeData(color: ColorTokens.neutral100),
+      iconTheme: IconThemeData(color: ColorTokens.neutral10),
     ),
     cardTheme: const CardThemeData(
       elevation: 2,
@@ -83,20 +83,20 @@ class AppTheme {
     ),
     chipTheme: ChipThemeData(
       backgroundColor: Colors.grey[100],
-      selectedColor: ColorTokens.primary30,
+      selectedColor: ColorTokens.secondary50,
       labelStyle: const TextStyle(color: ColorTokens.neutral20),
-      secondaryLabelStyle: const TextStyle(color: Colors.white),
+      secondaryLabelStyle: const TextStyle(color: ColorTokens.neutral10),
       brightness: Brightness.light,
       side: BorderSide(color: Colors.grey.shade300),
-      checkmarkColor: Colors.white,
+      checkmarkColor: ColorTokens.neutral10,
     ),
     badgeTheme: const BadgeThemeData(
-      backgroundColor: ColorTokens.primary30,
+      backgroundColor: ColorTokens.error50,
       textColor: ColorTokens.neutral100,
     ),
     bottomNavigationBarTheme: const BottomNavigationBarThemeData(
       backgroundColor: ColorTokens.neutral100,
-      selectedItemColor: ColorTokens.primary30,
+      selectedItemColor: ColorTokens.secondary50,
       unselectedItemColor: ColorTokens.neutral70,
     ),
     textButtonTheme: TextButtonThemeData(

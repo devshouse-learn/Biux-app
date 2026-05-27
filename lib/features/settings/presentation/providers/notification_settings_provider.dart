@@ -16,7 +16,7 @@ class NotificationSettingsProvider extends ChangeNotifier {
   bool get isLoading => _isLoading;
   String? get error => _error;
 
-  /// Cargar configuraciÃ³n de notificaciones
+  /// Cargar configuración de notificaciones
   Future<void> loadSettings() async {
     _isLoading = true;
     _error = null;
@@ -26,7 +26,7 @@ class NotificationSettingsProvider extends ChangeNotifier {
       _settings = await _repository.getSettings();
       _error = null;
     } on Exception catch (e) {
-      _error = 'Error al cargar configuraciÃ³n: $e';
+      _error = 'Error al cargar configuración: $e';
       _settings = NotificationSettingsEntity.defaults();
     } finally {
       _isLoading = false;
@@ -45,7 +45,7 @@ class NotificationSettingsProvider extends ChangeNotifier {
       _error = null;
       notifyListeners();
     } on Exception catch (e) {
-      _error = 'Error al actualizar configuraciÃ³n: $e';
+      _error = 'Error al actualizar configuración: $e';
       notifyListeners();
     }
   }
@@ -127,7 +127,7 @@ class NotificationSettingsProvider extends ChangeNotifier {
     );
   }
 
-  /// MÃ©todo auxiliar para cambiar un tipo de notificaciÃ³n
+  /// Método auxiliar para cambiar un tipo de notificación
   Future<void> _toggleType(
     String type,
     bool enabled,
@@ -141,12 +141,12 @@ class NotificationSettingsProvider extends ChangeNotifier {
       _error = null;
       notifyListeners();
     } on Exception catch (e) {
-      _error = 'Error al actualizar configuraciÃ³n: $e';
+      _error = 'Error al actualizar configuración: $e';
       notifyListeners();
     }
   }
 
-  /// Resetear a configuraciÃ³n por defecto
+  /// Resetear a configuración por defecto
   Future<void> resetToDefaults() async {
     try {
       await _repository.resetToDefaults();
@@ -154,14 +154,15 @@ class NotificationSettingsProvider extends ChangeNotifier {
       _error = null;
       notifyListeners();
     } on Exception catch (e) {
-      _error = 'Error al resetear configuraciÃ³n: $e';
+      _error = 'Error al resetear configuración: $e';
       notifyListeners();
     }
   }
 
-  /// Verificar si un tipo de notificaciÃ³n estÃ¡ habilitado
+  /// Verificar si un tipo de notificación está habilitado
   bool isNotificationTypeEnabled(String type) {
     return _settings?.isNotificationTypeEnabled(type) ?? false;
   }
 }
+
 

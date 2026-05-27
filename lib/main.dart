@@ -31,6 +31,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
+import 'package:biux/core/design_system/color_tokens.dart';
 import "package:flutter/services.dart";
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:provider/provider.dart';
@@ -43,7 +44,7 @@ Future<void> _syncOfflineRides() async {
   try {
     final pending = await OfflineRideDatasource.getPending();
     if (pending.isNotEmpty) {
-      debugPrint('ðŸ“¡ \${pending.length} rodadas pendientes de sincronizar');
+      debugPrint('dŸ“¡ \${pending.length} rodadas pendientes de sincronizar');
     }
   } catch (_) {}
 }
@@ -85,18 +86,18 @@ void main() async {
   await LocalStorage().init();
 
   // Inicializar servicios core de forma diferida para evitar ANR
-  // Se inicializan despuÃ©s del primer frame para que el splash aparezca inmediatamente
+  // Se inicializan después del primer frame para que el splash aparezca inmediatamente
   _initServicesAsync();
 
   // Inicializar tracking de tiempo de uso
   await ScreenTimeService.instance.initialize();
 
-  // ErrorWidget global para producciÃ³n - muestra UI amigable en vez de pantalla roja
+  // ErrorWidget global para producción - muestra UI amigable en vez de pantalla roja
   ErrorWidget.builder = (FlutterErrorDetails details) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       home: Scaffold(
-        backgroundColor: const Color(0xFF16242D),
+        backgroundColor: ColorTokens.primary30,
         body: Center(
           child: Padding(
             padding: const EdgeInsets.all(32),
@@ -110,7 +111,7 @@ void main() async {
                 ),
                 const SizedBox(height: 16),
                 const Text(
-                  'Algo saliÃ³ mal',
+                  'Algo salió mal',
                   style: TextStyle(
                     color: Colors.white,
                     fontSize: 20,
@@ -119,7 +120,7 @@ void main() async {
                 ),
                 const SizedBox(height: 8),
                 Text(
-                  'Por favor reinicia la aplicaciÃ³n',
+                  'Por favor reinicia la aplicación',
                   style: TextStyle(
                     color: Colors.white.withValues(alpha: 0.7),
                     fontSize: 14,
@@ -136,12 +137,12 @@ void main() async {
   runApp(MultiProvider(providers: AppProviders.all, child: MyApp()));
 }
 
-/// Inicializa servicios pesados de forma asÃ­ncrona sin bloquear el arranque
+/// Inicializa servicios pesados de forma asíncrona sin bloquear el arranque
 Future<void> _initServicesAsync() async {
   try {
     ConnectivityService().initialize();
 
-    // Auto-sync rodadas offline cuando se restaure la conexiÃ³n
+    // Auto-sync rodadas offline cuando se restaure la conexión
     ConnectivityService().statusStream.listen((status) {
       if (status == ConnectivityStatus.online) {
         _syncOfflineRides();
@@ -156,7 +157,7 @@ Future<void> _initServicesAsync() async {
     // Performance monitoring
     PerformanceService.startAppLoadTrace();
   } on FirebaseException catch (e) {
-    debugPrint('âš ï¸ Error en inicializaciÃ³n async de servicios: $e');
+    debugPrint('aš ï¸ Error en inicialización async de servicios: $e');
   }
 }
 
@@ -201,5 +202,8 @@ class MyApp extends StatelessWidget {
   }
 }
 
-// Test miÃ©rcoles, 26 de noviembre de 2025, 18:59:20 -05
+// Test miércoles, 26 de noviembre de 2025, 18:59:20 -05
+
+
+
 

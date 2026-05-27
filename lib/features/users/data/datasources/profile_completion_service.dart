@@ -28,24 +28,24 @@ class ProfileCompletionService {
 
       final userData = userDoc.data() ?? {};
 
-      // Verificar que todos los campos requeridos estÃ©n presentes y no estÃ©n vacÃ­os
+      // Verificar que todos los campos requeridos estén presentes y no estén vacíos
       for (String field in _requiredFields) {
         final value = userData[field];
         if (value == null || (value is String && value.trim().isEmpty)) {
-          debugPrint('âŒ Campo faltante o vacÃ­o: $field');
+          debugPrint('aŒ Campo faltante o vacío: $field');
           return false;
         }
       }
 
-      debugPrint('âœ… Perfil completo para usuario: $uid');
+      debugPrint('aœ… Perfil completo para usuario: $uid');
       return true;
     } on FirebaseException catch (e) {
-      debugPrint('âš ï¸ Error verificando perfil: $e');
+      debugPrint('aš ï¸ Error verificando perfil: $e');
       return false;
     }
   }
 
-  /// Obtiene un resumen de quÃ© campos le faltan completar al usuario
+  /// Obtiene un resumen de qué campos le faltan completar al usuario
   static Future<List<String>> getMissingFields({String? userId}) async {
     try {
       final uid = userId ?? FirebaseAuth.instance.currentUser?.uid;
@@ -70,7 +70,7 @@ class ProfileCompletionService {
 
       return missing;
     } on FirebaseException catch (e) {
-      debugPrint('âš ï¸ Error obteniendo campos faltantes: $e');
+      debugPrint('aš ï¸ Error obteniendo campos faltantes: $e');
       return _requiredFields;
     }
   }
@@ -80,7 +80,7 @@ class ProfileCompletionService {
     final missingFields = await getMissingFields(userId: userId);
     if (missingFields.isEmpty) return '';
 
-    // Translation keys â€“ the caller with BuildContext should use l.t() on each key
+    // Translation keys a€“ the caller with BuildContext should use l.t() on each key
     const fieldLabelKeys = {
       'fullName': 'field_full_name',
       'username': 'field_username',
@@ -93,4 +93,5 @@ class ProfileCompletionService {
     return 'please_complete_fields:${keys.join(',')}';
   }
 }
+
 

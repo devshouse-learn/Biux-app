@@ -1,6 +1,7 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:biux/core/design_system/locale_notifier.dart';
+import 'package:biux/core/design_system/color_tokens.dart';
 import 'package:biux/features/settings/presentation/widgets/settings_shared_widgets.dart';
 
 class InformationDetailsScreen extends StatelessWidget {
@@ -59,7 +60,7 @@ class InformationDetailsScreen extends StatelessWidget {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        backgroundColor: isDark ? const Color(0xFF16242D) : Colors.white,
+        backgroundColor: isDark ? ColorTokens.primary30 : Colors.white,
         title: Text(
           l.t('terms_conditions'),
           style: TextStyle(color: isDark ? Colors.white : Colors.black87),
@@ -90,7 +91,7 @@ class InformationDetailsScreen extends StatelessWidget {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        backgroundColor: isDark ? const Color(0xFF16242D) : Colors.white,
+        backgroundColor: isDark ? ColorTokens.primary30 : Colors.white,
         title: Text(
           l.t('tech_support'),
           style: TextStyle(color: isDark ? Colors.white : Colors.black87),
@@ -184,3 +185,4 @@ class InformationDetailsScreen extends StatelessWidget {
     );
   }
 }
+

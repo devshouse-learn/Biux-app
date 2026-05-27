@@ -1,9 +1,10 @@
 ﻿import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-/// Provider para manejar la ediciÃ³n del nombre de usuario
+/// Provider para manejar la edición del nombre de usuario
 class EditUsernameProvider extends ChangeNotifier {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   final FirebaseAuth _auth = FirebaseAuth.instance;
@@ -46,7 +47,7 @@ class EditUsernameProvider extends ChangeNotifier {
     // Cancelar timer anterior
     _debounceTimer?.cancel();
 
-    // Limpiar estado si el username estÃ¡ vacÃ­o
+    // Limpiar estado si el username está vacío
     if (username.isEmpty) {
       _usernameAvailable = null;
       _availabilityMessage = '';
@@ -83,7 +84,7 @@ class EditUsernameProvider extends ChangeNotifier {
     return regex.hasMatch(username);
   }
 
-  /// Realizar verificaciÃ³n real en Firestore
+  /// Realizar verificación real en Firestore
   Future<void> _performUsernameCheck(String username) async {
     _isCheckingAvailability = true;
     _availabilityMessage = 'username_checking';
@@ -127,7 +128,7 @@ class EditUsernameProvider extends ChangeNotifier {
         return false;
       }
 
-      // Verificar una vez mÃ¡s que estÃ¡ disponible
+      // Verificar una vez más que está disponible
       if (newUsername != _currentUsername) {
         final querySnapshot = await _firestore
             .collection('users')
@@ -164,4 +165,5 @@ class EditUsernameProvider extends ChangeNotifier {
     super.dispose();
   }
 }
+
 

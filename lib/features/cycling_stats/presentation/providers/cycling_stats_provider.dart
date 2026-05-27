@@ -137,11 +137,11 @@ class CyclingStatsProvider with ChangeNotifier {
     }
   }
 
-  // Progreso semanal (ÃƒÂºltimas 8 semanas)
+  // Progreso semanal (Ãƒaºltimas 8 semanas)
   List<Map<String, dynamic>> _weeklyProgress = [];
   List<Map<String, dynamic>> get weeklyProgress => _weeklyProgress;
 
-  /// RÃƒÂ©cords personales
+  /// RÃƒa©cords personales
   Map<String, dynamic> get personalRecords {
     if (_stats == null) return {};
     return {
@@ -199,4 +199,5 @@ class CyclingStatsProvider with ChangeNotifier {
     }
   }
 }
+
 

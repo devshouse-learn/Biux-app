@@ -1,4 +1,5 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
+import 'package:biux/core/design_system/color_tokens.dart';
 
 /// Ítem del menú de adjuntos
 class AttachMenuItem {
@@ -86,7 +87,7 @@ class _AttachMenuOverlayState extends State<_AttachMenuOverlay>
 
   @override
   Widget build(BuildContext context) {
-    final bg = widget.isDark ? const Color(0xFF1A2B3C) : Colors.white;
+    final bg = widget.isDark ? ColorTokens.primary20 : Colors.white;
     final bottomPadding = MediaQuery.of(context).viewInsets.bottom;
     // Calcular filas de 3
     final rows = <List<AttachMenuItem>>[];
@@ -217,3 +218,4 @@ class _AttachMenuButton extends StatelessWidget {
     );
   }
 }
+

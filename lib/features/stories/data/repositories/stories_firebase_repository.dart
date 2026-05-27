@@ -1,6 +1,7 @@
 ﻿import 'dart:io';
 
 import 'package:biux/core/config/strings.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:biux/features/stories/data/models/story.dart';
 import 'package:biux/features/authentication/data/repositories/authentication_repository.dart';
 import 'package:biux/core/utils/bytes_utils.dart';
@@ -24,7 +25,7 @@ class StoriesFirebaseRepository extends StoriesRepositoryAbstract {
       final listImages = await uploadStory(id: result.id, listFile: listFile);
 
       if (listImages.isEmpty) {
-        // Si no se subieron imÃ¡genes, eliminar el documento
+        // Si no se subieron imágenes, eliminar el documento
         await firestore.collection(collection).doc(result.id).delete();
         return false;
       }
@@ -160,4 +161,5 @@ class StoriesFirebaseRepository extends StoriesRepositoryAbstract {
     }
   }
 }
+
 

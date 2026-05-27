@@ -24,7 +24,7 @@ class ChatProvider extends ChangeNotifier {
   Timer? _typingTimer;
   StreamSubscription<Map<String, bool>>? _typingSub;
 
-  // IDs de mensajes optimistas pendientes de confirmaciÃ³n
+  // IDs de mensajes optimistas pendientes de confirmación
   final Set<String> _pendingOptimisticIds = {};
 
   StreamSubscription<List<ChatEntity>>? _chatsSub;
@@ -60,7 +60,7 @@ class ChatProvider extends ChangeNotifier {
         .getMessages(chatId)
         .listen(
           (list) {
-            // Detectar quÃ© optimistic ya fueron confirmados por Firestore
+            // Detectar qué optimistic ya fueron confirmados por Firestore
             // comparando contenido (ya que los IDs no coinciden)
             final confirmedTempIds = <String>{};
             for (final tempId in _pendingOptimisticIds) {
@@ -85,9 +85,9 @@ class ChatProvider extends ChangeNotifier {
             notifyListeners();
           },
           onError: (error) {
-            debugPrint('âŒ Error al escuchar mensajes del chat $chatId: $error');
+            debugPrint('aŒ Error al escuchar mensajes del chat $chatId: $error');
             _error =
-                'No se pudieron cargar los mensajes. Verifica tu conexiÃ³n.';
+                'No se pudieron cargar los mensajes. Verifica tu conexión.';
             notifyListeners();
           },
         );
@@ -96,7 +96,7 @@ class ChatProvider extends ChangeNotifier {
       // Re-aplicar estado de lectura con los timestamps actualizados
       _messages = _applyReadStatus(_messages);
       notifyListeners();
-    }, onError: (e) => debugPrint('âŒ Error en getChatStream $chatId: $e'));
+    }, onError: (e) => debugPrint('aŒ Error en getChatStream $chatId: $e'));
     _ds.markMessagesAsRead(chatId);
 
     // Escuchar typing de otros participantes
@@ -162,7 +162,7 @@ class ChatProvider extends ChangeNotifier {
     }
   }
 
-  // â”€â”€ Optimistic insert: muestra mensaje al instante en la UI â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // a”€a”€ Optimistic insert: muestra mensaje al instante en la UI a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€
   int _tempIdCounter = 0;
 
   String _nextTempId() =>
@@ -329,7 +329,7 @@ class ChatProvider extends ChangeNotifier {
     }
   }
 
-  /// EnvÃ­a mÃºltiples archivos de media (imÃ¡genes, videos y/o audios) en paralelo.
+  /// Envía mÃºltiples archivos de media (imágenes, videos y/o audios) en paralelo.
   Future<void> sendMediaFiles({
     required String chatId,
     required List<File> files,
@@ -371,7 +371,7 @@ class ChatProvider extends ChangeNotifier {
     await Future.wait(futures);
   }
 
-  /// EnvÃ­a un archivo de audio almacenado (no grabaciÃ³n de voz).
+  /// Envía un archivo de audio almacenado (no grabación de voz).
   Future<void> sendAudioFileMessage({
     required String chatId,
     required File audioFile,
@@ -652,7 +652,7 @@ class ChatProvider extends ChangeNotifier {
     );
   }
 
-  /// EnvÃ­o legacy con parÃ¡metros posicionales (compatibilidad)
+  /// Envío legacy con parámetros posicionales (compatibilidad)
 
   Future<void> sendPollMessage({
     required String chatId,
@@ -673,7 +673,7 @@ class ChatProvider extends ChangeNotifier {
       senderId: currentUid,
       senderName: senderName,
       senderAvatar: senderAvatar,
-      content: 'ðŸ“Š $question',
+      content: 'dŸ“Š $question',
       type: MessageType.poll,
       sentAt: DateTime.now(),
       pollQuestion: question,
@@ -757,7 +757,7 @@ class ChatProvider extends ChangeNotifier {
   }
 
   /// Aplica isRead/isDelivered en memoria segÃºn los timestamps del chat doc.
-  /// No necesita escribir en Firestore â€” funciona en tiempo real.
+  /// No necesita escribir en Firestore a€” funciona en tiempo real.
   List<MessageEntity> _applyReadStatus(List<MessageEntity> messages) {
     if (_activeChat == null) return messages;
     final uid = currentUid;
@@ -785,13 +785,11 @@ class ChatProvider extends ChangeNotifier {
 
   @override
   void dispose() {
-    // Cancelar todas las suscripciones
     _chatsSub?.cancel();
     _messagesSub?.cancel();
     _activeChatSub?.cancel();
-    _typingSub?.cancel();
-    _typingTimer?.cancel();
     super.dispose();
   }
 }
+
 

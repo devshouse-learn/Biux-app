@@ -238,7 +238,7 @@ class _UserProfileScreenState extends State<UserProfileScreen>
 
                           SizedBox(height: 16),
 
-                          // Segunda fila: Foto + Nombre/Usuario + BotÃ³n Seguir (si es otro usuario)
+                          // Segunda fila: Foto + Nombre/Usuario + Botón Seguir (si es otro usuario)
                           Row(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
@@ -305,7 +305,7 @@ class _UserProfileScreenState extends State<UserProfileScreen>
                                 ),
                               ),
 
-                              // BotÃ³n Seguir (para otros perfiles, no para el usuario actual)
+                              // Botón Seguir (para otros perfiles, no para el usuario actual)
                               if (AuthenticationRepository().getUserId !=
                                   user.id)
                                 Padding(
@@ -317,7 +317,7 @@ class _UserProfileScreenState extends State<UserProfileScreen>
 
                           SizedBox(height: 16),
 
-                          // Tercera fila: EstadÃ­sticas
+                          // Tercera fila: Estadísticas
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceAround,
                             children: [
@@ -397,7 +397,7 @@ class _UserProfileScreenState extends State<UserProfileScreen>
 
                           SizedBox(height: 12),
 
-                          // DescripciÃ³n
+                          // Descripción
                           if (user.description.isNotEmpty)
                             Align(
                               alignment: Alignment.centerLeft,
@@ -461,12 +461,12 @@ class _UserProfileScreenState extends State<UserProfileScreen>
     final currentUserId = AuthenticationRepository().getUserId;
     final isOwnProfile = currentUserId == profileUserId;
 
-    // Si es el perfil propio, no mostrar botÃ³n de seguir
+    // Si es el perfil propio, no mostrar botón de seguir
     if (isOwnProfile) {
       return SizedBox.shrink();
     }
 
-    // Deshabilitar si estÃ¡ procesando
+    // Deshabilitar si está procesando
     final isDisabled = provider.isProcessingFollow;
 
     return SizedBox(
@@ -582,7 +582,7 @@ class _UserProfileScreenState extends State<UserProfileScreen>
           );
         }
 
-        // Sin datos o lista vacÃ­a
+        // Sin datos o lista vacía
         if (!snapshot.hasData ||
             snapshot.data == null ||
             (snapshot.data as dynamic).isEmpty) {
@@ -616,10 +616,10 @@ class _UserProfileScreenState extends State<UserProfileScreen>
           );
         }
 
-        // Filtrar: solo PUBLICACIONES (no historias) con media vÃ¡lido
+        // Filtrar: solo PUBLICACIONES (no historias) con media válido
         final allExperiences = snapshot.data as dynamic;
         final experiences = allExperiences.where((exp) {
-          // Excluir historias â€” solo publicaciones en el perfil
+          // Excluir historias a€” solo publicaciones en el perfil
           if (exp.isStoryFormat == true) return false;
           try {
             if (exp.media == null || exp.media.isEmpty) return false;
@@ -629,7 +629,7 @@ class _UserProfileScreenState extends State<UserProfileScreen>
             if (url.isEmpty) return false;
             if (!url.startsWith('http://') && !url.startsWith('https://'))
               return false;
-            // Para videos: validar que tenga thumbnail o URL vÃ¡lida
+            // Para videos: validar que tenga thumbnail o URL válida
             if (media.mediaType == MediaType.video) {
               final thumb = media.thumbnailUrl ?? '';
               return thumb.isNotEmpty && thumb.startsWith('http') ||
@@ -641,7 +641,7 @@ class _UserProfileScreenState extends State<UserProfileScreen>
           }
         }).toList();
 
-        // Eliminar publicaciones con imÃ¡genes que fallaron al cargar
+        // Eliminar publicaciones con imágenes que fallaron al cargar
         experiences.removeWhere(
           (exp) => _failedImageIds.contains(exp.id.toString()),
         );
@@ -653,7 +653,7 @@ class _UserProfileScreenState extends State<UserProfileScreen>
           });
         }
 
-        // Si despuÃ©s de filtrar no hay experiencias, mostrar el mensaje
+        // Si después de filtrar no hay experiencias, mostrar el mensaje
         if (experiences.isEmpty) {
           return Container(
             width: double.infinity,
@@ -1087,14 +1087,14 @@ class _UserProfileScreenState extends State<UserProfileScreen>
     );
   }
 
-  // MÃ©todo para compartir el perfil del usuario
+  // Método para compartir el perfil del usuario
   // ignore: unused_element
   Future<void> _shareProfile(BiuxUser user) async {
     try {
       final userName = user.userName.isNotEmpty ? user.userName : user.fullName;
       final shareUrl = 'https://biux.devshouse.org/user/${user.id}';
 
-      final shareText = 'ðŸš´ Mira el perfil de $userName en Biux\n\n$shareUrl';
+      final shareText = 'dŸš´ Mira el perfil de $userName en Biux\n\n$shareUrl';
 
       await SharePlus.instance.share(ShareParams(text: shareText));
     } on Exception catch (e) {
@@ -1139,4 +1139,5 @@ class _UserListItem extends StatelessWidget {
     );
   }
 }
+
 

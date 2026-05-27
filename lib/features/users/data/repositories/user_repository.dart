@@ -59,7 +59,7 @@ class UserRepository {
     try {
       List<UserModel> users = [];
 
-      // Firestore permite mÃ¡ximo 30 elementos en whereIn
+      // Firestore permite máximo 30 elementos en whereIn
       List<List<String>> chunks = [];
       for (int i = 0; i < uids.length; i += 30) {
         chunks.add(
@@ -83,4 +83,5 @@ class UserRepository {
     }
   }
 }
+
 

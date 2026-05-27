@@ -200,12 +200,12 @@ class UserFirebaseRepository extends UserRepositoryAbstract {
   @override
   Future<BiuxUser> updateUser(BiuxUser user) async {
     try {
-      debugPrint('ðŸ“ Guardando datos en Firestore:');
+      debugPrint('dŸ“ Guardando datos en Firestore:');
       debugPrint('   - ID: ${user.id}');
       debugPrint('   - Nombre: ${user.fullName}');
-      debugPrint('   - TelÃ©fono: ${user.whatsapp}');
+      debugPrint('   - Teléfono: ${user.whatsapp}');
       debugPrint('   - Ciudad: ${user.cityId.name}');
-      debugPrint('   - DescripciÃ³n: ${user.description}');
+      debugPrint('   - Descripción: ${user.description}');
 
       await firestore.collection(collection).doc(user.id).update({
         AppStrings.fullName: user.fullName,
@@ -214,12 +214,12 @@ class UserFirebaseRepository extends UserRepositoryAbstract {
         AppStrings.description: user.description,
       });
 
-      debugPrint('âœ… Datos guardados en Firestore correctamente');
+      debugPrint('aœ… Datos guardados en Firestore correctamente');
       final response = await this.getUserId(user.id);
-      debugPrint('âœ… Datos recuperados: ${response.fullName}');
+      debugPrint('aœ… Datos recuperados: ${response.fullName}');
       return response;
     } on FirebaseException catch (e) {
-      debugPrint('âŒ Error al actualizar en Firestore: $e');
+      debugPrint('aŒ Error al actualizar en Firestore: $e');
       rethrow; // Propagar el error para que se capture en la pantalla
     }
   }
@@ -269,10 +269,10 @@ class UserFirebaseRepository extends UserRepositoryAbstract {
         await firestore.collection(collection).doc(id).update({
           'profileCover': downloadUrl,
         });
-        debugPrint('âœ… profileCover actualizado en Firestore: $downloadUrl');
+        debugPrint('aœ… profileCover actualizado en Firestore: $downloadUrl');
       }
     } on FirebaseException catch (e) {
-      debugPrint('âŒ Error al subir foto de portada: $e');
+      debugPrint('aŒ Error al subir foto de portada: $e');
     }
   }
 
@@ -287,4 +287,5 @@ class UserFirebaseRepository extends UserRepositoryAbstract {
     }
   }
 }
+
 

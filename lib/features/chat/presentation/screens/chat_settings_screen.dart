@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -102,12 +102,12 @@ class _ChatSettingsScreenState extends State<ChatSettingsScreen> {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: isDark ? const Color(0xFF1A2B3C) : Colors.white,
+        color: isDark ? ColorTokens.primary20 : Colors.white,
         borderRadius: BorderRadius.circular(12),
         boxShadow: [
           if (!isDark)
             BoxShadow(
-              color: Colors.black.withValues(alpha: 0.05),
+              color: Colors.black.withOpacity(0.05),
               blurRadius: 4,
               offset: const Offset(0, 2),
             ),
@@ -148,17 +148,14 @@ class _ChatSettingsScreenState extends State<ChatSettingsScreen> {
                   onChanged: _saveFontSize,
                 ),
               ),
-              const Text(
-                'A',
-                style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
-              ),
+              const Text('A', style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold)),
             ],
           ),
           Center(
             child: Container(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
               decoration: BoxDecoration(
-                color: isDark ? const Color(0xFF243B53) : Colors.grey.shade100,
+                color: isDark ? ColorTokens.primary30 : Colors.grey.shade100,
                 borderRadius: BorderRadius.circular(12),
               ),
               child: Text(
@@ -175,3 +172,4 @@ class _ChatSettingsScreenState extends State<ChatSettingsScreen> {
     );
   }
 }
+

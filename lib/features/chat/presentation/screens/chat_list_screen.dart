@@ -393,25 +393,25 @@ class _ChatListScreenState extends State<ChatListScreen>
                               lastMsgRaw['content'] as String? ?? '';
                           switch (type) {
                             case 'voice':
-                              lastMsg = 'ðŸŽ¤ Audio';
+                              lastMsg = 'dŸŽ¤ Audio';
                               break;
                             case 'image':
-                              lastMsg = 'ðŸ“· Imagen';
+                              lastMsg = 'dŸ“· Imagen';
                               break;
                             case 'video':
-                              lastMsg = 'ðŸŽ¬ Video';
+                              lastMsg = 'dŸŽ¬ Video';
                               break;
                             case 'location':
-                              lastMsg = 'ðŸ“ UbicaciÃ³n';
+                              lastMsg = 'dŸ“ Ubicación';
                               break;
                             case 'gif':
-                              lastMsg = 'ðŸŽžï¸ GIF';
+                              lastMsg = 'dŸŽžï¸ GIF';
                               break;
                             case 'file':
-                              lastMsg = 'ðŸ“Ž Archivo';
+                              lastMsg = 'dŸ“Ž Archivo';
                               break;
                             case 'deleted':
-                              lastMsg = 'ðŸš« Mensaje eliminado';
+                              lastMsg = 'dŸš« Mensaje eliminado';
                               break;
                             default:
                               lastMsg = content;
@@ -433,7 +433,7 @@ class _ChatListScreenState extends State<ChatListScreen>
                               ? Future.value({})
                               : _getUserData(otherUid),
                           builder: (context, userSnap) {
-                            // No renderizar hasta que la data del usuario estÃ© lista
+                            // No renderizar hasta que la data del usuario esté lista
                             if (!isGroup &&
                                 userSnap.connectionState !=
                                     ConnectionState.done) {
@@ -1042,4 +1042,5 @@ class _ChatListScreenState extends State<ChatListScreen>
     }
   }
 }
+
 

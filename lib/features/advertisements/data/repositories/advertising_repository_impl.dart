@@ -1,12 +1,13 @@
 ﻿import 'dart:async';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:biux/features/advertisements/data/models/advertising.dart';
 import 'package:biux/features/advertisements/data/repositories/advertising_repository.dart';
 import 'package:biux/core/services/app_logger.dart';
 
-/// ImplementaciÃ³n del repositorio de publicidades usando Firestore.
+/// Implementación del repositorio de publicidades usando Firestore.
 ///
-/// ColecciÃ³n: `publicidades`
+/// Colección: `publicidades`
 class AdvertisingRepositoryImpl {
   final AdvertisingRepository _repository = AdvertisingRepository();
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
@@ -30,7 +31,7 @@ class AdvertisingRepositoryImpl {
           .toList();
     } on FirebaseException catch (e) {
       AppLogger.warning(
-        'Error obteniendo publicidades, retornando lista vacÃ­a',
+        'Error obteniendo publicidades, retornando lista vacía',
         tag: 'AdvertisingRepoImpl',
         error: e,
       );
@@ -55,14 +56,14 @@ class AdvertisingRepositoryImpl {
     }
   }
 
-  /// Registra una visualizaciÃ³n de anuncio.
+  /// Registra una visualización de anuncio.
   Future<void> recordImpression(String adId) async {
     try {
       final docRef = _firestore.collection(_collection).doc(adId);
       await docRef.update({'impressions': FieldValue.increment(1)});
     } on FirebaseException catch (e) {
       AppLogger.error(
-        'Error registrando impresiÃ³n',
+        'Error registrando impresión',
         tag: 'AdvertisingRepoImpl',
         error: e,
       );
@@ -97,4 +98,5 @@ class AdvertisingRepositoryImpl {
     }
   }
 }
+
 

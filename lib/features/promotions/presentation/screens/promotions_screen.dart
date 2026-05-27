@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:biux/core/design_system/color_tokens.dart';
@@ -780,7 +780,7 @@ class _BusinessFormState extends State<_BusinessForm> {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final l = Provider.of<LocaleNotifier>(context, listen: false);
     return Scaffold(
-      backgroundColor: isDark ? const Color(0xFF121212) : Colors.grey[50],
+      backgroundColor: isDark ? ColorTokens.primary10 : Colors.grey[50],
       appBar: AppBar(
         title: Text(
           l.t('promotions_publish_business'),
@@ -965,7 +965,7 @@ class _BusinessFormState extends State<_BusinessForm> {
         prefixIcon: Icon(icon),
         border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
         filled: true,
-        fillColor: isDark ? const Color(0xFF1E1E1E) : Colors.white,
+        fillColor: isDark ? ColorTokens.primary20 : Colors.white,
       ),
     );
   }
@@ -1041,7 +1041,7 @@ class _EventFormState extends State<_EventForm> {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final l = Provider.of<LocaleNotifier>(context, listen: false);
     return Scaffold(
-      backgroundColor: isDark ? const Color(0xFF121212) : Colors.grey[50],
+      backgroundColor: isDark ? ColorTokens.primary10 : Colors.grey[50],
       appBar: AppBar(
         title: Text(
           l.t('promotions_create_event'),
@@ -1235,7 +1235,7 @@ class _EventFormState extends State<_EventForm> {
         prefixIcon: Icon(icon),
         border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
         filled: true,
-        fillColor: isDark ? const Color(0xFF1E1E1E) : Colors.white,
+        fillColor: isDark ? ColorTokens.primary20 : Colors.white,
       ),
     );
   }
@@ -1256,7 +1256,7 @@ class _EventFormState extends State<_EventForm> {
       child: Container(
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: isDark ? const Color(0xFF1E1E1E) : Colors.white,
+          color: isDark ? ColorTokens.primary20 : Colors.white,
           borderRadius: BorderRadius.circular(12),
           border: Border.all(
             color: _eventDate != null
@@ -1307,7 +1307,7 @@ class _EventFormState extends State<_EventForm> {
       child: Container(
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: isDark ? const Color(0xFF1E1E1E) : Colors.white,
+          color: isDark ? ColorTokens.primary20 : Colors.white,
           borderRadius: BorderRadius.circular(12),
           border: Border.all(
             color: _eventTime != null
@@ -1445,7 +1445,7 @@ class _BusinessCard extends StatelessWidget {
     return Container(
       margin: const EdgeInsets.only(bottom: 16),
       decoration: BoxDecoration(
-        color: isDark ? const Color(0xFF1E1E1E) : Colors.white,
+        color: isDark ? ColorTokens.primary20 : Colors.white,
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
@@ -1610,7 +1610,7 @@ class _EventCard extends StatelessWidget {
     return Container(
       margin: const EdgeInsets.only(bottom: 16),
       decoration: BoxDecoration(
-        color: isDark ? const Color(0xFF1E1E1E) : Colors.white,
+        color: isDark ? ColorTokens.primary20 : Colors.white,
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
@@ -2228,3 +2228,4 @@ class _AdminCard extends StatelessWidget {
     );
   }
 }
+

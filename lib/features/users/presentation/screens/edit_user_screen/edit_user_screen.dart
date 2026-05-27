@@ -107,7 +107,7 @@ class _FormGroupWidget extends StatelessWidget {
                     color: ColorTokens.neutral60,
                   ),
                 ),
-                // BotÃ³n para editar username
+                // Botón para editar username
                 Padding(
                   padding: const EdgeInsets.symmetric(
                     horizontal: 15,
@@ -287,9 +287,9 @@ class _BotonSend extends StatelessWidget {
               if (form.currentState!.validate()) {
                 final messenger = ScaffoldMessenger.of(context);
                 try {
-                  debugPrint('ðŸ“ Iniciando actualizaciÃ³n de perfil...');
+                  debugPrint('dŸ“ Iniciando actualización de perfil...');
                   await bloc.uploadUpdate(context);
-                  debugPrint('âœ… Perfil actualizado, cerrando pantalla...');
+                  debugPrint('aœ… Perfil actualizado, cerrando pantalla...');
 
                   if (context.mounted) {
                     messenger.showSnackBar(
@@ -305,7 +305,7 @@ class _BotonSend extends StatelessWidget {
                     }
                   }
                 } on Exception catch (e) {
-                  debugPrint('âŒ ExcepciÃ³n capturada: $e');
+                  debugPrint('aŒ Excepción capturada: $e');
                   if (context.mounted) {
                     messenger.showSnackBar(
                       SnackBarUtils.customSnackBar(
@@ -317,7 +317,7 @@ class _BotonSend extends StatelessWidget {
                   }
                 }
               } else {
-                debugPrint('âš ï¸ Formulario invÃ¡lido');
+                debugPrint('aš ï¸ Formulario inválido');
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBarUtils.customSnackBar(
                     content: bloc.nameController.text.isEmpty
@@ -566,4 +566,5 @@ class _ListCity extends StatelessWidget {
     );
   }
 }
+
 

@@ -141,7 +141,7 @@ class _AccidentsListScreenState extends State<AccidentsListScreen>
     );
   }
 
-  // â”€â”€ Lista de accidentes con pull-to-refresh â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // a”€a”€ Lista de accidentes con pull-to-refresh a”€a”€a”€a”€a”€a”€a”€a”€a”€
   Widget _buildListView(LocaleNotifier l) {
     return StreamBuilder<QuerySnapshot>(
       stream: FirebaseFirestore.instance
@@ -369,7 +369,7 @@ class _AccidentsListScreenState extends State<AccidentsListScreen>
     );
   }
 
-  // â”€â”€ Mapa de accidentes â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // a”€a”€ Mapa de accidentes a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€
   Widget _buildMapView(LocaleNotifier l) {
     return StreamBuilder<QuerySnapshot>(
       stream: FirebaseFirestore.instance
@@ -436,4 +436,5 @@ class _AccidentsListScreenState extends State<AccidentsListScreen>
     );
   }
 }
+
 

@@ -1,4 +1,4 @@
-// ignore_for_file: deprecated_member_use
+﻿// ignore_for_file: deprecated_member_use
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:biux/core/design_system/theme_notifier.dart';
@@ -15,7 +15,7 @@ class AppearanceDetailsScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text(l.t('appearance')),
-        backgroundColor: const Color(0xFF16242D),
+        backgroundColor: ColorTokens.primary30,
         foregroundColor: Colors.white,
       ),
       body: Consumer<ThemeNotifier>(
@@ -108,7 +108,7 @@ class _ThemeOptionTile extends StatelessWidget {
         decoration: BoxDecoration(
           color: selected
               ? ColorTokens.primary30.withValues(alpha: 0.08)
-              : (isDark ? const Color(0xFF1A2B3C) : Colors.white),
+              : (isDark ? ColorTokens.primary20 : Colors.white),
           borderRadius: BorderRadius.circular(12),
           border: Border.all(
             color: selected ? ColorTokens.primary30 : Colors.grey.shade300,
@@ -179,7 +179,7 @@ class _QuickToggleCard extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: isDark ? const Color(0xFF1A2B3C) : Colors.white,
+        color: isDark ? ColorTokens.primary20 : Colors.white,
         borderRadius: BorderRadius.circular(12),
         border: Border.all(color: Colors.grey.shade300),
       ),
@@ -206,3 +206,4 @@ class _QuickToggleCard extends StatelessWidget {
     );
   }
 }
+

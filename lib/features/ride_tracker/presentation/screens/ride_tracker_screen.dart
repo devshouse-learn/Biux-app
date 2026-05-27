@@ -1,16 +1,15 @@
 import 'dart:async';
-import 'dart:math' show sin, cos, sqrt, atan2, pi;
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:http/http.dart' as http;
 import 'package:biux/core/design_system/color_tokens.dart';
 import 'package:biux/features/ride_tracker/presentation/providers/ride_tracker_provider.dart';
 import 'package:biux/features/ride_tracker/domain/entities/ride_track_entity.dart';
-import 'package:biux/features/road_reports/presentation/providers/road_reports_provider.dart';
-import 'package:biux/features/road_reports/domain/entities/road_report_entity.dart';
-import 'package:biux/core/design_system/locale_notifier.dart';
+import 'package:biux/features/maps/data/datasources/directions_service.dart';
 
 class RideTrackerScreen extends StatefulWidget {
   final bool showHistory;
@@ -29,11 +28,14 @@ class RideTrackerScreen extends StatefulWidget {
 
 class _RideTrackerScreenState extends State<RideTrackerScreen>
     with SingleTickerProviderStateMixin {
-  LocaleNotifier get l => Provider.of<LocaleNotifier>(context);
-
   GoogleMapController? _mapController;
   late AnimationController _pulseController;
   bool _showHistory = false;
+
+  // Panel deslizable
+  double _panelHeight = 270.0;
+  static const double _kPanelMin = 210.0;
+  static const double _kPanelMax = 520.0;
 
   @override
   void initState() {
@@ -43,31 +45,13 @@ class _RideTrackerScreenState extends State<RideTrackerScreen>
       vsync: this,
       duration: const Duration(milliseconds: 1200),
     )..repeat(reverse: true);
-    // Cargar historial al iniciar
+    // Iniciar GPS en vivo inmediatamente al entrar a la pantalla
     WidgetsBinding.instance.addPostFrameCallback((_) {
+      final provider = context.read<RideTrackerProvider>();
+      provider.initLivePosition();
       final uid = FirebaseAuth.instance.currentUser?.uid;
-      if (uid != null) {
-        context.read<RideTrackerProvider>().loadHistory(uid);
-      }
-      context.read<RoadReportsProvider>().loadReports();
-
-      // Si hay destino, obtener posición actual y calcular ruta
-      if (widget.destination != null) {
-        _loadPlannedRoute();
-      }
+      if (uid != null) provider.loadHistory(uid);
     });
-  }
-
-  Future<void> _loadPlannedRoute() async {
-    final provider = context.read<RideTrackerProvider>();
-    await provider.initLivePosition();
-    final origin = provider.livePosition;
-    if (origin == null || !mounted) return;
-    await provider.fetchAndSetRoute(
-      origin,
-      widget.destination!,
-      widget.destinationName ?? l.t('location_shared'),
-    );
   }
 
   @override
@@ -88,32 +72,98 @@ class _RideTrackerScreenState extends State<RideTrackerScreen>
       backgroundColor: isDark ? ColorTokens.primary10 : const Color(0xFFF5F5F5),
       body: Consumer<RideTrackerProvider>(
         builder: (ctx, p, _) {
-          if (p.points.isNotEmpty && _mapController != null) {
-            try {
-              final last = p.points.last;
-              _mapController!.animateCamera(
-                CameraUpdate.newLatLng(LatLng(last.lat, last.lng)),
-              );
-            } catch (_) {
-              _mapController = null;
-            }
-          } else if (p.points.isEmpty) {
-            _mapController = null;
-          }
-
           // Si está mostrando historial
           if (_showHistory && !p.isTracking) {
             return _buildHistoryView(p);
           }
 
+          // Centro del mapa: tracking > posición viva > Colombia por defecto
+          final mapCenter = p.points.isNotEmpty
+              ? LatLng(p.points.last.lat, p.points.last.lng)
+              : p.livePosition ?? const LatLng(4.4389, -75.2322);
+
+          // Seguir posición en tiempo real
+          if (_mapController != null) {
+            if (p.points.isNotEmpty) {
+              try {
+                _mapController!.animateCamera(
+                  CameraUpdate.newLatLng(
+                    LatLng(p.points.last.lat, p.points.last.lng),
+                  ),
+                );
+              } catch (_) {
+                _mapController = null;
+              }
+            } else if (p.livePosition != null && !p.isTracking) {
+              try {
+                _mapController!.animateCamera(
+                  CameraUpdate.newLatLng(p.livePosition!),
+                );
+              } catch (_) {}
+            }
+          }
+
           return Stack(
             children: [
-              _buildMapArea(p),
+              _buildMapArea(p, mapCenter),
               _buildTopBar(p),
+              // Banner recalculando ruta
+              if (p.isRerouting)
+                Positioned(
+                  top: MediaQuery.of(context).padding.top + 60,
+                  left: 20,
+                  right: 20,
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 10,
+                    ),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFF1E88E5),
+                      borderRadius: BorderRadius.circular(20),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black26,
+                          blurRadius: 8,
+                          offset: const Offset(0, 3),
+                        ),
+                      ],
+                    ),
+                    child: const Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        SizedBox(
+                          width: 16,
+                          height: 16,
+                          child: CircularProgressIndicator(
+                            color: Colors.white,
+                            strokeWidth: 2,
+                          ),
+                        ),
+                        SizedBox(width: 10),
+                        Text(
+                          'Recalculando ruta...',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontWeight: FontWeight.w700,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              // FAB de planificación de ruta (solo cuando no graba)
+              if (!p.isTracking)
+                Positioned(
+                  right: 16,
+                  bottom: _panelHeight + 16,
+                  child: _buildRouteFab(p),
+                ),
               Positioned(
                 left: 0,
                 right: 0,
                 bottom: 0,
+                height: _panelHeight,
                 child: _buildBottomPanel(p),
               ),
             ],
@@ -123,33 +173,11 @@ class _RideTrackerScreenState extends State<RideTrackerScreen>
     );
   }
 
-  // ─── MAPA ────────────────────────────────────────────────
-  Widget _buildMapArea(RideTrackerProvider p) {
-    // Polylines y markers para la ruta planeada (si existe)
-    final Set<Polyline> polylines = {};
-    final Set<Marker> markers = {};
-
-    if (p.plannedRoute.isNotEmpty) {
-      polylines.add(
-        Polyline(
-          polylineId: const PolylineId('planned'),
-          points: p.plannedRoute,
-          color: const Color(0xFF1E88E5),
-          width: 4,
-          patterns: [PatternItem.dash(12), PatternItem.gap(8)],
-        ),
-      );
-      // Marcador de destino
-      markers.add(
-        Marker(
-          markerId: const MarkerId('destination'),
-          position: p.plannedRoute.last,
-          icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueRed),
-          infoWindow: InfoWindow(title: p.plannedDestinationName ?? 'Destino'),
-        ),
-      );
-    }
-
+  // ─── MAPA (siempre activo con GPS en vivo) ───────────────
+  Widget _buildMapArea(RideTrackerProvider p, LatLng center) {
+    // Construir polylines
+    final polylines = <Polyline>{};
+    // Ruta grabada
     if (p.points.isNotEmpty) {
       polylines.add(
         Polyline(
@@ -159,137 +187,72 @@ class _RideTrackerScreenState extends State<RideTrackerScreen>
           width: 5,
         ),
       );
-      if (p.points.length > 1) {
-        markers.add(
-          Marker(
-            markerId: const MarkerId('start'),
-            position: LatLng(p.points.first.lat, p.points.first.lng),
-            icon: BitmapDescriptor.defaultMarkerWithHue(
-              BitmapDescriptor.hueGreen,
-            ),
-            infoWindow: const InfoWindow(title: 'Inicio'),
-          ),
-        );
-      }
-      return GoogleMap(
-        initialCameraPosition: CameraPosition(
-          target: LatLng(p.points.last.lat, p.points.last.lng),
-          zoom: 16.5,
-        ),
-        onMapCreated: (controller) => _mapController = controller,
-        polylines: polylines,
-        markers: markers,
-        myLocationEnabled: true,
-        myLocationButtonEnabled: false,
-        zoomControlsEnabled: false,
-        compassEnabled: false,
-        mapToolbarEnabled: false,
-        padding: const EdgeInsets.only(bottom: 300),
-      );
     }
-
-    // Sin tracking pero con ruta planeada → mostrar mapa con la ruta
+    // Ruta planeada — línea sólida azul bien visible, calle por calle
     if (p.plannedRoute.isNotEmpty) {
-      return Stack(
-        children: [
-          GoogleMap(
-            initialCameraPosition: CameraPosition(
-              target: p.plannedRoute[p.plannedRoute.length ~/ 2],
-              zoom: 13,
-            ),
-            onMapCreated: (controller) {
-              _mapController = controller;
-              // Ajustar cámara para mostrar toda la ruta
-              Future.delayed(const Duration(milliseconds: 300), () {
-                if (_mapController == null) return;
-                final bounds = _boundsFromPoints(p.plannedRoute);
-                _mapController!.animateCamera(
-                  CameraUpdate.newLatLngBounds(bounds, 60),
-                );
-              });
-            },
-            polylines: polylines,
-            markers: markers,
-            myLocationEnabled: true,
-            myLocationButtonEnabled: false,
-            zoomControlsEnabled: false,
-            compassEnabled: false,
-            mapToolbarEnabled: false,
-            padding: const EdgeInsets.only(bottom: 300),
-          ),
-          if (p.routeLoading) const Center(child: CircularProgressIndicator()),
-        ],
+      // Sombra para mejor contraste sobre el mapa
+      polylines.add(
+        Polyline(
+          polylineId: const PolylineId('planned_shadow'),
+          points: p.plannedRoute,
+          color: Colors.black.withValues(alpha: 0.25),
+          width: 10,
+          jointType: JointType.round,
+          endCap: Cap.roundCap,
+          startCap: Cap.roundCap,
+        ),
+      );
+      polylines.add(
+        Polyline(
+          polylineId: const PolylineId('planned'),
+          points: p.plannedRoute,
+          color: const Color(0xFF1E88E5),
+          width: 7,
+          jointType: JointType.round,
+          endCap: Cap.roundCap,
+          startCap: Cap.roundCap,
+        ),
       );
     }
 
-    // Sin tracking ni ruta → placeholder
-    if (p.routeLoading) {
-      return const Center(child: CircularProgressIndicator());
+    // Marcadores
+    final markers = <Marker>{};
+    if (p.points.length > 1) {
+      markers.add(
+        Marker(
+          markerId: const MarkerId('start'),
+          position: LatLng(p.points.first.lat, p.points.first.lng),
+          icon: BitmapDescriptor.defaultMarkerWithHue(
+            BitmapDescriptor.hueGreen,
+          ),
+          infoWindow: const InfoWindow(title: 'Inicio'),
+        ),
+      );
+    }
+    if (p.plannedRoute.isNotEmpty) {
+      markers.add(
+        Marker(
+          markerId: const MarkerId('dest'),
+          position: p.plannedRoute.last,
+          icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueRed),
+          infoWindow: InfoWindow(title: p.plannedDestinationName ?? 'Destino'),
+        ),
+      );
     }
 
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    return Container(
-      width: double.infinity,
-      height: double.infinity,
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topCenter,
-          end: Alignment.bottomCenter,
-          colors: [
-            ColorTokens.primary30.withValues(alpha: 0.05),
-            Theme.of(context).brightness == Brightness.dark
-                ? ColorTokens.primary10
-                : const Color(0xFFF5F5F5),
-          ],
-        ),
-      ),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          AnimatedBuilder(
-            animation: _pulseController,
-            builder: (context, child) {
-              return Transform.scale(
-                scale: 1.0 + (_pulseController.value * 0.08),
-                child: Container(
-                  width: 120,
-                  height: 120,
-                  decoration: BoxDecoration(
-                    color: ColorTokens.primary30.withValues(alpha: 0.08),
-                    shape: BoxShape.circle,
-                  ),
-                  child: Icon(
-                    Icons.directions_bike_rounded,
-                    size: 60,
-                    color: isDark
-                        ? Colors.white.withValues(alpha: 0.7)
-                        : ColorTokens.primary30.withValues(alpha: 0.4),
-                  ),
-                ),
-              );
-            },
-          ),
-          SizedBox(height: 24),
-          Text(
-            p.isTracking ? l.t('getting_gps_signal') : l.t('ready_to_ride'),
-            style: TextStyle(
-              fontSize: 20,
-              fontWeight: FontWeight.w700,
-              color: isDark ? Colors.white : Colors.grey[800],
-            ),
-          ),
-          SizedBox(height: 8),
-          Text(
-            p.isTracking ? l.t('waiting_location') : l.t('press_start_record'),
-            textAlign: TextAlign.center,
-            style: TextStyle(
-              fontSize: 14,
-              color: isDark ? Colors.white70 : Colors.grey[500],
-            ),
-          ),
-          const SizedBox(height: 120),
-        ],
-      ),
+    return GoogleMap(
+      initialCameraPosition: CameraPosition(target: center, zoom: 16.5),
+      onMapCreated: (controller) {
+        _mapController = controller;
+      },
+      polylines: polylines,
+      markers: markers,
+      myLocationEnabled: true,
+      myLocationButtonEnabled: false,
+      zoomControlsEnabled: false,
+      compassEnabled: false,
+      mapToolbarEnabled: false,
+      padding: EdgeInsets.only(bottom: _panelHeight),
     );
   }
 
@@ -366,7 +329,7 @@ class _RideTrackerScreenState extends State<RideTrackerScreen>
                     ),
                     const SizedBox(width: 8),
                     Text(
-                      p.isPaused ? l.t('ride_paused') : l.t('ride_recording'),
+                      p.isPaused ? 'EN PAUSA' : 'GRABANDO',
                       style: const TextStyle(
                         color: Colors.white,
                         fontSize: 12,
@@ -440,10 +403,54 @@ class _RideTrackerScreenState extends State<RideTrackerScreen>
     );
   }
 
-  LatLngBounds _boundsFromPoints(List<LatLng> pts) {
-    double minLat = pts.first.latitude, maxLat = pts.first.latitude;
-    double minLng = pts.first.longitude, maxLng = pts.first.longitude;
-    for (final p in pts) {
+  // ─── FAB DE RUTA ─────────────────────────────────────────
+  Widget _buildRouteFab(RideTrackerProvider p) {
+    final hasRoute = p.plannedRoute.isNotEmpty;
+    return FloatingActionButton.extended(
+      heroTag: 'route_fab',
+      backgroundColor: hasRoute
+          ? const Color(0xFF1E88E5)
+          : ColorTokens.primary30,
+      foregroundColor: Colors.white,
+      icon: Icon(hasRoute ? Icons.alt_route_rounded : Icons.directions_rounded),
+      label: Text(
+        hasRoute ? 'Ruta activa' : 'Planear ruta',
+        style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 13),
+      ),
+      onPressed: () => _showRoutePlannerSheet(p),
+    );
+  }
+
+  // ─── SHEET DE PLANIFICACIÓN ───────────────────────────────
+  void _showRoutePlannerSheet(RideTrackerProvider p) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (_) => _RoutePlannerSheet(
+        provider: p,
+        onRouteSet: (points, name) {
+          p.setPlannedRoute(points, name);
+          // Centrar mapa en la ruta
+          if (points.isNotEmpty && _mapController != null) {
+            try {
+              final bounds = _boundsFromPoints(points);
+              _mapController!.animateCamera(
+                CameraUpdate.newLatLngBounds(bounds, 80),
+              );
+            } catch (_) {}
+          }
+        },
+      ),
+    );
+  }
+
+  LatLngBounds _boundsFromPoints(List<LatLng> points) {
+    double minLat = points.first.latitude;
+    double maxLat = points.first.latitude;
+    double minLng = points.first.longitude;
+    double maxLng = points.first.longitude;
+    for (final p in points) {
       if (p.latitude < minLat) minLat = p.latitude;
       if (p.latitude > maxLat) maxLat = p.latitude;
       if (p.longitude < minLng) minLng = p.longitude;
@@ -455,7 +462,6 @@ class _RideTrackerScreenState extends State<RideTrackerScreen>
     );
   }
 
-  // ─── PANEL INFERIOR ──────────────────────────────────────
   Widget _buildBottomPanel(RideTrackerProvider p) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     return Container(
@@ -479,14 +485,35 @@ class _RideTrackerScreenState extends State<RideTrackerScreen>
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                // Handle
-                Container(
-                  width: 40,
-                  height: 4,
-                  margin: const EdgeInsets.only(bottom: 14),
-                  decoration: BoxDecoration(
-                    color: isDark ? Colors.white24 : Colors.grey[300],
-                    borderRadius: BorderRadius.circular(2),
+                // Handle deslizable
+                GestureDetector(
+                  behavior: HitTestBehavior.translucent,
+                  onVerticalDragUpdate: (details) {
+                    setState(() {
+                      _panelHeight = (_panelHeight - details.delta.dy).clamp(
+                        _kPanelMin,
+                        _kPanelMax,
+                      );
+                    });
+                  },
+                  onVerticalDragEnd: (details) {
+                    final mid = (_kPanelMin + _kPanelMax) / 2;
+                    final snap = _panelHeight >= mid ? _kPanelMax : _kPanelMin;
+                    HapticFeedback.lightImpact();
+                    setState(() => _panelHeight = snap);
+                  },
+                  child: Padding(
+                    padding: const EdgeInsets.fromLTRB(0, 4, 0, 14),
+                    child: Center(
+                      child: Container(
+                        width: 40,
+                        height: 4,
+                        decoration: BoxDecoration(
+                          color: isDark ? Colors.white24 : Colors.grey[300],
+                          borderRadius: BorderRadius.circular(2),
+                        ),
+                      ),
+                    ),
                   ),
                 ),
 
@@ -544,7 +571,7 @@ class _RideTrackerScreenState extends State<RideTrackerScreen>
                               ? const Color(0xFF388E3C)
                               : Colors.orange[700],
                         ),
-                        SizedBox(width: 6),
+                        const SizedBox(width: 6),
                         Text(
                           p.isMoving
                               ? 'En movimiento'
@@ -561,7 +588,7 @@ class _RideTrackerScreenState extends State<RideTrackerScreen>
                     ),
                   ),
 
-                SizedBox(height: 16),
+                const SizedBox(height: 16),
 
                 // Stats grid
                 Row(
@@ -570,7 +597,7 @@ class _RideTrackerScreenState extends State<RideTrackerScreen>
                       icon: Icons.straighten_rounded,
                       value: p.totalKm.toStringAsFixed(2),
                       unit: 'km',
-                      label: l.t('distance'),
+                      label: 'Distancia',
                       color: isDark ? Colors.white : ColorTokens.primary30,
                     ),
                     _buildDivider(),
@@ -578,15 +605,15 @@ class _RideTrackerScreenState extends State<RideTrackerScreen>
                       icon: Icons.speed_rounded,
                       value: p.currentSpeed.toStringAsFixed(1),
                       unit: 'km/h',
-                      label: l.t('speed_label'),
-                      color: Color(0xFFFF9800),
+                      label: 'Velocidad',
+                      color: const Color(0xFFFF9800),
                     ),
                     _buildDivider(),
                     _buildStatItem(
                       icon: Icons.local_fire_department_rounded,
                       value: '${p.calories}',
                       unit: 'kcal',
-                      label: l.t('calories'),
+                      label: 'Calorías',
                       color: const Color(0xFFFF5722),
                     ),
                   ],
@@ -630,11 +657,6 @@ class _RideTrackerScreenState extends State<RideTrackerScreen>
                     ),
                   ),
                 ],
-
-                const SizedBox(height: 16),
-
-                // Alertas viales cercanas
-                _buildRoadAlertsSection(p),
 
                 const SizedBox(height: 16),
 
@@ -869,12 +891,12 @@ class _RideTrackerScreenState extends State<RideTrackerScreen>
     final isDark = Theme.of(context).brightness == Brightness.dark;
     return Scaffold(
       resizeToAvoidBottomInset: false,
-      backgroundColor: isDark ? ColorTokens.primary10 : Color(0xFFF5F5F5),
+      backgroundColor: isDark ? ColorTokens.primary10 : const Color(0xFFF5F5F5),
       appBar: AppBar(
         backgroundColor: ColorTokens.primary30,
         foregroundColor: Colors.white,
-        title: Text(
-          l.t('my_rides'),
+        title: const Text(
+          'Mis Rodadas',
           style: TextStyle(fontWeight: FontWeight.bold),
         ),
         leading: IconButton(
@@ -889,19 +911,19 @@ class _RideTrackerScreenState extends State<RideTrackerScreen>
         ),
         actions: [
           IconButton(
-            icon: Icon(Icons.refresh_rounded),
-            tooltip: l.t('update'),
+            icon: const Icon(Icons.refresh_rounded),
+            tooltip: 'Actualizar',
             onPressed: () {
               final uid = FirebaseAuth.instance.currentUser?.uid;
               if (uid != null) {
                 p.loadHistory(uid);
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
-                    content: Row(
+                    content: const Row(
                       children: [
                         Icon(Icons.check_circle, color: Colors.white, size: 18),
                         SizedBox(width: 8),
-                        Text(l.t('history_updated')),
+                        Text('Historial actualizado'),
                       ],
                     ),
                     backgroundColor: ColorTokens.primary30,
@@ -929,18 +951,18 @@ class _RideTrackerScreenState extends State<RideTrackerScreen>
                     size: 64,
                     color: Colors.grey[300],
                   ),
-                  SizedBox(height: 16),
+                  const SizedBox(height: 16),
                   Text(
-                    l.t('no_rides_yet'),
+                    'Sin rodadas aún',
                     style: TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
                       color: Colors.grey[600],
                     ),
                   ),
-                  SizedBox(height: 8),
+                  const SizedBox(height: 8),
                   Text(
-                    l.t('rides_will_appear'),
+                    'Tus rodadas grabadas aparecerán aquí',
                     style: TextStyle(fontSize: 14, color: Colors.grey[400]),
                   ),
                 ],
@@ -992,7 +1014,7 @@ class _RideTrackerScreenState extends State<RideTrackerScreen>
             '${p.history.length} rodadas registradas',
             style: const TextStyle(color: Colors.white70, fontSize: 13),
           ),
-          SizedBox(height: 12),
+          const SizedBox(height: 12),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
@@ -1006,7 +1028,7 @@ class _RideTrackerScreenState extends State<RideTrackerScreen>
                 '${(totalMin / 60).toStringAsFixed(1)} h',
                 'Tiempo',
               ),
-              _buildSummaryChip('🔥', '$totalCal', l.t('calories')),
+              _buildSummaryChip('🔥', '$totalCal', 'Calorías'),
             ],
           ),
         ],
@@ -1144,12 +1166,12 @@ class _RideTrackerScreenState extends State<RideTrackerScreen>
                                 color: ColorTokens.primary30,
                                 size: 18,
                               ),
-                              SizedBox(width: 8),
-                              Text(l.t('edit_name')),
+                              const SizedBox(width: 8),
+                              const Text('Editar nombre'),
                             ],
                           ),
                         ),
-                        PopupMenuItem(
+                        const PopupMenuItem(
                           value: 'delete',
                           child: Row(
                             children: [
@@ -1160,7 +1182,7 @@ class _RideTrackerScreenState extends State<RideTrackerScreen>
                               ),
                               SizedBox(width: 8),
                               Text(
-                                l.t('delete'),
+                                'Eliminar',
                                 style: TextStyle(color: Colors.red),
                               ),
                             ],
@@ -1302,7 +1324,7 @@ class _RideTrackerScreenState extends State<RideTrackerScreen>
                 '${date.hour.toString().padLeft(2, '0')}:${date.minute.toString().padLeft(2, '0')} - ${ride.endTime.hour.toString().padLeft(2, '0')}:${ride.endTime.minute.toString().padLeft(2, '0')}',
                 style: TextStyle(fontSize: 14, color: Colors.grey[500]),
               ),
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
               // Detalles en grid
               Container(
                 padding: const EdgeInsets.all(16),
@@ -1316,17 +1338,17 @@ class _RideTrackerScreenState extends State<RideTrackerScreen>
                       children: [
                         _buildDetailItem(
                           '📏',
-                          l.t('distance'),
+                          'Distancia',
                           '${ride.totalKm.toStringAsFixed(2)} km',
                         ),
                         _buildDetailItem(
                           '⏱️',
-                          l.t('duration'),
+                          'Duración',
                           ride.durationFormatted,
                         ),
                       ],
                     ),
-                    SizedBox(height: 16),
+                    const SizedBox(height: 16),
                     Row(
                       children: [
                         _buildDetailItem(
@@ -1341,12 +1363,12 @@ class _RideTrackerScreenState extends State<RideTrackerScreen>
                         ),
                       ],
                     ),
-                    SizedBox(height: 16),
+                    const SizedBox(height: 16),
                     Row(
                       children: [
                         _buildDetailItem(
                           '🔥',
-                          l.t('calories'),
+                          'Calorías',
                           '${ride.calories} kcal',
                         ),
                         _buildDetailItem(
@@ -1359,7 +1381,7 @@ class _RideTrackerScreenState extends State<RideTrackerScreen>
                   ],
                 ),
               ),
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
               SizedBox(
                 width: double.infinity,
                 height: 48,
@@ -1372,8 +1394,8 @@ class _RideTrackerScreenState extends State<RideTrackerScreen>
                     ),
                   ),
                   onPressed: () => Navigator.pop(ctx),
-                  child: Text(
-                    l.t('close'),
+                  child: const Text(
+                    'Cerrar',
                     style: TextStyle(fontWeight: FontWeight.w600),
                   ),
                 ),
@@ -1420,14 +1442,18 @@ class _RideTrackerScreenState extends State<RideTrackerScreen>
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Icon(Icons.edit_rounded, color: ColorTokens.primary30, size: 34),
-              SizedBox(height: 10),
+              const Icon(
+                Icons.edit_rounded,
+                color: ColorTokens.primary30,
+                size: 34,
+              ),
+              const SizedBox(height: 10),
               Text(
-                l.t('edit_name'),
+                'Editar nombre',
                 textAlign: TextAlign.center,
                 style: TextStyle(fontSize: 17, fontWeight: FontWeight.bold),
               ),
-              SizedBox(height: 14),
+              const SizedBox(height: 14),
               TextField(
                 controller: ctrl,
                 autofocus: true,
@@ -1435,7 +1461,7 @@ class _RideTrackerScreenState extends State<RideTrackerScreen>
                 textCapitalization: TextCapitalization.sentences,
                 style: TextStyle(color: isDark ? Colors.white : Colors.black87),
                 decoration: InputDecoration(
-                  hintText: l.t('ride_name_hint'),
+                  hintText: 'Ej: Ruta del domingo',
                   hintStyle: TextStyle(
                     color: isDark ? Colors.white38 : Colors.grey[400],
                   ),
@@ -1452,7 +1478,7 @@ class _RideTrackerScreenState extends State<RideTrackerScreen>
                   ),
                 ),
               ),
-              SizedBox(height: 16),
+              const SizedBox(height: 16),
               Row(
                 children: [
                   Expanded(
@@ -1466,7 +1492,7 @@ class _RideTrackerScreenState extends State<RideTrackerScreen>
                               ),
                             ),
                             onPressed: () => Navigator.pop(ctx),
-                            child: Text(l.t('cancel')),
+                            child: const Text('Cancelar'),
                           )
                         : TextButton(
                             style: TextButton.styleFrom(
@@ -1476,7 +1502,7 @@ class _RideTrackerScreenState extends State<RideTrackerScreen>
                               ),
                             ),
                             onPressed: () => Navigator.pop(ctx),
-                            child: Text(l.t('cancel')),
+                            child: const Text('Cancelar'),
                           ),
                   ),
                   const SizedBox(width: 10),
@@ -1496,8 +1522,8 @@ class _RideTrackerScreenState extends State<RideTrackerScreen>
                         Navigator.pop(ctx);
                         await p.renameRide(ride.id, name);
                       },
-                      child: Text(
-                        l.t('save'),
+                      child: const Text(
+                        'Guardar',
                         style: TextStyle(fontWeight: FontWeight.w700),
                       ),
                     ),
@@ -1516,21 +1542,21 @@ class _RideTrackerScreenState extends State<RideTrackerScreen>
       context: context,
       builder: (ctx) => AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        title: Row(
+        title: const Row(
           children: [
             Icon(Icons.delete_outline, color: Colors.red, size: 22),
             SizedBox(width: 8),
-            Text(l.t('delete_ride'), style: TextStyle(fontSize: 17)),
+            Text('Eliminar rodada', style: TextStyle(fontSize: 17)),
           ],
         ),
         content: Text(
           '¿Eliminar la rodada de ${ride.totalKm.toStringAsFixed(1)} km del ${ride.startTime.day}/${ride.startTime.month}/${ride.startTime.year}?',
-          style: TextStyle(fontSize: 14),
+          style: const TextStyle(fontSize: 14),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx),
-            child: Text(l.t('cancel')),
+            child: Text('Cancelar'),
           ),
           ElevatedButton(
             style: ElevatedButton.styleFrom(
@@ -1546,7 +1572,7 @@ class _RideTrackerScreenState extends State<RideTrackerScreen>
               p.deleteRide(ride.id, uid);
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(
-                  content: Text(l.t('ride_deleted')),
+                  content: const Text('Rodada eliminada'),
                   backgroundColor: Colors.red,
                   behavior: SnackBarBehavior.floating,
                   shape: RoundedRectangleBorder(
@@ -1555,7 +1581,7 @@ class _RideTrackerScreenState extends State<RideTrackerScreen>
                 ),
               );
             },
-            child: Text(l.t('delete')),
+            child: const Text('Eliminar'),
           ),
         ],
       ),
@@ -1583,9 +1609,9 @@ class _RideTrackerScreenState extends State<RideTrackerScreen>
                 color: Colors.orange,
                 size: 44,
               ),
-              SizedBox(height: 12),
-              Text(
-                l.t('ride_too_short_title'),
+              const SizedBox(height: 12),
+              const Text(
+                'Rodada muy corta',
                 textAlign: TextAlign.center,
                 style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
               ),
@@ -1616,8 +1642,8 @@ class _RideTrackerScreenState extends State<RideTrackerScreen>
                           Navigator.pop(ctx);
                           p.cancelTracking();
                         },
-                        child: Text(
-                          l.t('cancel'),
+                        child: const Text(
+                          'Cancelar',
                           style: TextStyle(fontWeight: FontWeight.w600),
                         ),
                       ),
@@ -1697,9 +1723,9 @@ class _RideTrackerScreenState extends State<RideTrackerScreen>
                 size: 44,
                 color: Color(0xFFF44336),
               ),
-              SizedBox(height: 10),
-              Text(
-                l.t('finish_ride_question'),
+              const SizedBox(height: 10),
+              const Text(
+                '¿Finalizar rodada?',
                 style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 6),
@@ -1730,7 +1756,7 @@ class _RideTrackerScreenState extends State<RideTrackerScreen>
                   ],
                 ),
               ),
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
               Row(
                 children: [
                   Expanded(
@@ -1745,8 +1771,8 @@ class _RideTrackerScreenState extends State<RideTrackerScreen>
                           ),
                         ),
                         onPressed: () => Navigator.pop(ctx),
-                        child: Text(
-                          l.t('continue_action'),
+                        child: const Text(
+                          'Continuar',
                           style: TextStyle(fontWeight: FontWeight.w600),
                         ),
                       ),
@@ -1768,8 +1794,8 @@ class _RideTrackerScreenState extends State<RideTrackerScreen>
                           Navigator.pop(ctx);
                           _showNameDialog(p);
                         },
-                        child: Text(
-                          l.t('save'),
+                        child: const Text(
+                          'Guardar',
                           style: TextStyle(fontWeight: FontWeight.w700),
                         ),
                       ),
@@ -1837,14 +1863,18 @@ class _RideTrackerScreenState extends State<RideTrackerScreen>
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Icon(Icons.edit_rounded, color: ColorTokens.primary30, size: 38),
-              SizedBox(height: 10),
+              const Icon(
+                Icons.edit_rounded,
+                color: ColorTokens.primary30,
+                size: 38,
+              ),
+              const SizedBox(height: 10),
               Text(
-                l.t('ride_name_question'),
+                '¿Cómo se llama esta rodada?',
                 textAlign: TextAlign.center,
                 style: TextStyle(fontSize: 17, fontWeight: FontWeight.bold),
               ),
-              SizedBox(height: 14),
+              const SizedBox(height: 14),
               TextField(
                 controller: ctrl,
                 autofocus: true,
@@ -1852,7 +1882,7 @@ class _RideTrackerScreenState extends State<RideTrackerScreen>
                 textCapitalization: TextCapitalization.sentences,
                 style: TextStyle(color: isDark ? Colors.white : Colors.black87),
                 decoration: InputDecoration(
-                  hintText: l.t('ride_name_hint'),
+                  hintText: 'Ej: Ruta del domingo',
                   hintStyle: TextStyle(
                     color: isDark ? Colors.white38 : Colors.grey[400],
                   ),
@@ -1869,7 +1899,7 @@ class _RideTrackerScreenState extends State<RideTrackerScreen>
                   ),
                 ),
               ),
-              SizedBox(height: 16),
+              const SizedBox(height: 16),
               Row(
                 children: [
                   Expanded(
@@ -1883,7 +1913,7 @@ class _RideTrackerScreenState extends State<RideTrackerScreen>
                               ),
                             ),
                             onPressed: () => Navigator.pop(ctx),
-                            child: Text(l.t('cancel')),
+                            child: const Text('Cancelar'),
                           )
                         : TextButton(
                             style: TextButton.styleFrom(
@@ -1893,10 +1923,10 @@ class _RideTrackerScreenState extends State<RideTrackerScreen>
                               ),
                             ),
                             onPressed: () => Navigator.pop(ctx),
-                            child: Text(l.t('cancel')),
+                            child: const Text('Cancelar'),
                           ),
                   ),
-                  SizedBox(width: 10),
+                  const SizedBox(width: 10),
                   Expanded(
                     child: ElevatedButton(
                       style: ElevatedButton.styleFrom(
@@ -1908,13 +1938,13 @@ class _RideTrackerScreenState extends State<RideTrackerScreen>
                       ),
                       onPressed: () async {
                         final name = ctrl.text.trim().isEmpty
-                            ? l.t('my_ride')
+                            ? 'Mi rodada'
                             : ctrl.text.trim();
                         Navigator.pop(ctx);
                         await _doSave(p, name, exitAfter);
                       },
-                      child: Text(
-                        l.t('save'),
+                      child: const Text(
+                        'Guardar',
                         style: TextStyle(fontWeight: FontWeight.w700),
                       ),
                     ),
@@ -1947,11 +1977,11 @@ class _RideTrackerScreenState extends State<RideTrackerScreen>
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Row(
+          content: const Row(
             children: [
               Icon(Icons.warning_rounded, color: Colors.white, size: 20),
               SizedBox(width: 10),
-              Text(l.t('ride_too_short')),
+              Text('Rodada muy corta, no se guardó'),
             ],
           ),
           backgroundColor: Colors.orange,
@@ -1969,21 +1999,21 @@ class _RideTrackerScreenState extends State<RideTrackerScreen>
       context: context,
       builder: (ctx) => AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        title: Row(
+        title: const Row(
           children: [
             Icon(Icons.warning_amber_rounded, color: Colors.orange, size: 22),
             SizedBox(width: 8),
-            Text(l.t('exit_question'), style: TextStyle(fontSize: 17)),
+            Text('¿Salir?', style: TextStyle(fontSize: 17)),
           ],
         ),
-        content: Text(
-          l.t('ride_in_progress_warning'),
+        content: const Text(
+          'Tienes una rodada en curso. Si sales perderás los datos.',
           style: TextStyle(fontSize: 14),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx),
-            child: Text(l.t('cancel')),
+            child: Text('Cancelar'),
           ),
           TextButton(
             onPressed: () {
@@ -1991,8 +2021,8 @@ class _RideTrackerScreenState extends State<RideTrackerScreen>
               p.cancelTracking();
               Navigator.of(context).pop();
             },
-            child: Text(
-              l.t('discard'),
+            child: const Text(
+              'Descartar',
               style: TextStyle(fontWeight: FontWeight.w600),
             ),
           ),
@@ -2008,290 +2038,586 @@ class _RideTrackerScreenState extends State<RideTrackerScreen>
               Navigator.pop(ctx);
               _showNameDialog(p, exitAfter: true);
             },
-            child: Text(l.t('save_and_exit')),
+            child: const Text('Guardar y Salir'),
           ),
         ],
       ),
     );
   }
+}
 
-  // ─── ALERTAS VIALES ──────────────────────────────────────
-  Widget _buildRoadAlertsSection(RideTrackerProvider p) {
-    return Consumer<RoadReportsProvider>(
-      builder: (context, rrp, _) {
-        if (rrp.isLoading) {
-          return const SizedBox(
-            height: 30,
-            child: Center(
-              child: SizedBox(
-                width: 16,
-                height: 16,
-                child: CircularProgressIndicator(strokeWidth: 2),
-              ),
-            ),
-          );
-        }
+// ─── SHEET DE PLANIFICACIÓN DE RUTA ──────────────────────────────────────────
+class _RoutePlannerSheet extends StatefulWidget {
+  final RideTrackerProvider provider;
+  final void Function(List<LatLng> points, String destName) onRouteSet;
 
-        final pos = p.points.isNotEmpty
-            ? LatLng(p.points.last.lat, p.points.last.lng)
-            : null;
+  const _RoutePlannerSheet({required this.provider, required this.onRouteSet});
 
-        final active = rrp.reports.where((r) => r.isActive).toList();
-        List<RoadReportEntity> nearby;
-        if (pos != null) {
-          nearby =
-              active
-                  .where(
-                    (r) =>
-                        _distKm(
-                          pos.latitude,
-                          pos.longitude,
-                          r.latitude,
-                          r.longitude,
-                        ) <=
-                        20.0,
-                  )
-                  .toList()
-                ..sort(
-                  (a, b) =>
-                      _distKm(
-                        pos.latitude,
-                        pos.longitude,
-                        a.latitude,
-                        a.longitude,
-                      ).compareTo(
-                        _distKm(
-                          pos.latitude,
-                          pos.longitude,
-                          b.latitude,
-                          b.longitude,
-                        ),
-                      ),
-                );
-        } else {
-          nearby = active;
-        }
+  @override
+  State<_RoutePlannerSheet> createState() => _RoutePlannerSheetState();
+}
 
-        if (nearby.isEmpty) return const SizedBox.shrink();
+class _RoutePlannerSheetState extends State<_RoutePlannerSheet> {
+  static const String _apiKey = 'AIzaSyDiMK4kwhaIkuMxAcioRonPzaozDRJtO20';
 
-        final isDark = Theme.of(context).brightness == Brightness.dark;
-        return Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                const Icon(
-                  Icons.warning_amber_rounded,
-                  size: 14,
-                  color: Colors.orange,
-                ),
-                const SizedBox(width: 6),
-                Text(
-                  'Alertas viales${pos != null ? ' cercanas' : ''}',
-                  style: TextStyle(
-                    fontSize: 11,
-                    fontWeight: FontWeight.w700,
-                    color: isDark ? Colors.white54 : Colors.grey[600],
-                    letterSpacing: 0.5,
-                  ),
-                ),
-                const SizedBox(width: 6),
-                Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 6,
-                    vertical: 2,
-                  ),
-                  decoration: BoxDecoration(
-                    color: Colors.orange.withValues(alpha: 0.15),
-                    borderRadius: BorderRadius.circular(6),
-                  ),
-                  child: Text(
-                    '${nearby.length}',
-                    style: const TextStyle(
-                      fontSize: 10,
-                      fontWeight: FontWeight.w700,
-                      color: Colors.orange,
-                    ),
-                  ),
-                ),
-                const Spacer(),
-                GestureDetector(
-                  onTap: () => rrp.loadReports(),
-                  child: Icon(
-                    Icons.refresh,
-                    size: 14,
-                    color: isDark ? Colors.white38 : Colors.grey[400],
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 8),
-            SizedBox(
-              height: 76,
-              child: ListView.separated(
-                scrollDirection: Axis.horizontal,
-                itemCount: nearby.length > 5 ? 5 : nearby.length,
-                separatorBuilder: (_, __) => const SizedBox(width: 8),
-                itemBuilder: (context, i) {
-                  final r = nearby[i];
-                  final distStr = pos != null
-                      ? _formatDist(
-                          _distKm(
-                            pos.latitude,
-                            pos.longitude,
-                            r.latitude,
-                            r.longitude,
-                          ),
-                        )
-                      : null;
-                  return _buildAlertChip(r, distStr, isDark);
+  final _destController = TextEditingController();
+  List<Map<String, dynamic>> _suggestions = [];
+  Timer? _debounce;
+  bool _loadingRoute = false;
+  bool _loadingSuggestions = false;
+  String? _selectedPlaceId;
+  String? _selectedPlaceName;
+  String? _routeDistance;
+  String? _routeDuration;
+
+  @override
+  void initState() {
+    super.initState();
+    // Si hay ruta activa, mostrar el nombre
+    if (widget.provider.plannedDestinationName != null) {
+      _destController.text = widget.provider.plannedDestinationName!;
+    }
+  }
+
+  @override
+  void dispose() {
+    _debounce?.cancel();
+    _destController.dispose();
+    super.dispose();
+  }
+
+  Future<void> _fetchSuggestions(String input) async {
+    if (input.length < 3) {
+      setState(() => _suggestions = []);
+      return;
+    }
+    setState(() => _loadingSuggestions = true);
+    try {
+      final origin = widget.provider.livePosition;
+      final locationBias = origin != null
+          ? '&location=${origin.latitude},${origin.longitude}&radius=50000'
+          : '';
+      final uri = Uri.parse(
+        'https://maps.googleapis.com/maps/api/place/autocomplete/json'
+        '?input=${Uri.encodeComponent(input)}'
+        '&key=$_apiKey'
+        '&language=es'
+        '$locationBias',
+      );
+      final res = await http.get(uri).timeout(const Duration(seconds: 8));
+      if (res.statusCode == 200) {
+        final data = jsonDecode(res.body);
+        if (data['status'] == 'OK') {
+          setState(() {
+            _suggestions = List<Map<String, dynamic>>.from(
+              data['predictions'].map(
+                (p) => {
+                  'place_id': p['place_id'],
+                  'description': p['description'],
                 },
               ),
-            ),
-          ],
-        );
-      },
-    );
+            );
+          });
+        } else {
+          setState(() => _suggestions = []);
+        }
+      }
+    } catch (_) {
+      setState(() => _suggestions = []);
+    } finally {
+      setState(() => _loadingSuggestions = false);
+    }
   }
 
-  Widget _buildAlertChip(RoadReportEntity r, String? dist, bool isDark) {
-    final Color chipColor;
-    switch (r.type) {
-      case 'danger':
-        chipColor = Colors.red;
-        break;
-      case 'construction':
-        chipColor = Colors.orange;
-        break;
-      case 'flooding':
-        chipColor = Colors.blue;
-        break;
-      case 'pothole':
-        chipColor = Colors.brown;
-        break;
-      default:
-        chipColor = Colors.orange;
+  Future<LatLng?> _getPlaceLatLng(String placeId) async {
+    try {
+      final uri = Uri.parse(
+        'https://maps.googleapis.com/maps/api/geocode/json'
+        '?place_id=$placeId&key=$_apiKey',
+      );
+      final res = await http.get(uri).timeout(const Duration(seconds: 8));
+      if (res.statusCode == 200) {
+        final data = jsonDecode(res.body);
+        debugPrint('Geocode place_id status: ${data['status']}');
+        if (data['status'] == 'OK' && data['results'].isNotEmpty) {
+          final loc = data['results'][0]['geometry']['location'];
+          return LatLng(loc['lat'] as double, loc['lng'] as double);
+        }
+      }
+    } catch (e) {
+      debugPrint('_getPlaceLatLng error: $e');
+    }
+    return null;
+  }
+
+  /// Geocodifica texto libre cuando el usuario no seleccionó de la lista.
+  Future<LatLng?> _geocodeText(String text) async {
+    try {
+      final origin = widget.provider.livePosition;
+      final biasParam = origin != null
+          ? '&bounds=${origin.latitude - 0.5},${origin.longitude - 0.5}|${origin.latitude + 0.5},${origin.longitude + 0.5}'
+          : '';
+      final uri = Uri.parse(
+        'https://maps.googleapis.com/maps/api/geocode/json'
+        '?address=${Uri.encodeComponent(text)}&key=$_apiKey&language=es$biasParam',
+      );
+      final res = await http.get(uri).timeout(const Duration(seconds: 8));
+      if (res.statusCode == 200) {
+        final data = jsonDecode(res.body);
+        debugPrint('Geocode text status: ${data['status']}');
+        if (data['status'] == 'OK' && data['results'].isNotEmpty) {
+          final loc = data['results'][0]['geometry']['location'];
+          return LatLng(loc['lat'] as double, loc['lng'] as double);
+        }
+      }
+    } catch (e) {
+      debugPrint('_geocodeText error: $e');
+    }
+    return null;
+  }
+
+  /// Llama a Google Directions API directamente con la clave y decodifica la
+  /// polyline. Intenta primero en bicicleta; si la región no lo soporta,
+  /// cae a modo conducción (misma red vial, útil para ciclismo).
+  /// Llama a Google Directions API y concatena las polylines detalladas de
+  /// CADA PASO, obteniendo la geometría exacta de la ruta calle por calle.
+  Future<List<LatLng>?> _callDirections(
+    LatLng origin,
+    LatLng dest,
+    String mode,
+  ) async {
+    const baseUrl = 'https://maps.googleapis.com/maps/api/directions/json';
+    // &alternatives=false  → solo la mejor ruta, sin variantes
+    final url =
+        '$baseUrl?origin=${origin.latitude},${origin.longitude}'
+        '&destination=${dest.latitude},${dest.longitude}'
+        '&mode=$mode'
+        '&alternatives=false'
+        '&units=metric'
+        '&key=$_apiKey';
+    debugPrint('🗺️ Directions [$mode]: $url');
+    try {
+      final res = await http
+          .get(Uri.parse(url))
+          .timeout(const Duration(seconds: 15));
+      if (res.statusCode != 200) {
+        debugPrint('HTTP ${res.statusCode}');
+        return null;
+      }
+      final data = jsonDecode(res.body);
+      debugPrint('Directions status: ${data['status']}');
+      if (data['status'] != 'OK' || (data['routes'] as List).isEmpty) {
+        if (data['error_message'] != null) {
+          debugPrint('API error_message: ${data['error_message']}');
+        }
+        return null;
+      }
+
+      // Concatenar la polyline detallada de CADA PASO de la ruta.
+      // Esto da la geometría exacta calle por calle, sin simplificaciones.
+      final steps = data['routes'][0]['legs'][0]['steps'] as List<dynamic>;
+      final points = <LatLng>[];
+      for (final step in steps) {
+        final encoded = step['polyline']['points'] as String;
+        points.addAll(_decodePolyline(encoded));
+      }
+      debugPrint('✅ Ruta con ${points.length} puntos (${steps.length} pasos)');
+      return points;
+    } catch (e) {
+      debugPrint('_callDirections error: $e');
+    }
+    return null;
+  }
+
+  List<LatLng> _decodePolyline(String encoded) {
+    final list = <LatLng>[];
+    int index = 0, lat = 0, lng = 0;
+    while (index < encoded.length) {
+      int b, shift = 0, result = 0;
+      do {
+        b = encoded.codeUnitAt(index++) - 63;
+        result |= (b & 0x1f) << shift;
+        shift += 5;
+      } while (b >= 0x20);
+      lat += (result & 1) != 0 ? ~(result >> 1) : (result >> 1);
+      shift = 0;
+      result = 0;
+      do {
+        b = encoded.codeUnitAt(index++) - 63;
+        result |= (b & 0x1f) << shift;
+        shift += 5;
+      } while (b >= 0x20);
+      lng += (result & 1) != 0 ? ~(result >> 1) : (result >> 1);
+      list.add(LatLng(lat / 1e5, lng / 1e5));
+    }
+    return list;
+  }
+
+  Future<void> _traceRoute() async {
+    final origin = widget.provider.livePosition;
+    if (origin == null) {
+      _showError('Esperando señal GPS. Inténtalo en un momento.');
+      return;
     }
 
-    return Container(
-      width: 130,
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
-      decoration: BoxDecoration(
-        color: chipColor.withValues(alpha: isDark ? 0.12 : 0.07),
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: chipColor.withValues(alpha: 0.3)),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Row(
-            children: [
-              Text(r.typeIcon, style: const TextStyle(fontSize: 14)),
-              const SizedBox(width: 6),
-              Expanded(
-                child: Text(
-                  r.typeName,
-                  style: TextStyle(
-                    fontSize: 11,
-                    fontWeight: FontWeight.w700,
-                    color: chipColor,
-                  ),
-                  overflow: TextOverflow.ellipsis,
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 4),
-          Text(
-            r.description.isEmpty ? r.typeName : r.description,
-            style: TextStyle(
-              fontSize: 10,
-              color: isDark ? Colors.white54 : Colors.grey[600],
-            ),
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-          ),
-          if (dist != null) ...[
-            const SizedBox(height: 3),
-            Row(
-              children: [
-                Icon(
-                  Icons.near_me,
-                  size: 9,
-                  color: isDark ? Colors.white38 : Colors.grey[400],
-                ),
-                const SizedBox(width: 3),
-                Text(
-                  dist,
-                  style: TextStyle(
-                    fontSize: 9,
-                    color: isDark ? Colors.white38 : Colors.grey[400],
-                  ),
-                ),
-                if (r.confirmations > 0) ...[
-                  const SizedBox(width: 6),
-                  Icon(
-                    Icons.thumb_up_alt,
-                    size: 9,
-                    color: chipColor.withValues(alpha: 0.7),
-                  ),
-                  const SizedBox(width: 2),
-                  Text(
-                    '${r.confirmations}',
-                    style: TextStyle(
-                      fontSize: 9,
-                      color: chipColor.withValues(alpha: 0.7),
-                    ),
-                  ),
-                ],
-              ],
-            ),
-          ],
-        ],
-      ),
-    );
+    final destText = _destController.text.trim();
+    if (destText.isEmpty) {
+      _showError('Escribe un destino primero.');
+      return;
+    }
+
+    setState(() => _loadingRoute = true);
+    try {
+      // 1. Coordenadas del destino
+      LatLng? dest;
+      if (_selectedPlaceId != null) {
+        dest = await _getPlaceLatLng(_selectedPlaceId!);
+      }
+      dest ??= await _geocodeText(destText);
+
+      if (dest == null) {
+        _showError(
+          'No se encontró la dirección "$destText". Escribe un nombre más específico.',
+        );
+        return;
+      }
+
+      // 2. Trazar ruta: intenta bicycling primero, cae a driving si no está disponible
+      List<LatLng>? points = await _callDirections(origin, dest, 'bicycling');
+      if (points == null || points.isEmpty) {
+        points = await _callDirections(origin, dest, 'driving');
+      }
+
+      if (points == null || points.isEmpty) {
+        _showError(
+          'No se encontró ninguna ruta hacia "$destText". '
+          'Verifica que la dirección exista y esté dentro de un área con calles.',
+        );
+        return;
+      }
+
+      widget.onRouteSet(points, _selectedPlaceName ?? destText);
+
+      if (mounted) Navigator.of(context).pop();
+    } catch (e) {
+      debugPrint('_traceRoute error: $e');
+      _showError('Error al trazar ruta: $e');
+    } finally {
+      if (mounted) setState(() => _loadingRoute = false);
+    }
   }
 
-  double _distKm(double lat1, double lon1, double lat2, double lon2) {
-    const r = 6371.0;
-    final dLat = (lat2 - lat1) * pi / 180;
-    final dLon = (lon2 - lon1) * pi / 180;
-    final a =
-        sin(dLat / 2) * sin(dLat / 2) +
-        cos(lat1 * pi / 180) *
-            cos(lat2 * pi / 180) *
-            sin(dLon / 2) *
-            sin(dLon / 2);
-    return r * 2 * atan2(sqrt(a), sqrt(1 - a));
-  }
-
-  String _formatDist(double km) {
-    if (km < 1) return '${(km * 1000).round()} m';
-    return '${km.toStringAsFixed(1)} km';
-  }
-
-  // ignore: unused_element
-  Future<bool> _onWillPop(RideTrackerProvider provider) async {
-    if (!provider.isTracking) return true;
-    final result = await showDialog<bool>(
+  void _showError(String msg) {
+    if (!mounted) return;
+    showDialog(
       context: context,
-      builder: (ctx) => AlertDialog(
-        title: Text(l.t('exit_ride_question')),
-        content: Text(l.t('active_ride_warning')),
+      builder: (_) => AlertDialog(
+        title: const Text('No se pudo trazar la ruta'),
+        content: Text(msg),
         actions: [
           TextButton(
-            onPressed: () => Navigator.of(ctx).pop(false),
-            child: Text(l.t('cancel')),
-          ),
-          ElevatedButton(
-            style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
-            onPressed: () => Navigator.of(ctx).pop(true),
-            child: Text(l.t('exit'), style: TextStyle(color: Colors.white)),
+            onPressed: () => Navigator.of(context).pop(),
+            child: const Text('Entendido'),
           ),
         ],
       ),
     );
-    return result ?? false;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final bg = isDark ? const Color(0xFF1A2635) : Colors.white;
+    final hasRoute = widget.provider.plannedRoute.isNotEmpty;
+
+    return Padding(
+      padding: EdgeInsets.only(
+        bottom: MediaQuery.of(context).viewInsets.bottom,
+      ),
+      child: Container(
+        decoration: BoxDecoration(
+          color: bg,
+          borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
+        ),
+        child: SafeArea(
+          top: false,
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(20, 16, 20, 20),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Handle
+                Center(
+                  child: Container(
+                    width: 40,
+                    height: 4,
+                    decoration: BoxDecoration(
+                      color: isDark ? Colors.white24 : Colors.grey[300],
+                      borderRadius: BorderRadius.circular(2),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 16),
+                Row(
+                  children: [
+                    const Icon(
+                      Icons.directions_bike_rounded,
+                      color: Color(0xFF1E88E5),
+                      size: 22,
+                    ),
+                    const SizedBox(width: 8),
+                    Text(
+                      'Planear ruta',
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.w800,
+                        color: isDark ? Colors.white : Colors.grey[800],
+                      ),
+                    ),
+                    const Spacer(),
+                    if (hasRoute)
+                      TextButton.icon(
+                        onPressed: () {
+                          widget.provider.clearPlannedRoute();
+                          Navigator.of(context).pop();
+                        },
+                        icon: const Icon(Icons.close, size: 16),
+                        label: const Text('Limpiar'),
+                        style: TextButton.styleFrom(
+                          foregroundColor: Colors.red,
+                        ),
+                      ),
+                  ],
+                ),
+                const SizedBox(height: 16),
+
+                // Origin (posición actual)
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 14,
+                    vertical: 12,
+                  ),
+                  decoration: BoxDecoration(
+                    color: isDark
+                        ? Colors.white.withValues(alpha: 0.06)
+                        : Colors.grey[100],
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(
+                      color: const Color(0xFF4CAF50).withValues(alpha: 0.4),
+                    ),
+                  ),
+                  child: Row(
+                    children: [
+                      const Icon(
+                        Icons.my_location_rounded,
+                        color: Color(0xFF4CAF50),
+                        size: 18,
+                      ),
+                      const SizedBox(width: 10),
+                      Text(
+                        widget.provider.livePosition != null
+                            ? 'Mi ubicación actual'
+                            : 'Obteniendo GPS...',
+                        style: TextStyle(
+                          fontSize: 14,
+                          color: isDark ? Colors.white70 : Colors.grey[700],
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+
+                const SizedBox(height: 8),
+
+                // Flecha conectora
+                Padding(
+                  padding: const EdgeInsets.only(left: 20),
+                  child: Icon(
+                    Icons.more_vert_rounded,
+                    color: Colors.grey[400],
+                    size: 20,
+                  ),
+                ),
+
+                const SizedBox(height: 4),
+
+                // Destination
+                TextField(
+                  controller: _destController,
+                  autofocus: true,
+                  style: TextStyle(
+                    color: isDark ? Colors.white : Colors.grey[800],
+                  ),
+                  decoration: InputDecoration(
+                    hintText: 'Hacia dónde vas...',
+                    hintStyle: TextStyle(
+                      color: isDark ? Colors.white38 : Colors.grey[400],
+                    ),
+                    prefixIcon: const Icon(
+                      Icons.location_on_rounded,
+                      color: Color(0xFFE53935),
+                      size: 20,
+                    ),
+                    suffixIcon: _destController.text.isNotEmpty
+                        ? IconButton(
+                            icon: const Icon(Icons.clear, size: 18),
+                            onPressed: () {
+                              _destController.clear();
+                              setState(() {
+                                _suggestions = [];
+                                _selectedPlaceId = null;
+                                _selectedPlaceName = null;
+                              });
+                            },
+                          )
+                        : null,
+                    filled: true,
+                    fillColor: isDark
+                        ? Colors.white.withValues(alpha: 0.06)
+                        : Colors.grey[100],
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                      borderSide: BorderSide.none,
+                    ),
+                    enabledBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                      borderSide: BorderSide(
+                        color: const Color(0xFFE53935).withValues(alpha: 0.4),
+                      ),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                      borderSide: const BorderSide(
+                        color: Color(0xFFE53935),
+                        width: 1.5,
+                      ),
+                    ),
+                    contentPadding: const EdgeInsets.symmetric(
+                      horizontal: 14,
+                      vertical: 12,
+                    ),
+                  ),
+                  onChanged: (val) {
+                    _selectedPlaceId = null;
+                    _debounce?.cancel();
+                    _debounce = Timer(const Duration(milliseconds: 400), () {
+                      _fetchSuggestions(val);
+                    });
+                    setState(() {});
+                  },
+                ),
+
+                // Sugerencias
+                if (_loadingSuggestions)
+                  const Padding(
+                    padding: EdgeInsets.symmetric(vertical: 8),
+                    child: Center(
+                      child: SizedBox(
+                        height: 20,
+                        width: 20,
+                        child: CircularProgressIndicator(strokeWidth: 2),
+                      ),
+                    ),
+                  )
+                else if (_suggestions.isNotEmpty)
+                  Container(
+                    margin: const EdgeInsets.only(top: 4),
+                    constraints: const BoxConstraints(maxHeight: 200),
+                    decoration: BoxDecoration(
+                      color: isDark ? const Color(0xFF1E2D3D) : Colors.white,
+                      borderRadius: BorderRadius.circular(12),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withValues(alpha: 0.08),
+                          blurRadius: 12,
+                          offset: const Offset(0, 4),
+                        ),
+                      ],
+                    ),
+                    child: ListView.separated(
+                      shrinkWrap: true,
+                      padding: const EdgeInsets.symmetric(vertical: 6),
+                      itemCount: _suggestions.length,
+                      separatorBuilder: (_, __) => Divider(
+                        height: 1,
+                        color: isDark ? Colors.white10 : Colors.grey[100],
+                      ),
+                      itemBuilder: (context, i) {
+                        final s = _suggestions[i];
+                        return ListTile(
+                          dense: true,
+                          leading: const Icon(
+                            Icons.place_rounded,
+                            size: 18,
+                            color: Color(0xFF1E88E5),
+                          ),
+                          title: Text(
+                            s['description'] as String,
+                            style: TextStyle(
+                              fontSize: 13,
+                              color: isDark ? Colors.white : Colors.grey[800],
+                            ),
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                          onTap: () {
+                            setState(() {
+                              _selectedPlaceId = s['place_id'] as String;
+                              _selectedPlaceName = s['description'] as String;
+                              _destController.text = s['description'] as String;
+                              _suggestions = [];
+                            });
+                            FocusScope.of(context).unfocus();
+                          },
+                        );
+                      },
+                    ),
+                  ),
+
+                const SizedBox(height: 16),
+
+                // Botón trazar ruta
+                SizedBox(
+                  width: double.infinity,
+                  height: 52,
+                  child: ElevatedButton.icon(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color(0xFF1E88E5),
+                      foregroundColor: Colors.white,
+                      elevation: 2,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(14),
+                      ),
+                    ),
+                    onPressed: _loadingRoute ? null : _traceRoute,
+                    icon: _loadingRoute
+                        ? const SizedBox(
+                            width: 18,
+                            height: 18,
+                            child: CircularProgressIndicator(
+                              color: Colors.white,
+                              strokeWidth: 2,
+                            ),
+                          )
+                        : const Icon(Icons.alt_route_rounded),
+                    label: Text(
+                      _loadingRoute
+                          ? 'Trazando ruta...'
+                          : 'Trazar ruta en bicicleta',
+                      style: const TextStyle(
+                        fontSize: 15,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
   }
 }

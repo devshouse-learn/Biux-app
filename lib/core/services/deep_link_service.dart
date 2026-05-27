@@ -37,12 +37,12 @@ class DeepLinkService {
   static Future<void> handleDeepLink(String? link, GoRouter router) async {
     if (link == null || link.isEmpty) return;
 
-    AppLogger.debug('ðŸ”— Procesando deep link: $link');
+    AppLogger.debug('dŸ”— Procesando deep link: $link');
 
     try {
       final uri = Uri.parse(link);
       AppLogger.debug(
-        'ðŸ”— URI Schema: ${uri.scheme}, Host: ${uri.host}, Path: ${uri.path}',
+        'dŸ”— URI Schema: ${uri.scheme}, Host: ${uri.host}, Path: ${uri.path}',
       );
 
       // Manejar esquema biux://
@@ -58,22 +58,22 @@ class DeepLinkService {
       }
 
       AppLogger.warning(
-        'âš ï¸ Esquema o host no reconocido: ${uri.scheme}://${uri.host}',
+        'aš ï¸ Esquema o host no reconocido: ${uri.scheme}://${uri.host}',
       );
     } on Exception catch (e) {
-      AppLogger.error('âŒ Error procesando deep link: $e');
+      AppLogger.error('aŒ Error procesando deep link: $e');
     }
   }
 
   static Future<void> _handleBiuxDeepLink(Uri uri, GoRouter router) async {
-    AppLogger.debug('ðŸ”— Manejando deep link biux: ${uri.toString()}');
+    AppLogger.debug('dŸ”— Manejando deep link biux: ${uri.toString()}');
 
     // biux://ride/{rideId}
     if (uri.host == 'ride') {
       final segments = uri.pathSegments;
       if (segments.isNotEmpty) {
         final rideId = segments.first;
-        AppLogger.debug('ðŸš´ Navegando a rodada: $rideId');
+        AppLogger.debug('dŸš´ Navegando a rodada: $rideId');
         router.push('/rides/$rideId');
       }
       return;
@@ -84,7 +84,7 @@ class DeepLinkService {
       final segments = uri.pathSegments;
       if (segments.isNotEmpty) {
         final postId = segments.first;
-        AppLogger.debug('ðŸ“ Navegando a post: $postId');
+        AppLogger.debug('dŸ“ Navegando a post: $postId');
         router.push('/stories');
       }
       return;
@@ -95,7 +95,7 @@ class DeepLinkService {
       final segments = uri.pathSegments;
       if (segments.isNotEmpty) {
         final groupId = segments.first;
-        AppLogger.debug('ðŸ‘¥ Navegando a grupo: $groupId');
+        AppLogger.debug('dŸ‘¥ Navegando a grupo: $groupId');
         router.push('/groups/$groupId');
       }
       return;
@@ -106,24 +106,24 @@ class DeepLinkService {
       final segments = uri.pathSegments;
       if (segments.isNotEmpty) {
         final userId = segments.first;
-        AppLogger.debug('ðŸ‘¤ Navegando a perfil: $userId');
+        AppLogger.debug('dŸ‘¤ Navegando a perfil: $userId');
         router.push('/user-profile/$userId');
       }
       return;
     }
 
-    AppLogger.warning('âš ï¸ Host de deep link no reconocido: ${uri.host}');
+    AppLogger.warning('aš ï¸ Host de deep link no reconocido: ${uri.host}');
   }
 
   static Future<void> _handleAppLink(Uri uri, GoRouter router) async {
-    AppLogger.debug('ðŸ”— Manejando app link: ${uri.toString()}');
-    AppLogger.debug('ðŸ”— Path: ${uri.path}, Segments: ${uri.pathSegments}');
+    AppLogger.debug('dŸ”— Manejando app link: ${uri.toString()}');
+    AppLogger.debug('dŸ”— Path: ${uri.path}, Segments: ${uri.pathSegments}');
 
     // https://biux.devshouse.org/ride/{rideId}
     if (uri.path.startsWith('/ride/')) {
       final rideId = uri.pathSegments.length > 1 ? uri.pathSegments[1] : null;
       if (rideId != null && rideId.isNotEmpty) {
-        AppLogger.debug('ðŸš´ Navegando a rodada desde app link: $rideId');
+        AppLogger.debug('dŸš´ Navegando a rodada desde app link: $rideId');
         router.push('/rides/$rideId');
       }
       return;
@@ -133,7 +133,7 @@ class DeepLinkService {
     if (uri.path.startsWith('/posts/')) {
       final postId = uri.pathSegments.length > 1 ? uri.pathSegments[1] : null;
       if (postId != null && postId.isNotEmpty) {
-        AppLogger.debug('ðŸ“ Navegando a post desde app link: $postId');
+        AppLogger.debug('dŸ“ Navegando a post desde app link: $postId');
         router.push('/stories');
       }
       return;
@@ -143,7 +143,7 @@ class DeepLinkService {
     if (uri.path.startsWith('/stories/')) {
       final storyId = uri.pathSegments.length > 1 ? uri.pathSegments[1] : null;
       if (storyId != null && storyId.isNotEmpty) {
-        AppLogger.debug('ðŸ“¸ Navegando a historia desde app link: $storyId');
+        AppLogger.debug('dŸ“¸ Navegando a historia desde app link: $storyId');
         router.push('/stories');
       }
       return;
@@ -153,7 +153,7 @@ class DeepLinkService {
     if (uri.path.startsWith('/group/')) {
       final groupId = uri.pathSegments.length > 1 ? uri.pathSegments[1] : null;
       if (groupId != null && groupId.isNotEmpty) {
-        AppLogger.debug('ðŸ‘¥ Navegando a grupo desde app link: $groupId');
+        AppLogger.debug('dŸ‘¥ Navegando a grupo desde app link: $groupId');
         router.push('/groups/$groupId');
       }
       return;
@@ -163,13 +163,13 @@ class DeepLinkService {
     if (uri.path.startsWith('/user/')) {
       final userId = uri.pathSegments.length > 1 ? uri.pathSegments[1] : null;
       if (userId != null && userId.isNotEmpty) {
-        AppLogger.debug('ðŸ‘¤ Navegando a perfil desde app link: $userId');
+        AppLogger.debug('dŸ‘¤ Navegando a perfil desde app link: $userId');
         router.push('/user-profile/$userId');
       }
       return;
     }
 
-    AppLogger.warning('âš ï¸ Path de app link no reconocido: ${uri.path}');
+    AppLogger.warning('aš ï¸ Path de app link no reconocido: ${uri.path}');
   }
 
   /// Texto para compartir una rodada
@@ -181,13 +181,13 @@ class DeepLinkService {
     final link = generateRideAppLink(rideId);
 
     if (groupName != null) {
-      return 'ðŸš´ Â¡Ãšnete a la rodada "$rideName" con $groupName!\n\n'
-          'ðŸ“ Tap para ver detalles e inscribirte:\n'
+      return 'dŸš´ a¡Ãšnete a la rodada "$rideName" con $groupName!\n\n'
+          'dŸ“ Tap para ver detalles e inscribirte:\n'
           '$link';
     }
 
-    return 'ðŸš´ Â¡Ãšnete a la rodada "$rideName"!\n\n'
-        'ðŸ“ Tap para ver detalles e inscribirte:\n'
+    return 'dŸš´ a¡Ãšnete a la rodada "$rideName"!\n\n'
+        'dŸ“ Tap para ver detalles e inscribirte:\n'
         '$link';
   }
 
@@ -198,8 +198,8 @@ class DeepLinkService {
   }) {
     final link = generateStoryAppLink(storyId);
 
-    return 'ðŸ“¸ Â¡Mira la historia de $userName!\n\n'
-        'ðŸ‘€ Tap para verla:\n'
+    return 'dŸ“¸ a¡Mira la historia de $userName!\n\n'
+        'dŸ‘€ Tap para verla:\n'
         '$link';
   }
 
@@ -210,8 +210,8 @@ class DeepLinkService {
   }) {
     final link = generateGroupAppLink(groupId);
 
-    return 'ðŸ‘¥ Â¡Ãšnete al grupo "$groupName"!\n\n'
-        'ðŸ”— Tap para mÃ¡s informaciÃ³n:\n'
+    return 'dŸ‘¥ a¡Ãšnete al grupo "$groupName"!\n\n'
+        'dŸ”— Tap para más información:\n'
         '$link';
   }
 
@@ -222,9 +222,10 @@ class DeepLinkService {
   }) {
     final link = generateUserAppLink(userId);
 
-    return 'ðŸ‘¤ Â¡Sigue a $userName en BIUX!\n\n'
-        'ðŸ”— Tap para ver su perfil:\n'
+    return 'dŸ‘¤ a¡Sigue a $userName en BIUX!\n\n'
+        'dŸ”— Tap para ver su perfil:\n'
         '$link';
   }
 }
+
 

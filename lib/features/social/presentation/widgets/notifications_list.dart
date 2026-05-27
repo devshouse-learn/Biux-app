@@ -1,4 +1,5 @@
 ﻿import 'package:flutter/material.dart';
+import 'package:biux/core/design_system/color_tokens.dart';
 import 'package:provider/provider.dart';
 import 'package:biux/core/design_system/locale_notifier.dart';
 import 'package:biux/features/social/domain/entities/notification_entity.dart';
@@ -77,7 +78,7 @@ class NotificationsList extends StatelessWidget {
   }
 }
 
-/// Widget de elemento de notificaciÃ³n individual
+/// Widget de elemento de notificación individual
 class NotificationItem extends StatefulWidget {
   final NotificationEntity notification;
 
@@ -95,7 +96,7 @@ class _NotificationItemState extends State<NotificationItem> {
 
   @override
   Widget build(BuildContext context) {
-    // Configurar locale espaÃ±ol para timeago
+    // Configurar locale español para timeago
     timeago.setLocaleMessages('es', timeago.EsMessages());
 
     final provider = context.read<NotificationsProvider>();
@@ -176,7 +177,7 @@ class _NotificationItemState extends State<NotificationItem> {
                             ? null
                             : () => _handleAccept(context),
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color(0xFF16242D),
+                          backgroundColor: ColorTokens.primary30,
                           foregroundColor: Colors.white,
                           padding: const EdgeInsets.symmetric(horizontal: 16),
                           shape: RoundedRectangleBorder(
@@ -254,7 +255,7 @@ class _NotificationItemState extends State<NotificationItem> {
             ? Colors.grey[900]
             : Colors.blue[50],
         onTap: () {
-          // Marcar como leÃ­da
+          // Marcar como leída
           if (!widget.notification.isRead) {
             provider.markAsRead(widget.notification.id);
           }
@@ -284,7 +285,7 @@ class _NotificationItemState extends State<NotificationItem> {
         });
 
         if (success) {
-          // Marcar la notificaciÃ³n como leÃ­da
+          // Marcar la notificación como leída
           context.read<NotificationsProvider>().markAsRead(
             widget.notification.id,
           );
@@ -320,7 +321,7 @@ class _NotificationItemState extends State<NotificationItem> {
         });
 
         if (success) {
-          // Marcar la notificaciÃ³n como leÃ­da
+          // Marcar la notificación como leída
           context.read<NotificationsProvider>().markAsRead(
             widget.notification.id,
           );
@@ -373,7 +374,7 @@ class _NotificationItemState extends State<NotificationItem> {
     }
 
     switch (widget.notification.type) {
-      // LIKES - Navegar al contenido especÃ­fico
+      // LIKES - Navegar al contenido específico
       case NotificationType.likePost:
         // Para posts, ir al detalle del post
         context.push('/post-detail/${widget.notification.targetId}');
@@ -422,7 +423,7 @@ class _NotificationItemState extends State<NotificationItem> {
         context.push('/user-profile/${widget.notification.fromUserId}');
         break;
 
-      // COMENTARIOS - Navegar directamente a la secciÃ³n de comentarios
+      // COMENTARIOS - Navegar directamente a la sección de comentarios
       case NotificationType.commentPost:
         // Para comentarios en posts, ir al detalle del post
         context.push('/post-detail/${widget.notification.targetId}');
@@ -490,4 +491,7 @@ class _NotificationItemState extends State<NotificationItem> {
     }
   }
 }
+
+
+
 

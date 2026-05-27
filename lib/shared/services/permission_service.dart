@@ -1,4 +1,5 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
+import 'package:biux/core/design_system/color_tokens.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:biux/core/design_system/locale_notifier.dart';
@@ -142,7 +143,7 @@ class PermissionService {
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
-        backgroundColor: isDark ? const Color(0xFF1A2B3C) : Colors.white,
+        backgroundColor: isDark ? ColorTokens.primary20 : Colors.white,
         title: Text(
           l.t('permission_required'),
           style: TextStyle(color: isDark ? Colors.white : Colors.black87),
@@ -168,3 +169,5 @@ class PermissionService {
     );
   }
 }
+
+

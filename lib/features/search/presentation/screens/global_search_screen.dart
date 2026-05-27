@@ -188,7 +188,7 @@ class _GlobalSearchScreenState extends State<GlobalSearchScreen>
             style: TextStyle(color: Colors.grey[400]),
           ),
           SizedBox(height: 32),
-          // Sugerencias rÃ¡pidas
+          // Sugerencias rápidas
           Wrap(
             spacing: 8,
             runSpacing: 8,
@@ -295,7 +295,7 @@ class _GlobalSearchScreenState extends State<GlobalSearchScreen>
               style: TextStyle(fontWeight: FontWeight.w600),
             ),
             subtitle: Text(
-              '${city.isNotEmpty ? "$city â€¢ " : ""}$memberCount ${l.t('members')}',
+              '${city.isNotEmpty ? "$city a€¢ " : ""}$memberCount ${l.t('members')}',
               style: TextStyle(color: Colors.grey[500], fontSize: 13),
             ),
             trailing: const Icon(Icons.chevron_right, size: 20),
@@ -333,7 +333,7 @@ class _GlobalSearchScreenState extends State<GlobalSearchScreen>
               style: const TextStyle(fontWeight: FontWeight.w600),
             ),
             subtitle: Text(
-              '${date != null ? "${date.toDate().day}/${date.toDate().month}/${date.toDate().year}" : ""}${difficulty.isNotEmpty ? " â€¢ $difficulty" : ""}',
+              '${date != null ? "${date.toDate().day}/${date.toDate().month}/${date.toDate().year}" : ""}${difficulty.isNotEmpty ? " a€¢ $difficulty" : ""}',
               style: TextStyle(color: Colors.grey[500], fontSize: 13),
             ),
             trailing: const Icon(Icons.chevron_right, size: 20),
@@ -364,4 +364,5 @@ class _GlobalSearchScreenState extends State<GlobalSearchScreen>
     );
   }
 }
+
 

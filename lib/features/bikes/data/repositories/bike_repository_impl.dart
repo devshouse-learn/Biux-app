@@ -11,7 +11,7 @@ import 'package:biux/features/bikes/data/models/bike_theft_model.dart';
 import 'package:biux/features/bikes/data/models/bike_transfer_model.dart';
 import "package:flutter/foundation.dart";
 
-/// ImplementaciÃ³n del repositorio de bicicletas con Firebase Firestore
+/// Implementación del repositorio de bicicletas con Firebase Firestore
 class BikeRepositoryImpl implements BikeRepository {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
@@ -39,7 +39,7 @@ class BikeRepositoryImpl implements BikeRepository {
   @override
   Future<List<BikeEntity>> getUserBikes(String userId) async {
     try {
-      debugPrint('ðŸ“¦ Repository: Buscando bicicletas con ownerId: "$userId"');
+      debugPrint('dŸ“¦ Repository: Buscando bicicletas con ownerId: "$userId"');
 
       final querySnapshot = await _firestore
           .collection(_bikesCollection)
@@ -48,12 +48,12 @@ class BikeRepositoryImpl implements BikeRepository {
           .get();
 
       debugPrint(
-        'ðŸ“¦ Repository: Query devolviÃ³ ${querySnapshot.docs.length} documentos',
+        'dŸ“¦ Repository: Query devolvió ${querySnapshot.docs.length} documentos',
       );
 
       if (querySnapshot.docs.isNotEmpty) {
         final firstDoc = querySnapshot.docs.first.data();
-        debugPrint('ðŸ“¦ Primer documento - ownerId: "${firstDoc['ownerId']}"');
+        debugPrint('dŸ“¦ Primer documento - ownerId: "${firstDoc['ownerId']}"');
       }
 
       // TEMPORAL: Verificar si hay bicis con ownerId "current-user-id"
@@ -63,7 +63,7 @@ class BikeRepositoryImpl implements BikeRepository {
           .get();
 
       debugPrint(
-        'ðŸ“¦ Total de bicis en Firestore: ${allBikesSnapshot.docs.length}',
+        'dŸ“¦ Total de bicis en Firestore: ${allBikesSnapshot.docs.length}',
       );
 
       int placeholderCount = 0;
@@ -72,17 +72,17 @@ class BikeRepositoryImpl implements BikeRepository {
         if (data['ownerId'] == 'current-user-id') {
           placeholderCount++;
           debugPrint(
-            'âš ï¸ Encontrada bici con placeholder - ID: ${doc.id}, Marca: ${data['brand']} ${data['model']}',
+            'aš ï¸ Encontrada bici con placeholder - ID: ${doc.id}, Marca: ${data['brand']} ${data['model']}',
           );
         }
       }
 
       if (placeholderCount > 0) {
         debugPrint(
-          'âš ï¸ TOTAL de bicis con placeholder "current-user-id": $placeholderCount',
+          'aš ï¸ TOTAL de bicis con placeholder "current-user-id": $placeholderCount',
         );
         debugPrint(
-          'ðŸ’¡ Estas bicis necesitan actualizar su ownerId a: "$userId"',
+          'dŸ’¡ Estas bicis necesitan actualizar su ownerId a: "$userId"',
         );
       }
 
@@ -90,7 +90,7 @@ class BikeRepositoryImpl implements BikeRepository {
           .map((doc) => BikeModel.fromJson(doc.data()).toEntity())
           .toList();
     } on FirebaseException catch (e) {
-      debugPrint('âŒ Repository: Error obteniendo bicicletas: $e');
+      debugPrint('aŒ Repository: Error obteniendo bicicletas: $e');
       throw Exception('Error al obtener bicicletas del usuario: $e');
     }
   }
@@ -154,7 +154,7 @@ class BikeRepositoryImpl implements BikeRepository {
 
   @override
   Future<String> generateUniqueQR() async {
-    // Generar cÃ³digo QR Ãºnico basado en timestamp y random
+    // Generar código QR Ãºnico basado en timestamp y random
     final timestamp = DateTime.now().millisecondsSinceEpoch;
     final random = DateTime.now().microsecondsSinceEpoch % 10000;
     return 'BIUX-$timestamp-$random';
@@ -271,7 +271,7 @@ class BikeRepositoryImpl implements BikeRepository {
           .get();
       final transfer = BikeTransferModel.fromJson(doc.data()!);
 
-      // Actualizar el dueÃ±o de la bicicleta
+      // Actualizar el dueño de la bicicleta
       await _firestore
           .collection(_bikesCollection)
           .doc(transfer.bikeId)
@@ -562,7 +562,7 @@ class BikeRepositoryImpl implements BikeRepository {
 
       return stats;
     } on FirebaseException catch (e) {
-      throw Exception('Error al obtener estadÃ­sticas de usuario: $e');
+      throw Exception('Error al obtener estadísticas de usuario: $e');
     }
   }
 
@@ -608,4 +608,5 @@ class BikeRepositoryImpl implements BikeRepository {
     }
   }
 }
+
 

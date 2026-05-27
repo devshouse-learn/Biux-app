@@ -1,6 +1,7 @@
-import 'dart:io';
+﻿import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:mime/mime.dart';
+import 'package:biux/core/design_system/color_tokens.dart';
 
 /// Bottom sheet que muestra una vista previa de los archivos seleccionados
 /// (imágenes y videos) y permite confirmar el envío.
@@ -71,7 +72,7 @@ class _MediaPreviewSheetState extends State<MediaPreviewSheet> {
 
   @override
   Widget build(BuildContext context) {
-    final bg = widget.isDark ? const Color(0xFF0D1B2A) : Colors.white;
+    final bg = widget.isDark ? ColorTokens.primary10 : Colors.white;
     final textColor = widget.isDark ? Colors.white : Colors.black87;
     final subtitleColor = widget.isDark ? Colors.white60 : Colors.black54;
 
@@ -297,3 +298,5 @@ class _VideoPreviewItem extends StatelessWidget {
     );
   }
 }
+
+
