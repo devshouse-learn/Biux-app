@@ -1,5 +1,6 @@
 ﻿import 'dart:io';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:biux/features/cities/data/models/city.dart';
 import 'package:biux/features/users/data/models/user.dart';
 import 'package:biux/features/authentication/data/repositories/authentication_repository.dart';
