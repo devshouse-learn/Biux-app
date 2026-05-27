@@ -11,6 +11,7 @@ import 'package:biux/features/chat/domain/entities/message_entity.dart';
 import 'package:biux/features/chat/presentation/providers/chat_provider.dart';
 import 'package:biux/core/design_system/locale_notifier.dart';
 import 'package:provider/provider.dart';
+import 'package:biux/core/design_system/color_tokens.dart';
 
 class MessageBubble extends StatelessWidget {
   final MessageEntity message;
@@ -147,7 +148,7 @@ class MessageBubble extends StatelessWidget {
       builder: (_) => Container(
         margin: const EdgeInsets.fromLTRB(12, 0, 12, 12),
         decoration: BoxDecoration(
-          color: isDark ? const Color(0xFF1A2B3C) : Colors.white,
+          color: isDark ? ColorTokens.primary20 : Colors.white,
           borderRadius: BorderRadius.circular(20),
         ),
         child: SafeArea(
@@ -622,7 +623,7 @@ class MessageBubble extends StatelessWidget {
                     vertical: 6,
                   ),
                   decoration: BoxDecoration(
-                    color: isDark ? const Color(0xFF1A2B3C) : Colors.white,
+                    color: isDark ? ColorTokens.primary20 : Colors.white,
                     borderRadius: BorderRadius.circular(24),
                     boxShadow: [
                       BoxShadow(
@@ -684,7 +685,7 @@ class _BubbleContent extends StatelessWidget {
   Widget build(BuildContext context) {
     final bg = isMe
         ? const Color(0xFF1E8BC3)
-        : (isDark ? const Color(0xFF1A2B3C) : Colors.white);
+        : (isDark ? ColorTokens.primary20 : Colors.white);
     final textColor = isMe
         ? Colors.white
         : (isDark ? Colors.white70 : Colors.black87);
@@ -1433,9 +1434,9 @@ class _LocationViewerScreen extends StatelessWidget {
     final target = gmaps.LatLng(lat, lng);
 
     return Scaffold(
-      backgroundColor: isDark ? const Color(0xFF0E1A23) : Colors.white,
+      backgroundColor: isDark ? ColorTokens.primary10 : Colors.white,
       appBar: AppBar(
-        backgroundColor: const Color(0xFF16242D),
+        backgroundColor: ColorTokens.primary30,
         foregroundColor: Colors.white,
         title: Text(
           Provider.of<LocaleNotifier>(context, listen: false).t('location'),
@@ -1732,5 +1733,7 @@ class _DeletedBubble extends StatelessWidget {
     );
   }
 }
+
+
 
 

@@ -83,7 +83,7 @@ class _TwoFactorScreenState extends State<TwoFactorScreen> {
     final h = MediaQuery.of(context).size.height;
 
     return Scaffold(
-      backgroundColor: isDark ? const Color(0xFF0D1B2A) : Colors.grey.shade50,
+      backgroundColor: isDark ? ColorTokens.primary10 : Colors.grey.shade50,
       appBar: AppBar(
         title: Text(l.t('two_step_verification')),
         actions: [
@@ -96,7 +96,7 @@ class _TwoFactorScreenState extends State<TwoFactorScreen> {
               ),
             ),
         ],
-        backgroundColor: const Color(0xFF16242D),
+        backgroundColor: ColorTokens.primary30,
         foregroundColor: Colors.white,
       ),
       body: SingleChildScrollView(
@@ -328,7 +328,7 @@ class _MethodTile extends StatelessWidget {
           borderRadius: BorderRadius.circular(12),
           color: selected
               ? ColorTokens.primary30.withValues(alpha: 0.05)
-              : (isDark ? const Color(0xFF1A2B3C) : Colors.white),
+              : (isDark ? ColorTokens.primary20 : Colors.white),
         ),
         child: Column(
           children: [
@@ -347,5 +347,6 @@ class _MethodTile extends StatelessWidget {
     );
   }
 }
+
 
 

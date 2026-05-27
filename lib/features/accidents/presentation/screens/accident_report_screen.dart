@@ -11,6 +11,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
 import 'package:biux/core/design_system/locale_notifier.dart';
+import 'package:biux/core/design_system/color_tokens.dart';
 import 'package:biux/features/accidents/domain/entities/accident_entity.dart';
 import 'package:biux/features/accidents/presentation/screens/accident_detail_screen.dart';
 import 'package:biux/features/users/presentation/providers/user_provider.dart';
@@ -1093,7 +1094,7 @@ class _AccidentReportScreenState extends State<AccidentReportScreen>
                 borderRadius: BorderRadius.circular(12),
               ),
               filled: true,
-              fillColor: isDark ? const Color(0xFF1E2A32) : Colors.grey[50],
+              fillColor: isDark ? ColorTokens.primary20 : Colors.grey[50],
             ),
           ),
 
@@ -1117,7 +1118,7 @@ class _AccidentReportScreenState extends State<AccidentReportScreen>
                     height: 100,
                     decoration: BoxDecoration(
                       color: isDark
-                          ? const Color(0xFF1E2A32)
+                          ? ColorTokens.primary20
                           : Colors.grey[100],
                       borderRadius: BorderRadius.circular(12),
                       border: Border.all(
@@ -1264,7 +1265,7 @@ class _AccidentReportScreenState extends State<AccidentReportScreen>
             color: selected
                 ? color.withValues(alpha: 0.2)
                 : isDark
-                ? const Color(0xFF1E2A32)
+                ? ColorTokens.primary20
                 : Colors.grey[100],
             borderRadius: BorderRadius.circular(12),
             border: Border.all(
@@ -1293,5 +1294,6 @@ class _AccidentReportScreenState extends State<AccidentReportScreen>
     );
   }
 }
+
 
 

@@ -31,6 +31,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
+import 'package:biux/core/design_system/color_tokens.dart';
 import "package:flutter/services.dart";
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:provider/provider.dart';
@@ -96,7 +97,7 @@ void main() async {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       home: Scaffold(
-        backgroundColor: const Color(0xFF16242D),
+        backgroundColor: ColorTokens.primary30,
         body: Center(
           child: Padding(
             padding: const EdgeInsets.all(32),
@@ -202,5 +203,7 @@ class MyApp extends StatelessWidget {
 }
 
 // Test miércoles, 26 de noviembre de 2025, 18:59:20 -05
+
+
 
 

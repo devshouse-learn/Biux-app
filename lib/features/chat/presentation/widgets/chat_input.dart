@@ -11,6 +11,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:biux/shared/services/permission_service.dart';
 import 'package:biux/features/chat/domain/entities/message_entity.dart';
 import 'package:biux/core/design_system/locale_notifier.dart';
+import 'package:biux/core/design_system/color_tokens.dart';
 import 'package:provider/provider.dart';
 
 const _kRecentEmojisKey = 'recent_emojis_v1';
@@ -982,7 +983,7 @@ class _ChatInputState extends State<ChatInput>
   // a”€a”€ Build a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€
   @override
   Widget build(BuildContext context) {
-    final bg = widget.isDark ? const Color(0xFF1A2B3C) : Colors.white;
+    final bg = widget.isDark ? ColorTokens.primary20 : Colors.white;
     final borderColor = widget.isDark
         ? const Color(0xFF2C3E50)
         : Colors.grey.shade300;
@@ -1049,7 +1050,7 @@ class _ChatInputState extends State<ChatInput>
                   child: Container(
                     decoration: BoxDecoration(
                       color: widget.isDark
-                          ? const Color(0xFF0D1B2A)
+                          ? ColorTokens.primary10
                           : Colors.grey.shade100,
                       borderRadius: BorderRadius.circular(24),
                       border: Border.all(color: borderColor),
@@ -1263,7 +1264,7 @@ class _ChatInputState extends State<ChatInput>
           firstChild: Container(
             height: 280,
             color: widget.isDark
-                ? const Color(0xFF0D1B2A)
+                ? ColorTokens.primary10
                 : Colors.grey.shade50,
             child: Column(
               children: [
@@ -1271,7 +1272,7 @@ class _ChatInputState extends State<ChatInput>
                   controller: _emojiTabController,
                   isScrollable: true,
                   tabAlignment: TabAlignment.start,
-                  indicatorColor: const Color(0xFF16242D),
+                  indicatorColor: ColorTokens.primary30,
                   labelPadding: const EdgeInsets.symmetric(horizontal: 6),
                   tabs: [
                     // Pestaña de recientes
@@ -1383,7 +1384,7 @@ class _ReplyBar extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-      color: isDark ? const Color(0xFF1A2B3C) : Colors.grey.shade100,
+      color: isDark ? ColorTokens.primary20 : Colors.grey.shade100,
       child: Row(
         children: [
           Container(width: 3, height: 36, color: const Color(0xFF1E8BC3)),
@@ -1631,5 +1632,6 @@ class _RecordingBarState extends State<_RecordingBar> {
     );
   }
 }
+
 
 

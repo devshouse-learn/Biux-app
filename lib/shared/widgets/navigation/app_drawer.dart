@@ -662,7 +662,7 @@ class _AppDrawerState extends State<AppDrawer> {
         style: TextStyle(
           fontSize: 14,
           fontWeight: FontWeight.w600,
-          color: isDark ? Colors.white : const Color(0xFF16242D),
+          color: isDark ? Colors.white : ColorTokens.primary30,
         ),
       ),
       subtitle: Text(
@@ -762,5 +762,6 @@ class _AppDrawerState extends State<AppDrawer> {
     }
   }
 }
+
 
 

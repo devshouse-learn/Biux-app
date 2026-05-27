@@ -197,7 +197,7 @@ class _EmergencyScreenState extends State<EmergencyScreen> {
   // ••••••••••••••••••••••••••••••••••••••••••••••••••••••••••
   Widget _buildRecentAccidents(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    final cardColor = isDark ? const Color(0xFF1E2A32) : Colors.white;
+    final cardColor = isDark ? ColorTokens.primary20 : Colors.white;
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -515,7 +515,7 @@ class _EmergencyScreenState extends State<EmergencyScreen> {
   // a”€a”€ NÃºmeros de Emergencia a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€
   Widget _buildQuickEmergency() {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    final cardColor = isDark ? const Color(0xFF1E2A32) : Colors.white;
+    final cardColor = isDark ? ColorTokens.primary20 : Colors.white;
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -690,7 +690,7 @@ class _EmergencyScreenState extends State<EmergencyScreen> {
   // a”€a”€ Contactos de Emergencia a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€
   Widget _buildContacts(BuildContext context, EmergencyProvider p) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    final cardColor = isDark ? const Color(0xFF1E2A32) : Colors.white;
+    final cardColor = isDark ? ColorTokens.primary20 : Colors.white;
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -1116,5 +1116,6 @@ class _EmergencyScreenState extends State<EmergencyScreen> {
     );
   }
 }
+
 
 

@@ -1,10 +1,11 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
+import 'color_tokens.dart';
 
 class DarkTheme {
   static ThemeData get theme => ThemeData(
     brightness: Brightness.dark,
     primaryColor: const Color(0xFF1E8BC3),
-    scaffoldBackgroundColor: const Color(0xFF0D1B2A),
+    scaffoldBackgroundColor: ColorTokens.primary10,
     colorScheme: const ColorScheme.dark(
       primary: Color(0xFF1E8BC3),
       secondary: Color(0xFF26C6DA),
@@ -17,13 +18,13 @@ class DarkTheme {
       elevation: 0,
     ),
     cardTheme: CardThemeData(
-      color: const Color(0xFF1A2B3C),
+      color: ColorTokens.primary20,
       elevation: 2,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
     ),
     inputDecorationTheme: InputDecorationTheme(
       filled: true,
-      fillColor: const Color(0xFF1A2B3C),
+      fillColor: ColorTokens.primary20,
       border: OutlineInputBorder(
         borderRadius: BorderRadius.circular(12),
         borderSide: const BorderSide(color: Color(0xFF2C3E50)),
@@ -54,3 +55,4 @@ class DarkTheme {
     ),
   );
 }
+

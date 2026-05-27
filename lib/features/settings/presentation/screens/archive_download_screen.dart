@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:biux/core/design_system/color_tokens.dart';
@@ -52,7 +52,7 @@ class _ArchiveDownloadScreenState extends State<ArchiveDownloadScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text(l.t('archive_download')),
-        backgroundColor: const Color(0xFF16242D),
+        backgroundColor: ColorTokens.primary30,
         foregroundColor: Colors.white,
       ),
       body: ListView(
@@ -120,3 +120,4 @@ class _ArchiveDownloadScreenState extends State<ArchiveDownloadScreen> {
     );
   }
 }
+

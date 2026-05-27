@@ -1,6 +1,7 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:biux/core/design_system/locale_notifier.dart';
+import 'package:biux/core/design_system/color_tokens.dart';
 
 class LanguageSelectionScreen {
   LanguageSelectionScreen._();
@@ -87,7 +88,7 @@ class _LanguageSheet extends StatelessWidget {
                     decoration: BoxDecoration(
                       color: isSelected
                           ? (isDark
-                                ? const Color(0xFF16242D)
+                                ? ColorTokens.primary30
                                 : const Color(
                                     0xFF16242D,
                                   ).withValues(alpha: 0.1))
@@ -95,7 +96,7 @@ class _LanguageSheet extends StatelessWidget {
                       borderRadius: BorderRadius.circular(12),
                       border: Border.all(
                         color: isSelected
-                            ? const Color(0xFF16242D)
+                            ? ColorTokens.primary30
                             : Colors.transparent,
                         width: isSelected ? 2 : 1,
                       ),
@@ -118,7 +119,7 @@ class _LanguageSheet extends StatelessWidget {
                               color: isSelected
                                   ? (isDark
                                         ? Colors.white
-                                        : const Color(0xFF16242D))
+                                        : ColorTokens.primary30)
                                   : (isDark ? Colors.white70 : Colors.black87),
                             ),
                           ),
@@ -141,3 +142,4 @@ class _LanguageSheet extends StatelessWidget {
     );
   }
 }
+

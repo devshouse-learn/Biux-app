@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -27,7 +27,7 @@ class _BlockedUsersScreenState extends State<BlockedUsersScreen> {
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Scaffold(
-      backgroundColor: isDark ? const Color(0xFF0D1B2A) : Colors.grey.shade50,
+      backgroundColor: isDark ? ColorTokens.primary10 : Colors.grey.shade50,
       appBar: AppBar(
         title: const Text('Usuarios bloqueados'),
         backgroundColor: ColorTokens.primary30,
@@ -137,7 +137,7 @@ class _BlockedUserTile extends StatelessWidget {
         }
 
         return Card(
-          color: isDark ? const Color(0xFF1A2B3C) : Colors.white,
+          color: isDark ? ColorTokens.primary20 : Colors.white,
           margin: const EdgeInsets.only(bottom: 8),
           child: ListTile(
             leading: CircleAvatar(
@@ -168,3 +168,4 @@ class _BlockedUserTile extends StatelessWidget {
     );
   }
 }
+

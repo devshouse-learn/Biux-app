@@ -1,4 +1,5 @@
 ﻿import 'package:flutter/material.dart';
+import 'package:biux/core/design_system/color_tokens.dart';
 import 'package:provider/provider.dart';
 import 'package:biux/core/design_system/locale_notifier.dart';
 import 'package:biux/features/social/domain/entities/notification_entity.dart';
@@ -176,7 +177,7 @@ class _NotificationItemState extends State<NotificationItem> {
                             ? null
                             : () => _handleAccept(context),
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color(0xFF16242D),
+                          backgroundColor: ColorTokens.primary30,
                           foregroundColor: Colors.white,
                           padding: const EdgeInsets.symmetric(horizontal: 16),
                           shape: RoundedRectangleBorder(
@@ -490,5 +491,7 @@ class _NotificationItemState extends State<NotificationItem> {
     }
   }
 }
+
+
 
 

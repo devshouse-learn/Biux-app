@@ -302,7 +302,7 @@ class _ChatScreenState extends State<ChatScreen> {
       context: context,
       backgroundColor: Colors.transparent,
       builder: (_) {
-        final bg = isDark ? const Color(0xFF1A2B3C) : Colors.white;
+        final bg = isDark ? ColorTokens.primary20 : Colors.white;
         final textColor = isDark ? Colors.white : Colors.black87;
         return Container(
           margin: const EdgeInsets.fromLTRB(12, 0, 12, 12),
@@ -754,7 +754,7 @@ class _ChatScreenState extends State<ChatScreen> {
         return Container(
           margin: const EdgeInsets.fromLTRB(12, 0, 12, 12),
           decoration: BoxDecoration(
-            color: isDark ? const Color(0xFF1A2B3C) : Colors.white,
+            color: isDark ? ColorTokens.primary20 : Colors.white,
             borderRadius: BorderRadius.circular(20),
           ),
           child: Column(
@@ -884,12 +884,12 @@ class _ChatScreenState extends State<ChatScreen> {
     final displayPhoto = _otherPhoto;
 
     return Scaffold(
-      backgroundColor: isDark ? const Color(0xFF0D1B2A) : Colors.grey.shade100,
+      backgroundColor: isDark ? ColorTokens.primary10 : Colors.grey.shade100,
       appBar: AppBar(
         automaticallyImplyLeading: !widget.embedded,
         backgroundColor: isDark
-            ? const Color(0xFF0D1B2A)
-            : const Color(0xFF16242D),
+            ? ColorTokens.primary10
+            : ColorTokens.primary30,
         foregroundColor: Colors.white,
         title: _searching
             ? TextField(
@@ -1375,7 +1375,7 @@ class _PinnedMessageBanner extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
         decoration: BoxDecoration(
-          color: isDark ? const Color(0xFF1A2B3C) : Colors.white,
+          color: isDark ? ColorTokens.primary20 : Colors.white,
           border: Border(
             bottom: BorderSide(
               color: const Color(0xFF1E8BC3).withOpacity(0.4),
@@ -1466,7 +1466,7 @@ class _TypingBubbleState extends State<_TypingBubble>
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
       decoration: BoxDecoration(
-        color: widget.isDark ? const Color(0xFF1A2B3C) : Colors.white,
+        color: widget.isDark ? ColorTokens.primary20 : Colors.white,
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
@@ -1577,5 +1577,6 @@ class _StarToastState extends State<_StarToast>
     );
   }
 }
+
 
 

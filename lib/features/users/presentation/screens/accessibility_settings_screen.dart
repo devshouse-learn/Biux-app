@@ -1,4 +1,4 @@
-// ignore_for_file: deprecated_member_use
+﻿// ignore_for_file: deprecated_member_use
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:biux/core/services/accessibility_service.dart';
@@ -15,7 +15,7 @@ class AccessibilitySettingsScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text(l.t('accessibility_appearance')),
-        backgroundColor: const Color(0xFF16242D),
+        backgroundColor: ColorTokens.primary30,
         foregroundColor: Colors.white,
       ),
       body: Consumer2<AccessibilityService, ThemeNotifier>(
@@ -245,3 +245,4 @@ class _ThemeOption extends StatelessWidget {
     );
   }
 }
+
