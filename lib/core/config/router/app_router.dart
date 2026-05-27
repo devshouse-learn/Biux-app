@@ -812,11 +812,6 @@ final GoRouter _router = GoRouter(
     ),
 
     // Bicicletas robadas
-    GoRoute(
-      path: '/shop/stolen-bikes',
-      name: 'stolenBikes',
-      builder: (context, state) => const StolenBikesScreen(),
-    ),
 
     // Education (EducaciÃ³n vial)
     GoRoute(
@@ -940,21 +935,6 @@ final GoRouter _router = GoRouter(
       builder: (context, state) => const ActivityScreenTimeScreen(),
     ),
 
-    // Detalle de producto (fuera del shell para pantalla completa sin bottom nav)
-    // Ruta para agregar producto (debe ir ANTES de /shop/:id)
-    GoRoute(
-      path: '/shop/add-product',
-      name: 'addProduct',
-      builder: (context, state) => const AddProductScreen(),
-    ),
-    GoRoute(
-      path: '/shop/:id',
-      name: 'productDetail',
-      builder: (context, state) {
-        final productId = state.pathParameters['id']!;
-        return ProductDetailScreen(productId: productId);
-      },
-    ),
   ],
   errorBuilder: (context, state) => Scaffold(
     body: Center(
