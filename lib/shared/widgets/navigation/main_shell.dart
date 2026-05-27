@@ -130,7 +130,7 @@ class _MainShellState extends State<MainShell> {
                 label: '',
               ),
               BottomNavigationBarItem(
-                icon: Icon(Icons.shopping_bag, size: 28),
+                icon: Icon(Icons.chat_bubble, size: 28),
                 label: '',
               ),
               BottomNavigationBarItem(
@@ -167,8 +167,8 @@ class _MainShellState extends State<MainShell> {
         context.go(AppRoutes.myBikes);
         break;
       case 3:
-        // Tienda
-        context.go('/shop');
+        // Mensajes
+        context.go(AppRoutes.chatList);
         break;
       case 4:
         // Mi Perfil
@@ -208,7 +208,7 @@ class _MainShellState extends State<MainShell> {
       setState(() {
         _selectedIndex = 2;
       });
-    } else if (location.startsWith('/shop')) {
+    } else if (location.startsWith(AppRoutes.chatList)) {
       setState(() {
         _selectedIndex = 3;
       });
