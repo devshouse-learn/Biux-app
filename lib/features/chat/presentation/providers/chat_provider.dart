@@ -25,7 +25,7 @@ class ChatProvider extends ChangeNotifier {
   Timer? _typingTimer;
   StreamSubscription<Map<String, bool>>? _typingSub;
 
-  // IDs de mensajes optimistas pendientes de confirmaciÃ³n
+  // IDs de mensajes optimistas pendientes de confirmación
   final Set<String> _pendingOptimisticIds = {};
 
   StreamSubscription<List<ChatEntity>>? _chatsSub;
@@ -61,7 +61,7 @@ class ChatProvider extends ChangeNotifier {
         .getMessages(chatId)
         .listen(
           (list) {
-            // Detectar quÃ© optimistic ya fueron confirmados por Firestore
+            // Detectar qué optimistic ya fueron confirmados por Firestore
             // comparando contenido (ya que los IDs no coinciden)
             final confirmedTempIds = <String>{};
             for (final tempId in _pendingOptimisticIds) {
@@ -88,7 +88,7 @@ class ChatProvider extends ChangeNotifier {
           onError: (error) {
             debugPrint('âŒ Error al escuchar mensajes del chat $chatId: $error');
             _error =
-                'No se pudieron cargar los mensajes. Verifica tu conexiÃ³n.';
+                'No se pudieron cargar los mensajes. Verifica tu conexión.';
             notifyListeners();
           },
         );
@@ -330,7 +330,7 @@ class ChatProvider extends ChangeNotifier {
     }
   }
 
-  /// EnvÃ­a mÃºltiples archivos de media (imÃ¡genes, videos y/o audios) en paralelo.
+  /// Envía mÃºltiples archivos de media (imágenes, videos y/o audios) en paralelo.
   Future<void> sendMediaFiles({
     required String chatId,
     required List<File> files,
@@ -372,7 +372,7 @@ class ChatProvider extends ChangeNotifier {
     await Future.wait(futures);
   }
 
-  /// EnvÃ­a un archivo de audio almacenado (no grabaciÃ³n de voz).
+  /// Envía un archivo de audio almacenado (no grabación de voz).
   Future<void> sendAudioFileMessage({
     required String chatId,
     required File audioFile,
@@ -653,7 +653,7 @@ class ChatProvider extends ChangeNotifier {
     );
   }
 
-  /// EnvÃ­o legacy con parÃ¡metros posicionales (compatibilidad)
+  /// Envío legacy con parámetros posicionales (compatibilidad)
 
   Future<void> sendPollMessage({
     required String chatId,
@@ -674,7 +674,7 @@ class ChatProvider extends ChangeNotifier {
       senderId: currentUid,
       senderName: senderName,
       senderAvatar: senderAvatar,
-      content: 'ðŸ“Š $question',
+      content: '“Š $question',
       type: MessageType.poll,
       sentAt: DateTime.now(),
       pollQuestion: question,

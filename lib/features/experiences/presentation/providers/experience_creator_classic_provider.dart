@@ -15,8 +15,8 @@ class MediaItem {
   final double? aspectRatio;
   final String? thumbnailPath;
   final bool isProcessing;
-  final String? url; // URL remota para media ya subida (modo ediciÃ³n)
-  final String? description; // DescripciÃ³n individual por imagen (stories)
+  final String? url; // URL remota para media ya subida (modo edición)
+  final String? description; // Descripción individual por imagen (stories)
 
   const MediaItem({
     required this.filePath,
@@ -56,7 +56,7 @@ class MediaItem {
   }
 }
 
-/// Provider clÃ¡sico para la creaciÃ³n de experiencias
+/// Provider clásico para la creación de experiencias
 class ExperienceCreatorProvider extends ChangeNotifier {
   final ExperienceRepository _repository;
   final ExperienceProvider? _experienceProvider;
@@ -97,7 +97,7 @@ class ExperienceCreatorProvider extends ChangeNotifier {
   bool get isTextOnly => _isTextOnly;
   ExperienceFormat get format => _format;
 
-  /// Actualizar descripciÃ³n
+  /// Actualizar descripción
   void updateDescription(String description) {
     _description = description;
     notifyListeners();
@@ -123,7 +123,7 @@ class ExperienceCreatorProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  /// Agregar imagen desde galerÃ­a
+  /// Agregar imagen desde galería
   Future<void> addImageFromGallery() async {
     if (_mediaItems.length >= 10) {
       _error = 'exp_max_files_allowed';
@@ -151,7 +151,7 @@ class ExperienceCreatorProvider extends ChangeNotifier {
         final mediaItem = MediaItem(
           filePath: image.path,
           mediaType: MediaType.image,
-          duration: 15, // 15 segundos estÃ¡ndar para todas las historias
+          duration: 15, // 15 segundos estándar para todas las historias
         );
 
         _mediaItems = [..._mediaItems, mediaItem];
@@ -163,7 +163,7 @@ class ExperienceCreatorProvider extends ChangeNotifier {
     }
   }
 
-  /// Agregar mÃºltiples imÃ¡genes desde galerÃ­a
+  /// Agregar mÃºltiples imágenes desde galería
   Future<void> addMultipleImagesFromGallery() async {
     try {
       final remaining = 10 - _mediaItems.length;
@@ -235,7 +235,7 @@ class ExperienceCreatorProvider extends ChangeNotifier {
         final mediaItem = MediaItem(
           filePath: image.path,
           mediaType: MediaType.image,
-          duration: 15, // 15 segundos estÃ¡ndar para todas las historias
+          duration: 15, // 15 segundos estándar para todas las historias
         );
 
         _mediaItems = [..._mediaItems, mediaItem];
@@ -264,7 +264,7 @@ class ExperienceCreatorProvider extends ChangeNotifier {
       final mediaItem = MediaItem(
         filePath: croppedImageFile.path,
         mediaType: MediaType.image,
-        duration: 15, // 15 segundos estÃ¡ndar para todas las historias
+        duration: 15, // 15 segundos estándar para todas las historias
       );
 
       _mediaItems = [..._mediaItems, mediaItem];
@@ -276,7 +276,7 @@ class ExperienceCreatorProvider extends ChangeNotifier {
     }
   }
 
-  /// Agregar video desde galerÃ­a
+  /// Agregar video desde galería
   Future<void> addVideoFromGallery() async {
     if (_mediaItems.length >= 10) {
       _error = 'exp_max_files_allowed';
@@ -298,27 +298,27 @@ class ExperienceCreatorProvider extends ChangeNotifier {
           return;
         }
 
-        // Crear controlador de video para obtener duraciÃ³n
+        // Crear controlador de video para obtener duración
         final controller = VideoPlayerController.file(file);
 
         await controller.initialize();
         final duration = controller.value.duration.inSeconds;
         controller.dispose();
 
-        // Validar duraciÃ³n mÃ¡xima de 30 segundos
+        // Validar duración máxima de 30 segundos
         if (duration > 30) {
           _error = 'exp_video_too_long';
           notifyListeners();
           return;
         }
 
-        // Limitar duraciÃ³n de videos a mÃ¡ximo 15 segundos (estÃ¡ndar de historias)
+        // Limitar duración de videos a máximo 15 segundos (estándar de historias)
         final actualDuration = duration > 15 ? 15 : duration;
 
         final mediaItem = MediaItem(
           filePath: video.path,
           mediaType: MediaType.video,
-          duration: actualDuration, // MÃ¡ximo 15 segundos
+          duration: actualDuration, // Máximo 15 segundos
         );
 
         _mediaItems = [..._mediaItems, mediaItem];
@@ -358,20 +358,20 @@ class ExperienceCreatorProvider extends ChangeNotifier {
         final duration = controller.value.duration.inSeconds;
         controller.dispose();
 
-        // Validar duraciÃ³n mÃ¡xima de 30 segundos
+        // Validar duración máxima de 30 segundos
         if (duration > 30) {
           _error = 'exp_video_too_long';
           notifyListeners();
           return;
         }
 
-        // Limitar duraciÃ³n de videos a mÃ¡ximo 15 segundos (estÃ¡ndar de historias)
+        // Limitar duración de videos a máximo 15 segundos (estándar de historias)
         final actualDuration = duration > 15 ? 15 : duration;
 
         final mediaItem = MediaItem(
           filePath: video.path,
           mediaType: MediaType.video,
-          duration: actualDuration, // MÃ¡ximo 15 segundos
+          duration: actualDuration, // Máximo 15 segundos
         );
 
         _mediaItems = [..._mediaItems, mediaItem];
@@ -407,7 +407,7 @@ class ExperienceCreatorProvider extends ChangeNotifier {
 
   /// Crear experiencia
   Future<bool> createExperience() async {
-    // Validar lÃ­mite mÃ¡ximo de archivos
+    // Validar límite máximo de archivos
     if (_mediaItems.length > 10) {
       _error = 'exp_max_files_allowed';
       notifyListeners();
@@ -421,7 +421,7 @@ class ExperienceCreatorProvider extends ChangeNotifier {
       return false;
     }
 
-    // Validar descripciÃ³n solo para posts de solo texto
+    // Validar descripción solo para posts de solo texto
     if (_isTextOnly && _description.trim().isEmpty) {
       _error = 'exp_description_required';
       notifyListeners();
@@ -447,7 +447,7 @@ class ExperienceCreatorProvider extends ChangeNotifier {
           )
           .toList();
 
-      // Crear request de experiencia con el formato explÃ­cito
+      // Crear request de experiencia con el formato explícito
       final request = CreateExperienceRequest(
         description: _description,
         tags: _tags,
@@ -474,7 +474,7 @@ class ExperienceCreatorProvider extends ChangeNotifier {
       _isUploading = false;
       notifyListeners();
 
-      // Limpiar estado despuÃ©s de crear
+      // Limpiar estado después de crear
       reset();
 
       return true;
@@ -492,7 +492,7 @@ class ExperienceCreatorProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  /// Cargar media existente de una experiencia (para modo ediciÃ³n)
+  /// Cargar media existente de una experiencia (para modo edición)
   void loadExistingMedia(List<ExperienceMediaEntity> existingMedia) {
     _mediaItems = existingMedia
         .map(
@@ -510,7 +510,7 @@ class ExperienceCreatorProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  /// Reemplazar un media item en una posiciÃ³n especÃ­fica (para re-crop en ediciÃ³n)
+  /// Reemplazar un media item en una posición específica (para re-crop en edición)
   void replaceMediaItem(int index, MediaItem newItem) {
     if (index >= 0 && index < _mediaItems.length) {
       _mediaItems[index] = newItem;
@@ -518,7 +518,7 @@ class ExperienceCreatorProvider extends ChangeNotifier {
     }
   }
 
-  /// Actualizar la descripciÃ³n de un media item (para stories)
+  /// Actualizar la descripción de un media item (para stories)
   void updateMediaDescription(int index, String description) {
     if (index >= 0 && index < _mediaItems.length) {
       _mediaItems[index] = _mediaItems[index].copyWith(

@@ -33,14 +33,14 @@ class _BiuxNotificationListenerState extends State<BiuxNotificationListener> {
 
       final isOpened = data['opened'] == true;
       if (!isOpened) {
-        // NotificaciÃ³n recibida pero no tocada - mostrar snackbar
+        // Notificación recibida pero no tocada - mostrar snackbar
         try {
           _showNotificationSnackbar(data);
         } on Exception catch (e) {
-          debugPrint('âš ï¸ Error mostrando snackbar de notificaciÃ³n: $e');
+          debugPrint('âš ï¸ Error mostrando snackbar de notificación: $e');
         }
       } else {
-        // NotificaciÃ³n tocada - navegar
+        // Notificación tocada - navegar
         _handleNotificationTap(data);
       }
     });
@@ -57,7 +57,7 @@ class _BiuxNotificationListenerState extends State<BiuxNotificationListener> {
     final scaffoldMessenger = ScaffoldMessenger.maybeOf(context);
     if (scaffoldMessenger == null) {
       debugPrint(
-        'âš ï¸ No hay ScaffoldMessenger disponible para mostrar notificaciÃ³n',
+        'âš ï¸ No hay ScaffoldMessenger disponible para mostrar notificación',
       );
       return;
     }
@@ -98,7 +98,7 @@ class _BiuxNotificationListenerState extends State<BiuxNotificationListener> {
     final targetId = data['targetId'] as String?;
     final targetType = data['targetType'] as String?;
 
-    debugPrint('ðŸ”” Navegando por notificaciÃ³n');
+    debugPrint('”” Navegando por notificación');
     debugPrint('   Type: $type');
     debugPrint('   TargetId: $targetId');
     debugPrint('   TargetType: $targetType');
@@ -128,7 +128,7 @@ class _BiuxNotificationListenerState extends State<BiuxNotificationListener> {
         }
         break;
 
-      // Likes en comentarios (ir al post/ride donde estÃ¡ el comentario)
+      // Likes en comentarios (ir al post/ride donde está el comentario)
       case 'like_comment':
         if (targetId != null) {
           // targetType puede ser 'post' o 'ride'
@@ -211,7 +211,7 @@ class _BiuxNotificationListenerState extends State<BiuxNotificationListener> {
 
       default:
         // Tipo desconocido, ir a notificaciones
-        debugPrint('âš ï¸ Tipo de notificaciÃ³n desconocido: $type');
+        debugPrint('âš ï¸ Tipo de notificación desconocido: $type');
         context.push('/notifications');
     }
   }

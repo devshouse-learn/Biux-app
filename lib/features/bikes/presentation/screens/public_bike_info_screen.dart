@@ -10,8 +10,8 @@ import 'package:biux/features/bikes/domain/entities/bike_entity.dart';
 import 'package:biux/features/bikes/domain/entities/bike_enums.dart';
 import 'package:biux/shared/widgets/images/optimized_image_picker.dart';
 
-/// Pantalla pÃºblica de informaciÃ³n de bicicleta accesible por QR
-/// Muestra informaciÃ³n bÃ¡sica sin datos personales
+/// Pantalla pÃºblica de información de bicicleta accesible por QR
+/// Muestra información básica sin datos personales
 class PublicBikeInfoScreen extends StatefulWidget {
   final String qrCode;
 

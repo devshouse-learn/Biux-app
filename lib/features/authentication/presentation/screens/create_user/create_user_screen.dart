@@ -459,8 +459,8 @@ class _CreateUserScreenState extends State<CreateUserScreen> {
                                       ],
                                     ),
                                     content: const Text(
-                                      'Lo sentimos, Biux estÃ¡ disponible '
-                                      'Ãºnicamente para usuarios mayores de 13 aÃ±os.',
+                                      'Lo sentimos, Biux está disponible '
+                                      'Ãºnicamente para usuarios mayores de 13 años.',
                                       style: TextStyle(height: 1.5),
                                     ),
                                     actions: [

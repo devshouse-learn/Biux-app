@@ -4,7 +4,7 @@ import 'package:biux/features/store/data/models/product_model.dart';
 import 'package:biux/features/store/domain/entities/product_entity.dart';
 import 'package:biux/features/store/domain/repositories/product_repository.dart';
 
-/// ImplementaciÃ³n del repositorio de productos usando Firestore
+/// Implementación del repositorio de productos usando Firestore
 class ProductRepositoryImpl implements ProductRepository {
   final FirebaseFirestore _firestore;
   final String _collection = 'productos';
@@ -14,7 +14,7 @@ class ProductRepositoryImpl implements ProductRepository {
   @override
   Future<List<ProductEntity>> getAllProducts() async {
     try {
-      // Usar solo orderBy para evitar problemas de Ã­ndice compuesto
+      // Usar solo orderBy para evitar problemas de índice compuesto
       final snapshot = await _firestore
           .collection(_collection)
           .orderBy('fechaCreacion', descending: true)
@@ -52,7 +52,7 @@ class ProductRepositoryImpl implements ProductRepository {
 
       return products;
     } on FirebaseException catch (e) {
-      throw Exception('Error al obtener productos por categorÃ­a: $e');
+      throw Exception('Error al obtener productos por categoría: $e');
     }
   }
 

@@ -71,7 +71,7 @@ class AttendeesFirestoreAdapter {
   }
 
   /// Migra un asistente de Firestore â†’ Realtime DB
-  /// Ãštil para migraciÃ³n inicial de datos existentes
+  /// Ãštil para migración inicial de datos existentes
   Future<void> migrateFromFirestore(String rideId) async {
     try {
       final doc = await _firestore.collection('rides').doc(rideId).get();
@@ -90,7 +90,7 @@ class AttendeesFirestoreAdapter {
           userId: userId,
           status: 'confirmed',
           joinedAt: DateTime.now().millisecondsSinceEpoch,
-          userName: '', // Se actualizarÃ¡ desde el perfil
+          userName: '', // Se actualizará desde el perfil
           userPhoto: null,
         );
 
@@ -115,7 +115,7 @@ class AttendeesFirestoreAdapter {
       }
 
       debugPrint(
-        'âœ… Migrados $rideId: ${participants.length} confirmados, ${maybeParticipants.length} tal vez',
+        '✓ Migrados $rideId: ${participants.length} confirmados, ${maybeParticipants.length} tal vez',
       );
     } on FirebaseException catch (e) {
       debugPrint('âŒ Error migrando rodada $rideId: $e');
@@ -128,7 +128,7 @@ class AttendeesFirestoreAdapter {
       final ridesSnapshot = await _firestore.collection('rides').get();
 
       debugPrint(
-        'ðŸš€ Iniciando migraciÃ³n de ${ridesSnapshot.docs.length} rodadas...',
+        'š€ Iniciando migración de ${ridesSnapshot.docs.length} rodadas...',
       );
 
       for (final doc in ridesSnapshot.docs) {
@@ -138,9 +138,9 @@ class AttendeesFirestoreAdapter {
         ); // Evitar rate limiting
       }
 
-      debugPrint('âœ… MigraciÃ³n completada!');
+      debugPrint('✓ Migración completada!');
     } on FirebaseException catch (e) {
-      debugPrint('âŒ Error en migraciÃ³n masiva: $e');
+      debugPrint('âŒ Error en migración masiva: $e');
     }
   }
 
@@ -170,7 +170,7 @@ class AttendeesFirestoreAdapter {
     }
 
     debugPrint(
-      'ðŸ§¹ Limpiados $toRemove.length asistentes cancelados de $rideId',
+      '§¹ Limpiados $toRemove.length asistentes cancelados de $rideId',
     );
   }
 }

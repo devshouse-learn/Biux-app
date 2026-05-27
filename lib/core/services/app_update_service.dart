@@ -8,11 +8,11 @@ import 'package:provider/provider.dart';
 /// Servicio para verificar actualizaciones de la app.
 ///
 /// Lee desde Firestore (via RemoteConfigService):
-/// - `min_version`: versiÃ³n mÃ­nima requerida (force update)
-/// - `latest_version`: Ãºltima versiÃ³n disponible (update sugerido)
+/// - `min_version`: versión mínima requerida (force update)
+/// - `latest_version`: Ãºltima versión disponible (update sugerido)
 /// - `update_url_ios`: URL de App Store
 /// - `update_url_android`: URL de Play Store
-/// - `maintenance_mode`: si la app estÃ¡ en mantenimiento
+/// - `maintenance_mode`: si la app está en mantenimiento
 /// - `maintenance_message`: mensaje de mantenimiento
 class AppUpdateService {
   AppUpdateService._();
@@ -62,7 +62,7 @@ class AppUpdateService {
     final config = RemoteConfigService();
     return config.getString(
       'maintenance_message',
-      defaultValue: 'La app estÃ¡ en mantenimiento. Vuelve pronto.',
+      defaultValue: 'La app está en mantenimiento. Vuelve pronto.',
     );
   }
 

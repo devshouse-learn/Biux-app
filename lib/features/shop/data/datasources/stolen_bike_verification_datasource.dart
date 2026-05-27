@@ -4,16 +4,16 @@ import 'package:biux/features/bikes/domain/entities/bike_theft_entity.dart';
 import 'package:biux/core/services/notification_service.dart';
 import "package:flutter/foundation.dart";
 
-/// Servicio para verificar si una bicicleta estÃ¡ reportada como robada
-/// antes de permitir su publicaciÃ³n en la tienda
+/// Servicio para verificar si una bicicleta está reportada como robada
+/// antes de permitir su publicación en la tienda
 class StolenBikeVerificationService {
   final BikeRepository bikeRepository;
   final NotificationService _notificationService = NotificationService();
 
   StolenBikeVerificationService({required this.bikeRepository});
 
-  /// Verifica si una bicicleta estÃ¡ reportada como robada
-  /// basÃ¡ndose en el nÃºmero de serie del cuadro
+  /// Verifica si una bicicleta está reportada como robada
+  /// basándose en el nÃºmero de serie del cuadro
   Future<VerificationResult> verifyBikeNotStolen({
     required String frameSerial,
     String? brand,
@@ -23,13 +23,13 @@ class StolenBikeVerificationService {
     String? sellerName,
   }) async {
     try {
-      debugPrint('ðŸ” Verificando bicicleta con nÃºmero de serie: $frameSerial');
+      debugPrint('” Verificando bicicleta con nÃºmero de serie: $frameSerial');
 
       // Buscar bicicletas registradas con ese nÃºmero de serie
       final bikes = await bikeRepository.searchBikes(frameSerial: frameSerial);
 
       if (bikes.isEmpty) {
-        debugPrint('âœ… No se encontrÃ³ la bicicleta registrada en el sistema');
+        debugPrint('✓ No se encontró la bicicleta registrada en el sistema');
         return VerificationResult(
           isStolen: false,
           isRegistered: false,
@@ -38,14 +38,14 @@ class StolenBikeVerificationService {
       }
 
       debugPrint(
-        'ðŸ“‹ Encontradas ${bikes.length} bicicleta(s) con ese nÃºmero de serie',
+        '“‹ Encontradas ${bikes.length} bicicleta(s) con ese nÃºmero de serie',
       );
 
       // Verificar cada bicicleta encontrada
       for (final bike in bikes) {
-        // Verificar si la bicicleta estÃ¡ actualmente reportada como robada
+        // Verificar si la bicicleta está actualmente reportada como robada
         if (bike.status.toString().contains('stolen')) {
-          debugPrint('âš ï¸ Â¡ALERTA! Bicicleta reportada como robada');
+          debugPrint('âš ï¸ ¡ALERTA! Bicicleta reportada como robada');
 
           // Obtener detalles del reporte de robo
           final theftReports = await bikeRepository.getTheftReports(bike.id);
@@ -54,7 +54,7 @@ class StolenBikeVerificationService {
             orElse: () => theftReports.first,
           );
 
-          // ðŸš¨ NUEVA FUNCIONALIDAD: Notificar al propietario y administradores
+          // š¨ NUEVA FUNCIONALIDAD: Notificar al propietario y administradores
           if (sellerUid != null && sellerName != null) {
             await _notificationService.notifyStolenBikeSaleAttempt(
               bikeOwnerId: bike.ownerId,
@@ -82,15 +82,15 @@ class StolenBikeVerificationService {
             message: 'âš ï¸ BICICLETA REPORTADA COMO ROBADA',
             details:
                 'Esta bicicleta fue reportada como robada el ${_formatDate(activeReport.theftDate)}. '
-                'UbicaciÃ³n del robo: ${activeReport.location}. '
+                'Ubicación del robo: ${activeReport.location}. '
                 'No se permite la venta de bicicletas robadas.\n\n'
-                'ðŸš¨ El propietario y los administradores han sido notificados de este intento.',
+                'š¨ El propietario y los administradores han sido notificados de este intento.',
           );
         }
 
         // Verificar coincidencias adicionales para mayor seguridad
         if (_matchesBikeDescription(bike, brand, model, color)) {
-          debugPrint('âœ… Bicicleta registrada y NO robada');
+          debugPrint('✓ Bicicleta registrada y NO robada');
           return VerificationResult(
             isStolen: false,
             isRegistered: true,
@@ -106,13 +106,13 @@ class StolenBikeVerificationService {
       return VerificationResult(
         isStolen: false,
         isRegistered: true,
-        message: 'VerificaciÃ³n parcial completada',
+        message: 'Verificación parcial completada',
         details:
             'Se encontraron bicicletas registradas con nÃºmero de serie similar. '
-            'Recomendamos verificaciÃ³n manual.',
+            'Recomendamos verificación manual.',
       );
     } on Exception catch (e) {
-      debugPrint('âŒ Error en verificaciÃ³n: $e');
+      debugPrint('âŒ Error en verificación: $e');
       return VerificationResult(
         isStolen: false,
         isRegistered: false,
@@ -136,10 +136,10 @@ class StolenBikeVerificationService {
   /// Obtiene todos los reportes de robo activos
   Future<List<StolenBikeInfo>> getAllStolenBikes() async {
     try {
-      // Obtener todas las ciudades (simplificado - en producciÃ³n serÃ­a una consulta mÃ¡s eficiente)
+      // Obtener todas las ciudades (simplificado - en producción sería una consulta más eficiente)
       final cities = [
-        'BogotÃ¡',
-        'MedellÃ­n',
+        'Bogotá',
+        'Medellín',
         'Cali',
         'Barranquilla',
         'Cartagena',
@@ -193,15 +193,15 @@ class StolenBikeVerificationService {
   }
 }
 
-/// Resultado de la verificaciÃ³n de una bicicleta
+/// Resultado de la verificación de una bicicleta
 class VerificationResult {
-  final bool isStolen; // Si estÃ¡ reportada como robada
-  final bool isRegistered; // Si estÃ¡ registrada en el sistema
+  final bool isStolen; // Si está reportada como robada
+  final bool isRegistered; // Si está registrada en el sistema
   final BikeEntity? bike; // Datos de la bicicleta si existe
   final BikeTheftEntity? theftReport; // Reporte de robo si existe
   final String message; // Mensaje principal
   final String? details; // Detalles adicionales
-  final bool hasError; // Si hubo un error en la verificaciÃ³n
+  final bool hasError; // Si hubo un error en la verificación
 
   const VerificationResult({
     required this.isStolen,
@@ -216,7 +216,7 @@ class VerificationResult {
   bool get canBeSold => !isStolen && !hasError;
 }
 
-/// InformaciÃ³n combinada de bicicleta robada y su reporte
+/// Información combinada de bicicleta robada y su reporte
 class StolenBikeInfo {
   final BikeEntity bike;
   final BikeTheftEntity theftReport;

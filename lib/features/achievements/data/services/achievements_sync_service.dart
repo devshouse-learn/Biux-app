@@ -19,11 +19,11 @@ class AchievementsSyncService {
 
       if (daysSinceSync >= _syncIntervalDays) {
         debugPrint(
-          'ðŸ”„ Logros: Sincronizando (ultima vez hace \${daysSinceSync.toInt()} dias)',
+          '”„ Logros: Sincronizando (ultima vez hace \${daysSinceSync.toInt()} dias)',
         );
         await fullSync(userId);
         await prefs.setInt(_lastSyncKey, now);
-        debugPrint('âœ… Logros: Sincronizacion semanal completada');
+        debugPrint('✓ Logros: Sincronizacion semanal completada');
       } else {
         debugPrint(
           'â­ï¸ Logros: No necesita sincronizar (faltan \${(_syncIntervalDays - daysSinceSync).toInt()} dias)',
@@ -198,7 +198,7 @@ class AchievementsSyncService {
         .set(updates, SetOptions(merge: true));
 
     debugPrint(
-      'ðŸ“Š Sync completo: \${accumKm.toStringAsFixed(1)} km, \$totalRides rodadas, max \${bestMaxSpeed.toStringAsFixed(1)} km/h, racha \$streak dias, \$groupCount grupos',
+      '“Š Sync completo: \${accumKm.toStringAsFixed(1)} km, \$totalRides rodadas, max \${bestMaxSpeed.toStringAsFixed(1)} km/h, racha \$streak dias, \$groupCount grupos',
     );
   }
 

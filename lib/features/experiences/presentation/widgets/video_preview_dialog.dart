@@ -5,7 +5,7 @@ import 'package:video_player/video_player.dart';
 import 'package:biux/core/design_system/color_tokens.dart';
 import 'package:biux/core/design_system/locale_notifier.dart';
 
-/// DiÃ¡logo para previsualizar videos antes de agregarlos
+/// Diálogo para previsualizar videos antes de agregarlos
 class VideoPreviewDialog extends StatefulWidget {
   final File videoFile;
   final String? title;
@@ -128,7 +128,7 @@ class _VideoPreviewDialogState extends State<VideoPreviewDialog> {
               ),
             ),
 
-            // Controls y informaciÃ³n del video
+            // Controls y información del video
             if (_isInitialized) _buildVideoInfo(),
 
             // Action buttons
@@ -316,7 +316,7 @@ class _VideoPreviewDialogState extends State<VideoPreviewDialog> {
   }
 }
 
-/// FunciÃ³n helper para mostrar el diÃ¡logo de vista previa
+/// Función helper para mostrar el diálogo de vista previa
 Future<bool?> showVideoPreviewDialog({
   required BuildContext context,
   required File videoFile,

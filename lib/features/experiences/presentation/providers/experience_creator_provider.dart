@@ -6,7 +6,7 @@ import 'package:biux/features/experiences/domain/repositories/experience_reposit
 import 'package:biux/features/experiences/presentation/providers/experience_provider.dart';
 import 'package:biux/features/experiences/data/datasources/video_experience_datasource.dart';
 
-/// Estado para la creaciÃ³n de experiencias
+/// Estado para la creación de experiencias
 class ExperienceCreatorState {
   final List<MediaItem> mediaItems;
   final String description;
@@ -167,7 +167,7 @@ class MediaItem {
   }
 }
 
-/// Provider para la creaciÃ³n de experiencias
+/// Provider para la creación de experiencias
 final experienceCreatorProvider =
     StateNotifierProvider<ExperienceCreatorNotifier, ExperienceCreatorState>((
       ref,
@@ -177,7 +177,7 @@ final experienceCreatorProvider =
       return ExperienceCreatorNotifier(repository, experienceNotifier);
     });
 
-/// Notifier para la creaciÃ³n de experiencias
+/// Notifier para la creación de experiencias
 class ExperienceCreatorNotifier extends StateNotifier<ExperienceCreatorState> {
   // final ExperienceRepository _repository; // PENDIENTE: Usar si se necesita acceso directo al repository
   final ExperienceNotifier _experienceNotifier;
@@ -189,7 +189,7 @@ class ExperienceCreatorNotifier extends StateNotifier<ExperienceCreatorState> {
     this._experienceNotifier,
   ) : super(const ExperienceCreatorState());
 
-  /// Actualizar descripciÃ³n
+  /// Actualizar descripción
   void updateDescription(String description) {
     state = state.copyWith(description: description);
   }
@@ -212,7 +212,7 @@ class ExperienceCreatorNotifier extends StateNotifier<ExperienceCreatorState> {
     );
   }
 
-  /// Agregar imagen desde galerÃ­a
+  /// Agregar imagen desde galería
   Future<void> addImageFromGallery() async {
     try {
       final XFile? image = await _imagePicker.pickImage(
@@ -226,7 +226,7 @@ class ExperienceCreatorNotifier extends StateNotifier<ExperienceCreatorState> {
         final mediaItem = MediaItem(
           filePath: image.path,
           mediaType: MediaType.image,
-          duration: 15, // 15 segundos por defecto para imÃ¡genes
+          duration: 15, // 15 segundos por defecto para imágenes
         );
 
         state = state.copyWith(mediaItems: [...state.mediaItems, mediaItem]);
@@ -236,7 +236,7 @@ class ExperienceCreatorNotifier extends StateNotifier<ExperienceCreatorState> {
     }
   }
 
-  /// Tomar foto con cÃ¡mara
+  /// Tomar foto con cámara
   Future<void> takePhoto() async {
     try {
       final XFile? image = await _imagePicker.pickImage(
@@ -260,7 +260,7 @@ class ExperienceCreatorNotifier extends StateNotifier<ExperienceCreatorState> {
     }
   }
 
-  /// Agregar video desde galerÃ­a
+  /// Agregar video desde galería
   Future<void> addVideoFromGallery() async {
     try {
       final XFile? video = await _imagePicker.pickVideo(
@@ -276,7 +276,7 @@ class ExperienceCreatorNotifier extends StateNotifier<ExperienceCreatorState> {
     }
   }
 
-  /// Grabar video con cÃ¡mara
+  /// Grabar video con cámara
   Future<void> recordVideo() async {
     try {
       final XFile? video = await _imagePicker.pickVideo(
@@ -292,7 +292,7 @@ class ExperienceCreatorNotifier extends StateNotifier<ExperienceCreatorState> {
     }
   }
 
-  /// Procesar video (validar duraciÃ³n, comprimir, generar thumbnail)
+  /// Procesar video (validar duración, comprimir, generar thumbnail)
   Future<void> _processVideo(String videoPath) async {
     try {
       // Marcar como procesando
@@ -307,10 +307,10 @@ class ExperienceCreatorNotifier extends StateNotifier<ExperienceCreatorState> {
 
       final xFile = XFile(videoPath);
 
-      // Validar duraciÃ³n del video
+      // Validar duración del video
       await _videoService.validateVideoDuration(xFile);
 
-      // Obtener informaciÃ³n real del video
+      // Obtener información real del video
       final videoInfo = await _videoService.getVideoInfo(xFile);
 
       final basicVideoItem = MediaItem(
@@ -406,7 +406,7 @@ class ExperienceCreatorNotifier extends StateNotifier<ExperienceCreatorState> {
       // Crear experiencia usando el ExperienceNotifier para actualizar las listas
       await _experienceNotifier.createExperience(request);
 
-      // Limpiar estado despuÃ©s de Ã©xito
+      // Limpiar estado después de éxito
       state = const ExperienceCreatorState();
       return true;
     } on Exception catch (e) {

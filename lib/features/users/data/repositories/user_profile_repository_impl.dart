@@ -44,7 +44,7 @@ class UserProfileRepositoryImpl implements UserProfileRepository {
     return 1.0 - (distances[s1.length][s2.length] / maxLength);
   }
 
-  // Calcula una puntuaciÃ³n de relevancia para cada usuario
+  // Calcula una puntuación de relevancia para cada usuario
   double _calculateSearchScore(BiuxUser user, String query) {
     final q = query.toLowerCase().trim();
     if (q.isEmpty) return 0.0;
@@ -52,7 +52,7 @@ class UserProfileRepositoryImpl implements UserProfileRepository {
     final fullName = user.fullName.toLowerCase();
     final userName = user.userName.toLowerCase();
 
-    // 1. Coincidencia exacta (mÃ¡xima prioridad: 1.0)
+    // 1. Coincidencia exacta (máxima prioridad: 1.0)
     if (fullName == q || userName == q) return 1.0;
 
     // 2. Comienza con (muy alta prioridad: 0.95)
@@ -94,10 +94,10 @@ class UserProfileRepositoryImpl implements UserProfileRepository {
           userData['id'] = doc.id;
           final user = BiuxUser.fromJsonMap(userData);
 
-          // Calcular puntuaciÃ³n de relevancia
+          // Calcular puntuación de relevancia
           final score = _calculateSearchScore(user, q);
 
-          // Solo incluir si tiene relevancia mÃ­nima (15%)
+          // Solo incluir si tiene relevancia mínima (15%)
           // Umbral bajo permite bÃºsquedas por 1-2 caracteres (como Instagram)
           if (score > 0.15) {
             resultsWithScore.add(MapEntry(user, score));
@@ -108,10 +108,10 @@ class UserProfileRepositoryImpl implements UserProfileRepository {
         }
       }
 
-      // Ordenar por puntuaciÃ³n descendente (mÃ¡s relevante primero)
+      // Ordenar por puntuación descendente (más relevante primero)
       resultsWithScore.sort((a, b) => b.value.compareTo(a.value));
 
-      // Retornar solo los usuarios (sin la puntuaciÃ³n)
+      // Retornar solo los usuarios (sin la puntuación)
       return resultsWithScore.map((e) => e.key).toList();
     } on FirebaseException catch (e) {
       debugPrint('âŒ Error buscando usuarios: $e');
@@ -155,7 +155,7 @@ class UserProfileRepositoryImpl implements UserProfileRepository {
 
       await batch.commit();
 
-      // Crear notificaciÃ³n de seguimiento en Realtime Database
+      // Crear notificación de seguimiento en Realtime Database
       try {
         final currentUser = await _firestore
             .collection('users')
@@ -178,8 +178,8 @@ class UserProfileRepositoryImpl implements UserProfileRepository {
           fromUserPhoto: fromUserPhoto,
         );
       } catch (notifError) {
-        debugPrint('Error creando notificaciÃ³n de seguimiento: $notifError');
-        // No fallar la operaciÃ³n si la notificaciÃ³n falla
+        debugPrint('Error creando notificación de seguimiento: $notifError');
+        // No fallar la operación si la notificación falla
       }
 
       return true;
@@ -282,8 +282,8 @@ class UserProfileRepositoryImpl implements UserProfileRepository {
   @override
   Future<List<BiuxUser>> getUserExperiences(String userId) async {
     try {
-      // Este mÃ©todo podrÃ­a obtener las experiencias del usuario
-      // Por ahora retornamos una lista vacÃ­a ya que las experiencias
+      // Este método podría obtener las experiencias del usuario
+      // Por ahora retornamos una lista vacía ya que las experiencias
       // se manejan en otro feature
       return [];
     } on FirebaseException catch (e) {
@@ -320,7 +320,7 @@ class UserProfileRepositoryImpl implements UserProfileRepository {
     try {
       if (_currentUserId == null || _currentUserId == userId) return false;
 
-      debugPrint('ðŸ“¨ sendFollowRequest: de $_currentUserId a $userId');
+      debugPrint('“¨ sendFollowRequest: de $_currentUserId a $userId');
 
       final currentUser = await _firestore
           .collection('users')
@@ -329,7 +329,7 @@ class UserProfileRepositoryImpl implements UserProfileRepository {
       final currentUserData = currentUser.data();
 
       debugPrint(
-        'ðŸ“¨ currentUserData: fullName=${currentUserData?['fullName']}, userName=${currentUserData?['userName']}, photo=${currentUserData?['photo']}',
+        '“¨ currentUserData: fullName=${currentUserData?['fullName']}, userName=${currentUserData?['userName']}, photo=${currentUserData?['photo']}',
       );
 
       // Create follow request document in the target user's subcollection
@@ -349,7 +349,7 @@ class UserProfileRepositoryImpl implements UserProfileRepository {
             'createdAt': FieldValue.serverTimestamp(),
           });
 
-      debugPrint('âœ… Follow request creado en Firestore');
+      debugPrint('✓ Follow request creado en Firestore');
 
       // Create notification in Realtime Database (where the app reads from)
       try {
@@ -360,7 +360,7 @@ class UserProfileRepositoryImpl implements UserProfileRepository {
         final fromUserPhoto = currentUserData?['photo'] as String?;
 
         debugPrint(
-          'ðŸ“¨ Creando notificaciÃ³n en RTDB para userId: $userId, fromUserName: $fromUserName',
+          '“¨ Creando notificación en RTDB para userId: $userId, fromUserName: $fromUserName',
         );
 
         final notificationsRepo = NotificationsRepositoryImpl();
@@ -373,10 +373,10 @@ class UserProfileRepositoryImpl implements UserProfileRepository {
           notificationId: 'follow_request_${_currentUserId}',
         );
         debugPrint(
-          'âœ… NotificaciÃ³n de follow_request creada en RTDB para $userId',
+          '✓ Notificación de follow_request creada en RTDB para $userId',
         );
       } catch (notifError) {
-        debugPrint('âŒ Error creando notificaciÃ³n de solicitud: $notifError');
+        debugPrint('âŒ Error creando notificación de solicitud: $notifError');
       }
 
       return true;
@@ -455,7 +455,7 @@ class UserProfileRepositoryImpl implements UserProfileRepository {
           fromUserPhoto: fromUserPhoto,
         );
       } catch (notifError) {
-        debugPrint('Error creando notificaciÃ³n de aceptaciÃ³n: $notifError');
+        debugPrint('Error creando notificación de aceptación: $notifError');
       }
 
       // Delete the follow_request notification from the current user
@@ -466,7 +466,7 @@ class UserProfileRepositoryImpl implements UserProfileRepository {
           'follow_request_$requesterId',
         );
       } on FirebaseException catch (e) {
-        debugPrint('Error eliminando notificaciÃ³n de solicitud: $e');
+        debugPrint('Error eliminando notificación de solicitud: $e');
       }
 
       return true;
@@ -496,7 +496,7 @@ class UserProfileRepositoryImpl implements UserProfileRepository {
           'follow_request_$requesterId',
         );
       } on FirebaseException catch (e) {
-        debugPrint('Error eliminando notificaciÃ³n de solicitud: $e');
+        debugPrint('Error eliminando notificación de solicitud: $e');
       }
 
       return true;

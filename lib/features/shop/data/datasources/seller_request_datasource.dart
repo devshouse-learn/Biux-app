@@ -24,7 +24,7 @@ class SellerRequestService {
     required String message,
   }) async {
     try {
-      debugPrint('Â­Æ’Ã´Ã˜ Creando solicitud de vendedor para: $userName');
+      debugPrint('­Æ’Ã´Ã˜ Creando solicitud de vendedor para: $userName');
 
       // Verificar si ya existe una solicitud pendiente
       final existingRequest = await _requestsCollection
@@ -34,12 +34,12 @@ class SellerRequestService {
           .get();
 
       if (existingRequest.docs.isNotEmpty) {
-        debugPrint('Ã”ÃœÃ¡Â´Â©Ã… Ya existe una solicitud pendiente');
+        debugPrint('Ã”Ãœá´©Ã… Ya existe una solicitud pendiente');
         throw Exception('Ya tienes una solicitud pendiente de revisiâ”œâ”‚n');
       }
 
       final request = SellerRequestModel(
-        id: '', // Se generarâ”œÃ­ automâ”œÃ­ticamente
+        id: '', // Se generarâ”œí automâ”œíticamente
         userId: userId,
         userName: userName,
         userPhoto: userPhoto,
@@ -51,7 +51,7 @@ class SellerRequestService {
 
       final docRef = await _requestsCollection.add(request.toMap());
 
-      debugPrint('Ã”Â£Ã  Solicitud creada con ID: ${docRef.id}');
+      debugPrint('Ã”£Ã  Solicitud creada con ID: ${docRef.id}');
       return docRef.id;
     } on FirebaseException catch (e) {
       debugPrint('Ã”Ã˜Ã® Error creando solicitud: $e');
@@ -84,7 +84,7 @@ class SellerRequestService {
         });
   }
 
-  /// Obtiene las solicitudes de un usuario especâ”œÂ¡fico
+  /// Obtiene las solicitudes de un usuario especâ”œ¡fico
   Stream<List<SellerRequestEntity>> getUserRequests(String userId) {
     return _requestsCollection
         .where('userId', isEqualTo: userId)
@@ -104,7 +104,7 @@ class SellerRequestService {
     String? comment,
   }) async {
     try {
-      debugPrint('Ã”Â£Ã  Aprobando solicitud: $requestId');
+      debugPrint('Ã”£Ã  Aprobando solicitud: $requestId');
 
       // Obtener la solicitud
       final requestDoc = await _requestsCollection.doc(requestId).get();
@@ -132,7 +132,7 @@ class SellerRequestService {
       });
 
       debugPrint(
-        'Ã”Â£Ã  Usuario ${request.userName} ahora es vendedor autorizado',
+        'Ã”£Ã  Usuario ${request.userName} ahora es vendedor autorizado',
       );
     } on FirebaseException catch (e) {
       debugPrint('Ã”Ã˜Ã® Error aprobando solicitud: $e');
@@ -156,7 +156,7 @@ class SellerRequestService {
         'reviewComment': comment ?? 'Solicitud rechazada',
       });
 
-      debugPrint('Ã”Â£Ã  Solicitud rechazada');
+      debugPrint('Ã”£Ã  Solicitud rechazada');
     } on FirebaseException catch (e) {
       debugPrint('Ã”Ã˜Ã® Error rechazando solicitud: $e');
       rethrow;
@@ -167,7 +167,7 @@ class SellerRequestService {
   Future<void> deleteRequest(String requestId) async {
     try {
       await _requestsCollection.doc(requestId).delete();
-      debugPrint('Â­Æ’Ã¹Ã¦Â´Â©Ã… Solicitud eliminada: $requestId');
+      debugPrint('­Æ’úÃ¦´©Ã… Solicitud eliminada: $requestId');
     } on FirebaseException catch (e) {
       debugPrint('Ã”Ã˜Ã® Error eliminando solicitud: $e');
       rethrow;

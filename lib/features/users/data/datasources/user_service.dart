@@ -58,7 +58,7 @@ class UserService {
     }
   }
 
-  /// Actualizar el nÃºmero de telÃ©fono del usuario en Firestore
+  /// Actualizar el nÃºmero de teléfono del usuario en Firestore
   Future<void> updatePhoneNumber(String uid, String phoneNumber) async {
     try {
       await _firestore.collection('users').doc(uid).update({
@@ -138,7 +138,7 @@ class UserService {
 
     try {
       if (uid.isEmpty) {
-        AppLogger.warning('UID vacÃ­o en updateUserProfile', tag: 'UserService');
+        AppLogger.warning('UID vacío en updateUserProfile', tag: 'UserService');
         return false;
       }
 
@@ -225,7 +225,7 @@ class UserService {
       return true;
     } on FirebaseException catch (e) {
       AppLogger.error(
-        'Error solicitando eliminaciÃ³n',
+        'Error solicitando eliminación',
         tag: 'UserService',
         error: e,
       );
@@ -401,7 +401,7 @@ class UserService {
       followers.remove(currentUserId);
       int newFollowerSCount = followers.length;
 
-      // ValidaciÃ³n: asegurar que el contador no sea negativo
+      // Validación: asegurar que el contador no sea negativo
       if (newFollowerSCount < 0) newFollowerSCount = 0;
       if (newFollowingCount < 0) newFollowingCount = 0;
 

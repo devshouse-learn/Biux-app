@@ -72,7 +72,7 @@ class _ImageCropEditorScreenState extends State<ImageCropEditorScreen> {
     }
   }
 
-  /// Calcula la escala mÃ­nima para que la imagen cubra el marco cuadrado
+  /// Calcula la escala mínima para que la imagen cubra el marco cuadrado
   double _calcFitScale(double frameSize, Size imageDisplaySize) {
     final scaleX = frameSize / imageDisplaySize.width;
     final scaleY = frameSize / imageDisplaySize.height;
@@ -86,7 +86,7 @@ class _ImageCropEditorScreenState extends State<ImageCropEditorScreen> {
 
     final halfFrame = frameSize / 2;
 
-    // Limitar desplazamiento para que el marco siempre estÃ© dentro de la imagen
+    // Limitar desplazamiento para que el marco siempre esté dentro de la imagen
     final minX = halfFrame - scaledW / 2;
     final maxX = scaledW / 2 - halfFrame;
     final minY = halfFrame - scaledH / 2;
@@ -129,15 +129,15 @@ class _ImageCropEditorScreenState extends State<ImageCropEditorScreen> {
       // Escala total aplicada (displayScale * _scale)
       final totalScale = displayScale * _scale;
 
-      // Centro de la imagen en pantalla: estÃ¡ en el centro del container,
+      // Centro de la imagen en pantalla: está en el centro del container,
       // desplazada por _offset
-      // El marco cuadrado estÃ¡ centrado en el container
+      // El marco cuadrado está centrado en el container
 
-      // PosiciÃ³n del centro del marco relativa al centro de la imagen original (en pÃ­xeles de imagen)
+      // Posición del centro del marco relativa al centro de la imagen original (en píxeles de imagen)
       final cropCenterX = (imageW / 2) - (_offset.dx / totalScale);
       final cropCenterY = (imageH / 2) - (_offset.dy / totalScale);
 
-      // TamaÃ±o del recorte en pÃ­xeles de imagen
+      // Tamaño del recorte en píxeles de imagen
       final cropSizeInImage = frameSize / totalScale;
 
       // Coordenadas del recorte
@@ -231,7 +231,7 @@ class _ImageCropEditorScreenState extends State<ImageCropEditorScreen> {
       ),
       body: Column(
         children: [
-          // Ãrea de ediciÃ³n
+          // Ãrea de edición
           Expanded(
             child: LayoutBuilder(
               builder: (context, constraints) {
@@ -241,7 +241,7 @@ class _ImageCropEditorScreenState extends State<ImageCropEditorScreen> {
                 // Guardar dimensiones reales del contenedor para usarlas en _onAccept
                 _containerSize = Size(containerW, containerH);
 
-                // Calcular cÃ³mo se muestra la imagen con BoxFit.contain
+                // Calcular cómo se muestra la imagen con BoxFit.contain
                 final imageW = _originalImageSize!.width;
                 final imageH = _originalImageSize!.height;
                 final displayScale = math.min(
@@ -252,7 +252,7 @@ class _ImageCropEditorScreenState extends State<ImageCropEditorScreen> {
                 final displayH = imageH * displayScale;
                 final imageDisplaySize = Size(displayW, displayH);
 
-                // Escala mÃ­nima para cubrir el marco
+                // Escala mínima para cubrir el marco
                 _fitScale = _calcFitScale(frameSize, imageDisplaySize);
                 final minScale = _fitScale;
 
@@ -276,7 +276,7 @@ class _ImageCropEditorScreenState extends State<ImageCropEditorScreen> {
                       });
                     },
                     onScaleEnd: (_) {
-                      // Asegurar escala mÃ­nima
+                      // Asegurar escala mínima
                       if (_scale < minScale) {
                         setState(() {
                           _scale = minScale;
@@ -306,7 +306,7 @@ class _ImageCropEditorScreenState extends State<ImageCropEditorScreen> {
                           ),
                         ),
 
-                        // Oscuridad fuera del marco (4 rectÃ¡ngulos)
+                        // Oscuridad fuera del marco (4 rectángulos)
                         // Arriba
                         Positioned(
                           top: 0,
@@ -358,7 +358,7 @@ class _ImageCropEditorScreenState extends State<ImageCropEditorScreen> {
                             ),
                             child: Stack(
                               children: [
-                                // LÃ­neas de tercios horizontales
+                                // Líneas de tercios horizontales
                                 Positioned(
                                   top: frameSize / 3 - 0.5,
                                   left: 0,
@@ -377,7 +377,7 @@ class _ImageCropEditorScreenState extends State<ImageCropEditorScreen> {
                                     color: Colors.white38,
                                   ),
                                 ),
-                                // LÃ­neas de tercios verticales
+                                // Líneas de tercios verticales
                                 Positioned(
                                   left: frameSize / 3 - 0.5,
                                   top: 0,

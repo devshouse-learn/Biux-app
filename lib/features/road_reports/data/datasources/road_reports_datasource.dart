@@ -87,7 +87,7 @@ class RoadReportsDatasource {
         return false;
       }
 
-      // Agregar confirmacion con arrayUnion (atÃ³mico, evita duplicados)
+      // Agregar confirmacion con arrayUnion (atómico, evita duplicados)
       await docRef.update({
         'confirmations': FieldValue.increment(1),
         'confirmedBy': FieldValue.arrayUnion([userId]),

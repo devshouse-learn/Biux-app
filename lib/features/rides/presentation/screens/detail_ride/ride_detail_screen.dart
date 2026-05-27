@@ -55,7 +55,7 @@ class _RideDetailScreenState extends State<RideDetailScreen>
         listen: false,
       ).startListening();
 
-      // Si viene desde notificaciÃ³n, abrir comentarios automÃ¡ticamente
+      // Si viene desde notificación, abrir comentarios automáticamente
       if (widget.openComments) {
         _openComments();
       }
@@ -141,7 +141,7 @@ class _RideDetailScreenState extends State<RideDetailScreen>
                     },
                   ),
                   actions: [
-                    // BotÃ³n de editar (solo para el creador)
+                    // Botón de editar (solo para el creador)
                     if (ride.createdBy == rideProvider.currentUserId &&
                         ride.status != RideStatus.cancelled &&
                         ride.status != RideStatus.completed)
@@ -241,7 +241,7 @@ class _RideDetailScreenState extends State<RideDetailScreen>
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Banner de cancelaciÃ³n
+          // Banner de cancelación
           if (ride.status == RideStatus.cancelled)
             Container(
               width: double.infinity,
@@ -286,11 +286,11 @@ class _RideDetailScreenState extends State<RideDetailScreen>
               ),
             ),
 
-          // InformaciÃ³n del grupo organizador
+          // Información del grupo organizador
           GroupInfoWidget(ride: ride),
           SizedBox(height: 16),
 
-          // InformaciÃ³n bÃ¡sica
+          // Información básica
           BasicInfoWidget(ride: ride),
           SizedBox(height: 16),
 
@@ -319,11 +319,11 @@ class _RideDetailScreenState extends State<RideDetailScreen>
           RideSocialActions(rideId: ride.id, rideOwnerId: ride.createdBy),
           SizedBox(height: 24),
 
-          // Participantes + botÃ³n de asistencia
+          // Participantes + botón de asistencia
           ParticipantsSectionWidget(ride: ride),
           SizedBox(height: 24),
 
-          // BotÃ³n de compartir
+          // Botón de compartir
           SizedBox(
             width: double.infinity,
             child: OutlinedButton.icon(
@@ -338,7 +338,7 @@ class _RideDetailScreenState extends State<RideDetailScreen>
             ),
           ),
 
-          // Si es el creador, botÃ³n de cancelar
+          // Si es el creador, botón de cancelar
           if (ride.createdBy == rideProvider.currentUserId &&
               ride.status != RideStatus.cancelled &&
               ride.status != RideStatus.completed) ...[
@@ -483,7 +483,7 @@ class _RideDetailScreenState extends State<RideDetailScreen>
   Future<void> _shareRide(BuildContext context, RideModel ride) async {
     final l = Provider.of<LocaleNotifier>(context, listen: false);
     try {
-      // Obtener informaciÃ³n del grupo
+      // Obtener información del grupo
       final provider = Provider.of<RideProvider>(context, listen: false);
       final groupInfo = await provider.getGroupInfo(ride.groupId);
       final groupName = groupInfo?['name'] ?? l.t('a_cycling_group');
@@ -510,7 +510,7 @@ class _RideDetailScreenState extends State<RideDetailScreen>
               ShareParams(files: [XFile(file.path)], text: shareText),
             );
 
-            // Limpiar archivo temporal despuÃ©s de compartir
+            // Limpiar archivo temporal después de compartir
             await file.delete();
           } else {
             // Si falla la descarga, compartir solo texto
@@ -663,7 +663,7 @@ class GroupInfoWidget extends StatelessWidget {
                                 width: 50,
                                 height: 50,
                                 imageType:
-                                    'avatar', // Cache de larga duraciÃ³n para logos
+                                    'avatar', // Cache de larga duración para logos
                                 fit: BoxFit.cover,
                               ),
                             )
@@ -710,7 +710,7 @@ class GroupInfoWidget extends StatelessWidget {
                                 style: Theme.of(context).textTheme.bodySmall,
                               ),
                             ],
-                            // Mostrar lÃ­der de la rodada
+                            // Mostrar líder de la rodada
                             SizedBox(height: 8),
                             Row(
                               children: [
@@ -1034,7 +1034,7 @@ class ParticipantsSectionWidget extends StatelessWidget {
               style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
             SizedBox(height: 16),
-            // â­ BotÃ³n de asistencia - visible para todos
+            // â­ Botón de asistencia - visible para todos
             RideAttendanceButton(ride: ride),
             SizedBox(height: 20),
             Row(

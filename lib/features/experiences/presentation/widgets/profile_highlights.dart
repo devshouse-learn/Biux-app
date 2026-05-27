@@ -65,7 +65,7 @@ class _ProfileHighlightsState extends State<ProfileHighlights> {
             scrollDirection: Axis.horizontal,
             padding: EdgeInsets.symmetric(horizontal: 12),
             children: [
-              // BotÃ³n "+" para agregar nuevo highlight (solo perfil propio)
+              // Botón "+" para agregar nuevo highlight (solo perfil propio)
               if (widget.isOwnProfile)
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 4),

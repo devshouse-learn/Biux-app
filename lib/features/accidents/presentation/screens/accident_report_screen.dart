@@ -939,7 +939,7 @@ class _AccidentReportScreenState extends State<AccidentReportScreen>
 
           SizedBox(height: 20),
 
-          // â”€â”€ UbicaciÃ³n â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+          // â”€â”€ Ubicación â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
           Text(
             l.t('accident_location_section'),
             style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
@@ -1079,7 +1079,7 @@ class _AccidentReportScreenState extends State<AccidentReportScreen>
 
           SizedBox(height: 20),
 
-          // â”€â”€ DescripciÃ³n â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+          // â”€â”€ Descripción â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
           Text(
             l.t('description_section'),
             style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
@@ -1191,7 +1191,7 @@ class _AccidentReportScreenState extends State<AccidentReportScreen>
 
           const SizedBox(height: 24),
 
-          // â”€â”€ BotÃ³n enviar â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+          // â”€â”€ Botón enviar â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
           SizedBox(
             width: double.infinity,
             height: 52,

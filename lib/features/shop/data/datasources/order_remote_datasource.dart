@@ -3,7 +3,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:biux/features/shop/data/models/order_model.dart';
 import 'package:biux/features/shop/domain/entities/order_entity.dart';
 
-/// Datasource para Ã³rdenes en Firebase Firestore
+/// Datasource para órdenes en Firebase Firestore
 class OrderRemoteDataSource {
   final FirebaseFirestore _firestore;
   static const String _collection = 'orders';
@@ -24,7 +24,7 @@ class OrderRemoteDataSource {
     }
   }
 
-  /// Obtener Ã³rdenes del usuario
+  /// Obtener órdenes del usuario
   Future<List<OrderModel>> getUserOrders(String userId) async {
     try {
       final snapshot = await _firestore
@@ -35,11 +35,11 @@ class OrderRemoteDataSource {
 
       return snapshot.docs.map((doc) => OrderModel.fromFirestore(doc)).toList();
     } on FirebaseException catch (e) {
-      throw Exception('Error al obtener Ã³rdenes del usuario: $e');
+      throw Exception('Error al obtener órdenes del usuario: $e');
     }
   }
 
-  /// Obtener todas las Ã³rdenes (solo admins)
+  /// Obtener todas las órdenes (solo admins)
   Future<List<OrderModel>> getAllOrders() async {
     try {
       final snapshot = await _firestore
@@ -49,7 +49,7 @@ class OrderRemoteDataSource {
 
       return snapshot.docs.map((doc) => OrderModel.fromFirestore(doc)).toList();
     } on FirebaseException catch (e) {
-      throw Exception('Error al obtener todas las Ã³rdenes: $e');
+      throw Exception('Error al obtener todas las órdenes: $e');
     }
   }
 

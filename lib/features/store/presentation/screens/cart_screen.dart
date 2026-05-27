@@ -40,7 +40,7 @@ class _CartScreenState extends State<CartScreen> {
                 ),
               ),
 
-              // Resumen y botÃ³n de compra
+              // Resumen y botón de compra
               _buildCheckoutSection(context, cart),
             ],
           );
@@ -190,7 +190,7 @@ class _CartScreenState extends State<CartScreen> {
 
             const SizedBox(width: 12),
 
-            // InformaciÃ³n del producto
+            // Información del producto
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -279,7 +279,7 @@ class _CartScreenState extends State<CartScreen> {
               ),
             ),
 
-            // BotÃ³n eliminar
+            // Botón eliminar
             IconButton(
               icon: const Icon(Icons.delete_outline, color: Colors.red),
               onPressed: () {
@@ -393,7 +393,7 @@ class _CartScreenState extends State<CartScreen> {
               ],
             ),
 
-            // CupÃ³n de descuento
+            // Cupón de descuento
             const SizedBox(height: 16),
             _buildCouponSection(context, cart),
 
@@ -447,7 +447,7 @@ class _CartScreenState extends State<CartScreen> {
             ),
             const SizedBox(height: 16),
 
-            // MÃ©todos de pago disponibles
+            // Métodos de pago disponibles
             Container(
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
@@ -463,7 +463,7 @@ class _CartScreenState extends State<CartScreen> {
                       Icon(Icons.payment, color: Colors.blue[700], size: 20),
                       const SizedBox(width: 8),
                       Text(
-                        'MÃ©todos de pago disponibles',
+                        'Métodos de pago disponibles',
                         style: TextStyle(
                           fontWeight: FontWeight.bold,
                           color: Colors.blue[700],
@@ -487,7 +487,7 @@ class _CartScreenState extends State<CartScreen> {
             ),
             const SizedBox(height: 16),
 
-            // Opciones de envÃ­o disponibles
+            // Opciones de envío disponibles
             Container(
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
@@ -507,7 +507,7 @@ class _CartScreenState extends State<CartScreen> {
                       ),
                       const SizedBox(width: 8),
                       Text(
-                        'EnvÃ­os disponibles a:',
+                        'Envíos disponibles a:',
                         style: TextStyle(
                           fontWeight: FontWeight.bold,
                           color: Colors.green[700],
@@ -521,8 +521,8 @@ class _CartScreenState extends State<CartScreen> {
                     spacing: 8,
                     runSpacing: 8,
                     children: [
-                      _buildShippingChip('BogotÃ¡', Icons.location_city),
-                      _buildShippingChip('MedellÃ­n', Icons.location_city),
+                      _buildShippingChip('Bogotá', Icons.location_city),
+                      _buildShippingChip('Medellín', Icons.location_city),
                       _buildShippingChip('Cali', Icons.location_city),
                       _buildShippingChip('Barranquilla', Icons.location_city),
                       _buildShippingChip('Cartagena', Icons.location_city),
@@ -546,7 +546,7 @@ class _CartScreenState extends State<CartScreen> {
                         const SizedBox(width: 8),
                         Expanded(
                           child: Text(
-                            'EnvÃ­o gratis en compras mayores a \$150,000 COP',
+                            'Envío gratis en compras mayores a \$150,000 COP',
                             style: TextStyle(
                               fontSize: 12,
                               color: Colors.green[900],
@@ -562,7 +562,7 @@ class _CartScreenState extends State<CartScreen> {
             ),
             const SizedBox(height: 16),
 
-            // BotÃ³n de compra mejorado
+            // Botón de compra mejorado
             SizedBox(
               width: double.infinity,
               child: ElevatedButton(
@@ -608,7 +608,7 @@ class _CartScreenState extends State<CartScreen> {
               ),
             ),
 
-            // BotÃ³n continuar comprando
+            // Botón continuar comprando
             TextButton(
               onPressed: () {
                 Navigator.pop(context);
@@ -800,7 +800,7 @@ class _CartScreenState extends State<CartScreen> {
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              const Text('EnvÃ­o:'),
+                              const Text('Envío:'),
                               Text(
                                 cart.total >= 150000
                                     ? 'GRATIS'
@@ -842,9 +842,9 @@ class _CartScreenState extends State<CartScreen> {
                     ),
                     const SizedBox(height: 24),
 
-                    // MÃ©todo de pago
+                    // Método de pago
                     const Text(
-                      'Selecciona mÃ©todo de pago',
+                      'Selecciona método de pago',
                       style: TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
@@ -853,15 +853,15 @@ class _CartScreenState extends State<CartScreen> {
                     const SizedBox(height: 12),
                     _buildPaymentOption(
                       context,
-                      'Tarjeta de CrÃ©dito/DÃ©bito',
+                      'Tarjeta de Crédito/Débito',
                       Icons.credit_card,
-                      selected: _selectedPayment == 'Tarjeta de CrÃ©dito/DÃ©bito',
+                      selected: _selectedPayment == 'Tarjeta de Crédito/Débito',
                       onTap: () {
                         setState(
-                          () => _selectedPayment = 'Tarjeta de CrÃ©dito/DÃ©bito',
+                          () => _selectedPayment = 'Tarjeta de Crédito/Débito',
                         );
                         context.read<CartProvider>().setSelectedPayment(
-                          'Tarjeta de CrÃ©dito/DÃ©bito',
+                          'Tarjeta de Crédito/Débito',
                         );
                       },
                     ),
@@ -911,8 +911,8 @@ class _CartScreenState extends State<CartScreen> {
                       spacing: 8,
                       runSpacing: 8,
                       children: [
-                        _buildCityOption('BogotÃ¡'),
-                        _buildCityOption('MedellÃ­n'),
+                        _buildCityOption('Bogotá'),
+                        _buildCityOption('Medellín'),
                         _buildCityOption('Cali'),
                         _buildCityOption('Barranquilla'),
                         _buildCityOption('Cartagena'),
@@ -935,7 +935,7 @@ class _CartScreenState extends State<CartScreen> {
                           const SizedBox(width: 12),
                           const Expanded(
                             child: Text(
-                              'Esta es una versiÃ³n demo. En producciÃ³n se integrarÃ­a una pasarela de pago real.',
+                              'Esta es una versión demo. En producción se integraría una pasarela de pago real.',
                               style: TextStyle(fontSize: 13),
                             ),
                           ),
@@ -946,7 +946,7 @@ class _CartScreenState extends State<CartScreen> {
                 ),
               ),
             ),
-            // BotÃ³n de confirmaciÃ³n
+            // Botón de confirmación
             Container(
               padding: const EdgeInsets.all(24),
               decoration: BoxDecoration(
@@ -980,7 +980,7 @@ class _CartScreenState extends State<CartScreen> {
                               const SizedBox(width: 12),
                               const Expanded(
                                 child: Text(
-                                  'Â¡Compra realizada con Ã©xito!',
+                                  '¡Compra realizada con éxito!',
                                   style: TextStyle(fontWeight: FontWeight.bold),
                                 ),
                               ),
@@ -1144,7 +1144,7 @@ class _CartScreenState extends State<CartScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'CupÃ³n aplicado: ${cart.appliedCoupon!.code}',
+                    'Cupón aplicado: ${cart.appliedCoupon!.code}',
                     style: TextStyle(
                       fontWeight: FontWeight.bold,
                       color: Colors.green[900],
@@ -1162,7 +1162,7 @@ class _CartScreenState extends State<CartScreen> {
               icon: const Icon(Icons.close, size: 20),
               color: Colors.red[700],
               onPressed: () => cart.removeCoupon(),
-              tooltip: 'Quitar cupÃ³n',
+              tooltip: 'Quitar cupón',
             ),
           ],
         ),
@@ -1183,7 +1183,7 @@ class _CartScreenState extends State<CartScreen> {
             Icon(Icons.local_offer, color: Colors.orange[700], size: 20),
             const SizedBox(width: 8),
             Text(
-              'Â¿Tienes un cupÃ³n de descuento?',
+              '¿Tienes un cupón de descuento?',
               style: TextStyle(
                 fontWeight: FontWeight.bold,
                 color: Colors.orange[900],
@@ -1234,7 +1234,7 @@ class _CartScreenState extends State<CartScreen> {
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
                       content: Text(
-                        'CupÃ³n "${cart.appliedCoupon!.code}" aplicado',
+                        'Cupón "${cart.appliedCoupon!.code}" aplicado',
                       ),
                       backgroundColor: Colors.green,
                       duration: const Duration(seconds: 2),

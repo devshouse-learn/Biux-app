@@ -14,7 +14,7 @@ class LikesProvider extends ChangeNotifier {
   final NotificationsRepository _notificationsRepository;
   final String userId;
 
-  // Variables para cachÃ© de datos del usuario
+  // Variables para caché de datos del usuario
   String? _cachedUserName;
   String? _cachedUserPhoto;
   bool _userDataLoaded = false;
@@ -91,13 +91,13 @@ class LikesProvider extends ChangeNotifier {
   // Map para rastrear cooldown por targetId (tiempo de espera entre acciones)
   final Map<String, DateTime> _cooldowns = {};
 
-  // DuraciÃ³n del cooldown (500ms para evitar spam pero permitir uso Ã¡gil)
+  // Duración del cooldown (500ms para evitar spam pero permitir uso ágil)
   static const Duration _cooldownDuration = Duration(milliseconds: 500);
 
   bool get isProcessing => _isProcessing;
   String? get error => _error;
 
-  /// Verifica si un target estÃ¡ en cooldown
+  /// Verifica si un target está en cooldown
   bool _isInCooldown(String targetId) {
     final lastAction = _cooldowns[targetId];
     if (lastAction == null) return false;
@@ -106,7 +106,7 @@ class LikesProvider extends ChangeNotifier {
     return timeSinceLastAction < _cooldownDuration;
   }
 
-  /// Marca el tiempo de la Ãºltima acciÃ³n
+  /// Marca el tiempo de la Ãºltima acción
   void _setCooldown(String targetId) {
     _cooldowns[targetId] = DateTime.now();
   }
@@ -140,7 +140,7 @@ class LikesProvider extends ChangeNotifier {
     required String commentId,
     required String commentOwnerId,
     String? commentPreview,
-    String? contextTargetId, // ID del post/ride donde estÃ¡ el comentario
+    String? contextTargetId, // ID del post/ride donde está el comentario
     CommentableType? contextType, // Tipo: post o ride
   }) async {
     // Preparar metadata con el contexto del comentario
@@ -264,18 +264,18 @@ class LikesProvider extends ChangeNotifier {
   }) async {
     // Validaciones de entrada
     if (userId.isEmpty) {
-      debugPrint('âŒ LikesProvider: userId vacÃ­o, abortando like');
+      debugPrint('âŒ LikesProvider: userId vacío, abortando like');
       return;
     }
     if (targetId.isEmpty) {
-      debugPrint('âŒ LikesProvider: targetId vacÃ­o, abortando like');
+      debugPrint('âŒ LikesProvider: targetId vacío, abortando like');
       return;
     }
     if (targetOwnerId.isEmpty) {
-      debugPrint('âŒ LikesProvider: targetOwnerId vacÃ­o, abortando like');
+      debugPrint('âŒ LikesProvider: targetOwnerId vacío, abortando like');
       return;
     }
-    // Cooldown: verificar si estÃ¡ en periodo de espera
+    // Cooldown: verificar si está en periodo de espera
     if (_isInCooldown(targetId)) {
       debugPrint(
         'â³ Like en cooldown para $targetId, espera ${_cooldownDuration.inSeconds}s',
@@ -283,7 +283,7 @@ class LikesProvider extends ChangeNotifier {
       return;
     }
 
-    // Cargar datos del usuario si no estÃ¡n cargados
+    // Cargar datos del usuario si no están cargados
     await _loadUserData();
 
     try {
@@ -300,16 +300,16 @@ class LikesProvider extends ChangeNotifier {
         expiresAt: expiresAt,
       );
 
-      // Crear notificaciÃ³n con ID determinÃ­stico para evitar duplicados.
-      // Si el usuario da like mÃ¡s de una vez (ej. doble-tap + botÃ³n),
-      // el set() en el mismo path pisa la notificaciÃ³n anterior sin
+      // Crear notificación con ID determinístico para evitar duplicados.
+      // Si el usuario da like más de una vez (ej. doble-tap + botón),
+      // el set() en el mismo path pisa la notificación anterior sin
       // incrementar el contador.
       if (targetOwnerId != userId) {
         final safeUserName = (_cachedUserName ?? '').trim().isNotEmpty
             ? _cachedUserName!
             : userId.split('_').last;
 
-        // ID determinÃ­stico: permite sobrescribir sin duplicar
+        // ID determinístico: permite sobrescribir sin duplicar
         final typeStr = type == LikeableType.post
             ? 'post'
             : type == LikeableType.comment
@@ -331,7 +331,7 @@ class LikesProvider extends ChangeNotifier {
         );
       }
 
-      // Establecer cooldown despuÃ©s de completar exitosamente
+      // Establecer cooldown después de completar exitosamente
       _setCooldown(targetId);
 
       _isProcessing = false;
@@ -351,14 +351,14 @@ class LikesProvider extends ChangeNotifier {
   }) async {
     // Validaciones de entrada
     if (userId.isEmpty) {
-      debugPrint('âŒ LikesProvider: userId vacÃ­o, abortando unlike');
+      debugPrint('âŒ LikesProvider: userId vacío, abortando unlike');
       return;
     }
     if (targetId.isEmpty) {
-      debugPrint('âŒ LikesProvider: targetId vacÃ­o, abortando unlike');
+      debugPrint('âŒ LikesProvider: targetId vacío, abortando unlike');
       return;
     }
-    // Cooldown: verificar si estÃ¡ en periodo de espera
+    // Cooldown: verificar si está en periodo de espera
     if (_isInCooldown(targetId)) {
       debugPrint(
         'â³ Unlike en cooldown para $targetId, espera ${_cooldownDuration.inSeconds}s',
@@ -373,7 +373,7 @@ class LikesProvider extends ChangeNotifier {
 
       await _repository.unlike(type: type, targetId: targetId, userId: userId);
 
-      // Eliminar la notificaciÃ³n de like usando el mismo ID determinÃ­stico
+      // Eliminar la notificación de like usando el mismo ID determinístico
       if (targetOwnerId != null && targetOwnerId != userId) {
         final typeStr = type == LikeableType.post
             ? 'post'
@@ -387,7 +387,7 @@ class LikesProvider extends ChangeNotifier {
         );
       }
 
-      // Establecer cooldown despuÃ©s de completar exitosamente
+      // Establecer cooldown después de completar exitosamente
       _setCooldown(targetId);
 
       _isProcessing = false;
@@ -399,7 +399,7 @@ class LikesProvider extends ChangeNotifier {
     }
   }
 
-  /// Obtiene el tipo de objetivo para notificaciÃ³n
+  /// Obtiene el tipo de objetivo para notificación
   NotificationTargetType _getTargetType(LikeableType type) {
     switch (type) {
       case LikeableType.post:

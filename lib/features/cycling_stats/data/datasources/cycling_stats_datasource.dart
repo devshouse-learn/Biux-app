@@ -111,7 +111,7 @@ class CyclingStatsDatasource {
         .get();
     final stats = snapshot.docs.map((d) => {'id': d.id, ...d.data()}).toList();
 
-    // Obtener nombres reales de la colecciÃ³n 'usuarios'
+    // Obtener nombres reales de la colección 'usuarios'
     final userIds = stats.map((s) => s['id'] as String).toList();
     if (userIds.isEmpty) return stats;
 

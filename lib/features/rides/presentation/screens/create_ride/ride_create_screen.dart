@@ -15,7 +15,7 @@ import 'package:biux/core/design_system/locale_notifier.dart';
 
 class RideCreateScreen extends StatefulWidget {
   final String groupId;
-  final RideModel? rideToEdit; // Rodada a editar (null = modo creaciÃ³n)
+  final RideModel? rideToEdit; // Rodada a editar (null = modo creación)
 
   const RideCreateScreen({Key? key, required this.groupId, this.rideToEdit})
     : super(key: key);
@@ -58,7 +58,7 @@ class _RideCreateScreenState extends State<RideCreateScreen> {
         wp.loadWeather();
       }
 
-      // Si es modo ediciÃ³n, pre-cargar los datos
+      // Si es modo edición, pre-cargar los datos
       if (widget.rideToEdit != null) {
         _loadRideData(meetingPointProvider);
       }
@@ -265,7 +265,7 @@ class _RideCreateScreenState extends State<RideCreateScreen> {
                                     borderRadius: BorderRadius.circular(8),
                                   ),
                                   child: Text(
-                                    safe ? 'âœ… Apto' : 'âš ï¸ PrecauciÃ³n',
+                                    safe ? '✓ Apto' : 'âš ï¸ Precaución',
                                     style: TextStyle(
                                       fontSize: 11,
                                       fontWeight: FontWeight.w700,
@@ -282,13 +282,13 @@ class _RideCreateScreenState extends State<RideCreateScreen> {
                               runSpacing: 6,
                               children: [
                                 _weatherDataChip(
-                                  'ðŸ’¨',
+                                  '’¨',
                                   '${wp.windSpeed.round()} km/h ${wp.windDirectionLabel}',
                                 ),
-                                _weatherDataChip('ðŸ’§', '${wp.humidity}%'),
+                                _weatherDataChip('’§', '${wp.humidity}%'),
                                 _weatherDataChip(
-                                  'ðŸŒ¡ï¸',
-                                  'ST ${wp.feelsLike.round()}Â°C',
+                                  'Œ¡ï¸',
+                                  'ST ${wp.feelsLike.round()}°C',
                                 ),
                                 if (wp.uvIndex > 0)
                                   _weatherDataChip(
@@ -325,7 +325,7 @@ class _RideCreateScreenState extends State<RideCreateScreen> {
                   ),
                   SizedBox(height: 16),
 
-                  // KilÃ³metros
+                  // Kilómetros
                   TextFormField(
                     controller: _kilometersController,
                     decoration: InputDecoration(
@@ -410,7 +410,7 @@ class _RideCreateScreenState extends State<RideCreateScreen> {
                     borderRadius: BorderRadius.circular(12),
                     imageType: 'ride',
                     currentImageUrl:
-                        _rideImageUrl, // Pre-cargar imagen en modo ediciÃ³n
+                        _rideImageUrl, // Pre-cargar imagen en modo edición
                     onImageSelected: (String? imageUrl) {
                       setState(() {
                         _rideImageUrl = imageUrl;
@@ -450,7 +450,7 @@ class _RideCreateScreenState extends State<RideCreateScreen> {
                   ),
                   SizedBox(height: 32),
 
-                  // BotÃ³n de crear/actualizar
+                  // Botón de crear/actualizar
                   if (rideProvider.isLoading)
                     Center(child: CircularProgressIndicator())
                   else
@@ -525,7 +525,7 @@ class _RideCreateScreenState extends State<RideCreateScreen> {
         ),
         SizedBox(height: 8),
 
-        // âœ… CAMPO DE TEXTO PARA NOMBRE MANUAL
+        // ✓ CAMPO DE TEXTO PARA NOMBRE MANUAL
         if (_customMeetingPointName != null)
           Container(
             width: double.infinity,
@@ -634,7 +634,7 @@ class _RideCreateScreenState extends State<RideCreateScreen> {
 
         SizedBox(height: 12),
 
-        // âœ… BOTÃ“N PARA AGREGAR PUNTO MANUAL
+        // ✓ BOTÃ“N PARA AGREGAR PUNTO MANUAL
         ElevatedButton.icon(
           onPressed: () => _showCustomMeetingPointDialog(),
           icon: Icon(Icons.add_location),
@@ -970,7 +970,7 @@ class _RideCreateScreenState extends State<RideCreateScreen> {
 
     final bool success;
     if (widget.rideToEdit != null) {
-      // Modo ediciÃ³n
+      // Modo edición
       success = await provider.updateRide(
         rideId: widget.rideToEdit?.id ?? '',
         name: _nameController.text.trim(),
@@ -983,7 +983,7 @@ class _RideCreateScreenState extends State<RideCreateScreen> {
         imageUrl: _rideImageUrl,
       );
     } else {
-      // Modo creaciÃ³n
+      // Modo creación
       success = await provider.createRide(
         name: _nameController.text.trim(),
         groupId: widget.groupId,

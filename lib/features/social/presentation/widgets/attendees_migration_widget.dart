@@ -3,12 +3,12 @@ import 'package:provider/provider.dart';
 import 'package:biux/core/design_system/locale_notifier.dart';
 import 'package:biux/features/social/data/datasources/attendees_firestore_adapter.dart';
 
-/// Widget para gestionar la migraciÃ³n y sincronizaciÃ³n de asistentes
+/// Widget para gestionar la migración y sincronización de asistentes
 ///
 /// USO:
 /// 1. Agregar en una pantalla de admin o debug
-/// 2. Ejecutar migraciÃ³n una sola vez
-/// 3. La sincronizaciÃ³n se activarÃ¡ automÃ¡ticamente
+/// 2. Ejecutar migración una sola vez
+/// 3. La sincronización se activará automáticamente
 class AttendeesMigrationWidget extends StatefulWidget {
   const AttendeesMigrationWidget({Key? key}) : super(key: key);
 

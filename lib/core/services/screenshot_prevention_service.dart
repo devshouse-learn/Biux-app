@@ -13,8 +13,8 @@ import 'package:biux/core/services/app_logger.dart';
 /// ScreenshotPreventionService.disable();
 /// ```
 ///
-/// Requiere cÃ³digo nativo en Android (ScreenshotPlugin.kt)
-/// y configuraciÃ³n en iOS (info.plist no aplica, se usa UIScreen).
+/// Requiere código nativo en Android (ScreenshotPlugin.kt)
+/// y configuración en iOS (info.plist no aplica, se usa UIScreen).
 class ScreenshotPreventionService {
   ScreenshotPreventionService._();
 
@@ -23,7 +23,7 @@ class ScreenshotPreventionService {
 
   static bool get isEnabled => _isEnabled;
 
-  /// Activa la prevenciÃ³n de capturas de pantalla
+  /// Activa la prevención de capturas de pantalla
   static Future<void> enable() async {
     if (_isEnabled) return;
     if (kIsWeb) return;
@@ -46,7 +46,7 @@ class ScreenshotPreventionService {
     }
   }
 
-  /// Desactiva la prevenciÃ³n de capturas de pantalla
+  /// Desactiva la prevención de capturas de pantalla
   static Future<void> disable() async {
     if (!_isEnabled) return;
     if (kIsWeb) return;

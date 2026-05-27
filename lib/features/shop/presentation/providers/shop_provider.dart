@@ -8,11 +8,11 @@ import 'package:biux/features/shop/domain/entities/order_entity.dart';
 import 'package:biux/features/shop/domain/repositories/product_repository.dart';
 import 'package:biux/features/shop/domain/repositories/order_repository.dart';
 
-/// Datos de un cupÃ³n de descuento
+/// Datos de un cupón de descuento
 class CouponData {
   final double discount; // Porcentaje de descuento (0.0 - 1.0)
   final String description;
-  final double? minPurchase; // Compra mÃ­nima requerida (opcional)
+  final double? minPurchase; // Compra mínima requerida (opcional)
 
   const CouponData({
     required this.discount,
@@ -49,7 +49,7 @@ class ShopProvider with ChangeNotifier {
   double _couponDiscount = 0.0;
   String? _couponErrorMessage;
 
-  // Estado de Ã³rdenes
+  // Estado de órdenes
   List<OrderEntity> _userOrders = [];
   bool _isLoadingOrders = false;
 
@@ -92,7 +92,7 @@ class ShopProvider with ChangeNotifier {
     }
   }
 
-  /// Filtrar por categorÃ­a
+  /// Filtrar por categoría
   void filterByCategory(String category) {
     _selectedCategory = category;
     _applyFilters();
@@ -109,7 +109,7 @@ class ShopProvider with ChangeNotifier {
   /// Aplicar todos los filtros
   void _applyFilters() {
     _filteredProducts = _allProducts.where((product) {
-      // Filtro por categorÃ­a
+      // Filtro por categoría
       final matchesCategory =
           _selectedCategory == ProductCategories.all ||
           product.category == _selectedCategory;
@@ -136,12 +136,12 @@ class ShopProvider with ChangeNotifier {
 
   /// Agregar producto al carrito
   void addToCart(ProductEntity product, {String? selectedSize}) {
-    debugPrint('ðŸ›’ ShopProvider.addToCart llamado:');
+    debugPrint('›’ ShopProvider.addToCart llamado:');
     debugPrint('  - Producto: ${product.name} (ID: ${product.id})');
     debugPrint('  - Talla: $selectedSize');
     debugPrint('  - Carrito actual: ${_cartItems.length} items');
 
-    // Verificar si el producto ya estÃ¡ en el carrito
+    // Verificar si el producto ya está en el carrito
     final existingIndex = _cartItems.indexWhere(
       (item) =>
           item.product.id == product.id && item.selectedSize == selectedSize,
@@ -171,7 +171,7 @@ class ShopProvider with ChangeNotifier {
     debugPrint('  - Total items: $cartItemCount');
     debugPrint('  - Total precio: \$$cartTotal');
     notifyListeners();
-    debugPrint('  âœ… notifyListeners() llamado');
+    debugPrint('  ✓ notifyListeners() llamado');
   }
 
   /// Remover producto del carrito
@@ -214,7 +214,7 @@ class ShopProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  /// Aplicar cupÃ³n de descuento (solo para compras)
+  /// Aplicar cupón de descuento (solo para compras)
   bool applyCoupon(String couponCode) {
     _couponErrorMessage = null;
 
@@ -225,16 +225,16 @@ class ShopProvider with ChangeNotifier {
       return false;
     }
 
-    // Validar compra mÃ­nima
-    const double minimumPurchase = 50000; // Compra mÃ­nima 50.000 COP
+    // Validar compra mínima
+    const double minimumPurchase = 50000; // Compra mínima 50.000 COP
     if (cartTotal < minimumPurchase) {
       _couponErrorMessage =
-          'Compra mÃ­nima: \$${minimumPurchase.toStringAsFixed(0)} COP';
+          'Compra mínima: \$${minimumPurchase.toStringAsFixed(0)} COP';
       notifyListeners();
       return false;
     }
 
-    // Cupones organizados por categorÃ­a
+    // Cupones organizados por categoría
     final Map<String, CouponData> validCoupons = {
       // Cupones generales
       'BIUX10': CouponData(
@@ -295,10 +295,10 @@ class ShopProvider with ChangeNotifier {
       return false;
     }
 
-    // Validar compra mÃ­nima especÃ­fica del cupÃ³n
+    // Validar compra mínima específica del cupón
     if (couponData.minPurchase != null && cartTotal < couponData.minPurchase!) {
       _couponErrorMessage =
-          'Compra mÃ­nima para este cupÃ³n: \$${couponData.minPurchase!.toStringAsFixed(0)} COP';
+          'Compra mínima para este cupón: \$${couponData.minPurchase!.toStringAsFixed(0)} COP';
       notifyListeners();
       return false;
     }
@@ -308,13 +308,13 @@ class ShopProvider with ChangeNotifier {
     _appliedCoupon = couponCode.toUpperCase();
 
     debugPrint(
-      'ðŸŽŸï¸ CupÃ³n aplicado: $_appliedCoupon (${couponData.description})',
+      'ŽŸï¸ Cupón aplicado: $_appliedCoupon (${couponData.description})',
     );
     debugPrint(
-      'ðŸ’° Descuento: \$${_couponDiscount.toStringAsFixed(0)} COP (${(couponData.discount * 100).toStringAsFixed(0)}%)',
+      '’° Descuento: \$${_couponDiscount.toStringAsFixed(0)} COP (${(couponData.discount * 100).toStringAsFixed(0)}%)',
     );
     debugPrint(
-      'ðŸ’µ Total con descuento: \$${cartTotalWithDiscount.toStringAsFixed(0)} COP',
+      '’µ Total con descuento: \$${cartTotalWithDiscount.toStringAsFixed(0)} COP',
     );
 
     notifyListeners();
@@ -370,12 +370,12 @@ class ShopProvider with ChangeNotifier {
           {
             'code': 'VERANO2026',
             'discount': '25%',
-            'description': 'PromociÃ³n verano',
+            'description': 'Promoción verano',
           },
           {
             'code': 'ENERO2026',
             'discount': '20%',
-            'description': 'PromociÃ³n enero',
+            'description': 'Promoción enero',
           },
         ],
       },
@@ -385,19 +385,19 @@ class ShopProvider with ChangeNotifier {
           {
             'code': 'VIP30',
             'discount': '30%',
-            'description': 'Compra mÃ­nima \$200.000',
+            'description': 'Compra mínima \$200.000',
           },
           {
             'code': 'ELITE40',
             'discount': '40%',
-            'description': 'Compra mÃ­nima \$500.000',
+            'description': 'Compra mínima \$500.000',
           },
         ],
       },
     ];
   }
 
-  /// Remover cupÃ³n aplicado
+  /// Remover cupón aplicado
   void removeCoupon() {
     _appliedCoupon = null;
     _couponDiscount = 0.0;
@@ -420,14 +420,14 @@ class ShopProvider with ChangeNotifier {
     }
 
     try {
-      // Calcular total final (con descuento de cupÃ³n si aplica)
+      // Calcular total final (con descuento de cupón si aplica)
       final finalTotal = cartTotalWithDiscount;
 
-      // Agregar info del cupÃ³n a las notas si se aplicÃ³ uno
+      // Agregar info del cupón a las notas si se aplicó uno
       String finalNotes = notes ?? '';
       if (_appliedCoupon != null) {
         final couponInfo =
-            '\nðŸŽŸï¸ CupÃ³n aplicado: $_appliedCoupon (Descuento: \$${_couponDiscount.toStringAsFixed(0)} COP)';
+            '\nŽŸï¸ Cupón aplicado: $_appliedCoupon (Descuento: \$${_couponDiscount.toStringAsFixed(0)} COP)';
         finalNotes = finalNotes.isEmpty ? couponInfo : '$finalNotes$couponInfo';
       }
 
@@ -452,7 +452,7 @@ class ShopProvider with ChangeNotifier {
         await productRepository.updateStock(item.product.id, newStock);
       }
 
-      // Limpiar carrito (y cupÃ³n)
+      // Limpiar carrito (y cupón)
       clearCart();
 
       // Recargar productos para actualizar stock
@@ -531,7 +531,7 @@ class ShopProvider with ChangeNotifier {
     }
   }
 
-  /// Cargar Ã³rdenes del usuario
+  /// Cargar órdenes del usuario
   Future<void> loadUserOrders(String userId) async {
     _isLoadingOrders = true;
     notifyListeners();
@@ -552,7 +552,7 @@ class ShopProvider with ChangeNotifier {
     try {
       await orderRepository.cancelOrder(orderId);
 
-      // Actualizar lista de Ã³rdenes
+      // Actualizar lista de órdenes
       final index = _userOrders.indexWhere((order) => order.id == orderId);
       if (index >= 0) {
         _userOrders[index] = _userOrders[index].copyWith(
@@ -618,15 +618,15 @@ class ShopProvider with ChangeNotifier {
     }
   }
 
-  /// Eliminar TODOS los productos sin imÃ¡genes (funciÃ³n de limpieza)
+  /// Eliminar TODOS los productos sin imágenes (función de limpieza)
   Future<int> deleteProductsWithoutImages() async {
     int deletedCount = 0;
 
     try {
-      // Recargar productos para tener la lista mÃ¡s actualizada
+      // Recargar productos para tener la lista más actualizada
       await loadProducts();
 
-      // Encontrar productos sin imÃ¡genes vÃ¡lidas
+      // Encontrar productos sin imágenes válidas
       final productsToDelete = _allProducts.where((product) {
         if (product.images.isEmpty) return true;
         return !product.images.any(
@@ -635,14 +635,14 @@ class ShopProvider with ChangeNotifier {
       }).toList();
 
       debugPrint(
-        'ðŸ—‘ï¸ Productos sin imÃ¡genes encontrados: ${productsToDelete.length}',
+        '—‘ï¸ Productos sin imágenes encontrados: ${productsToDelete.length}',
       );
 
       // Eliminar cada producto sin imagen
       for (final product in productsToDelete) {
         try {
           debugPrint(
-            'ðŸ—‘ï¸ Eliminando producto sin imagen: ${product.name} (${product.id})',
+            '—‘ï¸ Eliminando producto sin imagen: ${product.name} (${product.id})',
           );
           await productRepository.deleteProduct(product.id);
           deletedCount++;
@@ -651,10 +651,10 @@ class ShopProvider with ChangeNotifier {
         }
       }
 
-      // Recargar productos despuÃ©s de la limpieza
+      // Recargar productos después de la limpieza
       await loadProducts();
 
-      debugPrint('âœ… Productos eliminados: $deletedCount');
+      debugPrint('✓ Productos eliminados: $deletedCount');
       return deletedCount;
     } on FirebaseException catch (e) {
       _errorMessage = 'shop_cleanup_error';
@@ -663,7 +663,7 @@ class ShopProvider with ChangeNotifier {
     }
   }
 
-  /// Dar like/unlike a un producto (operaciÃ³n atÃ³mica en Firestore)
+  /// Dar like/unlike a un producto (operación atómica en Firestore)
   Future<bool> toggleProductLike(String productId, String userId) async {
     try {
       debugPrint(
@@ -678,7 +678,7 @@ class ShopProvider with ChangeNotifier {
       final product = _allProducts[productIndex];
       final likedByUsers = List<String>.from(product.likedByUsers);
 
-      // Actualizar localmente PRIMERO (respuesta instantÃ¡nea)
+      // Actualizar localmente PRIMERO (respuesta instantánea)
       if (likedByUsers.contains(userId)) {
         likedByUsers.remove(userId);
       } else {

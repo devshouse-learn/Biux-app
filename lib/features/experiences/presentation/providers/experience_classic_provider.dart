@@ -9,7 +9,7 @@ import 'package:biux/core/services/app_logger.dart';
 import 'package:biux/core/services/retry_service.dart';
 import 'package:biux/core/error/error_handler.dart';
 
-/// Provider de experiencias usando ChangeNotifier para compatibilidad con Provider clÃ¡sico
+/// Provider de experiencias usando ChangeNotifier para compatibilidad con Provider clásico
 class ExperienceProvider extends ChangeNotifier {
   final ExperienceRepository _repository;
 
@@ -22,14 +22,14 @@ class ExperienceProvider extends ChangeNotifier {
   List<ExperienceEntity> _userExperiences = [];
   List<ExperienceEntity> _rideExperiences = [];
   bool _isLoading = false;
-  bool _isLoadingMore = false; // Para cargar mÃ¡s posts
-  bool _hasMorePosts = true; // Si hay mÃ¡s posts por cargar
+  bool _isLoadingMore = false; // Para cargar más posts
+  bool _hasMorePosts = true; // Si hay más posts por cargar
   String? _error;
 
   /// Mapa de { originalPostId â†’ repostExperienceId } del usuario actual
   Map<String, String> _myReposts = {};
   static const int _postsPerPage =
-      20; // Posts por pÃ¡gina (aumentado para mejor UX)
+      20; // Posts por página (aumentado para mejor UX)
   static const int _initialPostsCount =
       15; // Posts iniciales (suficientes para pantalla completa)
 
@@ -50,7 +50,7 @@ class ExperienceProvider extends ChangeNotifier {
   bool get hasMorePosts => _hasMorePosts;
   String? get error => _error;
 
-  /// Carga experiencias de un usuario especÃ­fico
+  /// Carga experiencias de un usuario específico
   Future<void> loadUserExperiences(String userId) async {
     try {
       _setLoading(true);
@@ -67,7 +67,7 @@ class ExperienceProvider extends ChangeNotifier {
     }
   }
 
-  /// Obtiene una experiencia especÃ­fica por ID
+  /// Obtiene una experiencia específica por ID
   Future<ExperienceEntity?> getExperienceById(String experienceId) async {
     try {
       AppLogger.debug(
@@ -87,7 +87,7 @@ class ExperienceProvider extends ChangeNotifier {
     }
   }
 
-  /// Carga experiencias de una rodada especÃ­fica
+  /// Carga experiencias de una rodada específica
   Future<void> loadRideExperiences(String rideId) async {
     try {
       _setLoading(true);
@@ -126,15 +126,15 @@ class ExperienceProvider extends ChangeNotifier {
   /// - Mis publicaciones
   /// - Las publicaciones de los perfiles que sigo
   Future<void> loadPersonalizedFeed(String userId) async {
-    // No recargar el feed mientras se estÃ¡ creando una experiencia
+    // No recargar el feed mientras se está creando una experiencia
     // para evitar que el resultado de la query (que no incluye la nueva experiencia)
-    // sobreescriba la lista local que sÃ­ la contiene.
+    // sobreescriba la lista local que sí la contiene.
     if (_isCreating) return;
 
     try {
       _setLoading(true);
       _error = null;
-      _hasMorePosts = true; // Reset paginaciÃ³n
+      _hasMorePosts = true; // Reset paginación
 
       // Cargar experiencias del usuario actual (mis publicaciones)
       final myExperiences = await _repository.getUserExperiences(userId);
@@ -144,15 +144,15 @@ class ExperienceProvider extends ChangeNotifier {
         userId,
       );
 
-      // Combinar todas las experiencias y ordenar por fecha (mÃ¡s recientes primero)
+      // Combinar todas las experiencias y ordenar por fecha (más recientes primero)
       final allExperiences = [...myExperiences, ...followingExperiences];
       allExperiences.sort((a, b) => b.createdAt.compareTo(a.createdAt));
 
-      // âœ… FILTRO TEMPORAL: Solo publicaciones de las Ãºltimas 72 horas
+      // ✓ FILTRO TEMPORAL: Solo publicaciones de las Ãºltimas 72 horas
       final cutoff = DateTime.now().subtract(const Duration(hours: 72));
       allExperiences.removeWhere((exp) => exp.createdAt.isBefore(cutoff));
 
-      // âœ… FILTRADO: Solo posts con media realmente vÃ¡lida (imÃ¡genes y videos)
+      // ✓ FILTRADO: Solo posts con media realmente válida (imágenes y videos)
       final validExperiences = <ExperienceEntity>[];
       for (var exp in allExperiences) {
         // ignore: unnecessary_null_comparison
@@ -176,7 +176,7 @@ class ExperienceProvider extends ChangeNotifier {
             allUrlsValid = false;
             break;
           }
-          // Para imÃ¡genes: validar extensiones de imagen
+          // Para imágenes: validar extensiones de imagen
           if (media.mediaType == MediaType.image) {
             if (!url.contains('alt=') &&
                 !url.contains('.jpg') &&
@@ -188,7 +188,7 @@ class ExperienceProvider extends ChangeNotifier {
               break;
             }
           }
-          // Para videos: validar que tenga URL de video o thumbnail vÃ¡lido
+          // Para videos: validar que tenga URL de video o thumbnail válido
           if (media.mediaType == MediaType.video) {
             final thumb = media.thumbnailUrl?.trim() ?? '';
             final hasValidVideo =
@@ -214,12 +214,12 @@ class ExperienceProvider extends ChangeNotifier {
         }
       }
 
-      // Actualizar timestamp conocido para detecciÃ³n de contenido nuevo
+      // Actualizar timestamp conocido para detección de contenido nuevo
       if (validExperiences.isNotEmpty) {
         _latestKnownTimestamp = validExperiences.first.createdAt;
       }
 
-      // Guardar todos los posts disponibles para paginaciÃ³n
+      // Guardar todos los posts disponibles para paginación
       _allExperiences = validExperiences;
 
       // Cargar posts iniciales (suficientes para llenar pantalla)
@@ -234,9 +234,9 @@ class ExperienceProvider extends ChangeNotifier {
     }
   }
 
-  /// Carga mÃ¡s posts para infinite scroll (paginaciÃ³n)
+  /// Carga más posts para infinite scroll (paginación)
   Future<void> loadMorePosts(String userId) async {
-    // Si ya estÃ¡ cargando mÃ¡s o no hay mÃ¡s posts, no hacer nada
+    // Si ya está cargando más o no hay más posts, no hacer nada
     if (_isLoadingMore || !_hasMorePosts || _isLoading) return;
 
     try {
@@ -273,7 +273,7 @@ class ExperienceProvider extends ChangeNotifier {
 
       final newExperience = await _repository.createExperience(request);
 
-      // Recargar experiencias despuÃ©s de crear una nueva
+      // Recargar experiencias después de crear una nueva
       _refreshAfterCreate(newExperience);
       return true;
     } on FirebaseException catch (e) {
@@ -298,12 +298,12 @@ class ExperienceProvider extends ChangeNotifier {
   }
 
   /// Elimina un media individual de una experiencia
-  /// Retorna true si se eliminÃ³ la experiencia completa, false si solo se eliminÃ³ la foto
+  /// Retorna true si se eliminó la experiencia completa, false si solo se eliminó la foto
   Future<bool> removeMediaFromExperience(
     String experienceId,
     int mediaIndex,
   ) async {
-    // Buscar la experiencia en las listas locales para saber cuÃ¡ntos media tiene
+    // Buscar la experiencia en las listas locales para saber cuántos media tiene
     ExperienceEntity? exp;
     for (final list in [
       _experiences,
@@ -365,7 +365,7 @@ class ExperienceProvider extends ChangeNotifier {
     }
   }
 
-  /// Agrega una reacciÃ³n a una experiencia
+  /// Agrega una reacción a una experiencia
   Future<bool> addReaction(String experienceId, ReactionType reaction) async {
     try {
       await _repository.addReaction(experienceId, reaction);
@@ -376,7 +376,7 @@ class ExperienceProvider extends ChangeNotifier {
     }
   }
 
-  /// Elimina una reacciÃ³n de una experiencia
+  /// Elimina una reacción de una experiencia
   Future<bool> removeReaction(String experienceId) async {
     try {
       await _repository.removeReaction(experienceId);
@@ -418,7 +418,7 @@ class ExperienceProvider extends ChangeNotifier {
   }) async {
     try {
       await _repository.repostExperience(original, caption: caption);
-      // Invalidar cache de reposts para que se recargue la prÃ³xima vez
+      // Invalidar cache de reposts para que se recargue la próxima vez
       _myReposts.remove('_loaded');
     } on FirebaseException catch (e) {
       debugPrint('Error reposteando historia: ${e.toString()}');
@@ -437,7 +437,7 @@ class ExperienceProvider extends ChangeNotifier {
     }
   }
 
-  /// Verifica si el usuario ya reposteÃ³ el post con ese ID
+  /// Verifica si el usuario ya reposteó el post con ese ID
   bool hasRepostedPost(String postId) => _myReposts.containsKey(postId);
 
   /// Elimina el repost del usuario actual para un post original
@@ -504,7 +504,7 @@ class ExperienceProvider extends ChangeNotifier {
     super.dispose();
   }
 
-  // MÃ©todos privados
+  // Métodos privados
   void _setLoading(bool loading) {
     _isLoading = loading;
     notifyListeners();
@@ -531,7 +531,7 @@ class ExperienceProvider extends ChangeNotifier {
   }
 
   void _refreshAfterCreate(ExperienceEntity newExperience) {
-    // Agregar a la lista general (y a _allExperiences para que no se pierda en paginaciÃ³n)
+    // Agregar a la lista general (y a _allExperiences para que no se pierda en paginación)
     _experiences = [newExperience, ..._experiences];
     _allExperiences = [newExperience, ..._allExperiences];
 

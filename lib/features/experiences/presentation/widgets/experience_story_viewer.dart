@@ -19,7 +19,7 @@ import 'package:biux/features/social/domain/repositories/likes_repository.dart';
 import 'package:share_plus/share_plus.dart';
 
 /// Widget para mostrar una experiencia individual tipo Instagram Story
-/// Soporta reproducciÃ³n automÃ¡tica de videos e imÃ¡genes con duraciÃ³n
+/// Soporta reproducción automática de videos e imágenes con duración
 class ExperienceStoryViewer extends StatefulWidget {
   final ExperienceEntity experience;
   final List<ExperienceEntity>? allStories;
@@ -54,7 +54,7 @@ class _ExperienceStoryViewerState extends State<ExperienceStoryViewer>
   bool isPaused = false;
   bool isPressed = false;
   bool isMediaReady =
-      false; // Nueva variable para controlar cuando el media estÃ¡ listo
+      false; // Nueva variable para controlar cuando el media está listo
 
   List<UserEntity> _viewers = [];
   StreamSubscription<List<UserEntity>>? _viewersSub;
@@ -64,7 +64,7 @@ class _ExperienceStoryViewerState extends State<ExperienceStoryViewer>
     super.initState();
     _initializeControllers();
     _startCurrentMedia();
-    // Inicializar viewers con los datos estÃ¡ticos del entity
+    // Inicializar viewers con los datos estáticos del entity
     _viewers = List<UserEntity>.from(widget.experience.viewers);
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _recordStoryView();
@@ -99,7 +99,7 @@ class _ExperienceStoryViewerState extends State<ExperienceStoryViewer>
   }
 
   void _initializeControllers() {
-    // Inicializar con duraciÃ³n estÃ¡ndar de 15 segundos
+    // Inicializar con duración estándar de 15 segundos
     _progressController = AnimationController(
       duration: const Duration(seconds: 15),
       vsync: this,
@@ -119,21 +119,21 @@ class _ExperienceStoryViewerState extends State<ExperienceStoryViewer>
       isMediaReady = false; // Reset del estado de carga
     });
 
-    // Todas las historias duran exactamente 15 segundos como estÃ¡ndar
+    // Todas las historias duran exactamente 15 segundos como estándar
     const standardDuration = Duration(seconds: 15);
 
-    // Solo iniciar el progreso despuÃ©s de que el media estÃ© listo
-    // Para imÃ¡genes, se inicia inmediatamente
-    // Para videos, se inicia cuando el VideoPlayerWidget notifique que estÃ¡ listo
+    // Solo iniciar el progreso después de que el media esté listo
+    // Para imágenes, se inicia inmediatamente
+    // Para videos, se inicia cuando el VideoPlayerWidget notifique que está listo
     final currentMedia = widget.experience.media[currentMediaIndex];
     if (currentMedia.mediaType == MediaType.image) {
       _startProgressTimer(standardDuration);
     }
-    // Para videos, el timer se iniciarÃ¡ desde onVideoReady callback
+    // Para videos, el timer se iniciará desde onVideoReady callback
   }
 
   void _startProgressTimer(Duration duration) {
-    // La duraciÃ³n ya estÃ¡ establecida en 15 segundos en _initializeControllers
+    // La duración ya está establecida en 15 segundos en _initializeControllers
     // Solo necesitamos resetear y forward el controlador
     _progressController.reset();
     setState(() {
@@ -146,8 +146,8 @@ class _ExperienceStoryViewerState extends State<ExperienceStoryViewer>
   }
 
   void _onVideoReady() {
-    // Callback para cuando el video estÃ© listo para reproducirse
-    // Todas las historias duran exactamente 15 segundos como estÃ¡ndar
+    // Callback para cuando el video esté listo para reproducirse
+    // Todas las historias duran exactamente 15 segundos como estándar
     const standardDuration = Duration(seconds: 15);
     _startProgressTimer(standardDuration);
   }
@@ -181,7 +181,7 @@ class _ExperienceStoryViewerState extends State<ExperienceStoryViewer>
       isPaused = !isPaused;
     });
 
-    // Solo controlar el progreso si el media estÃ¡ listo
+    // Solo controlar el progreso si el media está listo
     if (isMediaReady) {
       if (isPaused) {
         _progressController.stop();
@@ -234,10 +234,10 @@ class _ExperienceStoryViewerState extends State<ExperienceStoryViewer>
               child: _buildProgressBar(),
             ),
 
-            // Ãreas de toque para navegaciÃ³n (antes del header para que el header quede encima)
+            // Ãreas de toque para navegación (antes del header para que el header quede encima)
             _buildTouchAreas(),
 
-            // Header con informaciÃ³n del usuario
+            // Header con información del usuario
             Positioned(
               top: MediaQuery.of(context).padding.top + 50,
               left: 10,
@@ -245,7 +245,7 @@ class _ExperienceStoryViewerState extends State<ExperienceStoryViewer>
               child: _buildUserHeader(),
             ),
 
-            // Footer con descripciÃ³n centrada
+            // Footer con descripción centrada
             if (widget.experience.description.isNotEmpty)
               Positioned(
                 bottom: MediaQuery.of(context).padding.bottom + 10,
@@ -259,7 +259,7 @@ class _ExperienceStoryViewerState extends State<ExperienceStoryViewer>
                 ),
               ),
 
-            // BotÃ³n de like para la historia (solo para otros usuarios, no para el propietario)
+            // Botón de like para la historia (solo para otros usuarios, no para el propietario)
             if (FirebaseAuth.instance.currentUser?.uid !=
                 widget.experience.user.id)
               Positioned(
@@ -271,7 +271,7 @@ class _ExperienceStoryViewerState extends State<ExperienceStoryViewer>
                 ),
               ),
 
-            // BotÃ³n de visualizadores (ojo con nÃºmero de vistas) - abajo a la derecha
+            // Botón de visualizadores (ojo con nÃºmero de vistas) - abajo a la derecha
             if (FirebaseAuth.instance.currentUser?.uid ==
                 widget.experience.user.id)
               Positioned(
@@ -315,7 +315,7 @@ class _ExperienceStoryViewerState extends State<ExperienceStoryViewer>
                 ),
               ),
 
-            // BotÃ³n de TRES PUNTOS BLANCO arriba a la derecha - visible para todos
+            // Botón de TRES PUNTOS BLANCO arriba a la derecha - visible para todos
             Positioned(
               top: MediaQuery.of(context).padding.top + 10,
               right: 10,
@@ -371,15 +371,15 @@ class _ExperienceStoryViewerState extends State<ExperienceStoryViewer>
           autoPlay: true,
           isPlaying: !isPaused,
           onVideoReady:
-              _onVideoReady, // Agregar callback para cuando estÃ© listo
+              _onVideoReady, // Agregar callback para cuando esté listo
           onFinished: () {
-            // Cuando termine el video, avanzar al siguiente automÃ¡ticamente
+            // Cuando termine el video, avanzar al siguiente automáticamente
             if (widget.onNext != null) {
               widget.onNext!();
             }
           },
           onTap: () {
-            // Al tocar el video, pausar/reanudar igual que las imÃ¡genes
+            // Al tocar el video, pausar/reanudar igual que las imágenes
             _togglePause();
             widget.onTap?.call();
           },
@@ -445,7 +445,7 @@ class _ExperienceStoryViewerState extends State<ExperienceStoryViewer>
 
     return Row(
       children: [
-        // Avatar + informaciÃ³n usuario (clickeable para ir al perfil)
+        // Avatar + información usuario (clickeable para ir al perfil)
         Flexible(
           child: GestureDetector(
             onTap: () {
@@ -467,7 +467,7 @@ class _ExperienceStoryViewerState extends State<ExperienceStoryViewer>
                   backgroundColor: Colors.grey[600],
                 ),
                 const SizedBox(width: 12),
-                // InformaciÃ³n directa del usuario
+                // Información directa del usuario
                 Flexible(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -570,12 +570,12 @@ class _ExperienceStoryViewerState extends State<ExperienceStoryViewer>
 
         const SizedBox(width: 8),
 
-        // No mostrar botÃ³n aquÃ­ - estÃ¡ en la esquina superior izquierda como PopupMenuButton
+        // No mostrar botón aquí - está en la esquina superior izquierda como PopupMenuButton
       ],
     );
   }
 
-  /// Muestra diÃ¡logo de confirmaciÃ³n para eliminar
+  /// Muestra diálogo de confirmación para eliminar
   void _confirmDeleteStory(BuildContext context) {
     final theme = Theme.of(context);
     final l = Provider.of<LocaleNotifier>(context, listen: false);
@@ -585,7 +585,7 @@ class _ExperienceStoryViewerState extends State<ExperienceStoryViewer>
       builder: (dialogContext) => AlertDialog(
         backgroundColor: theme.dialogTheme.backgroundColor,
         title: Text(
-          'Â¿EstÃ¡s seguro/a que quieres eliminar esta historia?',
+          '¿Estás seguro/a que quieres eliminar esta historia?',
           style: TextStyle(color: theme.textTheme.titleLarge?.color),
         ),
         content: Text(
@@ -617,7 +617,7 @@ class _ExperienceStoryViewerState extends State<ExperienceStoryViewer>
       final provider = context.read<ExperienceProvider>();
       await provider.deleteExperience(widget.experience.id);
 
-      // Cerrar el visor inmediatamente para UX instantÃ¡nea
+      // Cerrar el visor inmediatamente para UX instantánea
       if (context.mounted) {
         Navigator.of(context).pop();
       }
@@ -637,7 +637,7 @@ class _ExperienceStoryViewerState extends State<ExperienceStoryViewer>
     }
   }
 
-  /// Confirma eliminaciÃ³n de una foto individual
+  /// Confirma eliminación de una foto individual
   // ignore: unused_element
   void _confirmDeleteMedia(BuildContext context) {
     final theme = Theme.of(context);
@@ -679,7 +679,7 @@ class _ExperienceStoryViewerState extends State<ExperienceStoryViewer>
     try {
       final provider = context.read<ExperienceProvider>();
 
-      // Si despuÃ©s de eliminar no quedan mÃ¡s media, cerrar el visor y eliminar todo
+      // Si después de eliminar no quedan más media, cerrar el visor y eliminar todo
       if (widget.experience.media.length <= 1) {
         if (context.mounted) {
           Navigator.of(context).pop();
@@ -771,7 +771,7 @@ class _ExperienceStoryViewerState extends State<ExperienceStoryViewer>
               ),
               const SizedBox(height: 20),
 
-              // OpciÃ³n: Compartir
+              // Opción: Compartir
               ListTile(
                 leading: Container(
                   padding: const EdgeInsets.all(8),
@@ -797,7 +797,7 @@ class _ExperienceStoryViewerState extends State<ExperienceStoryViewer>
 
               const SizedBox(height: 8),
 
-              // OpciÃ³n: Repostear (solo para quienes no son dueÃ±os)
+              // Opción: Repostear (solo para quienes no son dueños)
               if (!isOwner) ...[
                 ListTile(
                   leading: Container(
@@ -828,7 +828,7 @@ class _ExperienceStoryViewerState extends State<ExperienceStoryViewer>
 
               const SizedBox(height: 8),
 
-              // OpciÃ³n: Eliminar (solo para el dueÃ±o)
+              // Opción: Eliminar (solo para el dueño)
               if (isOwner) ...[
                 ListTile(
                   leading: Container(
@@ -978,7 +978,7 @@ class _ExperienceStoryViewerState extends State<ExperienceStoryViewer>
                       : () async {
                           setModalState(() => isLoading = true);
                           // Capturar referencias antes del gap async para evitar
-                          // el error "_dependents.isEmpty" con contextos invÃ¡lidos
+                          // el error "_dependents.isEmpty" con contextos inválidos
                           final provider = modalContext
                               .read<ExperienceProvider>();
                           final messenger = ScaffoldMessenger.of(context);
@@ -993,7 +993,7 @@ class _ExperienceStoryViewerState extends State<ExperienceStoryViewer>
                             messenger.showSnackBar(
                               const SnackBar(
                                 content: Text(
-                                  'Â¡Historia reposteada en tu perfil!',
+                                  '¡Historia reposteada en tu perfil!',
                                 ),
                                 duration: Duration(seconds: 2),
                               ),
@@ -1062,7 +1062,7 @@ class _ExperienceStoryViewerState extends State<ExperienceStoryViewer>
     SharePlus.instance.share(ShareParams(text: shareText.toString()));
   }
 
-  /// Muestra modal con informaciÃ³n de visualizaciones y likes
+  /// Muestra modal con información de visualizaciones y likes
   void _showViewersModal(BuildContext context) {
     final theme = Theme.of(context);
     final l = Provider.of<LocaleNotifier>(context, listen: false);
@@ -1178,7 +1178,7 @@ class _ExperienceStoryViewerState extends State<ExperienceStoryViewer>
                                 ),
                                 child: Row(
                                   children: [
-                                    // Avatar con corazÃ³n superpuesto si dio like
+                                    // Avatar con corazón superpuesto si dio like
                                     Stack(
                                       clipBehavior: Clip.none,
                                       children: [
@@ -1216,7 +1216,7 @@ class _ExperienceStoryViewerState extends State<ExperienceStoryViewer>
                                       ],
                                     ),
                                     SizedBox(width: 12),
-                                    // InformaciÃ³n del usuario
+                                    // Información del usuario
                                     Expanded(
                                       child: Column(
                                         crossAxisAlignment:
@@ -1244,7 +1244,7 @@ class _ExperienceStoryViewerState extends State<ExperienceStoryViewer>
                                         ],
                                       ),
                                     ),
-                                    // Icono de flecha para indicar navegaciÃ³n
+                                    // Icono de flecha para indicar navegación
                                     Icon(
                                       Icons.chevron_right,
                                       color: Colors.grey[400],
@@ -1288,7 +1288,7 @@ class _ExperienceStoryViewerState extends State<ExperienceStoryViewer>
                         ),
                         const SizedBox(height: 8),
                         Text(
-                          'Comparte tu historia con mÃ¡s amigos para que la vean',
+                          'Comparte tu historia con más amigos para que la vean',
                           textAlign: TextAlign.center,
                           style: theme.textTheme.bodySmall?.copyWith(
                             color: Colors.grey[600],

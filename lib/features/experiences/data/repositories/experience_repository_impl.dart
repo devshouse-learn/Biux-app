@@ -11,7 +11,7 @@ import 'package:biux/features/experiences/data/models/experience_model.dart';
 import 'package:biux/features/users/domain/entities/user_entity.dart';
 import "package:flutter/foundation.dart";
 
-/// ImplementaciÃ³n del repository para experiencias usando Firebase
+/// Implementación del repository para experiencias usando Firebase
 class ExperienceRepositoryImpl implements ExperienceRepository {
   final FirebaseFirestore _firestore;
   final FirebaseAuth _auth;
@@ -49,7 +49,7 @@ class ExperienceRepositoryImpl implements ExperienceRepository {
             '',
       );
     } on FirebaseException catch (e) {
-      // Si hay error obteniendo desde Firestore, usar datos bÃ¡sicos de Firebase Auth
+      // Si hay error obteniendo desde Firestore, usar datos básicos de Firebase Auth
       return UserModel(
         id: firebaseUser.uid,
         fullName: firebaseUser.displayName ?? 'Usuario',
@@ -169,10 +169,10 @@ class ExperienceRepositoryImpl implements ExperienceRepository {
   Future<List<ExperienceEntity>> getFollowingExperiences(String userId) async {
     try {
       debugPrint(
-        'ðŸ” REPO: Obteniendo experiencias de usuarios seguidos para: $userId',
+        '” REPO: Obteniendo experiencias de usuarios seguidos para: $userId',
       );
 
-      // Primero intentar obtener de subcolecciÃ³n
+      // Primero intentar obtener de subcolección
       final followingSnapshot = await _firestore
           .collection('users')
           .doc(userId)
@@ -183,12 +183,12 @@ class ExperienceRepositoryImpl implements ExperienceRepository {
           .map((doc) => doc.id)
           .toList();
       debugPrint(
-        'ðŸ” REPO: Usuarios seguidos en subcolecciÃ³n: ${followingIds.length}',
+        '” REPO: Usuarios seguidos en subcolección: ${followingIds.length}',
       );
 
-      // Si no hay en subcolecciÃ³n, intentar desde el documento principal
+      // Si no hay en subcolección, intentar desde el documento principal
       if (followingIds.isEmpty) {
-        debugPrint('ðŸ” REPO: Buscando en documento principal del usuario...');
+        debugPrint('” REPO: Buscando en documento principal del usuario...');
         final userDoc = await _firestore.collection('users').doc(userId).get();
 
         if (userDoc.exists) {
@@ -199,17 +199,17 @@ class ExperienceRepositoryImpl implements ExperienceRepository {
             final followingMap = userData['following'] as Map;
             followingIds = followingMap.keys.cast<String>().toList();
             debugPrint(
-              'ðŸ” REPO: Usuarios seguidos en documento principal: ${followingIds.length}',
+              '” REPO: Usuarios seguidos en documento principal: ${followingIds.length}',
             );
-            debugPrint('ðŸ” REPO: Following map: $followingMap');
+            debugPrint('” REPO: Following map: $followingMap');
           }
         }
       }
 
-      debugPrint('ðŸ” REPO: Total IDs de usuarios seguidos: $followingIds');
+      debugPrint('” REPO: Total IDs de usuarios seguidos: $followingIds');
 
       if (followingIds.isEmpty) {
-        debugPrint('âš ï¸ REPO: No hay usuarios seguidos, retornando lista vacÃ­a');
+        debugPrint('âš ï¸ REPO: No hay usuarios seguidos, retornando lista vacía');
         return [];
       }
 
@@ -222,7 +222,7 @@ class ExperienceRepositoryImpl implements ExperienceRepository {
           .get();
 
       debugPrint(
-        'ðŸ” REPO: Experiencias de seguidos encontradas: ${snapshot.docs.length}',
+        '” REPO: Experiencias de seguidos encontradas: ${snapshot.docs.length}',
       );
 
       return snapshot.docs
@@ -287,7 +287,7 @@ class ExperienceRepositoryImpl implements ExperienceRepository {
         // Generar thumbnail para videos
         String? thumbnailUrl;
         if (mediaFile.mediaType == MediaType.video) {
-          // IMPLEMENTADO (STUB): Implementar generaciÃ³n de thumbnail
+          // IMPLEMENTADO (STUB): Implementar generación de thumbnail
           thumbnailUrl = url; // Por ahora usar la misma URL
         }
 
@@ -371,7 +371,7 @@ class ExperienceRepositoryImpl implements ExperienceRepository {
         throw Exception('No tienes permisos para eliminar esta experiencia');
       }
 
-      // Eliminar documento de Firestore primero (para que desaparezca de la UI rÃ¡pido)
+      // Eliminar documento de Firestore primero (para que desaparezca de la UI rápido)
       await _firestore.collection('experiences').doc(actualDocId).delete();
 
       // Eliminar archivos multimedia del storage en paralelo (en segundo plano)
@@ -416,7 +416,7 @@ class ExperienceRepositoryImpl implements ExperienceRepository {
       );
 
       if (mediaIndex < 0 || mediaIndex >= mediaList.length) {
-        throw Exception('Ãndice de media invÃ¡lido');
+        throw Exception('Ãndice de media inválido');
       }
 
       // Si es el Ãºltimo media, eliminar toda la experiencia
@@ -442,7 +442,7 @@ class ExperienceRepositoryImpl implements ExperienceRepository {
         'media': mediaList,
       });
 
-      return false; // false = solo se eliminÃ³ una foto
+      return false; // false = solo se eliminó una foto
     } on FirebaseException catch (e) {
       throw Exception('Error eliminando media: $e');
     }
@@ -574,7 +574,7 @@ class ExperienceRepositoryImpl implements ExperienceRepository {
         'reactions': FieldValue.arrayUnion([reactionData]),
       });
     } on FirebaseException catch (e) {
-      throw Exception('Error agregando reacciÃ³n: $e');
+      throw Exception('Error agregando reacción: $e');
     }
   }
 
@@ -586,7 +586,7 @@ class ExperienceRepositoryImpl implements ExperienceRepository {
         throw Exception('Usuario no autenticado');
       }
 
-      // Obtener la experiencia para encontrar la reacciÃ³n del usuario
+      // Obtener la experiencia para encontrar la reacción del usuario
       final doc = await _firestore
           .collection('experiences')
           .doc(experienceId)
@@ -598,14 +598,14 @@ class ExperienceRepositoryImpl implements ExperienceRepository {
       final data = doc.data()!;
       final reactions = List.from(data['reactions'] ?? []);
 
-      // Remover la reacciÃ³n del usuario actual
+      // Remover la reacción del usuario actual
       reactions.removeWhere((reaction) => reaction['user']['id'] == user.uid);
 
       await _firestore.collection('experiences').doc(experienceId).update({
         'reactions': reactions,
       });
     } on FirebaseException catch (e) {
-      throw Exception('Error removiendo reacciÃ³n: $e');
+      throw Exception('Error removiendo reacción: $e');
     }
   }
 
@@ -808,10 +808,10 @@ class ExperienceRepositoryImpl implements ExperienceRepository {
     }
   }
 
-  /// Optimiza una imagen para reducir su tamaÃ±o manteniendo calidad
+  /// Optimiza una imagen para reducir su tamaño manteniendo calidad
   Future<File> _optimizeImage(File originalFile) async {
     try {
-      // Obtener el tamaÃ±o del archivo original
+      // Obtener el tamaño del archivo original
       final originalBytes = await originalFile.readAsBytes();
       final originalSize = originalBytes.length;
 
@@ -825,19 +825,19 @@ class ExperienceRepositoryImpl implements ExperienceRepository {
       final timestamp = DateTime.now().millisecondsSinceEpoch;
       final optimizedPath = '${tempDir.path}/optimized_$timestamp.jpg';
 
-      // ConfiguraciÃ³n de compresiÃ³n conservadora para mantener calidad
+      // Configuración de compresión conservadora para mantener calidad
       int quality = 92;
       int? targetWidth;
       int? targetHeight;
 
-      // Ajustar calidad segÃºn el tamaÃ±o del archivo
+      // Ajustar calidad segÃºn el tamaño del archivo
       if (originalSize > 10 * 1024 * 1024) {
-        // Archivos > 10MB: compresiÃ³n moderada
+        // Archivos > 10MB: compresión moderada
         quality = 85;
         targetWidth = 1920;
         targetHeight = 2400;
       } else if (originalSize > 5 * 1024 * 1024) {
-        // Archivos > 5MB: compresiÃ³n ligera
+        // Archivos > 5MB: compresión ligera
         quality = 90;
         targetWidth = 2048;
         targetHeight = 2560;
@@ -853,7 +853,7 @@ class ExperienceRepositoryImpl implements ExperienceRepository {
       );
 
       if (compressedBytes == null) {
-        // Si falla la compresiÃ³n, usar archivo original
+        // Si falla la compresión, usar archivo original
         return originalFile;
       }
 
@@ -861,15 +861,15 @@ class ExperienceRepositoryImpl implements ExperienceRepository {
       final optimizedFile = File(optimizedPath);
       await optimizedFile.writeAsBytes(compressedBytes);
 
-      // Verificar que la optimizaciÃ³n fue efectiva
+      // Verificar que la optimización fue efectiva
       final optimizedSize = compressedBytes.length;
       final compressionRatio = (1 - (optimizedSize / originalSize)) * 100;
 
       debugPrint(
-        'Imagen optimizada: ${originalSize ~/ 1024}KB â†’ ${optimizedSize ~/ 1024}KB (${compressionRatio.toStringAsFixed(1)}% reducciÃ³n)',
+        'Imagen optimizada: ${originalSize ~/ 1024}KB â†’ ${optimizedSize ~/ 1024}KB (${compressionRatio.toStringAsFixed(1)}% reducción)',
       );
 
-      // Si la compresiÃ³n redujo menos del 10%, usar original
+      // Si la compresión redujo menos del 10%, usar original
       if (compressionRatio < 10) {
         await optimizedFile.delete();
         return originalFile;

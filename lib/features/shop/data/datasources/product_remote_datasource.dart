@@ -22,7 +22,7 @@ class ProductRemoteDataSource {
         .toList();
   }
 
-  /// Obtener productos por categorÃ­a
+  /// Obtener productos por categoría
   Future<List<ProductModel>> getProductsByCategory(String category) async {
     try {
       final snapshot = await _firestore
@@ -36,7 +36,7 @@ class ProductRemoteDataSource {
           .map((doc) => ProductModel.fromFirestore(doc))
           .toList();
     } on FirebaseException catch (e) {
-      throw Exception('Error al obtener productos por categorÃ­a: $e');
+      throw Exception('Error al obtener productos por categoría: $e');
     }
   }
 
@@ -55,7 +55,7 @@ class ProductRemoteDataSource {
     }
   }
 
-  /// Buscar productos por nombre o descripciÃ³n
+  /// Buscar productos por nombre o descripción
   Future<List<ProductModel>> searchProducts(String query) async {
     try {
       final snapshot = await _firestore

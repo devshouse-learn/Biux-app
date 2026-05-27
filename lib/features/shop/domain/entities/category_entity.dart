@@ -1,4 +1,4 @@
-﻿/// Entidad de CategorÃ­a de productos de ciclismo
+﻿/// Entidad de Categoría de productos de ciclismo
 class CategoryEntity {
   final String id;
   final String name;
@@ -27,9 +27,9 @@ class CategoryEntity {
   }
 }
 
-/// CategorÃ­as predefinidas para productos de ciclismo Biux
+/// Categorías predefinidas para productos de ciclismo Biux
 class ProductCategories {
-  // CategorÃ­as principales
+  // Categorías principales
   static const String all = 'todos';
   static const String jerseys = 'jerseys';
   static const String shorts = 'culotes';
@@ -39,7 +39,7 @@ class ProductCategories {
   static const String shoes = 'zapatos';
   static const String accessories = 'accesorios';
 
-  // Nuevas categorÃ­as especÃ­ficas para ciclistas
+  // Nuevas categorías específicas para ciclistas
   static const String bikes = 'bicicletas';
   static const String components = 'componentes';
   static const String nutrition = 'nutricion';
@@ -51,35 +51,35 @@ class ProductCategories {
 
   static List<CategoryEntity> getAll() {
     return [
-      CategoryEntity(id: all, name: 'Todos', icon: 'ðŸ›ï¸'),
-      CategoryEntity(id: bikes, name: 'Bicicletas', icon: 'ðŸš´'),
-      CategoryEntity(id: jerseys, name: 'Jerseys', icon: 'ðŸ‘•'),
-      CategoryEntity(id: shorts, name: 'Culotes', icon: 'ðŸ©³'),
-      CategoryEntity(id: helmets, name: 'Cascos', icon: 'ðŸª–'),
-      CategoryEntity(id: gloves, name: 'Guantes', icon: 'ðŸ§¤'),
-      CategoryEntity(id: glasses, name: 'Gafas', icon: 'ðŸ•¶ï¸'),
-      CategoryEntity(id: shoes, name: 'Calzado', icon: 'ðŸ‘Ÿ'),
+      CategoryEntity(id: all, name: 'Todos', icon: '›ï¸'),
+      CategoryEntity(id: bikes, name: 'Bicicletas', icon: 'š´'),
+      CategoryEntity(id: jerseys, name: 'Jerseys', icon: '‘•'),
+      CategoryEntity(id: shorts, name: 'Culotes', icon: '©³'),
+      CategoryEntity(id: helmets, name: 'Cascos', icon: 'ª–'),
+      CategoryEntity(id: gloves, name: 'Guantes', icon: '§¤'),
+      CategoryEntity(id: glasses, name: 'Gafas', icon: '•¶ï¸'),
+      CategoryEntity(id: shoes, name: 'Calzado', icon: '‘Ÿ'),
       CategoryEntity(id: components, name: 'Componentes', icon: 'âš™ï¸'),
-      CategoryEntity(id: electronics, name: 'ElectrÃ³nica', icon: 'ðŸ“±'),
-      CategoryEntity(id: nutrition, name: 'NutriciÃ³n', icon: 'ðŸŽ'),
-      CategoryEntity(id: hydration, name: 'HidrataciÃ³n', icon: 'ðŸ’§'),
-      CategoryEntity(id: safety, name: 'Seguridad', icon: 'ðŸ¦º'),
-      CategoryEntity(id: maintenance, name: 'Mantenimiento', icon: 'ðŸ”§'),
-      CategoryEntity(id: storage, name: 'Almacenamiento', icon: 'ðŸŽ’'),
+      CategoryEntity(id: electronics, name: 'Electrónica', icon: '“±'),
+      CategoryEntity(id: nutrition, name: 'Nutrición', icon: 'Ž'),
+      CategoryEntity(id: hydration, name: 'Hidratación', icon: '’§'),
+      CategoryEntity(id: safety, name: 'Seguridad', icon: '¦º'),
+      CategoryEntity(id: maintenance, name: 'Mantenimiento', icon: '”§'),
+      CategoryEntity(id: storage, name: 'Almacenamiento', icon: 'Ž’'),
       CategoryEntity(id: accessories, name: 'Accesorios', icon: 'âœ¨'),
     ];
   }
 
   static List<CategoryEntity> getMainCategories() {
-    // CategorÃ­as principales que se muestran en el Tab
+    // Categorías principales que se muestran en el Tab
     return [
       CategoryEntity(id: bikes, name: 'Bicicletas', icon: 'ï¿½'),
-      CategoryEntity(id: jerseys, name: 'Jerseys', icon: 'ðŸ‘•'),
-      CategoryEntity(id: shorts, name: 'Culotes', icon: 'ðŸ©³'),
-      CategoryEntity(id: helmets, name: 'Cascos', icon: 'ðŸª–'),
-      CategoryEntity(id: shoes, name: 'Calzado', icon: 'ðŸ‘Ÿ'),
+      CategoryEntity(id: jerseys, name: 'Jerseys', icon: '‘•'),
+      CategoryEntity(id: shorts, name: 'Culotes', icon: '©³'),
+      CategoryEntity(id: helmets, name: 'Cascos', icon: 'ª–'),
+      CategoryEntity(id: shoes, name: 'Calzado', icon: '‘Ÿ'),
       CategoryEntity(id: components, name: 'Componentes', icon: 'âš™ï¸'),
-      CategoryEntity(id: accessories, name: 'MÃ¡s', icon: 'âœ¨'),
+      CategoryEntity(id: accessories, name: 'Más', icon: 'âœ¨'),
     ];
   }
 

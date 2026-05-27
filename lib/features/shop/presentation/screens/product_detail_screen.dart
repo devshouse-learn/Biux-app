@@ -37,7 +37,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
   @override
   void initState() {
     super.initState();
-    // No llamar _loadProduct aquÃ­ para evitar usar context antes de que el widget estÃ© montado
+    // No llamar _loadProduct aquí para evitar usar context antes de que el widget esté montado
   }
 
   @override
@@ -57,31 +57,31 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
   Future<void> _loadProduct() async {
     final l = Provider.of<LocaleNotifier>(context, listen: false);
     try {
-      debugPrint('ðŸ” Buscando producto con ID: ${widget.productId}');
+      debugPrint('” Buscando producto con ID: ${widget.productId}');
       final shopProvider = context.read<ShopProvider>();
 
-      // Asegurarse de que los productos estÃ©n cargados
+      // Asegurarse de que los productos estén cargados
       if (shopProvider.products.isEmpty) {
-        debugPrint('ðŸ“¦ Cargando productos desde Firebase...');
+        debugPrint('“¦ Cargando productos desde Firebase...');
         await shopProvider.loadProducts();
-        debugPrint('âœ… Productos cargados: ${shopProvider.products.length}');
+        debugPrint('✓ Productos cargados: ${shopProvider.products.length}');
       } else {
         debugPrint(
-          'ðŸ“¦ Ya hay ${shopProvider.products.length} productos cargados',
+          '“¦ Ya hay ${shopProvider.products.length} productos cargados',
         );
       }
 
-      // Buscar el producto especÃ­fico
+      // Buscar el producto específico
       ProductEntity? product;
       try {
         product = shopProvider.products.firstWhere(
           (p) => p.id == widget.productId,
         );
-        debugPrint('âœ… Producto encontrado: ${product.name}');
+        debugPrint('✓ Producto encontrado: ${product.name}');
       } on FirebaseException catch (e) {
         debugPrint('âŒ Producto con ID ${widget.productId} no encontrado');
         debugPrint(
-          'ðŸ“‹ IDs disponibles: ${shopProvider.products.map((p) => p.id).join(", ")}',
+          '“‹ IDs disponibles: ${shopProvider.products.map((p) => p.id).join(", ")}',
         );
 
         if (!mounted) return;
@@ -91,7 +91,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
           _hasError = true;
         });
 
-        // Mostrar snackbar solo si el widget estÃ¡ montado
+        // Mostrar snackbar solo si el widget está montado
         WidgetsBinding.instance.addPostFrameCallback((_) {
           if (mounted) {
             if (context.mounted)
@@ -103,7 +103,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                 ),
               );
 
-            // Regresar a la tienda despuÃ©s de mostrar el error
+            // Regresar a la tienda después de mostrar el error
             Future.delayed(const Duration(seconds: 2), () {
               if (mounted) {
                 debugPrint('â¬…ï¸ Regresando a la tienda...');
@@ -130,7 +130,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
       if (product.hasVideo &&
           product.videoUrl != null &&
           product.videoUrl!.isNotEmpty) {
-        debugPrint('ðŸŽ¥ Inicializando video: ${product.videoUrl}');
+        debugPrint('Ž¥ Inicializando video: ${product.videoUrl}');
         _initializeVideo(product.videoUrl!);
       }
     } on FirebaseException catch (e) {
@@ -191,7 +191,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
       return;
     }
 
-    debugPrint('ðŸ›’ Intentando agregar al carrito: ${_product!.name}');
+    debugPrint('›’ Intentando agregar al carrito: ${_product!.name}');
     debugPrint('  - ID: ${_product!.id}');
     debugPrint('  - Precio: \$${_product!.price}');
     debugPrint('  - Cantidad: $_quantity');
@@ -210,14 +210,14 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
     }
 
     final shopProvider = context.read<ShopProvider>();
-    debugPrint('ðŸ“¦ Carrito antes: ${shopProvider.cartItems.length} items');
+    debugPrint('“¦ Carrito antes: ${shopProvider.cartItems.length} items');
 
     for (int i = 0; i < _quantity; i++) {
       shopProvider.addToCart(_product!, selectedSize: _selectedSize);
     }
 
-    debugPrint('ðŸ“¦ Carrito despuÃ©s: ${shopProvider.cartItems.length} items');
-    debugPrint('âœ… Producto agregado exitosamente');
+    debugPrint('“¦ Carrito después: ${shopProvider.cartItems.length} items');
+    debugPrint('✓ Producto agregado exitosamente');
 
     if (mounted) {
       if (context.mounted)
@@ -574,7 +574,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                   );
                 },
               ),
-              // BotÃ³n de opciones para el vendedor
+              // Botón de opciones para el vendedor
               Consumer<UserProvider>(
                 builder: (context, userProvider, child) {
                   final currentUser = userProvider.user;
@@ -632,7 +632,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // Indicador de imÃ¡genes/video
+                  // Indicador de imágenes/video
                   if (_product!.images.length > 1 || _product!.hasVideo)
                     _buildMediaIndicator(),
                   const SizedBox(height: 20),
@@ -734,7 +734,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                               _selectedSize = size;
                             });
                           },
-                          // âœ… Colores con buen contraste para leer las tallas
+                          // ✓ Colores con buen contraste para leer las tallas
                           selectedColor: ColorTokens.primary30,
                           backgroundColor: Colors.grey[100],
                           labelStyle: TextStyle(
@@ -754,7 +754,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                     SizedBox(height: 24),
                   ],
 
-                  // DescripciÃ³n detallada
+                  // Descripción detallada
                   Text(
                     l.t('description'),
                     style: const TextStyle(
@@ -804,15 +804,15 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
         }
       },
       itemBuilder: (context, index) {
-        // Mostrar video en el Ãºltimo Ã­ndice si existe
+        // Mostrar video en el Ãºltimo índice si existe
         if (_product!.hasVideo && index == _product!.images.length) {
           return _buildVideoPlayer();
         }
 
-        // Mostrar imÃ¡genes
+        // Mostrar imágenes
         final imageUrl = _product!.images[index];
 
-        // âœ… Soportar imÃ¡genes locales con protocolo asset://
+        // ✓ Soportar imágenes locales con protocolo asset://
         if (imageUrl.startsWith('asset://')) {
           final assetPath = imageUrl.replaceFirst('asset://', '');
           return Image.asset(
@@ -829,7 +829,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
           );
         }
 
-        // âœ… Soportar mock placeholders
+        // ✓ Soportar mock placeholders
         if (imageUrl.startsWith('mock://')) {
           return Container(
             color: Colors.grey[200],
@@ -1039,10 +1039,10 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
             ),
             const SizedBox(height: 16),
 
-            // Botones de acciÃ³n
+            // Botones de acción
             Row(
               children: [
-                // BotÃ³n Agregar al carrito
+                // Botón Agregar al carrito
                 Expanded(
                   child: OutlinedButton.icon(
                     onPressed: _product!.isAvailable ? _addToCart : null,
@@ -1060,7 +1060,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                 ),
                 const SizedBox(width: 12),
 
-                // BotÃ³n Comprar ahora
+                // Botón Comprar ahora
                 Expanded(
                   child: ElevatedButton.icon(
                     onPressed: _product!.isAvailable ? _buyNow : null,
@@ -1079,7 +1079,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
               ],
             ),
 
-            // NUEVA FUNCIONALIDAD: BotÃ³n para ver cÃ³digo QR (solo para bicis verificadas)
+            // NUEVA FUNCIONALIDAD: Botón para ver código QR (solo para bicis verificadas)
             if (_product!.isBicycle && _product!.isVerifiedNotStolen) ...[
               const SizedBox(height: 16),
               Container(

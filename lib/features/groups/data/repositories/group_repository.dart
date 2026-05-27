@@ -48,7 +48,7 @@ class GroupRepository implements GroupRepositoryInterface {
         coverUrl: coverUrl,
         adminId: adminId,
         cityId: cityId, // NUEVO CAMPO
-        memberIds: [adminId], // El admin se agrega automÃ¡ticamente como miembro
+        memberIds: [adminId], // El admin se agrega automáticamente como miembro
         pendingRequestIds: [],
         createdAt: DateTime.now(),
         updatedAt: DateTime.now(),
@@ -58,8 +58,8 @@ class GroupRepository implements GroupRepositoryInterface {
       await docRef.set(group.toFirestore());
 
       // Log para debug
-      AppLogger.info('âœ… Grupo creado exitosamente: ${docRef.id}');
-      AppLogger.debug('ðŸ“‹ Datos del grupo: ${group.toFirestore()}');
+      AppLogger.info('✓ Grupo creado exitosamente: ${docRef.id}');
+      AppLogger.debug('“‹ Datos del grupo: ${group.toFirestore()}');
 
       return docRef.id;
     } on FirebaseException catch (e) {
@@ -71,7 +71,7 @@ class GroupRepository implements GroupRepositoryInterface {
   // NUEVO: Obtener grupos por ciudad
   // No filtramos isActive en query para incluir docs antiguos sin ese campo
   Stream<List<GroupModel>> getGroupsByCity(String cityId) {
-    AppLogger.debug('ðŸ” Obteniendo grupos de la ciudad: $cityId');
+    AppLogger.debug('” Obteniendo grupos de la ciudad: $cityId');
 
     return _firestore
         .collection(_collection)
@@ -79,7 +79,7 @@ class GroupRepository implements GroupRepositoryInterface {
         .snapshots()
         .map((snapshot) {
           AppLogger.debug(
-            'ðŸ“Š Grupos encontrados en la ciudad: ${snapshot.docs.length}',
+            '“Š Grupos encontrados en la ciudad: ${snapshot.docs.length}',
           );
 
           final groups = snapshot.docs
@@ -99,20 +99,20 @@ class GroupRepository implements GroupRepositoryInterface {
           // Ordenar por fecha en memoria
           groups.sort((a, b) => b.createdAt.compareTo(a.createdAt));
 
-          AppLogger.info('âœ… Grupos procesados correctamente: ${groups.length}');
+          AppLogger.info('✓ Grupos procesados correctamente: ${groups.length}');
           return groups;
         });
   }
 
   // Obtener todos los grupos activos - MANTENER PARA COMPATIBILIDAD
   // NOTA: No filtramos por 'isActive' en la query de Firestore porque
-  // documentos antiguos pueden no tener ese campo y serÃ­an excluidos.
+  // documentos antiguos pueden no tener ese campo y serían excluidos.
   // En su lugar, filtramos en memoria tratando ausencia como true.
   Stream<List<GroupModel>> getGroups() {
-    AppLogger.debug('ðŸ” Obteniendo todos los grupos...');
+    AppLogger.debug('” Obteniendo todos los grupos...');
 
     return _firestore.collection(_collection).snapshots().map((snapshot) {
-      AppLogger.debug('ðŸ“Š Grupos encontrados: ${snapshot.docs.length}');
+      AppLogger.debug('“Š Grupos encontrados: ${snapshot.docs.length}');
 
       final groups = snapshot.docs
           .map((doc) {
@@ -131,7 +131,7 @@ class GroupRepository implements GroupRepositoryInterface {
       // Ordenar por fecha en memoria
       groups.sort((a, b) => b.createdAt.compareTo(a.createdAt));
 
-      AppLogger.info('âœ… Grupos procesados correctamente: ${groups.length}');
+      AppLogger.info('✓ Grupos procesados correctamente: ${groups.length}');
       return groups;
     });
   }
@@ -170,7 +170,7 @@ class GroupRepository implements GroupRepositoryInterface {
         });
   }
 
-  // Obtener un grupo especÃ­fico
+  // Obtener un grupo específico
   Future<GroupModel?> getGroup(String groupId) async {
     try {
       final doc = await _firestore.collection(_collection).doc(groupId).get();
@@ -193,7 +193,7 @@ class GroupRepository implements GroupRepositoryInterface {
         'updatedAt': Timestamp.fromDate(DateTime.now()),
       });
 
-      // Obtener datos del grupo y usuario para crear notificaciÃ³n
+      // Obtener datos del grupo y usuario para crear notificación
       try {
         final groupDoc = await _firestore
             .collection(_collection)
@@ -208,7 +208,7 @@ class GroupRepository implements GroupRepositoryInterface {
           final adminId = groupData['adminId'] as String?;
 
           if (adminId != null && adminId.isNotEmpty) {
-            // Crear notificaciÃ³n para el admin del grupo
+            // Crear notificación para el admin del grupo
             await _firestore
                 .collection('users')
                 .doc(adminId)
@@ -235,9 +235,9 @@ class GroupRepository implements GroupRepositoryInterface {
         }
       } catch (notifError) {
         AppLogger.debug(
-          'Error creando notificaciÃ³n de solicitud de ingreso: $notifError',
+          'Error creando notificación de solicitud de ingreso: $notifError',
         );
-        // No fallar la operaciÃ³n si la notificaciÃ³n falla
+        // No fallar la operación si la notificación falla
       }
 
       return true;

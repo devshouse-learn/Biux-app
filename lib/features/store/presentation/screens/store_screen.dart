@@ -7,7 +7,7 @@ import 'package:biux/features/store/presentation/providers/product_provider.dart
 import 'package:biux/features/store/presentation/providers/cart_provider.dart';
 import 'package:biux/core/design_system/locale_notifier.dart';
 
-/// Pantalla principal de la tienda con diseÃ±o profesional y moderno
+/// Pantalla principal de la tienda con diseño profesional y moderno
 /// Incluye precios formateados en COP con separadores de miles
 class StoreScreen extends StatefulWidget {
   const StoreScreen({super.key});
@@ -81,7 +81,7 @@ class _StoreScreenState extends State<StoreScreen> {
                     ),
                   ),
                   SizedBox(width: 12),
-                  // TÃ­tulo
+                  // Título
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -105,7 +105,7 @@ class _StoreScreenState extends State<StoreScreen> {
                       ],
                     ),
                   ),
-                  // BotÃ³n Mis Pedidos
+                  // Botón Mis Pedidos
                   Container(
                     margin: const EdgeInsets.only(right: 8),
                     decoration: BoxDecoration(
@@ -121,7 +121,7 @@ class _StoreScreenState extends State<StoreScreen> {
                       },
                     ),
                   ),
-                  // BotÃ³n Favoritos
+                  // Botón Favoritos
                   Container(
                     margin: const EdgeInsets.only(right: 8),
                     decoration: BoxDecoration(
@@ -262,7 +262,7 @@ class _StoreScreenState extends State<StoreScreen> {
                   ),
                 ),
                 const SizedBox(width: 12),
-                // BotÃ³n limpiar filtros mejorado
+                // Botón limpiar filtros mejorado
                 Container(
                   decoration: BoxDecoration(
                     color: const Color(0xFF3B82F6),
@@ -292,7 +292,7 @@ class _StoreScreenState extends State<StoreScreen> {
             ),
           ),
 
-          // Filtros por categorÃ­a mejorados
+          // Filtros por categoría mejorados
           Container(
             height: 60,
             decoration: BoxDecoration(
@@ -433,7 +433,7 @@ class _StoreScreenState extends State<StoreScreen> {
     );
   }
 
-  /// Chip de categorÃ­a mejorado
+  /// Chip de categoría mejorado
   Widget _buildCategoryChip(
     BuildContext context,
     String label,
@@ -470,7 +470,7 @@ class _StoreScreenState extends State<StoreScreen> {
     );
   }
 
-  /// Tarjeta de producto mejorada con diseÃ±o profesional
+  /// Tarjeta de producto mejorada con diseño profesional
   Widget _buildProductCard(BuildContext context, ProductEntity product) {
     return Container(
       decoration: BoxDecoration(
@@ -517,7 +517,7 @@ class _StoreScreenState extends State<StoreScreen> {
             ),
           ),
 
-          // InformaciÃ³n del producto
+          // Información del producto
           Expanded(
             flex: 2,
             child: Padding(
@@ -596,7 +596,7 @@ class _StoreScreenState extends State<StoreScreen> {
                   ),
                   const Spacer(),
 
-                  // Stock y botÃ³n de agregar
+                  // Stock y botón de agregar
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
@@ -686,7 +686,7 @@ class _StoreScreenState extends State<StoreScreen> {
     );
   }
 
-  /// Obtiene el Ã­cono segÃºn la categorÃ­a del producto
+  /// Obtiene el ícono segÃºn la categoría del producto
   IconData _getCategoryIcon(ProductCategory category) {
     switch (category) {
       case ProductCategory.bicicletas:
@@ -716,7 +716,7 @@ class _StoreScreenState extends State<StoreScreen> {
     try {
       context.read<CartProvider>().addItem(product);
 
-      // Feedback hÃ¡ptico
+      // Feedback háptico
       HapticFeedback.lightImpact();
 
       // Snackbar mejorado
@@ -765,7 +765,7 @@ class _StoreScreenState extends State<StoreScreen> {
     }
   }
 
-  /// Mostrar pantalla de Mis Pedidos con estado vacÃ­o
+  /// Mostrar pantalla de Mis Pedidos con estado vacío
   void _showMyOrdersScreen(BuildContext context) {
     final l = Provider.of<LocaleNotifier>(context, listen: false);
     showModalBottomSheet(
@@ -842,7 +842,7 @@ class _StoreScreenState extends State<StoreScreen> {
                 ],
               ),
             ),
-            // Estado vacÃ­o
+            // Estado vacío
             Expanded(
               child: Center(
                 child: Column(
@@ -912,7 +912,7 @@ class _StoreScreenState extends State<StoreScreen> {
     );
   }
 
-  /// Mostrar pantalla de Favoritos con estado vacÃ­o
+  /// Mostrar pantalla de Favoritos con estado vacío
   void _showFavoritesScreen(BuildContext context) {
     final l = Provider.of<LocaleNotifier>(context, listen: false);
     showModalBottomSheet(
@@ -989,7 +989,7 @@ class _StoreScreenState extends State<StoreScreen> {
                 ],
               ),
             ),
-            // Estado vacÃ­o
+            // Estado vacío
             Expanded(
               child: Center(
                 child: Column(

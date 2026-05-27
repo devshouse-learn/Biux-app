@@ -6,7 +6,7 @@ import 'package:intl/intl.dart';
 import 'package:biux/core/design_system/locale_notifier.dart';
 import 'package:provider/provider.dart';
 
-/// Modelo de promociÃ³n
+/// Modelo de promoción
 class Promotion {
   final String id;
   final String title;
@@ -70,15 +70,15 @@ class Promotion {
   String get typeEmoji {
     switch (type) {
       case 'descuento':
-        return 'ðŸ·ï¸';
+        return '·ï¸';
       case 'oferta':
-        return 'ðŸŽ';
+        return 'Ž';
       case 'evento':
-        return 'ðŸš´';
+        return 'š´';
       case 'novedad':
         return 'âœ¨';
       default:
-        return 'ðŸ“¢';
+        return '“¢';
     }
   }
 
@@ -93,7 +93,7 @@ class Promotion {
       case 'novedad':
         return 'Novedad';
       default:
-        return 'PromociÃ³n';
+        return 'Promoción';
     }
   }
 }
@@ -178,7 +178,7 @@ class _PromotionsWidgetState extends State<PromotionsWidget>
             dividerColor: Colors.transparent,
             indicatorSize: TabBarIndicatorSize.tab,
             tabs: const [
-              Tab(text: 'ðŸ“‹ Activas'),
+              Tab(text: '“‹ Activas'),
               Tab(text: 'âž• Crear Nueva'),
             ],
           ),
@@ -232,7 +232,7 @@ class _PromotionsWidgetState extends State<PromotionsWidget>
             icon: Icons.campaign_outlined,
             title: 'Sin promociones aÃºn',
             subtitle:
-                'SÃ© el primero en compartir una\npromociÃ³n con la comunidad ciclista.',
+                'Sé el primero en compartir una\npromoción con la comunidad ciclista.',
             showButton: true,
           );
         }
@@ -242,7 +242,7 @@ class _PromotionsWidgetState extends State<PromotionsWidget>
           children: [
             if (active.isNotEmpty) ...[
               _buildSectionHeader(
-                'ðŸ”¥ Activas (${active.length})',
+                '”¥ Activas (${active.length})',
                 color: const Color(0xFF16242D),
               ),
               const SizedBox(height: 12),
@@ -302,7 +302,7 @@ class _PromotionsWidgetState extends State<PromotionsWidget>
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Header: tipo + tÃ­tulo + menÃº
+              // Header: tipo + título + menÃº
               Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -319,7 +319,7 @@ class _PromotionsWidgetState extends State<PromotionsWidget>
                     ),
                   ),
                   const SizedBox(width: 10),
-                  // TÃ­tulo y tipo
+                  // Título y tipo
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -370,7 +370,7 @@ class _PromotionsWidgetState extends State<PromotionsWidget>
                       ],
                     ),
                   ),
-                  // MenÃº de opciones (solo dueÃ±o)
+                  // MenÃº de opciones (solo dueño)
                   if (isOwner && !isExpired)
                     PopupMenuButton<String>(
                       icon: Icon(
@@ -407,7 +407,7 @@ class _PromotionsWidgetState extends State<PromotionsWidget>
               ),
               const SizedBox(height: 12),
 
-              // DescripciÃ³n
+              // Descripción
               Text(
                 promo.description,
                 style: const TextStyle(
@@ -419,7 +419,7 @@ class _PromotionsWidgetState extends State<PromotionsWidget>
                 overflow: TextOverflow.ellipsis,
               ),
 
-              // UbicaciÃ³n
+              // Ubicación
               if (promo.location.isNotEmpty) ...[
                 const SizedBox(height: 10),
                 Row(
@@ -487,7 +487,7 @@ class _PromotionsWidgetState extends State<PromotionsWidget>
                     const SizedBox(width: 4),
                     Text(
                       isExpired
-                          ? 'ExpirÃ³ ${dateFormat.format(promo.expiresAt!)}'
+                          ? 'Expiró ${dateFormat.format(promo.expiresAt!)}'
                           : 'Expira ${dateFormat.format(promo.expiresAt!)}',
                       style: TextStyle(
                         fontSize: 11,
@@ -551,7 +551,7 @@ class _PromotionsWidgetState extends State<PromotionsWidget>
                   _tabController.animateTo(1);
                 },
                 icon: const Icon(Icons.add, size: 18),
-                label: const Text('Crear PromociÃ³n'),
+                label: const Text('Crear Promoción'),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color(0xFF16242D),
                   foregroundColor: Colors.white,
@@ -571,7 +571,7 @@ class _PromotionsWidgetState extends State<PromotionsWidget>
     );
   }
 
-  /// ===== TAB 2: Formulario de creaciÃ³n =====
+  /// ===== TAB 2: Formulario de creación =====
   Widget _buildCreateForm() {
     return SingleChildScrollView(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
@@ -603,7 +603,7 @@ class _PromotionsWidgetState extends State<PromotionsWidget>
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          'Nueva PromociÃ³n',
+                          'Nueva Promoción',
                           style: TextStyle(
                             fontSize: 15,
                             fontWeight: FontWeight.w700,
@@ -626,13 +626,13 @@ class _PromotionsWidgetState extends State<PromotionsWidget>
             ),
             const SizedBox(height: 24),
 
-            // Campo: TÃ­tulo
-            _buildLabel('TÃ­tulo de la promociÃ³n *'),
+            // Campo: Título
+            _buildLabel('Título de la promoción *'),
             const SizedBox(height: 8),
             TextFormField(
               controller: _titleController,
               validator: (v) => (v == null || v.trim().isEmpty)
-                  ? 'El tÃ­tulo es obligatorio'
+                  ? 'El título es obligatorio'
                   : null,
               decoration: _inputDecoration(
                 hint: l.t('promotion_hint'),
@@ -642,18 +642,18 @@ class _PromotionsWidgetState extends State<PromotionsWidget>
             ),
             const SizedBox(height: 20),
 
-            // Campo: DescripciÃ³n
-            _buildLabel('DescripciÃ³n *'),
+            // Campo: Descripción
+            _buildLabel('Descripción *'),
             const SizedBox(height: 8),
             TextFormField(
               controller: _descriptionController,
               maxLines: 3,
               validator: (v) => (v == null || v.trim().isEmpty)
-                  ? 'La descripciÃ³n es obligatoria'
+                  ? 'La descripción es obligatoria'
                   : null,
               decoration: _inputDecoration(
                 hint:
-                    'Describe tu promociÃ³n con detalles: ubicaciÃ³n, horarios, condiciones...',
+                    'Describe tu promoción con detalles: ubicación, horarios, condiciones...',
                 icon: Icons.description_outlined,
                 alignTop: true,
               ),
@@ -702,7 +702,7 @@ class _PromotionsWidgetState extends State<PromotionsWidget>
                                 value: 'descuento',
                                 child: Row(
                                   children: [
-                                    Text('ðŸ·ï¸', style: TextStyle(fontSize: 16)),
+                                    Text('·ï¸', style: TextStyle(fontSize: 16)),
                                     SizedBox(width: 8),
                                     Text('Descuento'),
                                   ],
@@ -712,7 +712,7 @@ class _PromotionsWidgetState extends State<PromotionsWidget>
                                 value: 'oferta',
                                 child: Row(
                                   children: [
-                                    Text('ðŸŽ', style: TextStyle(fontSize: 16)),
+                                    Text('Ž', style: TextStyle(fontSize: 16)),
                                     SizedBox(width: 8),
                                     Text('Oferta'),
                                   ],
@@ -722,7 +722,7 @@ class _PromotionsWidgetState extends State<PromotionsWidget>
                                 value: 'evento',
                                 child: Row(
                                   children: [
-                                    Text('ðŸš´', style: TextStyle(fontSize: 16)),
+                                    Text('š´', style: TextStyle(fontSize: 16)),
                                     SizedBox(width: 8),
                                     Text('Evento'),
                                   ],
@@ -752,7 +752,7 @@ class _PromotionsWidgetState extends State<PromotionsWidget>
                 ),
                 const SizedBox(width: 12),
 
-                // Fecha expiraciÃ³n
+                // Fecha expiración
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -827,8 +827,8 @@ class _PromotionsWidgetState extends State<PromotionsWidget>
             ),
             const SizedBox(height: 20),
 
-            // Campo: UbicaciÃ³n
-            _buildLabel('UbicaciÃ³n (opcional)'),
+            // Campo: Ubicación
+            _buildLabel('Ubicación (opcional)'),
             const SizedBox(height: 8),
             TextFormField(
               controller: _locationController,
@@ -869,7 +869,7 @@ class _PromotionsWidgetState extends State<PromotionsWidget>
                   SizedBox(width: 10),
                   Expanded(
                     child: Text(
-                      'Las promociones serÃ¡n visibles para todos los ciclistas de tu comunidad.',
+                      'Las promociones serán visibles para todos los ciclistas de tu comunidad.',
                       style: TextStyle(
                         fontSize: 12,
                         color: Color(0xFF5A7A8A),
@@ -930,7 +930,7 @@ class _PromotionsWidgetState extends State<PromotionsWidget>
                           )
                         : const Icon(Icons.send_rounded, size: 18),
                     label: Text(
-                      _isPublishing ? 'Publicando...' : 'Publicar PromociÃ³n',
+                      _isPublishing ? 'Publicando...' : 'Publicar Promoción',
                       style: const TextStyle(
                         fontSize: 15,
                         fontWeight: FontWeight.w600,
@@ -1060,7 +1060,7 @@ class _PromotionsWidgetState extends State<PromotionsWidget>
 
     final user = _auth.currentUser;
     if (user == null) {
-      _showSnackBar('Debes iniciar sesiÃ³n para publicar', isError: true);
+      _showSnackBar('Debes iniciar sesión para publicar', isError: true);
       return;
     }
 
@@ -1092,9 +1092,9 @@ class _PromotionsWidgetState extends State<PromotionsWidget>
         _selectedDate = null;
       });
 
-      _showSnackBar('PromociÃ³n publicada exitosamente ðŸŽ‰');
+      _showSnackBar('Promoción publicada exitosamente Ž‰');
 
-      // Ir a pestaÃ±a de activas
+      // Ir a pestaña de activas
       _tabController.animateTo(0);
     } on FirebaseException catch (e) {
       _showSnackBar('Error al publicar: $e', isError: true);
@@ -1109,7 +1109,7 @@ class _PromotionsWidgetState extends State<PromotionsWidget>
       builder: (ctx) => AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
         title: const Text(
-          'Eliminar PromociÃ³n',
+          'Eliminar Promoción',
           style: TextStyle(
             fontWeight: FontWeight.w700,
             color: Color(0xFF16242D),
@@ -1129,7 +1129,7 @@ class _PromotionsWidgetState extends State<PromotionsWidget>
               Navigator.pop(ctx);
               try {
                 await _promotionsRef.doc(promo.id).delete();
-                _showSnackBar('PromociÃ³n eliminada');
+                _showSnackBar('Promoción eliminada');
               } on FirebaseException catch (e) {
                 _showSnackBar('Error al eliminar: $e', isError: true);
               }

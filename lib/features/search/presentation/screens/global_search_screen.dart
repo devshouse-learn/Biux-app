@@ -189,7 +189,7 @@ class _GlobalSearchScreenState extends State<GlobalSearchScreen>
             style: TextStyle(color: Colors.grey[400]),
           ),
           SizedBox(height: 32),
-          // Sugerencias rÃ¡pidas
+          // Sugerencias rápidas
           Wrap(
             spacing: 8,
             runSpacing: 8,

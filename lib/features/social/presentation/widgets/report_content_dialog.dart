@@ -6,19 +6,19 @@ import 'package:biux/features/social/data/datasources/report_datasource.dart';
 import 'package:biux/core/design_system/locale_notifier.dart';
 import 'package:provider/provider.dart';
 
-/// DiÃ¡logo para reportar contenido (posts, comentarios, usuarios, rodadas)
+/// Diálogo para reportar contenido (posts, comentarios, usuarios, rodadas)
 class ReportContentDialog {
   static const _reasons = [
     'Contenido inapropiado',
     'Spam o publicidad',
     'Acoso o bullying',
-    'InformaciÃ³n falsa',
+    'Información falsa',
     'Contenido violento',
-    'SuplantaciÃ³n de identidad',
+    'Suplantación de identidad',
     'Otro',
   ];
 
-  /// Mostrar diÃ¡logo de reporte
+  /// Mostrar diálogo de reporte
   static void show({
     required BuildContext context,
     required String contentId,
@@ -66,7 +66,7 @@ class ReportContentDialog {
               ),
               SizedBox(height: 16),
 
-              // TÃ­tulo
+              // Título
               Row(
                 children: [
                   Icon(Icons.flag_outlined, color: ColorTokens.error50),
@@ -79,7 +79,7 @@ class ReportContentDialog {
               ),
               SizedBox(height: 8),
               Text(
-                'Â¿Por quÃ© deseas reportar este contenido?',
+                '¿Por qué deseas reportar este contenido?',
                 style: TextStyle(fontSize: 14, color: Colors.grey.shade600),
               ),
               SizedBox(height: 16),
@@ -122,7 +122,7 @@ class ReportContentDialog {
               ],
               SizedBox(height: 16),
 
-              // BotÃ³n enviar
+              // Botón enviar
               SizedBox(
                 width: double.infinity,
                 child: ElevatedButton(

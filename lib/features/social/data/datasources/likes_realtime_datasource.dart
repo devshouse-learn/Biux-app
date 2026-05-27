@@ -65,7 +65,7 @@ class LikesRealtimeDatasource {
     return ref.onValue.map((event) {
       if (event.snapshot.value == null) return false;
 
-      // Verificar si estÃ¡ expirado (solo para stories)
+      // Verificar si está expirado (solo para stories)
       if (type == 'story') {
         final data = event.snapshot.value as Map<dynamic, dynamic>;
         final expiresAt = data['expiresAt'] as int?;
@@ -88,20 +88,20 @@ class LikesRealtimeDatasource {
     final path = '${_getBasePath(type)}/$targetId/${like.userId}';
     final jsonData = like.toJson();
 
-    debugPrint('ðŸ” DEBUG DATASOURCE - Path: $path');
-    debugPrint('ðŸ” DEBUG DATASOURCE - JSON: $jsonData');
+    debugPrint('” DEBUG DATASOURCE - Path: $path');
+    debugPrint('” DEBUG DATASOURCE - JSON: $jsonData');
 
     // Verificar auth
     final currentUser = FirebaseAuth.instance.currentUser;
-    debugPrint('ðŸ” DEBUG AUTH - currentUser.uid: ${currentUser?.uid}');
-    debugPrint('ðŸ” DEBUG AUTH - like.userId: ${like.userId}');
-    debugPrint('ðŸ” DEBUG AUTH - Match: ${currentUser?.uid == like.userId}');
+    debugPrint('” DEBUG AUTH - currentUser.uid: ${currentUser?.uid}');
+    debugPrint('” DEBUG AUTH - like.userId: ${like.userId}');
+    debugPrint('” DEBUG AUTH - Match: ${currentUser?.uid == like.userId}');
 
     final ref = _database.ref(path);
 
     try {
       await ref.set(jsonData);
-      debugPrint('âœ… LIKE GUARDADO EXITOSAMENTE');
+      debugPrint('✓ LIKE GUARDADO EXITOSAMENTE');
     } on FirebaseException catch (e) {
       debugPrint('âŒ ERROR AL GUARDAR LIKE: $e');
       rethrow;
@@ -118,7 +118,7 @@ class LikesRealtimeDatasource {
     await ref.remove();
   }
 
-  /// Obtiene un like especÃ­fico
+  /// Obtiene un like específico
   Future<LikeModel?> getLike({
     required String type,
     required String targetId,

@@ -429,7 +429,7 @@ class _EmergencyScreenState extends State<EmergencyScreen> {
                       ),
                       const SizedBox(width: 3),
                       Text(
-                        a.userName.isNotEmpty ? a.userName : 'AnÃ³nimo',
+                        a.userName.isNotEmpty ? a.userName : 'Anónimo',
                         style: TextStyle(color: Colors.grey[500], fontSize: 11),
                       ),
                       const SizedBox(width: 8),
@@ -539,35 +539,35 @@ class _EmergencyScreenState extends State<EmergencyScreen> {
           ),
           const SizedBox(height: 12),
           _eTile(
-            emoji: 'ðŸš‘',
+            emoji: 'š‘',
             service: l.t('ambulance_samu'),
             description: l.t('medical_emergencies'),
             number: '123',
             color: Colors.red,
           ),
           _eTile(
-            emoji: 'ðŸš”',
+            emoji: 'š”',
             service: l.t('national_police'),
             description: l.t('security_crimes'),
             number: '112',
             color: Colors.blue,
           ),
           _eTile(
-            emoji: 'ðŸš’',
+            emoji: 'š’',
             service: l.t('firefighters'),
             description: l.t('fires_rescues'),
             number: '119',
             color: Colors.orange,
           ),
           _eTile(
-            emoji: 'ðŸ¥',
+            emoji: '¥',
             service: l.t('red_cross'),
             description: l.t('first_aid_humanitarian'),
             number: '132',
             color: Colors.red[800]!,
           ),
           _eTile(
-            emoji: 'ðŸ›¡ï¸',
+            emoji: '›¡ï¸',
             service: l.t('civil_defense'),
             description: l.t('natural_disasters'),
             number: '144',
@@ -924,19 +924,19 @@ class _EmergencyScreenState extends State<EmergencyScreen> {
   }
 
   String _relIcon(String? r) => switch (r) {
-    'MamÃ¡' => 'ðŸ‘©',
-    'PapÃ¡' => 'ðŸ‘¨',
-    'Hermano/a' => 'ðŸ§‘â€ðŸ¤â€ðŸ§‘',
-    'Esposo/a' => 'ðŸ’‘',
+    'Mamá' => '‘©',
+    'Papá' => '‘¨',
+    'Hermano/a' => '§‘â€¤â€§‘',
+    'Esposo/a' => '’‘',
     'Novio/a' => 'â¤ï¸',
-    'Hijo/a' => 'ðŸ‘¶',
-    'TÃ­o/a' => 'ðŸ‘¤',
-    'Abuelo/a' => 'ðŸ‘´',
-    'Primo/a' => 'ðŸ¤',
-    'Amigo/a' => 'ðŸ¤—',
-    'CompaÃ±ero/a' => 'ðŸš´',
-    'Vecino/a' => 'ðŸ ',
-    _ => 'ðŸ‘¤',
+    'Hijo/a' => '‘¶',
+    'Tío/a' => '‘¤',
+    'Abuelo/a' => '‘´',
+    'Primo/a' => '¤',
+    'Amigo/a' => '¤—',
+    'Compañero/a' => 'š´',
+    'Vecino/a' => ' ',
+    _ => '‘¤',
   };
 
   void _showAdd(BuildContext context) {
@@ -944,17 +944,17 @@ class _EmergencyScreenState extends State<EmergencyScreen> {
     final phoneC = TextEditingController();
     String? selRel;
     const rels = [
-      'MamÃ¡',
-      'PapÃ¡',
+      'Mamá',
+      'Papá',
       'Hermano/a',
       'Esposo/a',
       'Novio/a',
       'Hijo/a',
-      'TÃ­o/a',
+      'Tío/a',
       'Abuelo/a',
       'Primo/a',
       'Amigo/a',
-      'CompaÃ±ero/a',
+      'Compañero/a',
       'Vecino/a',
       'Otro',
     ];
@@ -992,7 +992,7 @@ class _EmergencyScreenState extends State<EmergencyScreen> {
                 TextField(
                   controller: phoneC,
                   decoration: InputDecoration(
-                    labelText: 'TelÃ©fono',
+                    labelText: 'Teléfono',
                     prefixIcon: Icon(Icons.phone),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(10),
@@ -1005,7 +1005,7 @@ class _EmergencyScreenState extends State<EmergencyScreen> {
                 DropdownButtonFormField<String>(
                   initialValue: selRel,
                   decoration: InputDecoration(
-                    labelText: 'RelaciÃ³n',
+                    labelText: 'Relación',
                     prefixIcon: Icon(Icons.family_restroom),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(10),
@@ -1094,10 +1094,10 @@ class _EmergencyScreenState extends State<EmergencyScreen> {
           ),
           const SizedBox(height: 12),
           _tip('Usa siempre casco y luces'),
-          _tip('Comparte tu ubicaciÃ³n con alguien de confianza'),
-          _tip('Lleva identificaciÃ³n y datos mÃ©dicos'),
+          _tip('Comparte tu ubicación con alguien de confianza'),
+          _tip('Lleva identificación y datos médicos'),
           _tip('Revisa tu bicicleta antes de salir'),
-          _tip('Respeta las seÃ±ales de trÃ¡nsito'),
+          _tip('Respeta las señales de tránsito'),
           _tip('Usa ropa reflectiva de noche'),
         ],
       ),

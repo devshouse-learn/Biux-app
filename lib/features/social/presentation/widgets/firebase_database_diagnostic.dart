@@ -3,7 +3,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
-/// Widget de diagnÃ³stico para Firebase Realtime Database
+/// Widget de diagnóstico para Firebase Realtime Database
 ///
 /// Agrega este widget en tu pantalla principal TEMPORALMENTE
 /// para diagnosticar el problema de MissingPluginException
@@ -23,18 +23,18 @@ class _FirebaseDatabaseDiagnosticState
   Future<void> _testConnection() async {
     setState(() {
       _isTesting = true;
-      _status = 'Probando conexiÃ³n...';
+      _status = 'Probando conexión...';
     });
 
     try {
       // Test 1: Verificar instancia
       final database = FirebaseDatabase.instance;
-      setState(() => _status = 'âœ… 1/5: Instancia creada');
+      setState(() => _status = '✓ 1/5: Instancia creada');
       await Future.delayed(Duration(milliseconds: 500));
 
       // Test 2: Crear referencia
       final ref = database.ref('diagnostic_test');
-      setState(() => _status = 'âœ… 2/5: Referencia creada');
+      setState(() => _status = '✓ 2/5: Referencia creada');
       await Future.delayed(Duration(milliseconds: 500));
 
       // Test 3: Escribir dato
@@ -42,28 +42,28 @@ class _FirebaseDatabaseDiagnosticState
         'timestamp': DateTime.now().millisecondsSinceEpoch,
         'message': 'Test desde Flutter',
       });
-      setState(() => _status = 'âœ… 3/5: Escritura exitosa');
+      setState(() => _status = '✓ 3/5: Escritura exitosa');
       await Future.delayed(Duration(milliseconds: 500));
 
       // Test 4: Leer dato
       final snapshot = await ref.get();
       final value = snapshot.value;
-      setState(() => _status = 'âœ… 4/5: Lectura exitosa: $value');
+      setState(() => _status = '✓ 4/5: Lectura exitosa: $value');
       await Future.delayed(Duration(milliseconds: 500));
 
       // Test 5: Eliminar dato de prueba
       await ref.remove();
-      setState(() => _status = 'âœ… 5/5: TODO FUNCIONANDO!');
+      setState(() => _status = '✓ 5/5: TODO FUNCIONANDO!');
 
-      // Verificar autenticaciÃ³n
+      // Verificar autenticación
       final user = FirebaseAuth.instance.currentUser;
       if (user != null) {
         setState(
           () => _status =
-              'âœ… COMPLETO: Firebase DB funciona! Usuario: ${user.uid}',
+              '✓ COMPLETO: Firebase DB funciona! Usuario: ${user.uid}',
         );
       } else {
-        setState(() => _status = 'âš ï¸ DB funciona pero NO estÃ¡s autenticado');
+        setState(() => _status = 'âš ï¸ DB funciona pero NO estás autenticado');
       }
     } on FirebaseException catch (e) {
       setState(() => _status = 'âŒ ERROR: $e');
@@ -131,7 +131,7 @@ Soluciones:
                 Icon(Icons.bug_report, color: Colors.orange[700]),
                 const SizedBox(width: 8),
                 const Text(
-                  'DiagnÃ³stico Firebase DB',
+                  'Diagnóstico Firebase DB',
                   style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                 ),
               ],
@@ -143,7 +143,7 @@ Soluciones:
                 fontSize: 14,
                 color: _status.startsWith('âŒ')
                     ? Colors.red
-                    : _status.startsWith('âœ…')
+                    : _status.startsWith('✓')
                     ? Colors.green
                     : Colors.blue,
               ),
@@ -163,7 +163,7 @@ Soluciones:
                         ),
                       )
                     : const Icon(Icons.play_arrow),
-                label: Text(_isTesting ? 'Probando...' : 'Probar ConexiÃ³n'),
+                label: Text(_isTesting ? 'Probando...' : 'Probar Conexión'),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.orange[700],
                   foregroundColor: Colors.white,
@@ -172,7 +172,7 @@ Soluciones:
             ),
             const SizedBox(height: 8),
             const Text(
-              'ðŸ’¡ Si aparece MissingPluginException, necesitas rebuild completo',
+              '’¡ Si aparece MissingPluginException, necesitas rebuild completo',
               style: TextStyle(
                 fontSize: 12,
                 fontStyle: FontStyle.italic,

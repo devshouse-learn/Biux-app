@@ -57,7 +57,7 @@ class MessageBubble extends StatelessWidget {
         isMe: isMe,
         onDeleteForMe: () => onDeleteForMe(message),
       );
-    // Ocultar si expirÃ³
+    // Ocultar si expiró
     if (message.expiresAt != null &&
         DateTime.now().isAfter(message.expiresAt!)) {
       return const SizedBox.shrink();
@@ -165,7 +165,7 @@ class MessageBubble extends StatelessWidget {
                     borderRadius: BorderRadius.circular(2),
                   ),
                 ),
-                // TÃ­tulo: preview del mensaje
+                // Título: preview del mensaje
                 Padding(
                   padding: const EdgeInsets.symmetric(
                     horizontal: 16,
@@ -173,9 +173,9 @@ class MessageBubble extends StatelessWidget {
                   ),
                   child: Text(
                     message.type == MessageType.voice
-                        ? 'ðŸŽ¤ Mensaje de voz'
+                        ? 'Ž¤ Mensaje de voz'
                         : message.type == MessageType.image
-                        ? 'ðŸ–¼ï¸ Imagen'
+                        ? '–¼ï¸ Imagen'
                         : message.content.length > 40
                         ? message.content.substring(0, 40) + '...'
                         : message.content,
@@ -447,7 +447,7 @@ class MessageBubble extends StatelessWidget {
                   },
                 ),
                 const Divider(height: 1),
-                // Eliminar para mÃ­ (todos pueden)
+                // Eliminar para mí (todos pueden)
                 ListTile(
                   leading: Container(
                     padding: const EdgeInsets.all(8),
@@ -469,15 +469,15 @@ class MessageBubble extends StatelessWidget {
                     style: const TextStyle(color: Colors.red),
                   ),
                   subtitle: const Text(
-                    'Solo tÃº dejarÃ¡s de ver este mensaje',
+                    'Solo tÃº dejarás de ver este mensaje',
                     style: TextStyle(fontSize: 11, color: Colors.red),
                   ),
                   onTap: () {
                     Navigator.pop(context);
                     _confirmDelete(
                       context,
-                      title: 'Eliminar para mÃ­',
-                      message: 'Â¿Eliminar este mensaje solo para ti?',
+                      title: 'Eliminar para mí',
+                      message: '¿Eliminar este mensaje solo para ti?',
                       onConfirm: () => onDeleteForMe(message),
                     );
                   },
@@ -508,7 +508,7 @@ class MessageBubble extends StatelessWidget {
                       ),
                     ),
                     subtitle: const Text(
-                      'Todos dejarÃ¡n de ver este mensaje',
+                      'Todos dejarán de ver este mensaje',
                       style: TextStyle(fontSize: 11, color: Colors.red),
                     ),
                     onTap: () {
@@ -517,7 +517,7 @@ class MessageBubble extends StatelessWidget {
                         context,
                         title: 'Eliminar para todos',
                         message:
-                            'Â¿Eliminar este mensaje para todos los participantes?',
+                            '¿Eliminar este mensaje para todos los participantes?',
                         onConfirm: () => onDeleteForAll(message),
                       );
                     },
@@ -582,7 +582,7 @@ class MessageBubble extends StatelessWidget {
   }
 
   void _showEmojiPicker(BuildContext context) {
-    const emojis = ['ðŸ‘', 'â¤ï¸', 'ðŸ˜‚', 'ðŸ˜®', 'ðŸ˜¢', 'ðŸ”¥', 'ðŸ’ª', 'ðŸš´'];
+    const emojis = ['‘', 'â¤ï¸', '˜‚', '˜®', '˜¢', '”¥', '’ª', 'š´'];
     final renderBox = context.findRenderObject() as RenderBox?;
     if (renderBox == null) return;
     final offset = renderBox.localToGlobal(Offset.zero);
@@ -900,7 +900,7 @@ class _VoiceMessageState extends State<_VoiceMessage> {
       width: 200,
       child: Row(
         children: [
-          // BotÃ³n play/pause
+          // Botón play/pause
           GestureDetector(
             onTap: _togglePlay,
             child: _loading
@@ -1577,7 +1577,7 @@ class _ReactionsRow extends StatelessWidget {
 /// Chulos de estado del mensaje (estilo WhatsApp)
 /// - 1 gris: enviado
 /// - 2 grises: entregado
-/// - 2 azules: leÃ­do
+/// - 2 azules: leído
 class _MessageStatusTicks extends StatelessWidget {
   final bool isRead;
   final bool isDelivered;

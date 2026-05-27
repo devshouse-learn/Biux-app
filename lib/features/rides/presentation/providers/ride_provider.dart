@@ -144,12 +144,12 @@ class RideProvider extends ChangeNotifier {
       _setError('La fecha de la rodada no puede ser en el pasado');
       return false;
     }
-    // Validar kilÃ³metros
+    // Validar kilómetros
     if (kilometers <= 0) {
-      _setError('Los kilÃ³metros deben ser mayor a 0');
+      _setError('Los kilómetros deben ser mayor a 0');
       return false;
     }
-    // Validar nombre mÃ­nimo
+    // Validar nombre mínimo
     if (name.trim().length < 3) {
       _setError('El nombre debe tener al menos 3 caracteres');
       return false;
@@ -251,7 +251,7 @@ class RideProvider extends ChangeNotifier {
         return false;
       }
 
-      // Preparar datos de actualizaciÃ³n
+      // Preparar datos de actualización
       final updateData = {
         'name': name,
         'meetingPointId': meetingPointId,
@@ -340,24 +340,24 @@ class RideProvider extends ChangeNotifier {
       _setError(null);
 
       // Obtener datos del usuario actual
-      // IMPORTANTE: Usar la colecciÃ³n 'users' (no 'usuarios')
+      // IMPORTANTE: Usar la colección 'users' (no 'usuarios')
       final userDoc = await _firestore
           .collection('users')
           .doc(currentUserId)
           .get();
       final userData = userDoc.data();
 
-      // ðŸ” DEBUG: Ver exactamente quÃ© datos tenemos
-      debugPrint('ðŸ” DEBUG joinRide - userData completo: $userData');
-      debugPrint('ðŸ” DEBUG joinRide - currentUserId: $currentUserId');
+      // ” DEBUG: Ver exactamente qué datos tenemos
+      debugPrint('” DEBUG joinRide - userData completo: $userData');
+      debugPrint('” DEBUG joinRide - currentUserId: $currentUserId');
       debugPrint(
-        'ðŸ” DEBUG joinRide - Firebase Auth displayName: ${_auth.currentUser?.displayName}',
+        '” DEBUG joinRide - Firebase Auth displayName: ${_auth.currentUser?.displayName}',
       );
       debugPrint(
-        'ðŸ” DEBUG joinRide - Firebase Auth email: ${_auth.currentUser?.email}',
+        '” DEBUG joinRide - Firebase Auth email: ${_auth.currentUser?.email}',
       );
       debugPrint(
-        'ðŸ” DEBUG joinRide - Firebase Auth phoneNumber: ${_auth.currentUser?.phoneNumber}',
+        '” DEBUG joinRide - Firebase Auth phoneNumber: ${_auth.currentUser?.phoneNumber}',
       );
 
       // Crear metadata del participante con fallbacks
@@ -366,13 +366,13 @@ class RideProvider extends ChangeNotifier {
 
       if (userData != null && userData.isNotEmpty) {
         // Intentar todos los campos posibles de Firestore
-        // IMPORTANTE: TambiÃ©n revisar si el valor no es una cadena vacÃ­a
+        // IMPORTANTE: También revisar si el valor no es una cadena vacía
         String? fullName = userData['fullName'];
         String? userNameField = userData['userName'];
         String? usernameField = userData['username'];
         String? nameField = userData['name'];
 
-        // Buscar el primer campo que NO estÃ© vacÃ­o
+        // Buscar el primer campo que NO esté vacío
         userName =
             (fullName != null && fullName.trim().isNotEmpty
                 ? fullName
@@ -389,7 +389,7 @@ class RideProvider extends ChangeNotifier {
             userData['full_name'] ??
             userData['displayName'] ??
             _auth.currentUser?.displayName ??
-            // Usar telÃ©fono formateado como Ãºltimo recurso
+            // Usar teléfono formateado como Ãºltimo recurso
             (_auth.currentUser?.phoneNumber
                     ?.replaceAll('phone_', '')
                     .replaceAll('+57', '') ??
@@ -403,16 +403,16 @@ class RideProvider extends ChangeNotifier {
             userData['avatar'] ??
             _auth.currentUser?.photoURL;
 
-        debugPrint('ðŸ” DEBUG joinRide - userName seleccionado: "$userName"');
-        debugPrint('ðŸ” DEBUG joinRide - photoUrl seleccionado: "$photoUrl"');
+        debugPrint('” DEBUG joinRide - userName seleccionado: "$userName"');
+        debugPrint('” DEBUG joinRide - photoUrl seleccionado: "$photoUrl"');
       } else {
-        // CRÃTICO: Si no existe el documento en Firestore, crearlo con datos bÃ¡sicos
+        // CRÃTICO: Si no existe el documento en Firestore, crearlo con datos básicos
         debugPrint(
-          'âš ï¸ DEBUG joinRide - No se encontrÃ³ documento de usuario en Firestore',
+          'âš ï¸ DEBUG joinRide - No se encontró documento de usuario en Firestore',
         );
-        debugPrint('âš ï¸ Creando documento bÃ¡sico para el usuario...');
+        debugPrint('âš ï¸ Creando documento básico para el usuario...');
 
-        // Usar telÃ©fono como nombre temporal si no hay displayName
+        // Usar teléfono como nombre temporal si no hay displayName
         userName =
             _auth.currentUser?.displayName ??
             _auth.currentUser?.phoneNumber
@@ -422,7 +422,7 @@ class RideProvider extends ChangeNotifier {
             'Usuario';
         photoUrl = _auth.currentUser?.photoURL;
 
-        // Crear documento bÃ¡sico en Firestore con la colecciÃ³n correcta
+        // Crear documento básico en Firestore con la colección correcta
         try {
           await _firestore.collection('users').doc(currentUserId).set(
             {
@@ -436,7 +436,7 @@ class RideProvider extends ChangeNotifier {
             SetOptions(merge: true),
           ); // merge: true para no sobrescribir si existe
 
-          debugPrint('âœ… Documento de usuario creado/actualizado');
+          debugPrint('✓ Documento de usuario creado/actualizado');
         } on FirebaseException catch (e) {
           debugPrint('âŒ Error creando documento de usuario: $e');
         }
@@ -564,7 +564,7 @@ class RideProvider extends ChangeNotifier {
     }
   }
 
-  // Seleccionar una rodada especÃ­fica
+  // Seleccionar una rodada específica
   void selectRide(RideModel ride) {
     _selectedRide = ride;
     notifyListeners();
@@ -576,7 +576,7 @@ class RideProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  // Cargar rodadas por grupo (mÃ©todo que faltaba)
+  // Cargar rodadas por grupo (método que faltaba)
   Future<void> loadGroupRides(String groupId) async {
     try {
       _setLoading(true);
@@ -602,7 +602,7 @@ class RideProvider extends ChangeNotifier {
     }
   }
 
-  // Obtener el estado de participaciÃ³n del usuario actual en una rodada
+  // Obtener el estado de participación del usuario actual en una rodada
   RideParticipationStatus getParticipationStatus(RideModel ride) {
     if (currentUserId == null) return RideParticipationStatus.notParticipating;
 
@@ -718,7 +718,7 @@ class RideProvider extends ChangeNotifier {
     }
   }
 
-  // Obtener informaciÃ³n del grupo de una rodada
+  // Obtener información del grupo de una rodada
   Future<Map<String, dynamic>?> getGroupInfo(String groupId) async {
     try {
       final groupDoc = await _firestore.collection('groups').doc(groupId).get();
@@ -737,7 +737,7 @@ class RideProvider extends ChangeNotifier {
         'logoUrl': groupData['logo'] ?? groupData['logoUrl'],
       };
     } on FirebaseException catch (e) {
-      debugPrint('Error al cargar informaciÃ³n del grupo: $e');
+      debugPrint('Error al cargar información del grupo: $e');
       return null;
     }
   }
@@ -794,7 +794,7 @@ class RideProvider extends ChangeNotifier {
     return list;
   }
 
-  // PaginaciÃ³n
+  // Paginación
   // ignore: unused_field
   static const int _pageSize = 15;
   // ignore: unused_field

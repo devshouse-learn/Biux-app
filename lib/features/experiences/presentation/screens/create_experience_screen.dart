@@ -13,7 +13,7 @@ import 'dart:io';
 import 'package:image_picker/image_picker.dart';
 
 /// Pantalla para crear nuevas experiencias
-/// Soporta imÃ¡genes y videos con compresiÃ³n automÃ¡tica
+/// Soporta imágenes y videos con compresión automática
 class CreateExperienceScreen extends StatefulWidget {
   final ExperienceType experienceType;
   final String? rideId;
@@ -22,7 +22,7 @@ class CreateExperienceScreen extends StatefulWidget {
   final bool isPostMode; // true = solo posts, false/null = modo completo
   final bool
   textOnly; // true = post solo texto (sin multimedia), false = permite multimedia
-  final ExperienceEntity? experienceToEdit; // Para modo ediciÃ³n
+  final ExperienceEntity? experienceToEdit; // Para modo edición
 
   const CreateExperienceScreen({
     super.key,
@@ -52,7 +52,7 @@ class _CreateExperienceScreenState extends State<CreateExperienceScreen> {
   // ignore: unused_field
   bool _isAdvertisement = false;
 
-  // Modo ediciÃ³n
+  // Modo edición
   bool get _isEditMode => widget.experienceToEdit != null;
 
   @override
@@ -68,7 +68,7 @@ class _CreateExperienceScreenState extends State<CreateExperienceScreen> {
       _contentType = 'story'; // Default
     }
 
-    // Pre-llenar datos si estamos en modo ediciÃ³n
+    // Pre-llenar datos si estamos en modo edición
     if (_isEditMode) {
       _descriptionController.text = widget.experienceToEdit!.description;
     }
@@ -85,7 +85,7 @@ class _CreateExperienceScreenState extends State<CreateExperienceScreen> {
             : ExperienceFormat.post,
       );
 
-      // En modo ediciÃ³n, pre-cargar la descripciÃ³n y media en el provider
+      // En modo edición, pre-cargar la descripción y media en el provider
       if (_isEditMode) {
         creatorProvider.updateDescription(widget.experienceToEdit!.description);
         creatorProvider.loadExistingMedia(widget.experienceToEdit!.media);
@@ -119,7 +119,7 @@ class _CreateExperienceScreenState extends State<CreateExperienceScreen> {
                     : widget.isStoryMode
                     ? 'Nueva Historia'
                     : widget.isPostMode
-                    ? 'Nueva PublicaciÃ³n'
+                    ? 'Nueva Publicación'
                     : widget.experienceType == ExperienceType.ride
                     ? 'Nueva Experiencia de Rodada'
                     : 'Nueva Experiencia',
@@ -144,7 +144,7 @@ class _CreateExperienceScreenState extends State<CreateExperienceScreen> {
                         SizedBox(width: 8),
                         Text(
                           widget.isPostMode
-                              ? 'Descartar PublicaciÃ³n'
+                              ? 'Descartar Publicación'
                               : 'Descartar Historia',
                           style: TextStyle(color: Colors.red),
                         ),
@@ -205,7 +205,7 @@ class _CreateExperienceScreenState extends State<CreateExperienceScreen> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          // Selector de tipo de contenido (solo si no estÃ¡ en modo fijo)
+                          // Selector de tipo de contenido (solo si no está en modo fijo)
                           if (!widget.isStoryMode && !widget.isPostMode) ...[
                             _buildContentTypeSelector(),
                             const SizedBox(height: 24),
@@ -217,7 +217,7 @@ class _CreateExperienceScreenState extends State<CreateExperienceScreen> {
                             const SizedBox(height: 24),
                           ],
 
-                          // DescripciÃ³n
+                          // Descripción
                           _buildDescriptionSection(provider),
 
                           const SizedBox(height: 24),
@@ -226,7 +226,7 @@ class _CreateExperienceScreenState extends State<CreateExperienceScreen> {
                           // _buildTagsSection(provider),
                           // const SizedBox(height: 24),
 
-                          // InformaciÃ³n adicional
+                          // Información adicional
                           _buildInfoSection(),
                         ],
                       ),
@@ -338,8 +338,8 @@ class _CreateExperienceScreenState extends State<CreateExperienceScreen> {
                       Expanded(
                         child: Text(
                           _contentType == 'story'
-                              ? 'Historia requiere imagen o video (mÃ¡ximo 30 segundos)'
-                              : 'Agrega fotos o videos a tu publicaciÃ³n',
+                              ? 'Historia requiere imagen o video (máximo 30 segundos)'
+                              : 'Agrega fotos o videos a tu publicación',
                           style: TextStyle(
                             fontSize: 11,
                             fontWeight: FontWeight.w500,
@@ -484,8 +484,8 @@ class _CreateExperienceScreenState extends State<CreateExperienceScreen> {
                 Expanded(
                   child: Text(
                     _contentType == 'story'
-                        ? 'Historia: Texto corto (mÃ¡ximo 100 caracteres)'
-                        : 'PublicaciÃ³n: Escribe lo que quieras compartir',
+                        ? 'Historia: Texto corto (máximo 100 caracteres)'
+                        : 'Publicación: Escribe lo que quieras compartir',
                     style: TextStyle(
                       fontSize: 12,
                       fontWeight: FontWeight.w500,
@@ -539,7 +539,7 @@ class _CreateExperienceScreenState extends State<CreateExperienceScreen> {
               ),
             ),
             validator: (value) {
-              // La descripciÃ³n es opcional
+              // La descripción es opcional
               return null;
             },
             onChanged: provider.updateDescription,
@@ -651,7 +651,7 @@ class _CreateExperienceScreenState extends State<CreateExperienceScreen> {
               ),
               const SizedBox(width: 8),
               Text(
-                'InformaciÃ³n',
+                'Información',
                 style: TextStyle(
                   fontSize: 14,
                   fontWeight: FontWeight.w600,
@@ -661,29 +661,29 @@ class _CreateExperienceScreenState extends State<CreateExperienceScreen> {
             ],
           ),
           SizedBox(height: 8),
-          // InformaciÃ³n segÃºn el tipo de contenido
+          // Información segÃºn el tipo de contenido
           if (widget.textOnly) ...[
             _buildInfoItem(
-              'ðŸ“ Post de solo texto',
-              'No se requiere ni permite multimedia. Solo escribe tu publicaciÃ³n.',
+              '“ Post de solo texto',
+              'No se requiere ni permite multimedia. Solo escribe tu publicación.',
             ),
           ] else if (_contentType == 'story') ...[
             _buildInfoItem(
-              'â±ï¸ Historia efÃ­mera',
-              'Tu historia desaparecerÃ¡ en 24 horas.',
+              'â±ï¸ Historia efímera',
+              'Tu historia desaparecerá en 24 horas.',
             ),
             _buildInfoItem(
-              'ðŸ“¸ Multimedia requerida',
+              '“¸ Multimedia requerida',
               'Las historias requieren al menos una imagen o video (<30s).',
             ),
           ] else if (widget.experienceType == ExperienceType.ride) ...[
             _buildInfoItem(
-              'ðŸ“¹ Videos de hasta 30 segundos',
-              'Los videos se comprimirÃ¡n automÃ¡ticamente para optimizar la calidad y el tamaÃ±o.',
+              '“¹ Videos de hasta 30 segundos',
+              'Los videos se comprimirán automáticamente para optimizar la calidad y el tamaño.',
             ),
             _buildInfoItem(
-              'ðŸ“± MÃ¡ximo 5 elementos',
-              'Puedes agregar hasta 5 imÃ¡genes o videos en total.',
+              '“± Máximo 5 elementos',
+              'Puedes agregar hasta 5 imágenes o videos en total.',
             ),
           ] else ...[
             _buildInfoItem(
@@ -691,8 +691,8 @@ class _CreateExperienceScreenState extends State<CreateExperienceScreen> {
               l.t('exp_create_info_media_optional_desc'),
             ),
             _buildInfoItem(
-              'ï¿½ MÃ¡ximo 5 elementos',
-              'Puedes agregar hasta 5 imÃ¡genes o videos en total.',
+              'ï¿½ Máximo 5 elementos',
+              'Puedes agregar hasta 5 imágenes o videos en total.',
             ),
           ],
         ],
@@ -736,7 +736,7 @@ class _CreateExperienceScreenState extends State<CreateExperienceScreen> {
     final hasMedia = provider.mediaItems.isNotEmpty;
     final isProcessing = provider.mediaItems.any((item) => item.isProcessing);
 
-    // Modo ediciÃ³n: solo requiere que no estÃ© subiendo
+    // Modo edición: solo requiere que no esté subiendo
     if (_isEditMode) {
       return !provider.isUploading && !isProcessing;
     }
@@ -751,7 +751,7 @@ class _CreateExperienceScreenState extends State<CreateExperienceScreen> {
       return false;
     }
 
-    // Posts con multimedia: REQUIEREN multimedia, descripciÃ³n es opcional
+    // Posts con multimedia: REQUIEREN multimedia, descripción es opcional
     return hasMedia && !provider.isUploading && !isProcessing;
   }
 
@@ -762,7 +762,7 @@ class _CreateExperienceScreenState extends State<CreateExperienceScreen> {
     final l = Provider.of<LocaleNotifier>(context, listen: false);
 
     if (_isEditMode) {
-      // Modo ediciÃ³n: actualizar experiencia existente
+      // Modo edición: actualizar experiencia existente
       final experienceProvider = context.read<ExperienceProvider>();
       final creatorProvider = context.read<ExperienceCreatorProvider>();
       final newDescription = _descriptionController.text.trim();
@@ -814,7 +814,7 @@ class _CreateExperienceScreenState extends State<CreateExperienceScreen> {
         }
       }
     } else {
-      // Modo creaciÃ³n: crear nueva experiencia
+      // Modo creación: crear nueva experiencia
       final provider = context.read<ExperienceCreatorProvider>();
       final success = await provider.createExperience();
 
@@ -822,7 +822,7 @@ class _CreateExperienceScreenState extends State<CreateExperienceScreen> {
         Navigator.of(context).pop(true);
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content: Text('Â¡Experiencia publicada exitosamente!'),
+            content: Text('¡Experiencia publicada exitosamente!'),
             backgroundColor: Colors.green,
           ),
         );
@@ -842,11 +842,11 @@ class _CreateExperienceScreenState extends State<CreateExperienceScreen> {
 
   void _showDeleteDialog(BuildContext context) {
     final title = widget.isPostMode
-        ? 'Descartar PublicaciÃ³n'
+        ? 'Descartar Publicación'
         : 'Descartar Historia';
     final content = widget.isPostMode
-        ? 'Â¿EstÃ¡s seguro de que deseas descartar esta publicaciÃ³n? Se perderÃ¡n todos los cambios.'
-        : 'Â¿EstÃ¡s seguro de que deseas descartar esta historia? Se perderÃ¡n todos los cambios.';
+        ? '¿Estás seguro de que deseas descartar esta publicación? Se perderán todos los cambios.'
+        : '¿Estás seguro de que deseas descartar esta historia? Se perderán todos los cambios.';
     showDialog(
       context: context,
       builder: (dialogContext) => AlertDialog(
@@ -872,14 +872,14 @@ class _CreateExperienceScreenState extends State<CreateExperienceScreen> {
     );
   }
 
-  /// Abre el selector de imÃ¡genes y despuÃ©s el editor de crop
+  /// Abre el selector de imágenes y después el editor de crop
   Future<void> _openImagePickerWithCrop(
     BuildContext context,
     ExperienceCreatorProvider provider, {
     required bool isCamera,
   }) async {
     try {
-      // Usar el mÃ©todo del provider para obtener la imagen
+      // Usar el método del provider para obtener la imagen
       if (isCamera) {
         // Tomar foto
         final navigator = Navigator.of(context);
@@ -907,13 +907,13 @@ class _CreateExperienceScreenState extends State<CreateExperienceScreen> {
             );
 
             if (croppedFile != null) {
-              // AÃ±adir la imagen recortada al provider
+              // Añadir la imagen recortada al provider
               provider.addCroppedImage(croppedFile);
             }
           }
         }
       } else {
-        // Seleccionar desde galerÃ­a
+        // Seleccionar desde galería
         final navigator = Navigator.of(context);
 
         final imagePicker = provider.imagePicker;
@@ -938,7 +938,7 @@ class _CreateExperienceScreenState extends State<CreateExperienceScreen> {
             );
 
             if (croppedFile != null) {
-              // AÃ±adir la imagen recortada al provider
+              // Añadir la imagen recortada al provider
               provider.addCroppedImage(croppedFile);
             }
           }
@@ -973,7 +973,7 @@ class _CreateExperienceScreenState extends State<CreateExperienceScreen> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'Â¿QuÃ© quieres crear?',
+            '¿Qué quieres crear?',
             style: TextStyle(
               fontSize: 16,
               fontWeight: FontWeight.w600,
@@ -983,7 +983,7 @@ class _CreateExperienceScreenState extends State<CreateExperienceScreen> {
           const SizedBox(height: 16),
           Row(
             children: [
-              // OpciÃ³n Story
+              // Opción Story
               Expanded(
                 child: GestureDetector(
                   onTap: () {
@@ -1031,7 +1031,7 @@ class _CreateExperienceScreenState extends State<CreateExperienceScreen> {
                 ),
               ),
               const SizedBox(width: 16),
-              // OpciÃ³n Post
+              // Opción Post
               Expanded(
                 child: GestureDetector(
                   onTap: () {

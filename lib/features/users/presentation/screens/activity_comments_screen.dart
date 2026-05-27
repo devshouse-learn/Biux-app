@@ -349,7 +349,7 @@ class _ActivityCommentsScreenState extends State<ActivityCommentsScreen> {
 
   String _formatTimeAgo(DateTime date) {
     final diff = DateTime.now().difference(date);
-    if (diff.inDays > 365) return 'Hace ${diff.inDays ~/ 365} aÃ±o(s)';
+    if (diff.inDays > 365) return 'Hace ${diff.inDays ~/ 365} año(s)';
     if (diff.inDays > 30) return 'Hace ${diff.inDays ~/ 30} mes(es)';
     if (diff.inDays > 0) return 'Hace ${diff.inDays}d';
     if (diff.inHours > 0) return 'Hace ${diff.inHours}h';

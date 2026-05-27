@@ -6,7 +6,7 @@ import 'package:biux/features/store/domain/usecases/update_product_usecase.dart'
 import 'package:biux/features/store/domain/usecases/delete_product_usecase.dart';
 import 'package:biux/features/users/domain/entities/user_entity.dart';
 
-/// Provider para gestiÃ³n de productos con control de roles y permisos
+/// Provider para gestión de productos con control de roles y permisos
 class ProductProvider with ChangeNotifier {
   final GetAllProductsUseCase _getAllProductsUseCase;
   final GetProductsByCategoryUseCase _getProductsByCategoryUseCase;
@@ -66,7 +66,7 @@ class ProductProvider with ChangeNotifier {
     }
   }
 
-  /// Cargar productos por categorÃ­a
+  /// Cargar productos por categoría
   Future<void> loadProductsByCategory(ProductCategory category) async {
     _isLoading = true;
     _error = null;
@@ -155,7 +155,7 @@ class ProductProvider with ChangeNotifier {
   }
 
   /// Actualizar un producto existente
-  /// Requiere que el usuario sea el vendedor dueÃ±o o administrador
+  /// Requiere que el usuario sea el vendedor dueño o administrador
   Future<void> updateProduct(
     ProductEntity product,
     UserEntity currentUser,
@@ -181,7 +181,7 @@ class ProductProvider with ChangeNotifier {
   }
 
   /// Eliminar un producto
-  /// Requiere que el usuario sea el vendedor dueÃ±o o administrador
+  /// Requiere que el usuario sea el vendedor dueño o administrador
   Future<void> deleteProduct(
     String productId,
     ProductEntity product,

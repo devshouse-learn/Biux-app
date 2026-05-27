@@ -72,7 +72,7 @@ class _ProfileImagePickerState extends State<ProfileImagePicker> {
             ),
           ),
 
-        // BotÃ³n de ediciÃ³n
+        // Botón de edición
         Positioned(
           bottom: 0,
           right: 0,
@@ -310,7 +310,7 @@ class _ProfileImagePickerState extends State<ProfileImagePicker> {
       final img.Image? originalImage = img.decodeImage(imageBytes);
       if (originalImage == null) return null;
 
-      // Determinar el tamaÃ±o cuadrado (el menor entre ancho y alto)
+      // Determinar el tamaño cuadrado (el menor entre ancho y alto)
       final int squareSize = originalImage.width < originalImage.height
           ? originalImage.width
           : originalImage.height;
@@ -328,7 +328,7 @@ class _ProfileImagePickerState extends State<ProfileImagePicker> {
         height: squareSize,
       );
 
-      // Redimensionar para optimizar tamaÃ±o
+      // Redimensionar para optimizar tamaño
       final img.Image resizedImage = img.copyResize(
         croppedImage,
         width: 512,
@@ -360,7 +360,7 @@ class _ProfileImagePickerState extends State<ProfileImagePicker> {
     setState(() {
       _selectedImage = null;
     });
-    // AquÃ­ podrÃ­as llamar un callback para eliminar la imagen del servidor
+    // Aquí podrías llamar un callback para eliminar la imagen del servidor
   }
 }
 

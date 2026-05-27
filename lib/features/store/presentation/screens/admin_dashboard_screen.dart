@@ -4,7 +4,7 @@ import 'package:biux/features/users/domain/entities/user_entity.dart';
 import 'package:biux/features/store/presentation/providers/product_provider.dart';
 import 'package:biux/core/design_system/locale_notifier.dart';
 
-/// Panel de administraciÃ³n para gestionar usuarios, vendedores y productos
+/// Panel de administración para gestionar usuarios, vendedores y productos
 class AdminDashboardScreen extends StatefulWidget {
   final UserEntity currentUser;
 
@@ -63,7 +63,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen>
     );
   }
 
-  // Tab 1: GestiÃ³n de usuarios
+  // Tab 1: Gestión de usuarios
   Widget _buildUsersTab() {
     final l = Provider.of<LocaleNotifier>(context);
     return ListView(
@@ -100,7 +100,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen>
     );
   }
 
-  // Tab 2: GestiÃ³n de vendedores
+  // Tab 2: Gestión de vendedores
   Widget _buildSellersTab() {
     final l = Provider.of<LocaleNotifier>(context);
     return ListView(
@@ -157,7 +157,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen>
     );
   }
 
-  // Tab 3: GestiÃ³n de productos
+  // Tab 3: Gestión de productos
   Widget _buildProductsTab() {
     final l = Provider.of<LocaleNotifier>(context);
     return Consumer<ProductProvider>(
@@ -391,7 +391,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen>
           ),
           ElevatedButton(
             onPressed: () {
-              // IMPLEMENTADO (STUB): Implementar autorizaciÃ³n real
+              // IMPLEMENTADO (STUB): Implementar autorización real
               Navigator.pop(context);
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(
@@ -434,7 +434,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen>
           ),
           ElevatedButton(
             onPressed: () {
-              // IMPLEMENTADO (STUB): Implementar revocaciÃ³n real
+              // IMPLEMENTADO (STUB): Implementar revocación real
               Navigator.pop(context);
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(

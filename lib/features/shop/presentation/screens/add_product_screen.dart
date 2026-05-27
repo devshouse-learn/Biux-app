@@ -359,7 +359,7 @@ class _AddProductScreenState extends State<AddProductScreen> {
   Widget _buildImagePicker(LocaleNotifier l) {
     return Column(
       children: [
-        // Preview de imÃ¡genes seleccionadas
+        // Preview de imágenes seleccionadas
         if (_selectedImages.isNotEmpty)
           SizedBox(
             height: 120,
@@ -412,7 +412,7 @@ class _AddProductScreenState extends State<AddProductScreen> {
             ),
           ),
         if (_selectedImages.isNotEmpty) const SizedBox(height: 12),
-        // BotÃ³n para agregar imÃ¡genes
+        // Botón para agregar imágenes
         InkWell(
           onTap: _pickImages,
           borderRadius: BorderRadius.circular(12),
@@ -446,7 +446,7 @@ class _AddProductScreenState extends State<AddProductScreen> {
                 SizedBox(height: 8),
                 Text(
                   _selectedImages.isEmpty
-                      ? 'ðŸ“· ${l.t('tap_add_photos')}'
+                      ? '“· ${l.t('tap_add_photos')}'
                       : '${l.t('add_more_images')} (${_selectedImages.length}/5)',
                   style: TextStyle(
                     color: _selectedImages.isEmpty
@@ -525,7 +525,7 @@ class _AddProductScreenState extends State<AddProductScreen> {
         if (_isBicycle) ...[
           const SizedBox(height: 16),
 
-          // Warning de verificaciÃ³n
+          // Warning de verificación
           Container(
             padding: const EdgeInsets.all(14),
             decoration: BoxDecoration(
@@ -616,7 +616,7 @@ class _AddProductScreenState extends State<AddProductScreen> {
 
           const SizedBox(height: 16),
 
-          // BotÃ³n de verificaciÃ³n antirrobo
+          // Botón de verificación antirrobo
           _buildStolenCheckButton(l),
         ],
       ],
@@ -738,7 +738,7 @@ class _AddProductScreenState extends State<AddProductScreen> {
   Widget _buildActionButtons(LocaleNotifier l) {
     return Column(
       children: [
-        // BotÃ³n Agregar
+        // Botón Agregar
         SizedBox(
           width: double.infinity,
           height: 52,
@@ -769,7 +769,7 @@ class _AddProductScreenState extends State<AddProductScreen> {
           ),
         ),
         const SizedBox(height: 12),
-        // BotÃ³n Cancelar
+        // Botón Cancelar
         SizedBox(
           width: double.infinity,
           height: 48,
@@ -882,7 +882,7 @@ class _AddProductScreenState extends State<AddProductScreen> {
 
     setState(() => _isCheckingStolen = true);
 
-    // Simular verificaciÃ³n (en producciÃ³n consultar base de datos de robadas)
+    // Simular verificación (en producción consultar base de datos de robadas)
     await Future.delayed(const Duration(seconds: 2));
 
     // Verificar contra la lista de bicicletas robadas
@@ -974,8 +974,8 @@ class _AddProductScreenState extends State<AddProductScreen> {
           .where((t) => t.isNotEmpty)
           .toList();
 
-      // Subir imÃ¡genes a Firebase Storage y obtener URLs
-      // Si no hay imÃ¡genes reales, no permitir publicar
+      // Subir imágenes a Firebase Storage y obtener URLs
+      // Si no hay imágenes reales, no permitir publicar
       if (_selectedImages.isEmpty && _imageUrls.isEmpty) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
@@ -1046,7 +1046,7 @@ class _AddProductScreenState extends State<AddProductScreen> {
       if (success) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('âœ… ${l.t('product_published_success')}'),
+            content: Text('✓ ${l.t('product_published_success')}'),
             backgroundColor: ColorTokens.success40,
           ),
         );

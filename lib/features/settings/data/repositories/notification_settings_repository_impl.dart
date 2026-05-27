@@ -35,7 +35,7 @@ class NotificationSettingsRepositoryImpl
         return defaults;
       }
     } on FirebaseException catch (e) {
-      debugPrint('Error al obtener configuraciÃ³n de notificaciones: $e');
+      debugPrint('Error al obtener configuración de notificaciones: $e');
       return NotificationSettingsEntity.defaults();
     }
   }
@@ -54,12 +54,12 @@ class NotificationSettingsRepositoryImpl
           .doc('notifications')
           .set(settings.toMap(), SetOptions(merge: true));
 
-      // TambiÃ©n actualizar en el documento principal del usuario para fÃ¡cil acceso del backend
+      // También actualizar en el documento principal del usuario para fácil acceso del backend
       await _firestore.collection('users').doc(_userId).update({
         'notificationSettings': settings.toMap(),
       });
     } on FirebaseException catch (e) {
-      debugPrint('Error al actualizar configuraciÃ³n de notificaciones: $e');
+      debugPrint('Error al actualizar configuración de notificaciones: $e');
       rethrow;
     }
   }

@@ -37,14 +37,14 @@ class CommentsRealtimeDatasource {
       data.forEach((key, value) {
         if (value is Map) {
           final comment = CommentModel.fromJson(key, value);
-          // Solo comentarios principales (sin parentCommentId) y que NO estÃ©n eliminados
+          // Solo comentarios principales (sin parentCommentId) y que NO estén eliminados
           if (comment.parentCommentId == null && !comment.isDeleted) {
             comments.add(comment);
           }
         }
       });
 
-      // Ordenar por fecha de creaciÃ³n ascendente
+      // Ordenar por fecha de creación ascendente
       comments.sort((a, b) => a.createdAt.compareTo(b.createdAt));
 
       return comments;
@@ -79,7 +79,7 @@ class CommentsRealtimeDatasource {
             }
           });
 
-          // Ordenar por fecha de creaciÃ³n ascendente
+          // Ordenar por fecha de creación ascendente
           replies.sort((a, b) => a.createdAt.compareTo(b.createdAt));
 
           return replies;
@@ -117,29 +117,29 @@ class CommentsRealtimeDatasource {
       mentions: comment.mentions,
     );
 
-    // Debug: Ver quÃ© datos estamos enviando
+    // Debug: Ver qué datos estamos enviando
     final jsonData = commentWithId.toJson();
 
     // IMPORTANTE: Usar timestamp del servidor en lugar del cliente
     jsonData['createdAt'] = ServerValue.timestamp;
 
-    debugPrint('ðŸ” Creando comentario en: ${ref.path}');
-    debugPrint('ðŸ” UserId del comentario: ${comment.userId}');
+    debugPrint('” Creando comentario en: ${ref.path}');
+    debugPrint('” UserId del comentario: ${comment.userId}');
 
-    // CRÃTICO: Verificar que el usuario estÃ© autenticado
+    // CRÃTICO: Verificar que el usuario esté autenticado
     final currentUser = FirebaseAuth.instance.currentUser;
-    debugPrint('ðŸ‘¤ Usuario actual en Firebase Auth: ${currentUser?.uid}');
-    debugPrint('ðŸŽ« Â¿Tiene token?: ${currentUser != null}');
+    debugPrint('‘¤ Usuario actual en Firebase Auth: ${currentUser?.uid}');
+    debugPrint('Ž« ¿Tiene token?: ${currentUser != null}');
     if (currentUser != null) {
       final token = await currentUser.getIdToken();
-      debugPrint('ðŸŽ« Token ID (primeros 50 chars): ${token?.substring(0, 50)}');
+      debugPrint('Ž« Token ID (primeros 50 chars): ${token?.substring(0, 50)}');
     }
 
-    debugPrint('ðŸ“ Escribiendo comentario en Realtime Database...');
+    debugPrint('“ Escribiendo comentario en Realtime Database...');
     debugPrint('   Datos: $jsonData');
     try {
       await ref.set(jsonData);
-      debugPrint('âœ… Comentario creado exitosamente: $commentId');
+      debugPrint('✓ Comentario creado exitosamente: $commentId');
     } on FirebaseException catch (e) {
       debugPrint('âŒ Error al crear comentario: $e');
       debugPrint('âŒ Path: ${ref.path}');
@@ -153,7 +153,7 @@ class CommentsRealtimeDatasource {
     // Si es una respuesta, incrementar el contador de respuestas del padre
     if (comment.parentCommentId != null) {
       try {
-        debugPrint('ðŸ”¢ Actualizando contador de respuestas del padre...');
+        debugPrint('”¢ Actualizando contador de respuestas del padre...');
         final parentRef = _database.ref(
           '${_getBasePath(type)}/$targetId/${comment.parentCommentId}/repliesCount',
         );
@@ -161,7 +161,7 @@ class CommentsRealtimeDatasource {
         final currentCount = snapshot.value as int? ?? 0;
         await parentRef.set(currentCount + 1);
         debugPrint(
-          'âœ… Contador actualizado: $currentCount -> ${currentCount + 1}',
+          '✓ Contador actualizado: $currentCount -> ${currentCount + 1}',
         );
       } catch (counterError) {
         // No fallar si el contador no se puede actualizar
@@ -196,7 +196,7 @@ class CommentsRealtimeDatasource {
   }) async {
     final ref = _database.ref('${_getBasePath(type)}/$targetId/$commentId');
 
-    debugPrint('ðŸ—‘ï¸ Eliminando comentario (soft delete)');
+    debugPrint('—‘ï¸ Eliminando comentario (soft delete)');
     debugPrint('   Path: ${ref.path}');
     debugPrint('   CommentId: $commentId');
 
@@ -210,19 +210,19 @@ class CommentsRealtimeDatasource {
       };
 
       await ref.update(updateData);
-      debugPrint('âœ… Comentario marcado como eliminado en Firebase');
+      debugPrint('✓ Comentario marcado como eliminado en Firebase');
     } on FirebaseException catch (e) {
       debugPrint('âŒ Error al actualizar en Firebase: $e');
 
-      // Si el error es de permisos, intentar eliminaciÃ³n alternativa
+      // Si el error es de permisos, intentar eliminación alternativa
       if (e.toString().contains('Permission denied') ||
           e.toString().contains('PERMISSION_DENIED')) {
-        debugPrint('ðŸ”„ Intentando eliminaciÃ³n completa...');
+        debugPrint('”„ Intentando eliminación completa...');
         try {
           await ref.remove();
-          debugPrint('âœ… Comentario eliminado completamente');
+          debugPrint('✓ Comentario eliminado completamente');
         } catch (e2) {
-          debugPrint('âŒ Error en eliminaciÃ³n alternativa: $e2');
+          debugPrint('âŒ Error en eliminación alternativa: $e2');
           rethrow;
         }
       } else {
@@ -231,14 +231,14 @@ class CommentsRealtimeDatasource {
     }
   }
 
-  /// Obtiene un comentario especÃ­fico
+  /// Obtiene un comentario específico
   Future<CommentModel?> getComment({
     required String type,
     required String targetId,
     required String commentId,
   }) async {
     final ref = _database.ref('${_getBasePath(type)}/$targetId/$commentId');
-    debugPrint('ðŸ” Obteniendo comentario de: ${ref.path}');
+    debugPrint('” Obteniendo comentario de: ${ref.path}');
 
     final snapshot = await ref.get();
 

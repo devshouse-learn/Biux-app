@@ -29,7 +29,7 @@ class UserProfileProvider extends ChangeNotifier {
   List<BiuxUser> _following = [];
   bool _isLoadingFollowers = false;
   bool _isLoadingFollowing = false;
-  bool _isProcessingFollow = false; // âœ… NUEVA: Estado de procesamiento
+  bool _isProcessingFollow = false; // ✓ NUEVA: Estado de procesamiento
 
   // Estado de follow request (cuentas privadas)
   bool _hasPendingFollowRequest = false;
@@ -52,7 +52,7 @@ class UserProfileProvider extends ChangeNotifier {
   bool get isLoadingProfile => _isLoadingProfile;
   bool get isLoading => _isLoadingProfile || _isLoadingContent;
   bool get isFollowing => _isFollowing;
-  bool get isProcessingFollow => _isProcessingFollow; // âœ… NUEVO
+  bool get isProcessingFollow => _isProcessingFollow; // ✓ NUEVO
   bool get hasPendingFollowRequest => _hasPendingFollowRequest;
   bool get isPrivateAccount => _isPrivateAccount;
   List<BiuxUser> get followRequests => _followRequests;
@@ -69,11 +69,11 @@ class UserProfileProvider extends ChangeNotifier {
 
   // BÃºsqueda de usuarios
   Future<void> searchUsers(String query) async {
-    // Validar longitud mÃ­nima de bÃºsqueda
+    // Validar longitud mínima de bÃºsqueda
     if (query.trim().isEmpty) {
       return;
     }
-    // Validar longitud mÃ¡xima
+    // Validar longitud máxima
     if (query.trim().length > 50) {
       return;
     }
@@ -161,7 +161,7 @@ class UserProfileProvider extends ChangeNotifier {
         _isPrivateAccount = profile.profileVisibility == 'private';
 
         debugPrint(
-          'ðŸ‘¤ loadUserProfile: userId=$userId, profileVisibility=${profile.profileVisibility}, isPrivate=$_isPrivateAccount, isFollowing=$_isFollowing',
+          '‘¤ loadUserProfile: userId=$userId, profileVisibility=${profile.profileVisibility}, isPrivate=$_isPrivateAccount, isFollowing=$_isFollowing',
         );
 
         // Si es privada y no lo sigue, verificar solicitud pendiente
@@ -169,7 +169,7 @@ class UserProfileProvider extends ChangeNotifier {
           _hasPendingFollowRequest = await _repository.hasPendingFollowRequest(
             userId,
           );
-          debugPrint('ðŸ‘¤ hasPendingFollowRequest=$_hasPendingFollowRequest');
+          debugPrint('‘¤ hasPendingFollowRequest=$_hasPendingFollowRequest');
         }
 
         // Cargar posts y stories solo si no es privada O si ya lo sigue
@@ -196,7 +196,7 @@ class UserProfileProvider extends ChangeNotifier {
 
   // Configurar listener en tiempo real para el perfil actual
   void _setupProfileListener(String userId) {
-    // Cancelar listener anterior si existÃ­a
+    // Cancelar listener anterior si existía
     _profileStreamSubscription?.cancel();
 
     try {
@@ -220,7 +220,7 @@ class UserProfileProvider extends ChangeNotifier {
     }
   }
 
-  /// ActualizaciÃ³n rÃ¡pida del perfil sin cargar contenido (para despuÃ©s de follow/unfollow)
+  /// Actualización rápida del perfil sin cargar contenido (para después de follow/unfollow)
   Future<void> refreshProfileQuick(String userId) async {
     try {
       final profile = await _repository.getUserProfile(userId);
@@ -245,20 +245,20 @@ class UserProfileProvider extends ChangeNotifier {
         userId,
       );
 
-      // âœ… Validar que las publicaciones estÃ©n disponibles
-      // Filtrar publicaciones que no tengan media o cuya media estÃ© vacÃ­a
+      // ✓ Validar que las publicaciones estén disponibles
+      // Filtrar publicaciones que no tengan media o cuya media esté vacía
       final validExperiences = userExperiences.where((exp) {
         // ignore: unnecessary_null_comparison, dead_null_aware_expression
         final hasMedia = exp.media != null && exp.media.isNotEmpty;
         if (!hasMedia) {
-          debugPrint('âš ï¸ Eliminando publicaciÃ³n sin media: ${exp.id}');
+          debugPrint('âš ï¸ Eliminando publicación sin media: ${exp.id}');
         }
         return hasMedia;
       }).toList();
 
       _userPosts = validExperiences;
 
-      // Stories: solo experiencias efÃ­meras vÃ¡lidas
+      // Stories: solo experiencias efímeras válidas
       final now = DateTime.now();
       final twentyFourHoursAgo = now.subtract(const Duration(hours: 24));
 
@@ -290,15 +290,15 @@ class UserProfileProvider extends ChangeNotifier {
     notifyListeners();
 
     debugPrint(
-      'ðŸ”µ followUser: userId=$userId, isPrivate=$_isPrivateAccount, isFollowing=$_isFollowing, hasPending=$_hasPendingFollowRequest',
+      '”µ followUser: userId=$userId, isPrivate=$_isPrivateAccount, isFollowing=$_isFollowing, hasPending=$_hasPendingFollowRequest',
     );
 
     try {
       // Si la cuenta es privada, enviar solicitud en vez de seguir directamente
       if (_isPrivateAccount) {
-        debugPrint('ðŸ”’ Cuenta privada - enviando follow request...');
+        debugPrint('”’ Cuenta privada - enviando follow request...');
         final success = await _repository.sendFollowRequest(userId);
-        debugPrint('ðŸ”’ sendFollowRequest resultado: $success');
+        debugPrint('”’ sendFollowRequest resultado: $success');
         if (success) {
           _hasPendingFollowRequest = true;
           notifyListeners();
