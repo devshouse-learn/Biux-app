@@ -1,4 +1,3 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:provider/provider.dart';
 import 'package:provider/single_child_widget.dart';
@@ -41,24 +40,6 @@ import 'package:biux/features/bikes/domain/usecases/transfer_bike_ownership_usec
 import 'package:biux/features/bikes/domain/usecases/get_public_bike_info_usecase.dart';
 import 'package:biux/features/bikes/domain/usecases/delete_bike_usecase.dart';
 import 'package:biux/features/bikes/domain/usecases/mark_as_recovered_usecase.dart';
-
-// Shop
-import 'package:biux/features/shop/presentation/providers/shop_provider.dart';
-import 'package:biux/features/shop/presentation/providers/seller_request_provider.dart';
-import 'package:biux/features/shop/data/repositories/product_repository_impl.dart';
-import 'package:biux/features/shop/data/repositories/order_repository_impl.dart';
-import 'package:biux/features/shop/data/datasources/product_remote_datasource.dart';
-import 'package:biux/features/shop/data/datasources/order_remote_datasource.dart';
-
-// Store
-import 'package:biux/features/store/data/repositories/product_repository_impl.dart'
-    as store_repo;
-import 'package:biux/features/store/domain/usecases/create_product_usecase.dart';
-import 'package:biux/features/store/domain/usecases/get_products_usecase.dart';
-import 'package:biux/features/store/domain/usecases/update_product_usecase.dart';
-import 'package:biux/features/store/domain/usecases/delete_product_usecase.dart';
-import 'package:biux/features/store/presentation/providers/product_provider.dart';
-import 'package:biux/features/store/presentation/providers/cart_provider.dart';
 
 // Promotions
 import 'package:biux/features/promotions/presentation/providers/promotions_provider.dart';
@@ -106,10 +87,9 @@ class AppProviders {
     ..._mapProviders,
     ..._groupAndRideProviders,
     ..._bikeProviders,
-    ..._shopProviders,
-    ..._storeProviders,
     ..._experienceProviders,
     ..._socialProviders,
+    ..._promotionProviders,
     ..._featureProviders,
     ..._settingsProviders,
   ];
@@ -182,46 +162,8 @@ class AppProviders {
     ),
   ];
 
-  static List<SingleChildWidget> get _shopProviders => [
-    ChangeNotifierProvider(
-      create: (_) => ShopProvider(
-        productRepository: ProductRepositoryImpl(
-          remoteDataSource: ProductRemoteDataSource(),
-        ),
-        orderRepository: OrderRepositoryImpl(
-          remoteDataSource: OrderRemoteDataSource(),
-        ),
-      ),
-    ),
+  static List<SingleChildWidget> get _promotionProviders => [
     ChangeNotifierProvider(create: (_) => PromotionsProvider()),
-    ChangeNotifierProvider(create: (_) => SellerRequestProvider()),
-  ];
-
-  static List<SingleChildWidget> get _storeProviders => [
-    ChangeNotifierProvider(
-      create: (_) {
-        final productRepository = store_repo.ProductRepositoryImpl(
-          FirebaseFirestore.instance,
-        );
-        return ProductProvider(
-          getAllProductsUseCase: GetAllProductsUseCase(productRepository),
-          getProductsByCategoryUseCase: GetProductsByCategoryUseCase(
-            productRepository,
-          ),
-          getProductsBySellerUseCase: GetProductsBySellerUseCase(
-            productRepository,
-          ),
-          getFeaturedProductsUseCase: GetFeaturedProductsUseCase(
-            productRepository,
-          ),
-          searchProductsUseCase: SearchProductsUseCase(productRepository),
-          createProductUseCase: CreateProductUseCase(productRepository),
-          updateProductUseCase: UpdateProductUseCase(productRepository),
-          deleteProductUseCase: DeleteProductUseCase(productRepository),
-        );
-      },
-    ),
-    ChangeNotifierProvider(create: (_) => CartProvider()),
   ];
 
   static List<SingleChildWidget> get _experienceProviders => [
