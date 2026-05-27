@@ -19,7 +19,7 @@ class RideRepository {
     }
   }
 
-  // Obtener rodadas de un grupo especÃ­fico
+  // Obtener rodadas de un grupo específico
   Stream<List<RideModel>> getGroupRides(String groupId) {
     return _firestore
         .collection('rides')
@@ -46,7 +46,7 @@ class RideRepository {
         );
   }
 
-  // Obtener una rodada especÃ­fica
+  // Obtener una rodada específica
   Future<RideModel?> getRideById(String rideId) async {
     try {
       final doc = await _firestore.collection('rides').doc(rideId).get();
@@ -155,7 +155,7 @@ class RideRepository {
         );
   }
 
-  // Obtener prÃ³ximas rodadas (todas)
+  // Obtener próximas rodadas (todas)
   Stream<List<RideModel>> getUpcomingRides() {
     final now = DateTime.now();
     return _firestore
@@ -172,4 +172,5 @@ class RideRepository {
         );
   }
 }
+
 

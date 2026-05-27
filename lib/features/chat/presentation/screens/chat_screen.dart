@@ -143,7 +143,7 @@ class _ChatScreenState extends State<ChatScreen> {
       } else {
         if (mounted) setState(() => _loadingProfile = false);
       }
-      // Escuchar estado en lÃ­nea
+      // Escuchar estado en línea
       _onlineSub = FirebaseFirestore.instance
           .collection('users')
           .doc(otherId)
@@ -192,7 +192,7 @@ class _ChatScreenState extends State<ChatScreen> {
     }
   }
 
-  // â”€â”€ CÃ¡mara: pantalla con toggle Foto/Video â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // a”€a”€ Cámara: pantalla con toggle Foto/Video a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€
   // ignore: unused_element
   Future<void> _openCamera() async {
     final file = await CameraModePicker.open(context);
@@ -207,7 +207,7 @@ class _ChatScreenState extends State<ChatScreen> {
     await _sendMediaFiles(confirmed);
   }
 
-  // â”€â”€ MenÃº clip/adjuntos â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // a”€a”€ MenÃº clip/adjuntos a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€
   // ignore: unused_element
   void _showAttachMenu() {
     final isDark = Theme.of(context).brightness == Brightness.dark;
@@ -250,7 +250,7 @@ class _ChatScreenState extends State<ChatScreen> {
     );
   }
 
-  // â”€â”€ GalerÃ­a: fotos y videos mÃºltiples â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // a”€a”€ Galería: fotos y videos mÃºltiples a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€
   Future<void> _pickFromGallery() async {
     final granted = await PermissionService().ensurePermission(
       Permission.photos,
@@ -271,7 +271,7 @@ class _ChatScreenState extends State<ChatScreen> {
     await _sendMediaFiles(confirmed);
   }
 
-  // â”€â”€ CÃ¡mara desde menÃº: misma pantalla con toggle â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // a”€a”€ Cámara desde menÃº: misma pantalla con toggle a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€
   Future<void> _openCameraFromMenu() async {
     final file = await CameraModePicker.open(context);
     if (file == null || !mounted) return;
@@ -285,7 +285,7 @@ class _ChatScreenState extends State<ChatScreen> {
     await _sendMediaFiles(confirmed);
   }
 
-  // â”€â”€ Audio: abre gestor de archivos filtrado a audio â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // a”€a”€ Audio: abre gestor de archivos filtrado a audio a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€
   Future<void> _pickAudio() async {
     final result = await FilePicker.platform.pickFiles(
       type: FileType.audio,
@@ -296,7 +296,7 @@ class _ChatScreenState extends State<ChatScreen> {
     if (path == null) return;
     final file = File(path);
     final fileName = path.split('/').last.split('\\').last;
-    // Mostrar confirmaciÃ³n antes de enviar
+    // Mostrar confirmación antes de enviar
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final confirmed = await showModalBottomSheet<bool>(
       context: context,
@@ -379,17 +379,17 @@ class _ChatScreenState extends State<ChatScreen> {
     );
   }
 
-  // â”€â”€ UbicaciÃ³n: compartir ubicaciÃ³n con elecciÃ³n de precisiÃ³n â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // a”€a”€ Ubicación: compartir ubicación con elección de precisión a”€a”€a”€a”€a”€a”€a”€a”€a”€
   Future<void> _shareLocation() async {
     if (!mounted) return;
-    // Pedir permiso de ubicaciÃ³n (diÃ¡logo estÃ¡ndar permitir/denegar)
+    // Pedir permiso de ubicación (diálogo estándar permitir/denegar)
     final granted = await PermissionService().ensurePermission(
       Permission.location,
       context: context,
     );
     if (!granted) return;
 
-    // Preguntar al usuario si desea enviar ubicaciÃ³n precisa o aproximada
+    // Preguntar al usuario si desea enviar ubicación precisa o aproximada
     final precision = await showModalBottomSheet<LocationAccuracy>(
       context: context,
       backgroundColor: Theme.of(context).cardColor,
@@ -456,7 +456,7 @@ class _ChatScreenState extends State<ChatScreen> {
     double? lng;
 
     if (precision == LocationAccuracy.low) {
-      // Aproximada: abrir mapa para elegir ubicaciÃ³n
+      // Aproximada: abrir mapa para elegir ubicación
       final picked = await Navigator.push<LatLng>(
         context,
         MaterialPageRoute(builder: (_) => const LocationPickerScreen()),
@@ -536,7 +536,7 @@ class _ChatScreenState extends State<ChatScreen> {
     );
   }
 
-  // â”€â”€ Encuesta: crear y enviar â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // a”€a”€ Encuesta: crear y enviar a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€
   void _createPoll() async {
     if (!mounted) return;
     final result = await showModalBottomSheet<PollResult>(
@@ -580,7 +580,7 @@ class _ChatScreenState extends State<ChatScreen> {
     );
   }
 
-  // â”€â”€ Bloquear usuario â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // a”€a”€ Bloquear usuario a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€
   void _showBlockUserDialog() {
     final l = Provider.of<LocaleNotifier>(context, listen: false);
     final currentUid = FirebaseAuth.instance.currentUser?.uid ?? '';
@@ -597,9 +597,9 @@ class _ChatScreenState extends State<ChatScreen> {
       builder: (ctx) => AlertDialog(
         title: Text(l.t('block_user')),
         content: Text(
-          'Â¿Deseas bloquear a ${_otherName.isNotEmpty ? _otherName : 'este usuario'}? '
-          'No podrÃ¡ enviarte mensajes, ver tu foto de perfil '
-          'ni tu informaciÃ³n. TambiÃ©n serÃ¡ removido de tus seguidores.',
+          'a¿Deseas bloquear a ${_otherName.isNotEmpty ? _otherName : 'este usuario'}? '
+          'No podrá enviarte mensajes, ver tu foto de perfil '
+          'ni tu información. También será removido de tus seguidores.',
         ),
         actions: [
           TextButton(
@@ -628,7 +628,7 @@ class _ChatScreenState extends State<ChatScreen> {
     );
   }
 
-  // â”€â”€ Desbloquear usuario â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // a”€a”€ Desbloquear usuario a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€
   void _showUnblockDialog() {
     final l = Provider.of<LocaleNotifier>(context, listen: false);
     final currentUid = FirebaseAuth.instance.currentUser?.uid ?? '';
@@ -640,8 +640,8 @@ class _ChatScreenState extends State<ChatScreen> {
       builder: (ctx) => AlertDialog(
         title: Text(l.t('unblock_user')),
         content: Text(
-          'Â¿Deseas desbloquear a ${_otherName.isNotEmpty ? _otherName : 'este usuario'}? '
-          'PodrÃ¡ enviarte mensajes y ver tu perfil nuevamente.',
+          'a¿Deseas desbloquear a ${_otherName.isNotEmpty ? _otherName : 'este usuario'}? '
+          'Podrá enviarte mensajes y ver tu perfil nuevamente.',
         ),
         actions: [
           TextButton(
@@ -670,7 +670,7 @@ class _ChatScreenState extends State<ChatScreen> {
     );
   }
 
-  // â”€â”€ Vaciar chat â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // a”€a”€ Vaciar chat a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€
   void _showClearChatDialog() {
     bool keepStarred = true;
     final l = Provider.of<LocaleNotifier>(context, listen: false);
@@ -728,7 +728,7 @@ class _ChatScreenState extends State<ChatScreen> {
     );
   }
 
-  // â”€â”€ Toast al destacar â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // a”€a”€ Toast al destacar a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€
   void _showStarToast() {
     late OverlayEntry entry;
     entry = OverlayEntry(
@@ -1086,7 +1086,7 @@ class _ChatScreenState extends State<ChatScreen> {
                 .toList();
           }
 
-          // Scroll automÃ¡tico solo cuando llegan mensajes nuevos
+          // Scroll automático solo cuando llegan mensajes nuevos
           if (messages.length != _lastMessageCount && _searchQuery.isEmpty) {
             _lastMessageCount = messages.length;
             WidgetsBinding.instance.addPostFrameCallback(
@@ -1353,7 +1353,7 @@ class _ChatScreenState extends State<ChatScreen> {
   }
 }
 
-// â”€â”€ Banner mensaje fijado â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// a”€a”€ Banner mensaje fijado a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€
 
 class _PinnedMessageBanner extends StatelessWidget {
   final MessageEntity message;
@@ -1401,9 +1401,9 @@ class _PinnedMessageBanner extends StatelessWidget {
                   ),
                   Text(
                     message.type == MessageType.voice
-                        ? 'ðŸŽ¤ Mensaje de voz'
+                        ? 'dŸŽ¤ Mensaje de voz'
                         : message.type == MessageType.image
-                        ? 'ðŸ–¼ï¸ Imagen'
+                        ? 'dŸ–¼ï¸ Imagen'
                         : message.content,
                     style: TextStyle(
                       fontSize: 12,
@@ -1432,7 +1432,7 @@ class _PinnedMessageBanner extends StatelessWidget {
   }
 }
 
-// â”€â”€ Typing bubble â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// a”€a”€ Typing bubble a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€
 
 class _TypingBubble extends StatefulWidget {
   final bool isDark;
@@ -1501,7 +1501,7 @@ class _TypingBubbleState extends State<_TypingBubble>
   }
 }
 
-// â”€â”€ Toast desvanecimiento para "Destacaste este mensaje" â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// a”€a”€ Toast desvanecimiento para "Destacaste este mensaje" a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€
 
 class _StarToast extends StatefulWidget {
   final VoidCallback onDone;
@@ -1577,4 +1577,5 @@ class _StarToastState extends State<_StarToast>
     );
   }
 }
+
 

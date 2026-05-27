@@ -181,7 +181,7 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen> {
     final userEmail = firebaseUser?.email;
 
     if (userEmail != null && userEmail.isNotEmpty) {
-      // Tiene email vinculado â†’ enviar reset
+      // Tiene email vinculado a†’ enviar reset
       showDialog(
         context: context,
         builder: (dialogContext) => AlertDialog(
@@ -228,7 +228,7 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen> {
         ),
       );
     } else {
-      // No tiene email â†’ pedir que vincule uno
+      // No tiene email a†’ pedir que vincule uno
       final emailController = TextEditingController();
       showDialog(
         context: context,
@@ -304,7 +304,7 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen> {
     final firebaseUser = FirebaseAuth.instance.currentUser;
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
-    // Obtener info de la sesiÃ³n
+    // Obtener info de la sesión
     final creationTime = firebaseUser?.metadata.creationTime;
     final lastSignIn = firebaseUser?.metadata.lastSignInTime;
     final providers = firebaseUser?.providerData ?? [];
@@ -372,24 +372,24 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen> {
             ),
             SizedBox(height: 20),
 
-            // Fecha de creaciÃ³n
+            // Fecha de creación
             _buildActivityRow(
               icon: Icons.calendar_today,
               label: l.t('account_created_date'),
               value: creationTime != null
                   ? dateFormat.format(creationTime.toLocal())
-                  : 'â€”',
+                  : 'a€”',
               isDark: isDark,
             ),
             SizedBox(height: 12),
 
-            // Ãšltimo inicio de sesiÃ³n
+            // Ãšltimo inicio de sesión
             _buildActivityRow(
               icon: Icons.access_time,
               label: l.t('last_login_date'),
               value: lastSignIn != null
                   ? dateFormat.format(lastSignIn.toLocal())
-                  : 'â€”',
+                  : 'a€”',
               isDark: isDark,
             ),
             SizedBox(height: 20),
@@ -511,7 +511,7 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen> {
   bool _isAccountVerified() {
     final firebaseUser = FirebaseAuth.instance.currentUser;
     if (firebaseUser == null) return false;
-    // Si tiene telÃ©fono verificado, estÃ¡ verificado
+    // Si tiene teléfono verificado, está verificado
     if (firebaseUser.phoneNumber != null &&
         firebaseUser.phoneNumber!.isNotEmpty) {
       return true;
@@ -581,7 +581,7 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen> {
             ),
             SizedBox(height: 20),
 
-            // Estado de verificaciÃ³n por telÃ©fono
+            // Estado de verificación por teléfono
             if (isPhoneVerified)
               _buildVerificationRow(
                 icon: Icons.phone_android,
@@ -591,7 +591,7 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen> {
                 isDark: isDark,
               ),
 
-            // Estado de verificaciÃ³n por email
+            // Estado de verificación por email
             if (hasEmail) ...[
               SizedBox(height: 12),
               _buildVerificationRow(
@@ -603,7 +603,7 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen> {
               ),
             ],
 
-            // BotÃ³n para enviar verificaciÃ³n de email si no estÃ¡ verificado
+            // Botón para enviar verificación de email si no está verificado
             if (hasEmail && !isEmailVerified) ...[
               const SizedBox(height: 20),
               SizedBox(
@@ -708,4 +708,5 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen> {
     );
   }
 }
+
 

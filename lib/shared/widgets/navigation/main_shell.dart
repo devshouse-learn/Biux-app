@@ -67,12 +67,20 @@ class _MainShellState extends State<MainShell> {
           return widget.child;
         }
 
+        // Colores dinámicos según el tema actual
+        final isDark = Theme.of(context).brightness == Brightness.dark;
+        final appBarColor = Theme.of(context).appBarTheme.backgroundColor ?? ColorTokens.primary30;
+        final textColor = Theme.of(context).appBarTheme.foregroundColor ?? ColorTokens.neutral100;
+        final navBarColor = isDark ? ColorTokens.primary20 : ColorTokens.neutral100;
+        final selectedColor = isDark ? ColorTokens.primary60 : ColorTokens.primary30;
+        final unselectedColor = isDark ? ColorTokens.neutral70 : ColorTokens.neutral70;
+
         // Key por idioma fuerza reconstrucción completa del Scaffold
         return Scaffold(
           key: ValueKey('shell_${l.langCode}'),
           appBar: AppBar(
-            backgroundColor: ColorTokens.primary30,
-            foregroundColor: ColorTokens.neutral100,
+            backgroundColor: appBarColor,
+            foregroundColor: textColor,
             title: Text(
               _titleForIndex(_selectedIndex, l, context),
               style: Styles.mainMenuTextBiux,
@@ -81,7 +89,7 @@ class _MainShellState extends State<MainShell> {
               // Buscar usuarios (solo en tab de inicio)
               if (_selectedIndex == 0)
                 IconButton(
-                  icon: const Icon(Icons.search, color: Colors.white),
+                  icon: Icon(Icons.search, color: textColor),
                   onPressed: () => context.push('/users/search'),
                 ),
               // Notificaciones con badge
@@ -94,8 +102,8 @@ class _MainShellState extends State<MainShell> {
                     icon: Badge(
                       label: Text('$unreadCount'),
                       isLabelVisible: hasUnread,
-                      backgroundColor: Colors.red,
-                      child: const Icon(Icons.notifications),
+                      backgroundColor: ColorTokens.error50,
+                      child: Icon(Icons.notifications, color: textColor),
                     ),
                     onPressed: () {
                       context.push('/notifications');
@@ -111,9 +119,9 @@ class _MainShellState extends State<MainShell> {
             currentIndex: _selectedIndex,
             onTap: _onTabTapped,
             type: BottomNavigationBarType.fixed,
-            backgroundColor: ColorTokens.primary40,
-            selectedItemColor: ColorTokens.neutral100,
-            unselectedItemColor: ColorTokens.neutral100.withValues(alpha: 0.6),
+            backgroundColor: navBarColor,
+            selectedItemColor: selectedColor,
+            unselectedItemColor: unselectedColor,
             showSelectedLabels: false,
             showUnselectedLabels: false,
             items: [
@@ -126,11 +134,11 @@ class _MainShellState extends State<MainShell> {
                 label: '',
               ),
               BottomNavigationBarItem(
-                icon: Icon(Icons.pedal_bike, size: 28),
+                icon: Icon(Icons.send, size: 28),
                 label: '',
               ),
               BottomNavigationBarItem(
-                icon: Icon(Icons.chat_bubble, size: 28),
+                icon: Icon(Icons.pedal_bike, size: 28),
                 label: '',
               ),
               BottomNavigationBarItem(
@@ -159,16 +167,16 @@ class _MainShellState extends State<MainShell> {
         context.go('/stories');
         break;
       case 1:
-        // Rutas/Roads
+        // Rutas
         context.go('/rides');
         break;
       case 2:
-        // Mis Bicis
-        context.go(AppRoutes.myBikes);
-        break;
-      case 3:
         // Mensajes
         context.go(AppRoutes.chatList);
+        break;
+      case 3:
+        // Mis Bicis
+        context.go(AppRoutes.myBikes);
         break;
       case 4:
         // Mi Perfil
@@ -204,11 +212,11 @@ class _MainShellState extends State<MainShell> {
       setState(() {
         _selectedIndex = 1;
       });
-    } else if (location.startsWith('/bikes') || location == AppRoutes.myBikes) {
+    } else if (location.startsWith(AppRoutes.chatList)) {
       setState(() {
         _selectedIndex = 2;
       });
-    } else if (location.startsWith(AppRoutes.chatList)) {
+    } else if (location.startsWith('/bikes') || location == AppRoutes.myBikes) {
       setState(() {
         _selectedIndex = 3;
       });

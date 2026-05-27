@@ -179,12 +179,12 @@ class _ExperiencesListScreenState extends State<ExperiencesListScreen>
     final allExperiences = provider.experiences; // Feed personalizado
 
     // POSTS: Experiencias que van en el feed principal vertical
-    // - Incluye fotos y videos con contenido vÃ¡lido
-    // - Cualquier longitud de descripciÃ³n
+    // - Incluye fotos y videos con contenido válido
+    // - Cualquier longitud de descripción
     // - EXCLUYE las que ya se muestran como stories
     final posts = allExperiences.where((exp) => exp.isPostFormat).toList();
 
-    // Layout tipo Instagram: Stories arriba, publicaciones abajo â€” todo en un scroll
+    // Layout tipo Instagram: Stories arriba, publicaciones abajo a€” todo en un scroll
     return RefreshIndicator(
       onRefresh: _loadFeed,
       child: posts.isEmpty
@@ -239,7 +239,7 @@ class _ExperiencesListScreenState extends State<ExperiencesListScreen>
     );
   }
 
-  /// Estado vacÃ­o cuando no hay posts pero sÃ­ hay stories
+  /// Estado vacío cuando no hay posts pero sí hay stories
   Widget _buildEmptyStateInLayout() {
     final theme = Theme.of(context);
     final l = Provider.of<LocaleNotifier>(context, listen: false);
@@ -315,7 +315,7 @@ class _ExperiencesListScreenState extends State<ExperiencesListScreen>
         // +1 para el widget de historias al inicio, +1 para el loader al final
         itemCount: 1 + intercaledList.length + (provider.hasMorePosts ? 1 : 0),
         itemBuilder: (context, index) {
-          // Primer Ã­tem: secciÃ³n de historias
+          // Primer ítem: sección de historias
           if (index == 0) {
             return const ExperiencesStoriesWidget();
           }
@@ -372,14 +372,14 @@ class _ExperiencesListScreenState extends State<ExperiencesListScreen>
   }
 
   /// Crea un anuncio de ejemplo
-  /// En producciÃ³n, esto vendrÃ­a de un repositorio que consulte el backend
+  /// En producción, esto vendría de un repositorio que consulte el backend
   AdvertisementEntity _createMockAdvertisement(int index) {
     final advertisements = [
       AdvertisementEntity(
         id: 'ad_1',
         title: 'Biux Premium',
         description:
-            'Desbloquea funciones exclusivas y conecta con mÃ¡s ciclistas',
+            'Desbloquea funciones exclusivas y conecta con más ciclistas',
         imageUrl:
             'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=500&h=300&fit=crop',
         callToActionText: 'Descubrir',
@@ -390,10 +390,10 @@ class _ExperiencesListScreenState extends State<ExperiencesListScreen>
       AdvertisementEntity(
         id: 'ad_2',
         title: 'Accesorios para Ciclismo',
-        description: 'Los mejores accesorios para tus rodadas. EnvÃ­o gratis.',
+        description: 'Los mejores accesorios para tus rodadas. Envío gratis.',
         imageUrl:
             'https://images.unsplash.com/photo-1552820728-8ac41f1ce891?w=500&h=300&fit=crop',
-        callToActionText: 'Ver catÃ¡logo',
+        callToActionText: 'Ver catálogo',
         callToActionUrl: 'https://shop.biux.app',
         advertiserName: 'Biux Shop',
         createdAt: DateTime.now(),
@@ -415,7 +415,7 @@ class _ExperiencesListScreenState extends State<ExperiencesListScreen>
     return advertisements[index % advertisements.length];
   }
 
-  /// Navegar directamente a crear publicaciÃ³n (comportamiento original)
+  /// Navegar directamente a crear publicación (comportamiento original)
   // ignore: unused_element
   void _navigateToCreatePost(BuildContext context) {
     Navigator.of(context)
@@ -423,13 +423,13 @@ class _ExperiencesListScreenState extends State<ExperiencesListScreen>
           MaterialPageRoute(
             builder: (context) => const CreateExperienceScreen(
               experienceType: ExperienceType.general,
-              isPostMode: true, // Modo publicaciÃ³n permanente
+              isPostMode: true, // Modo publicación permanente
               textOnly: false, // Permite multimedia
             ),
           ),
         )
         .then((result) {
-          // Si se creÃ³ exitosamente, recargar el feed
+          // Si se creó exitosamente, recargar el feed
           if (result == true) {
             _loadFeed();
           }
@@ -601,7 +601,7 @@ class _ExperienceCard extends StatelessWidget {
                 }
               }
             },
-            // Sin onImageTap: zoom directo en la galerÃ­a estilo Instagram
+            // Sin onImageTap: zoom directo en la galería estilo Instagram
             onDoubleTap: () {
               // Doble-tap = like (estilo Instagram)
               final likesProvider = context.read<LikesProvider>();
@@ -631,14 +631,14 @@ class _ExperienceCard extends StatelessWidget {
                 final provider = ctx.watch<ExperienceProvider>();
                 final uid = FirebaseAuth.instance.currentUser?.uid;
                 final isOwner = uid == experience.user.id;
-                // Es repost propio (el item en sÃ­ es un repost del usuario)
+                // Es repost propio (el item en sí es un repost del usuario)
                 final isMyOwnRepost = experience.isRepost && isOwner;
-                // El usuario reposteÃ³ este post original
+                // El usuario reposteó este post original
                 final hasRepostedOriginal = provider.hasRepostedPost(
                   experience.id,
                 );
                 final isReposted = isMyOwnRepost || hasRepostedOriginal;
-                // No mostrar botÃ³n de repost para posts propios que NO son reposts
+                // No mostrar botón de repost para posts propios que NO son reposts
                 final showRepostButton = !(isOwner && !experience.isRepost);
 
                 return PostSocialActions(
@@ -831,7 +831,7 @@ class _ExperienceCard extends StatelessWidget {
         experience,
         caption: captionController.text.trim(),
       );
-      // Recargar mapa de reposts para que el botÃ³n refleje estado actual
+      // Recargar mapa de reposts para que el botón refleje estado actual
       final uid = FirebaseAuth.instance.currentUser?.uid;
       if (uid != null && context.mounted) {
         provider.loadMyReposts(uid);
@@ -936,7 +936,7 @@ class _ExperienceCard extends StatelessWidget {
   }
 }
 
-/// Widget para cada opciÃ³n de post
+/// Widget para cada opción de post
 // CLASE COMENTADA - Ya no se usa _PostOptionTile
 /*
 class _PostOptionTile extends StatelessWidget {
@@ -1149,7 +1149,7 @@ class _AdvertisementCard extends StatelessWidget {
                   if (advertisement.advertiserName != null) ...[
                     const SizedBox(width: 4),
                     Text(
-                      'â€¢ ${advertisement.advertiserName}',
+                      'a€¢ ${advertisement.advertiserName}',
                       style: TextStyle(
                         fontSize: 11,
                         color: ColorTokens.secondary50.withValues(alpha: 0.8),
@@ -1200,7 +1200,7 @@ class _AdvertisementCard extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // TÃ­tulo
+                  // Título
                   Text(
                     advertisement.title,
                     style: TextStyle(
@@ -1212,7 +1212,7 @@ class _AdvertisementCard extends StatelessWidget {
 
                   const SizedBox(height: 8),
 
-                  // DescripciÃ³n
+                  // Descripción
                   Text(
                     advertisement.description,
                     style: TextStyle(
@@ -1226,7 +1226,7 @@ class _AdvertisementCard extends StatelessWidget {
 
                   const SizedBox(height: 12),
 
-                  // BotÃ³n CTA
+                  // Botón CTA
                   SizedBox(
                     width: double.infinity,
                     child: ElevatedButton(
@@ -1345,7 +1345,7 @@ class _AdvertisementCard extends StatelessWidget {
                               ),
                             ),
 
-                          // TÃ­tulo
+                          // Título
                           Text(
                             advertisement.title,
                             style: TextStyle(
@@ -1357,7 +1357,7 @@ class _AdvertisementCard extends StatelessWidget {
 
                           const SizedBox(height: 12),
 
-                          // DescripciÃ³n completa
+                          // Descripción completa
                           Text(
                             advertisement.description,
                             style: TextStyle(
@@ -1369,7 +1369,7 @@ class _AdvertisementCard extends StatelessWidget {
 
                           const SizedBox(height: 24),
 
-                          // BotÃ³n CTA expandido
+                          // Botón CTA expandido
                           SizedBox(
                             width: double.infinity,
                             child: ElevatedButton(
@@ -1399,7 +1399,7 @@ class _AdvertisementCard extends StatelessWidget {
 
                           SizedBox(height: 16),
 
-                          // BotÃ³n de cerrar
+                          // Botón de cerrar
                           SizedBox(
                             width: double.infinity,
                             child: OutlinedButton(
@@ -1442,7 +1442,7 @@ class _AdvertisementCard extends StatelessWidget {
     );
   }
 
-  /// Maneja la acciÃ³n del botÃ³n CTA del anuncio
+  /// Maneja la acción del botón CTA del anuncio
   void _handleAdvertisementAction(BuildContext context) async {
     final l = Provider.of<LocaleNotifier>(context, listen: false);
     try {
@@ -1475,4 +1475,5 @@ class _AdvertisementCard extends StatelessWidget {
     }
   }
 }
+
 

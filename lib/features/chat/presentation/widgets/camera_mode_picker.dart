@@ -4,7 +4,7 @@ import 'package:camera/camera.dart';
 import 'package:provider/provider.dart';
 import 'package:biux/core/design_system/locale_notifier.dart';
 
-/// Pantalla de cÃ¡mara real con preview en vivo, flash, cambio de cÃ¡mara
+/// Pantalla de cámara real con preview en vivo, flash, cambio de cámara
 /// y toggle Foto/Video estilo WhatsApp.
 class CameraModePicker extends StatefulWidget {
   const CameraModePicker({super.key});
@@ -211,7 +211,7 @@ class _CameraModePickerState extends State<CameraModePicker>
               ),
             ),
 
-          // Barra superior: cerrar, flash, rotar cÃ¡mara
+          // Barra superior: cerrar, flash, rotar cámara
           Positioned(
             top: topPad + 8,
             left: 8,
@@ -252,7 +252,7 @@ class _CameraModePickerState extends State<CameraModePicker>
                   ),
                 ),
                 const SizedBox(width: 8),
-                // Rotar cÃ¡mara
+                // Rotar cámara
                 if (_cameras.length > 1)
                   IconButton(
                     icon: const Icon(
@@ -266,7 +266,7 @@ class _CameraModePickerState extends State<CameraModePicker>
             ),
           ),
 
-          // Indicador de grabaciÃ³n
+          // Indicador de grabación
           if (_isRecording)
             Positioned(
               top: topPad + 60,
@@ -341,7 +341,7 @@ class _CameraModePickerState extends State<CameraModePicker>
                   ],
                 ),
                 const SizedBox(height: 20),
-                // BotÃ³n captura
+                // Botón captura
                 GestureDetector(
                   onTap: _onCaptureTap,
                   child: AnimatedContainer(
@@ -433,4 +433,5 @@ class _ModeTab extends StatelessWidget {
     );
   }
 }
+
 

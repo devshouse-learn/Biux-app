@@ -262,7 +262,7 @@ class _AppDrawerState extends State<AppDrawer> {
                       ),
                     ),
                     const SizedBox(height: 4),
-                    // Email/TelÃ©fono
+                    // Email/Teléfono
                     Text(
                       user?.email ?? cu?.phoneNumber ?? '',
                       style: TextStyle(
@@ -273,7 +273,7 @@ class _AppDrawerState extends State<AppDrawer> {
 
                     const SizedBox(height: 14),
 
-                    // â”€â”€ BotÃ³n SOS compacto â”€â”€
+                    // a”€a”€ Botón SOS compacto a”€a”€
                     GestureDetector(
                       onLongPressStart: (_) => _startSosHold(),
                       onLongPressEnd: (_) => _cancelSosHold(),
@@ -762,4 +762,5 @@ class _AppDrawerState extends State<AppDrawer> {
     }
   }
 }
+
 

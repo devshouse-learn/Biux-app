@@ -9,8 +9,8 @@ import 'package:biux/core/design_system/locale_notifier.dart';
 import 'package:biux/shared/widgets/common/post_card.dart';
 import 'package:firebase_database/firebase_database.dart';
 
-/// Pantalla estilo Instagram para ver publicaciones con galerÃ­a
-/// Permite: ver imÃ¡genes en grande, darle like, y comentar
+/// Pantalla estilo Instagram para ver publicaciones con galería
+/// Permite: ver imágenes en grande, darle like, y comentar
 class PostDetailScreen extends StatefulWidget {
   final String postId;
 
@@ -60,7 +60,7 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
       if (mounted) {
         setState(() {
           _isLoading = false;
-          _error = 'Error cargando la publicaciÃ³n: $e';
+          _error = 'Error cargando la publicación: $e';
         });
       }
     }
@@ -88,22 +88,22 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
       return 'hace ${difference.inMinutes} minuto${difference.inMinutes != 1 ? 's' : ''}';
     }
 
-    // Menos de un dÃ­a
+    // Menos de un día
     if (difference.inHours < 24) {
       return 'hace ${difference.inHours} hora${difference.inHours != 1 ? 's' : ''}';
     }
 
-    // Menos de 7 dÃ­as
+    // Menos de 7 días
     if (difference.inDays < 7) {
-      return 'hace ${difference.inDays} dÃ­a${difference.inDays != 1 ? 's' : ''}';
+      return 'hace ${difference.inDays} día${difference.inDays != 1 ? 's' : ''}';
     }
 
-    // MÃ¡s de 7 dÃ­as - mostrar formato DD-MM
+    // Más de 7 días - mostrar formato DD-MM
     if (createdAt.year == now.year) {
       return '${createdAt.day.toString().padLeft(2, '0')}-${createdAt.month.toString().padLeft(2, '0')}';
     }
 
-    // Diferente aÃ±o - mostrar DD-MM-YYYY
+    // Diferente año - mostrar DD-MM-YYYY
     return '${createdAt.day.toString().padLeft(2, '0')}-${createdAt.month.toString().padLeft(2, '0')}-${createdAt.year}';
   }
 
@@ -328,7 +328,7 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
     );
   }
 
-  /// Construye el botÃ³n de opciones (menÃº de tres puntos)
+  /// Construye el botón de opciones (menÃº de tres puntos)
   Widget _buildPostOptions(BuildContext context, ExperienceEntity experience) {
     return PopupMenuButton<String>(
       color: Colors.grey[800],
@@ -372,7 +372,7 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
     );
   }
 
-  /// Muestra diÃ¡logo de confirmaciÃ³n para eliminar el post
+  /// Muestra diálogo de confirmación para eliminar el post
   void _showDeletePostConfirmation(
     BuildContext context,
     ExperienceEntity experience,
@@ -412,14 +412,14 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
     try {
       final database = FirebaseDatabase.instance;
 
-      // Intentar primero marcar como eliminado (actualizaciÃ³n)
+      // Intentar primero marcar como eliminado (actualización)
       try {
         await database.ref('experiences/${experience.id}').update({
           'isDeleted': true,
           'deletedAt': DateTime.now().millisecondsSinceEpoch,
         });
       } catch (updateError) {
-        // Si falla la actualizaciÃ³n, intentar eliminaciÃ³n directa
+        // Si falla la actualización, intentar eliminación directa
         if (updateError.toString().contains('Permission denied')) {
           await database.ref('experiences/${experience.id}').remove();
         } else {
@@ -427,7 +427,7 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
         }
       }
 
-      // Mostrar Ã©xito
+      // Mostrar éxito
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
@@ -437,7 +437,7 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
           ),
         );
 
-        // Navegar de vuelta despuÃ©s de 1 segundo
+        // Navegar de vuelta después de 1 segundo
         await Future.delayed(const Duration(seconds: 1));
         if (context.mounted) {
           Navigator.pop(context);
@@ -509,4 +509,5 @@ class _RepostBannerDetail extends StatelessWidget {
     );
   }
 }
+
 

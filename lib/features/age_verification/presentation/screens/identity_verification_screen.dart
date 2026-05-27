@@ -31,7 +31,7 @@ class _IdentityVerificationScreenState
   final List<String> _docTypes = [
     'INE / Credencial de elector',
     'Pasaporte',
-    'CÃ©dula profesional',
+    'Cédula profesional',
     'Licencia de conducir',
   ];
 
@@ -115,7 +115,7 @@ class _IdentityVerificationScreenState
         backgroundColor: ColorTokens.primary30,
         foregroundColor: Colors.white,
         title: const Text(
-          'VerificaciÃ³n de identidad',
+          'Verificación de identidad',
           style: TextStyle(fontWeight: FontWeight.bold),
         ),
         automaticallyImplyLeading: false,
@@ -182,8 +182,8 @@ class _IdentityVerificationScreenState
               const SizedBox(width: 10),
               Expanded(
                 child: Text(
-                  'Tus documentos estÃ¡n protegidos con cifrado y solo serÃ¡n '
-                  'usados para verificar tu identidad. No serÃ¡n compartidos con terceros.',
+                  'Tus documentos están protegidos con cifrado y solo serán '
+                  'usados para verificar tu identidad. No serán compartidos con terceros.',
                   style: TextStyle(
                     fontSize: 12,
                     color: Colors.blue[800],
@@ -262,7 +262,7 @@ class _IdentityVerificationScreenState
                   )
                 : const Icon(Icons.upload_rounded),
             label: Text(
-              _uploading ? 'Subiendo...' : 'Enviar para verificaciÃ³n',
+              _uploading ? 'Subiendo...' : 'Enviar para verificación',
               style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w700),
             ),
             style: ElevatedButton.styleFrom(
@@ -282,7 +282,7 @@ class _IdentityVerificationScreenState
           child: TextButton(
             onPressed: () => context.go('/stories'),
             child: const Text(
-              'Verificar mÃ¡s tarde (acceso limitado)',
+              'Verificar más tarde (acceso limitado)',
               style: TextStyle(color: Colors.grey, fontSize: 13),
             ),
           ),
@@ -402,7 +402,7 @@ class _IdentityVerificationScreenState
         ),
         const SizedBox(height: 24),
         const Text(
-          'Â¡Documentos enviados!',
+          'a¡Documentos enviados!',
           style: TextStyle(fontSize: 22, fontWeight: FontWeight.w800),
         ),
         const SizedBox(height: 12),
@@ -414,7 +414,7 @@ class _IdentityVerificationScreenState
           ),
           child: const Text(
             'Revisaremos tus documentos en 24-48 horas. '
-            'Mientras tanto puedes usar Biux con acceso bÃ¡sico.',
+            'Mientras tanto puedes usar Biux con acceso básico.',
             style: TextStyle(fontSize: 14, height: 1.6),
             textAlign: TextAlign.center,
           ),
@@ -442,4 +442,5 @@ class _IdentityVerificationScreenState
     );
   }
 }
+
 

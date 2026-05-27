@@ -12,7 +12,7 @@ class CommentsProvider extends ChangeNotifier {
   final NotificationsRepository _notificationsRepository;
   final String userId;
 
-  // Variables para cachÃ© de datos del usuario
+  // Variables para caché de datos del usuario
   String? _cachedUserName;
   String? _cachedUserPhoto;
   bool _userDataLoaded = false;
@@ -89,7 +89,7 @@ class CommentsProvider extends ChangeNotifier {
   // Map para rastrear cooldown de comentarios (prevenir spam)
   final Map<String, DateTime> _commentCooldowns = {};
 
-  // DuraciÃ³n del cooldown (5 segundos para comentarios - mÃ¡s largo para prevenir spam)
+  // Duración del cooldown (5 segundos para comentarios - más largo para prevenir spam)
   static const Duration _commentCooldownDuration = Duration(seconds: 5);
 
   // Helper methods para cooldown
@@ -157,7 +157,7 @@ class CommentsProvider extends ChangeNotifier {
     // Cooldown: prevenir spam de comentarios
     if (_isInCommentCooldown(targetId)) {
       debugPrint(
-        'â³ Comentario en cooldown para $targetId, espera ${_commentCooldownDuration.inSeconds}s',
+        'a³ Comentario en cooldown para $targetId, espera ${_commentCooldownDuration.inSeconds}s',
       );
       _error = 'comments_cooldown';
       notifyListeners();
@@ -166,7 +166,7 @@ class CommentsProvider extends ChangeNotifier {
 
     if (_isPosting) return null;
 
-    // Cargar datos del usuario si no estÃ¡n cargados
+    // Cargar datos del usuario si no están cargados
     await _loadUserData();
 
     // Validar longitud
@@ -187,10 +187,10 @@ class CommentsProvider extends ChangeNotifier {
       _error = null;
       notifyListeners();
 
-      // IMPORTANTE: Forzar recarga de datos para asegurar que estÃ¡n actualizados
+      // IMPORTANTE: Forzar recarga de datos para asegurar que están actualizados
       _userDataLoaded = false;
 
-      // Cargar datos del usuario si no estÃ¡n cargados
+      // Cargar datos del usuario si no están cargados
       await _loadUserData();
 
       // Verificar que el usuario haya completado su perfil
@@ -201,7 +201,7 @@ class CommentsProvider extends ChangeNotifier {
         return null;
       }
 
-      // Verificar autenticaciÃ³n de Firebase
+      // Verificar autenticación de Firebase
       final currentUser = FirebaseAuth.instance.currentUser;
       if (currentUser == null) {
         _error = 'comments_login_required';
@@ -234,20 +234,20 @@ class CommentsProvider extends ChangeNotifier {
 
       debugPrint('Comentario creado: $commentId');
 
-      // Crear notificaciÃ³n para el dueÃ±o del contenido
+      // Crear notificación para el dueño del contenido
       if (targetOwnerId != userIdForComment) {
         final safeUserName = (_cachedUserName ?? '').trim().isNotEmpty
             ? _cachedUserName!
             : userIdForComment.split('_').last;
 
-        // Determinar tipo de notificaciÃ³n
+        // Determinar tipo de notificación
         final notifType = parentCommentId != null
             ? NotificationType.replyComment
             : (type == CommentableType.post
                   ? NotificationType.commentPost
                   : NotificationType.commentRide);
 
-        // Determinar a quiÃ©n notificar
+        // Determinar a quién notificar
         final notifyUserId =
             parentCommentId != null && parentCommentOwnerId != null
             ? parentCommentOwnerId
@@ -278,7 +278,7 @@ class CommentsProvider extends ChangeNotifier {
       // Detectar menciones y notificar
       await _notifyMentions(text, targetId, type);
 
-      // Establecer cooldown despuÃ©s de Ã©xito
+      // Establecer cooldown después de éxito
       _setCommentCooldown(targetId);
 
       _isPosting = false;
@@ -288,7 +288,7 @@ class CommentsProvider extends ChangeNotifier {
     } on FirebaseException catch (e) {
       debugPrint('Error al crear comentario: $e');
 
-      // Detectar tipo de error especÃ­fico
+      // Detectar tipo de error específico
       if (e.toString().contains('MissingPluginException')) {
         _error = 'comments_missing_plugin';
       } else if (e.toString().contains('permission')) {
@@ -361,7 +361,7 @@ class CommentsProvider extends ChangeNotifier {
       _error = null;
       notifyListeners();
 
-      debugPrint('ðŸ—‘ï¸ Intentando eliminar comentario:');
+      debugPrint('dŸ—‘ï¸ Intentando eliminar comentario:');
       debugPrint('   Tipo: $type');
       debugPrint('   TargetId: $targetId');
       debugPrint('   CommentId: $commentId');
@@ -374,12 +374,12 @@ class CommentsProvider extends ChangeNotifier {
         userId: userId,
       );
 
-      debugPrint('âœ… Comentario eliminado correctamente');
+      debugPrint('aœ… Comentario eliminado correctamente');
       _isDeleting = false;
       notifyListeners();
     } catch (e, st) {
       final errorMsg = e.toString();
-      debugPrint('âŒ Error al eliminar comentario: $errorMsg');
+      debugPrint('aŒ Error al eliminar comentario: $errorMsg');
       debugPrint('Stack trace: $st');
 
       if (errorMsg.contains('permiso')) {
@@ -409,8 +409,8 @@ class CommentsProvider extends ChangeNotifier {
       if (mentionedUsername == null || mentionedUsername == _cachedUserName)
         continue;
 
-      // AquÃ­ necesitarÃ­as obtener el userId del username mencionado
-      // Por ahora lo dejamos como comentario para implementar despuÃ©s
+      // Aquí necesitarías obtener el userId del username mencionado
+      // Por ahora lo dejamos como comentario para implementar después
       // final mentionedUserId = await _getUserIdByUsername(mentionedUsername);
 
       // if (mentionedUserId != null) {
@@ -458,4 +458,5 @@ class CommentsProvider extends ChangeNotifier {
     notifyListeners();
   }
 }
+
 

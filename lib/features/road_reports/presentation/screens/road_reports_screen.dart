@@ -21,7 +21,7 @@ class _RoadReportsScreenState extends State<RoadReportsScreen> {
 
   String get _currentUid => FirebaseAuth.instance.currentUser?.uid ?? '';
 
-  // CachÃ© de reverse geocoding para evitar llamadas repetidas
+  // Caché de reverse geocoding para evitar llamadas repetidas
   final Map<String, String> _addressCache = {};
 
   @override
@@ -32,7 +32,7 @@ class _RoadReportsScreenState extends State<RoadReportsScreen> {
     });
   }
 
-  /// Devuelve direcciÃ³n legible usando Nominatim (OpenStreetMap), sin API key.
+  /// Devuelve dirección legible usando Nominatim (OpenStreetMap), sin API key.
   Future<String> _reverseGeocode(double lat, double lon) async {
     final key = '${lat.toStringAsFixed(5)},${lon.toStringAsFixed(5)}';
     if (_addressCache.containsKey(key)) return _addressCache[key]!;
@@ -123,7 +123,7 @@ class _RoadReportsScreenState extends State<RoadReportsScreen> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Error ubicaciÃ³n: $e'),
+            content: Text('Error ubicación: $e'),
             backgroundColor: Colors.red,
           ),
         );
@@ -172,7 +172,7 @@ class _RoadReportsScreenState extends State<RoadReportsScreen> {
           ],
         ),
         content: Text(
-          'Â¿EstÃ¡s seguro de que quieres eliminar este reporte?',
+          'a¿Estás seguro de que quieres eliminar este reporte?',
         ),
         actions: [
           TextButton(
@@ -247,7 +247,7 @@ class _RoadReportsScreenState extends State<RoadReportsScreen> {
                   ),
                   const SizedBox(height: 8),
                   Text(
-                    'Â¡Las vÃ­as estÃ¡n despejadas!',
+                    'a¡Las vías están despejadas!',
                     style: TextStyle(color: Colors.grey[400], fontSize: 13),
                   ),
                 ],
@@ -345,7 +345,7 @@ class _RoadReportsScreenState extends State<RoadReportsScreen> {
             ),
             const SizedBox(height: 8),
 
-            // UbicaciÃ³n â€” direcciÃ³n detallada
+            // Ubicación a€” dirección detallada
             FutureBuilder<String>(
               future: _reverseGeocode(r.latitude, r.longitude),
               builder: (context, snap) {
@@ -397,7 +397,7 @@ class _RoadReportsScreenState extends State<RoadReportsScreen> {
                                     ),
                                     const SizedBox(width: 6),
                                     Text(
-                                      'Obteniendo direcciÃ³n...',
+                                      'Obteniendo dirección...',
                                       style: TextStyle(
                                         fontSize: 11,
                                         color: Colors.blue.withValues(
@@ -430,7 +430,7 @@ class _RoadReportsScreenState extends State<RoadReportsScreen> {
             ),
             const SizedBox(height: 12),
 
-            // Footer: confirmaciones + botÃ³n
+            // Footer: confirmaciones + botón
             Row(
               children: [
                 Icon(Icons.thumb_up, size: 14, color: Colors.grey[400]),
@@ -441,8 +441,8 @@ class _RoadReportsScreenState extends State<RoadReportsScreen> {
                 ),
                 const Spacer(),
 
-                // Siempre mostrar botÃ³n de confirmar (incluso en tu propio reporte)
-                // pero tambiÃ©n mostrar indicador si es tuyo
+                // Siempre mostrar botón de confirmar (incluso en tu propio reporte)
+                // pero también mostrar indicador si es tuyo
                 if (isOwner) ...[
                   Container(
                     padding: const EdgeInsets.symmetric(
@@ -464,7 +464,7 @@ class _RoadReportsScreenState extends State<RoadReportsScreen> {
                   ),
                 ],
 
-                // BotÃ³n de confirmar siempre visible para todos
+                // Botón de confirmar siempre visible para todos
                 ElevatedButton.icon(
                   onPressed: alreadyConfirmed
                       ? null
@@ -513,11 +513,11 @@ class _RoadReportsScreenState extends State<RoadReportsScreen> {
     final descCtrl = TextEditingController();
     bool isSending = false;
     final types = {
-      'pothole': 'ðŸ•³ï¸ Hueco',
-      'obstacle': 'âš ï¸ ObstÃ¡culo',
-      'danger': 'ðŸš¨ Peligro',
-      'construction': 'ðŸš§ ConstrucciÃ³n',
-      'flooding': 'ðŸŒŠ InundaciÃ³n',
+      'pothole': 'dŸ•³ï¸ Hueco',
+      'obstacle': 'aš ï¸ Obstáculo',
+      'danger': 'dŸš¨ Peligro',
+      'construction': 'dŸš§ Construcción',
+      'flooding': 'dŸŒŠ Inundación',
     };
 
     showModalBottomSheet(
@@ -704,4 +704,5 @@ class _RoadReportsScreenState extends State<RoadReportsScreen> {
     );
   }
 }
+
 

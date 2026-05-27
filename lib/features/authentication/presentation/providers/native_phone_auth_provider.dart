@@ -10,7 +10,7 @@ import 'package:biux/core/services/app_logger.dart';
 enum AuthState { initial, loading, codeSent, authenticated, error }
 
 /// Provider NUEVO con Firebase Phone Auth NATIVO
-/// âœ… Soporte para login automÃ¡tico de admin sin cÃ³digo
+/// aœ… Soporte para login automático de admin sin código
 class NativePhoneAuthProvider extends ChangeNotifier {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
@@ -27,7 +27,7 @@ class NativePhoneAuthProvider extends ChangeNotifier {
   AuthState get state => _state;
   String? get errorMessage => _errorMessage;
   String? get phoneNumber => _phoneNumber;
-  bool get canResendCode => true; // SIEMPRE permitir reenvÃ­o
+  bool get canResendCode => true; // SIEMPRE permitir reenvío
   int get resendSeconds => _resendSeconds;
   bool get needsProfileSetup => _needsProfileSetup;
 
@@ -53,10 +53,10 @@ class NativePhoneAuthProvider extends ChangeNotifier {
   }
 
   /// ENVIAR CÃ“DIGO SMS usando Firebase Phone Authentication
-  /// Admin bypass controlado por configuraciÃ³n remota en Firestore
+  /// Admin bypass controlado por configuración remota en Firestore
   Future<void> sendCode(String phoneNumber) async {
     try {
-      // Verificar si es admin desde configuraciÃ³n remota (Firestore)
+      // Verificar si es admin desde configuración remota (Firestore)
       final isAdmin = RemoteConfigService().isAdminPhone(phoneNumber);
 
       if (isAdmin) {
@@ -81,15 +81,15 @@ class NativePhoneAuthProvider extends ChangeNotifier {
         phoneNumber: phoneNumber,
         timeout: const Duration(seconds: 60),
 
-        // VerificaciÃ³n automÃ¡tica (solo Android)
+        // Verificación automática (solo Android)
         verificationCompleted: (PhoneAuthCredential credential) async {
-          AppLogger.info('VerificaciÃ³n automÃ¡tica completada', tag: 'Auth');
+          AppLogger.info('Verificación automática completada', tag: 'Auth');
           try {
             final userCredential = await _auth.signInWithCredential(credential);
             await _handleSuccessfulAuth(userCredential.user);
           } on FirebaseException catch (e) {
             AppLogger.error(
-              'Error en verificaciÃ³n automÃ¡tica',
+              'Error en verificación automática',
               tag: 'Auth',
               error: e,
             );
@@ -115,7 +115,7 @@ class NativePhoneAuthProvider extends ChangeNotifier {
           notifyListeners();
         },
 
-        // CÃ³digo enviado correctamente
+        // Código enviado correctamente
         codeSent: (String verificationId, int? resendToken) {
           AppLogger.info('SMS enviado correctamente', tag: 'Auth');
 
@@ -136,7 +136,7 @@ class NativePhoneAuthProvider extends ChangeNotifier {
         forceResendingToken: _resendToken,
       );
     } on FirebaseException catch (e) {
-      AppLogger.error('Error enviando cÃ³digo', tag: 'Auth', error: e);
+      AppLogger.error('Error enviando código', tag: 'Auth', error: e);
       _state = AuthState.error;
       _errorMessage = 'err_send_code';
       notifyListeners();
@@ -153,7 +153,7 @@ class NativePhoneAuthProvider extends ChangeNotifier {
     }
 
     try {
-      AppLogger.info('Verificando cÃ³digo SMS', tag: 'Auth');
+      AppLogger.info('Verificando código SMS', tag: 'Auth');
 
       _state = AuthState.loading;
       _errorMessage = null;
@@ -169,7 +169,7 @@ class NativePhoneAuthProvider extends ChangeNotifier {
       final userCredential = await _auth.signInWithCredential(credential);
       await _handleSuccessfulAuth(userCredential.user);
     } on FirebaseException catch (e) {
-      AppLogger.error('Error verificando cÃ³digo', tag: 'Auth', error: e);
+      AppLogger.error('Error verificando código', tag: 'Auth', error: e);
       _state = AuthState.error;
 
       if (e.toString().contains('invalid-verification-code')) {
@@ -223,7 +223,7 @@ class NativePhoneAuthProvider extends ChangeNotifier {
 
     _needsProfileSetup = !userDoc.exists || userDoc.data()?['name'] == null;
 
-    // Guardar el phoneNumber si no estÃ¡ en el documento
+    // Guardar el phoneNumber si no está en el documento
     if (user != null && _phoneNumber != null && _phoneNumber!.isNotEmpty) {
       final existingPhone = userDoc.data()?['phoneNumber'] ?? '';
       if (existingPhone.toString().isEmpty) {
@@ -243,7 +243,7 @@ class NativePhoneAuthProvider extends ChangeNotifier {
       );
     }
 
-    // Registrar la sesiÃ³n del dispositivo actual
+    // Registrar la sesión del dispositivo actual
     if (user != null) {
       try {
         final platform = Platform.isIOS ? 'ios' : 'android';
@@ -259,7 +259,7 @@ class NativePhoneAuthProvider extends ChangeNotifier {
           'sessions': FieldValue.arrayUnion([sessionEntry]),
         }, SetOptions(merge: true));
       } on FirebaseException catch (e) {
-        AppLogger.warning('Error registrando sesiÃ³n', tag: 'Auth', error: e);
+        AppLogger.warning('Error registrando sesión', tag: 'Auth', error: e);
       }
     }
 
@@ -286,4 +286,5 @@ class NativePhoneAuthProvider extends ChangeNotifier {
     super.dispose();
   }
 }
+
 

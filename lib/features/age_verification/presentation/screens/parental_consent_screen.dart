@@ -81,7 +81,7 @@ class _ParentalConsentScreenState extends State<ParentalConsentScreen> {
         backgroundColor: ColorTokens.primary30,
         foregroundColor: Colors.white,
         title: const Text(
-          'VerificaciÃ³n parental',
+          'Verificación parental',
           style: TextStyle(fontWeight: FontWeight.bold),
         ),
         automaticallyImplyLeading: false,
@@ -117,7 +117,7 @@ class _ParentalConsentScreenState extends State<ParentalConsentScreen> {
           const SizedBox(height: 20),
           const Center(
             child: Text(
-              'Se requiere autorizaciÃ³n',
+              'Se requiere autorización',
               style: TextStyle(fontSize: 20, fontWeight: FontWeight.w800),
               textAlign: TextAlign.center,
             ),
@@ -142,7 +142,7 @@ class _ParentalConsentScreenState extends State<ParentalConsentScreen> {
                     ),
                     const SizedBox(width: 8),
                     Text(
-                      'Tienes ${widget.userAge} aÃ±os',
+                      'Tienes ${widget.userAge} años',
                       style: const TextStyle(
                         fontWeight: FontWeight.w700,
                         fontSize: 14,
@@ -152,7 +152,7 @@ class _ParentalConsentScreenState extends State<ParentalConsentScreen> {
                 ),
                 const SizedBox(height: 8),
                 const Text(
-                  'Biux permite el uso de la app a partir de los 13 aÃ±os. '
+                  'Biux permite el uso de la app a partir de los 13 años. '
                   'Como eres menor de 18, necesitamos que un padre, madre o tutor '
                   'legal autorice tu registro.',
                   style: TextStyle(fontSize: 13, height: 1.5),
@@ -168,12 +168,12 @@ class _ParentalConsentScreenState extends State<ParentalConsentScreen> {
           ),
           _step(
             '2',
-            'DeberÃ¡n confirmar que autorizan tu registro',
+            'Deberán confirmar que autorizan tu registro',
             Icons.check_circle_outline_rounded,
           ),
           _step(
             '3',
-            'Una vez aprobado, tendrÃ¡s acceso completo',
+            'Una vez aprobado, tendrás acceso completo',
             Icons.lock_open_rounded,
           ),
           const SizedBox(height: 20),
@@ -198,7 +198,7 @@ class _ParentalConsentScreenState extends State<ParentalConsentScreen> {
             ),
             validator: (v) {
               if (v == null || v.isEmpty) return 'Ingresa el correo';
-              if (!v.contains('@')) return 'Correo invÃ¡lido';
+              if (!v.contains('@')) return 'Correo inválido';
               return null;
             },
           ),
@@ -286,8 +286,8 @@ class _ParentalConsentScreenState extends State<ParentalConsentScreen> {
             borderRadius: BorderRadius.circular(14),
           ),
           child: Text(
-            'Enviamos un correo a ${_emailCtrl.text} para solicitar autorizaciÃ³n. '
-            'Tu cuenta estarÃ¡ activa una vez que tu tutor apruebe la solicitud.',
+            'Enviamos un correo a ${_emailCtrl.text} para solicitar autorización. '
+            'Tu cuenta estará activa una vez que tu tutor apruebe la solicitud.',
             style: const TextStyle(fontSize: 14, height: 1.6),
             textAlign: TextAlign.center,
           ),
@@ -363,4 +363,5 @@ class _ParentalConsentScreenState extends State<ParentalConsentScreen> {
     );
   }
 }
+
 

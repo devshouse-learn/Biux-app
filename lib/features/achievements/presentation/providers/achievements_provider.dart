@@ -54,7 +54,7 @@ class AchievementsProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  /// Llamar al terminar una rodada para actualizar logros automÃ¡ticamente
+  /// Llamar al terminar una rodada para actualizar logros automáticamente
   Future<void> onRideCompleted({
     required String userId,
     required double km,
@@ -142,7 +142,7 @@ class AchievementsProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  /// Fuerza sincronizaciÃ³n completa â€” llamado desde UI
+  /// Fuerza sincronización completa a€” llamado desde UI
   Future<void> forceSync(String userId) async {
     _isSyncing = true;
     notifyListeners();
@@ -159,7 +159,7 @@ class AchievementsProvider with ChangeNotifier {
   /// Callback para mostrar overlay cuando se desbloquea un logro
   Function(String achievementId)? onAchievementUnlocked;
 
-  /// Verificar y desbloquear logros segÃºn estadÃ­sticas
+  /// Verificar y desbloquear logros segÃºn estadísticas
   Future<void> checkAndUnlock({
     required String userId,
     required Map<String, dynamic> stats,
@@ -176,4 +176,5 @@ class AchievementsProvider with ChangeNotifier {
     }
   }
 }
+
 

@@ -10,8 +10,8 @@ import 'package:biux/core/services/image_compression_service.dart';
 import 'package:biux/core/services/optimized_storage_service.dart';
 import 'package:biux/core/services/optimized_cache_manager.dart';
 
-/// Widget optimizado para selecciÃ³n y carga de imÃ¡genes
-/// Integra compresiÃ³n automÃ¡tica y carga eficiente para reducir costos de Firebase
+/// Widget optimizado para selección y carga de imágenes
+/// Integra compresión automática y carga eficiente para reducir costos de Firebase
 class OptimizedImagePicker extends StatefulWidget {
   final String? currentImageUrl;
   final Function(String? imageUrl) onImageSelected;
@@ -65,7 +65,7 @@ class _OptimizedImagePickerState extends State<OptimizedImagePicker> {
             // Overlay de carga
             if (_isUploading) _buildUploadOverlay(),
 
-            // Icono de cÃ¡mara
+            // Icono de cámara
             if (!_isUploading) _buildCameraIcon(),
           ],
         ),
@@ -96,7 +96,7 @@ class _OptimizedImagePickerState extends State<OptimizedImagePicker> {
           fit: BoxFit.cover,
           placeholder: (context, url) => _buildPlaceholder(),
           errorWidget: (context, url, error) => _buildPlaceholder(),
-          // ConfiguraciÃ³n de cachÃ© optimizada para reducir transferencias
+          // Configuración de caché optimizada para reducir transferencias
           cacheManager: DefaultCacheManager(),
           maxWidthDiskCache: _safeCacheSize(
             widget.width,
@@ -232,7 +232,7 @@ class _OptimizedImagePickerState extends State<OptimizedImagePicker> {
     try {
       final XFile? pickedFile = await _picker.pickImage(
         source: source,
-        maxWidth: 1920, // LÃ­mite inicial antes de compresiÃ³n
+        maxWidth: 1920, // Límite inicial antes de compresión
         maxHeight: 1920,
         imageQuality: 90, // Calidad inicial alta, luego comprimimos
       );
@@ -241,7 +241,7 @@ class _OptimizedImagePickerState extends State<OptimizedImagePicker> {
 
       final File imageFile = File(pickedFile.path);
 
-      // Verificar si necesita compresiÃ³n y mostrar info al usuario
+      // Verificar si necesita compresión y mostrar info al usuario
       final needsCompression = await ImageCompressionService.needsCompression(
         imageFile,
       );
@@ -299,7 +299,7 @@ class _OptimizedImagePickerState extends State<OptimizedImagePicker> {
           break;
 
         case 'ride':
-          // Si no hay entityId (creaciÃ³n de ride), generar uno temporal
+          // Si no hay entityId (creación de ride), generar uno temporal
           final rideId =
               widget.entityId ??
               'temp_${DateTime.now().millisecondsSinceEpoch}';
@@ -357,7 +357,7 @@ class _OptimizedImagePickerState extends State<OptimizedImagePicker> {
 
   void _removeImage() {
     Navigator.pop(context);
-    // Pasar cadena vacÃ­a para indicar eliminaciÃ³n (no null)
+    // Pasar cadena vacía para indicar eliminación (no null)
     widget.onImageSelected("");
   }
 
@@ -409,7 +409,7 @@ class _OptimizedImagePickerState extends State<OptimizedImagePicker> {
   }
 }
 
-/// Widget para mostrar imÃ¡genes optimizadas con cachÃ© inteligente
+/// Widget para mostrar imágenes optimizadas con caché inteligente
 class OptimizedNetworkImage extends StatelessWidget {
   final String imageUrl;
   final double? width;
@@ -418,7 +418,7 @@ class OptimizedNetworkImage extends StatelessWidget {
   final Widget? placeholder;
   final Widget? errorWidget;
   final BorderRadius? borderRadius;
-  final String imageType; // Para usar cachÃ© apropiado
+  final String imageType; // Para usar caché apropiado
 
   const OptimizedNetworkImage({
     super.key,
@@ -432,26 +432,26 @@ class OptimizedNetworkImage extends StatelessWidget {
     this.imageType = 'default', // thumbnail, avatar, etc.
   });
 
-  /// Calcula la resoluciÃ³n Ã³ptima para cachÃ© segÃºn el tipo de imagen
+  /// Calcula la resolución óptima para caché segÃºn el tipo de imagen
   int? _getOptimalCacheSize(double? displaySize, String imageType) {
     if (displaySize == null || !displaySize.isFinite) {
       return null;
     }
 
-    // Para avatares y logos, usamos una resoluciÃ³n mÃ­nima de 200px para mejor calidad
+    // Para avatares y logos, usamos una resolución mínima de 200px para mejor calidad
     if (imageType == 'avatar' || imageType == 'logo') {
       final minSize = 200.0;
       final result = (displaySize * 2).clamp(
         minSize,
         400.0,
-      ); // 2x para calidad HD, mÃ¡ximo 400px
+      ); // 2x para calidad HD, máximo 400px
       debugPrint(
         'OptimizedNetworkImage - Cache size para $imageType: display=${displaySize} -> cache=${result}',
       );
       return result.round();
     }
 
-    // Para thumbnails, usamos 1.5x el tamaÃ±o de display
+    // Para thumbnails, usamos 1.5x el tamaño de display
     if (imageType == 'thumbnail') {
       final result = (displaySize * 1.5).clamp(100.0, 300.0);
       debugPrint(
@@ -460,21 +460,21 @@ class OptimizedNetworkImage extends StatelessWidget {
       return result.round();
     }
 
-    // Para covers y otras imÃ¡genes grandes, usamos resoluciÃ³n HD
+    // Para covers y otras imágenes grandes, usamos resolución HD
     if (imageType == 'cover') {
-      // Para covers, usamos mÃ­nimo 600px y hasta 1200px para mÃ¡xima calidad
+      // Para covers, usamos mínimo 600px y hasta 1200px para máxima calidad
       final minSize = 600.0;
       final result = (displaySize * 3).clamp(
         minSize,
         1200.0,
-      ); // 3x para calidad ultra HD, mÃ¡ximo 1200px
+      ); // 3x para calidad ultra HD, máximo 1200px
       debugPrint(
         'OptimizedNetworkImage - Cache size para cover: display=${displaySize} -> cache=${result}',
       );
       return result.round();
     }
 
-    // Para otros tipos, usar el tamaÃ±o original si es finito
+    // Para otros tipos, usar el tamaño original si es finito
     final result = displaySize.round();
     debugPrint(
       'OptimizedNetworkImage - Cache size para $imageType: display=${displaySize} -> cache=${result}',
@@ -484,10 +484,10 @@ class OptimizedNetworkImage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Validar que la URL no estÃ© vacÃ­a
+    // Validar que la URL no esté vacía
     if (imageUrl.isEmpty) {
       debugPrint(
-        'OptimizedNetworkImage - URL vacÃ­a, mostrando widget de error',
+        'OptimizedNetworkImage - URL vacía, mostrando widget de error',
       );
       return errorWidget ??
           Container(
@@ -502,7 +502,7 @@ class OptimizedNetworkImage extends StatelessWidget {
           );
     }
 
-    // Debug: Imprimir informaciÃ³n de la imagen
+    // Debug: Imprimir información de la imagen
     debugPrint(
       'OptimizedNetworkImage: ${imageUrl.isNotEmpty ? "Loading" : "Empty URL"} - URL: $imageUrl',
     );
@@ -562,7 +562,7 @@ class OptimizedNetworkImage extends StatelessWidget {
                 ),
               );
         },
-        // ConfiguraciÃ³n optimizada para mÃ¡ximo rendimiento y mÃ­nimo costo
+        // Configuración optimizada para máximo rendimiento y mínimo costo
         maxWidthDiskCache: _getOptimalCacheSize(width, imageType),
         maxHeightDiskCache: _getOptimalCacheSize(height, imageType),
         memCacheWidth: _getOptimalCacheSize(width, imageType),
@@ -571,5 +571,6 @@ class OptimizedNetworkImage extends StatelessWidget {
     );
   }
 }
+
 
 

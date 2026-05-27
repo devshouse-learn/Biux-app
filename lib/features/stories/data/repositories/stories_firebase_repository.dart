@@ -25,7 +25,7 @@ class StoriesFirebaseRepository extends StoriesRepositoryAbstract {
       final listImages = await uploadStory(id: result.id, listFile: listFile);
 
       if (listImages.isEmpty) {
-        // Si no se subieron imÃ¡genes, eliminar el documento
+        // Si no se subieron imágenes, eliminar el documento
         await firestore.collection(collection).doc(result.id).delete();
         return false;
       }
@@ -161,4 +161,5 @@ class StoriesFirebaseRepository extends StoriesRepositoryAbstract {
     }
   }
 }
+
 
