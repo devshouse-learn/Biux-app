@@ -9,12 +9,18 @@ import 'package:http/http.dart' as http;
 import 'package:biux/core/design_system/color_tokens.dart';
 import 'package:biux/features/ride_tracker/presentation/providers/ride_tracker_provider.dart';
 import 'package:biux/features/ride_tracker/domain/entities/ride_track_entity.dart';
-import 'package:biux/shared/services/directions_service.dart';
+import 'package:biux/features/maps/data/datasources/directions_service.dart';
 
 class RideTrackerScreen extends StatefulWidget {
   final bool showHistory;
-  const RideTrackerScreen({Key? key, this.showHistory = false})
-    : super(key: key);
+  final LatLng? destination;
+  final String? destinationName;
+  const RideTrackerScreen({
+    Key? key,
+    this.showHistory = false,
+    this.destination,
+    this.destinationName,
+  }) : super(key: key);
 
   @override
   State<RideTrackerScreen> createState() => _RideTrackerScreenState();

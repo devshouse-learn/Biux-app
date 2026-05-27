@@ -50,7 +50,6 @@ class RideTrackerProvider with ChangeNotifier {
   String? get plannedDestinationName => _plannedDestinationName;
   bool get routeLoading => _routeLoading;
   bool get isRerouting => _isRerouting;
-  bool get isRerouting => _isRerouting;
   double get totalKm => _totalKm;
   double get currentSpeed => _currentSpeed;
   double get maxSpeed => _maxSpeed;
