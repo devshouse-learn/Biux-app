@@ -65,6 +65,7 @@ class StoryGroupsProvider with ChangeNotifier {
   /// Ãštil para agrupar experiencias que ya están en memoria
   Future<void> groupExistingStories(List<ExperienceEntity> experiences) async {
     _isLoading = true;
+    _error = null;
     notifyListeners();
 
     try {
@@ -114,7 +115,7 @@ class StoryGroupsProvider with ChangeNotifier {
   UserStoryGroupEntity? getGroupByUserId(String userId) {
     try {
       return _storyGroups.firstWhere((group) => group.userId == userId);
-    } on Exception catch (e) {
+    } on Exception catch (_) {
       return null;
     }
   }
