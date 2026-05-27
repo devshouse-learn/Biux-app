@@ -285,6 +285,105 @@ class AuthProvider extends ChangeNotifier {
     }
   }
 
+  Future<void> loginWithEmail(String email, String password) async {
+    try {
+      AppLogger.debug('🔓 [AuthProvider] Iniciando login con email: $email');
+      _state = AuthState.loading;
+      _errorMessage = null;
+      notifyListeners();
+
+      final userCredential = await _auth.signInWithEmailAndPassword(
+        email: email,
+        password: password,
+      );
+      final user = userCredential.user;
+
+      AppLogger.info('✅ [AuthProvider] Usuario autenticado con email: ${user?.uid}');
+
+      // Reinicializar servicio de notificaciones
+      await NotificationService().reinitializeAfterLogin();
+
+      // Verificar si el usuario necesita completar su perfil
+      if (user != null) {
+        await _checkProfileSetup(user.uid);
+      }
+
+      _state = AuthState.authenticated;
+      AppLogger.info('✅ [AuthProvider] ¡Autenticación con email completada exitosamente!');
+    } on FirebaseAuthException catch (e) {
+      _state = AuthState.error;
+      _errorMessage = _mapAuthError(e.code);
+      AppLogger.error('❌ [AuthProvider] Error en login con email: ${e.code}');
+      AppLogger.debug('   Mensaje: ${e.message}');
+    } on FirebaseException catch (e) {
+      _state = AuthState.error;
+      _errorMessage = e.toString();
+      AppLogger.error('❌ [AuthProvider] Error en login con email: $e');
+    }
+    notifyListeners();
+  }
+
+  Future<void> registerWithEmail(String email, String password) async {
+    try {
+      AppLogger.debug('📝 [AuthProvider] Iniciando registro con email: $email');
+      _state = AuthState.loading;
+      _errorMessage = null;
+      notifyListeners();
+
+      final userCredential = await _auth.createUserWithEmailAndPassword(
+        email: email,
+        password: password,
+      );
+      final user = userCredential.user;
+
+      AppLogger.info('✅ [AuthProvider] Usuario registrado con email: ${user?.uid}');
+
+      // Reinicializar servicio de notificaciones
+      await NotificationService().reinitializeAfterLogin();
+
+      // Verificar si el usuario necesita completar su perfil
+      if (user != null) {
+        await _checkProfileSetup(user.uid);
+      }
+
+      _state = AuthState.authenticated;
+      AppLogger.info('✅ [AuthProvider] ¡Registro con email completado exitosamente!');
+    } on FirebaseAuthException catch (e) {
+      _state = AuthState.error;
+      _errorMessage = _mapAuthError(e.code);
+      AppLogger.error('❌ [AuthProvider] Error en registro con email: ${e.code}');
+      AppLogger.debug('   Mensaje: ${e.message}');
+    } on FirebaseException catch (e) {
+      _state = AuthState.error;
+      _errorMessage = e.toString();
+      AppLogger.error('❌ [AuthProvider] Error en registro con email: $e');
+    }
+    notifyListeners();
+  }
+
+  String _mapAuthError(String code) {
+    switch (code) {
+      case 'user-not-found':
+        return 'err_user_not_found';
+      case 'wrong-password':
+        return 'err_wrong_password';
+      case 'user-disabled':
+        return 'err_user_disabled';
+      case 'too-many-requests':
+        return 'err_too_many_requests';
+      case 'operation-not-allowed':
+        return 'err_operation_not_allowed';
+      case 'email-already-in-use':
+        return 'err_email_already_in_use';
+      case 'invalid-email':
+        return 'err_invalid_email';
+      case 'weak-password':
+        return 'err_weak_password';
+      default:
+        return 'err_auth_failed';
+    }
+  }
+
   @override
   void dispose() {
     _resendTimer?.cancel();
