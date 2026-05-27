@@ -1,25 +1,24 @@
 ﻿import 'dart:io';
 import 'package:firebase_storage/firebase_storage.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:video_player/video_player.dart';
 
-/// Servicio para subir imágenes y videos a Firebase Storage
+/// Servicio para subir imÃ¡genes y videos a Firebase Storage
 /// Optimizado para funcionar en Web y Mobile
 class MediaUploadService {
   final FirebaseStorage _storage = FirebaseStorage.instance;
   final ImagePicker _picker = ImagePicker();
 
-  /// Seleccionar imagen de la cámara (solo mobile)
+  /// Seleccionar imagen de la cÃ¡mara (solo mobile)
   Future<XFile?> pickImageFromCamera() async {
     if (kIsWeb) {
-      debugPrint('âš ï¸ Cámara no disponible en Web');
+      debugPrint('âš ï¸ CÃ¡mara no disponible en Web');
       return null;
     }
 
     try {
-      debugPrint('“¸ Abriendo cámara...');
+      debugPrint('ðŸ“¸ Abriendo cÃ¡mara...');
       final image = await _picker.pickImage(
         source: ImageSource.camera,
         maxWidth: 1920,
@@ -28,7 +27,7 @@ class MediaUploadService {
       );
 
       if (image != null) {
-        debugPrint('✓ Foto tomada: ${image.name}');
+        debugPrint('âœ… Foto tomada: ${image.name}');
       }
       return image;
     } on FirebaseException catch (e) {
@@ -37,10 +36,10 @@ class MediaUploadService {
     }
   }
 
-  /// Seleccionar imagen de la galería (web y mobile)
+  /// Seleccionar imagen de la galerÃ­a (web y mobile)
   Future<XFile?> pickImageFromGallery() async {
     try {
-      debugPrint('ï¿½ï¸ Abriendo selector de imágenes...');
+      debugPrint('ï¿½ï¸ Abriendo selector de imÃ¡genes...');
 
       final image = await _picker.pickImage(
         source: ImageSource.gallery,
@@ -51,11 +50,11 @@ class MediaUploadService {
 
       if (image != null) {
         debugPrint(
-          '✓ Imagen seleccionada: ${image.name} (${await image.length()} bytes)',
+          'âœ… Imagen seleccionada: ${image.name} (${await image.length()} bytes)',
         );
         return image;
       } else {
-        debugPrint('âš ï¸ No se seleccionó ninguna imagen');
+        debugPrint('âš ï¸ No se seleccionÃ³ ninguna imagen');
         return null;
       }
     } catch (e, stackTrace) {
@@ -65,7 +64,7 @@ class MediaUploadService {
     }
   }
 
-  /// Seleccionar mÃºltiples imágenes de la galería (web y mobile)
+  /// Seleccionar mÃºltiples imÃ¡genes de la galerÃ­a (web y mobile)
   Future<List<XFile>> pickMultipleImages() async {
     try {
       debugPrint('ï¿½ï¸ Abriendo selector mÃºltiple...');
@@ -76,7 +75,7 @@ class MediaUploadService {
         imageQuality: 85,
       );
 
-      debugPrint('✓ ${images.length} imágenes seleccionadas');
+      debugPrint('âœ… ${images.length} imÃ¡genes seleccionadas');
       for (var img in images) {
         final size = await img.length();
         debugPrint('  - ${img.name}: $size bytes');
@@ -84,13 +83,13 @@ class MediaUploadService {
 
       return images;
     } catch (e, stackTrace) {
-      debugPrint('âŒ Error al seleccionar mÃºltiples imágenes: $e');
+      debugPrint('âŒ Error al seleccionar mÃºltiples imÃ¡genes: $e');
       debugPrint('Stack trace: $stackTrace');
       return [];
     }
   }
 
-  /// Seleccionar video de la cámara (solo mobile)
+  /// Seleccionar video de la cÃ¡mara (solo mobile)
   Future<XFile?> pickVideoFromCamera() async {
     if (kIsWeb) {
       debugPrint('âš ï¸ Grabar video no disponible en Web');
@@ -98,14 +97,14 @@ class MediaUploadService {
     }
 
     try {
-      debugPrint('Ž¥ Abriendo cámara de video...');
+      debugPrint('ðŸŽ¥ Abriendo cÃ¡mara de video...');
       final video = await _picker.pickVideo(
         source: ImageSource.camera,
         maxDuration: const Duration(seconds: 30),
       );
 
       if (video != null) {
-        debugPrint('✓ Video grabado: ${video.name}');
+        debugPrint('âœ… Video grabado: ${video.name}');
       }
       return video;
     } on FirebaseException catch (e) {
@@ -114,10 +113,10 @@ class MediaUploadService {
     }
   }
 
-  /// Seleccionar video de la galería (web y mobile)
+  /// Seleccionar video de la galerÃ­a (web y mobile)
   Future<XFile?> pickVideoFromGallery() async {
     try {
-      debugPrint('Ž¥ Abriendo selector de videos...');
+      debugPrint('ðŸŽ¥ Abriendo selector de videos...');
 
       final video = await _picker.pickVideo(
         source: ImageSource.gallery,
@@ -125,9 +124,9 @@ class MediaUploadService {
       );
 
       if (video != null) {
-        debugPrint('✓ Video seleccionado: ${video.name}');
+        debugPrint('âœ… Video seleccionado: ${video.name}');
       } else {
-        debugPrint('âš ï¸ No se seleccionó ningÃºn video');
+        debugPrint('âš ï¸ No se seleccionÃ³ ningÃºn video');
       }
       return video;
     } catch (e, stackTrace) {
@@ -137,12 +136,12 @@ class MediaUploadService {
     }
   }
 
-  /// Validar duración del video (máximo 30 segundos)
+  /// Validar duraciÃ³n del video (mÃ¡ximo 30 segundos)
   Future<bool> validateVideoDuration(String videoPath) async {
     if (kIsWeb) {
-      // En web no podemos validar fácilmente, asumimos válido
+      // En web no podemos validar fÃ¡cilmente, asumimos vÃ¡lido
       debugPrint(
-        'âš ï¸ Validación de duración no disponible en Web (asumiendo válido)',
+        'âš ï¸ ValidaciÃ³n de duraciÃ³n no disponible en Web (asumiendo vÃ¡lido)',
       );
       return true;
     }
@@ -155,11 +154,11 @@ class MediaUploadService {
 
       final isValid = duration.inSeconds <= 30;
       debugPrint(
-        'â±ï¸ Duración del video: ${duration.inSeconds}s - Válido: $isValid',
+        'â±ï¸ DuraciÃ³n del video: ${duration.inSeconds}s - VÃ¡lido: $isValid',
       );
       return isValid;
     } on FirebaseException catch (e) {
-      debugPrint('âŒ Error al validar duración del video: $e');
+      debugPrint('âŒ Error al validar duraciÃ³n del video: $e');
       return false;
     }
   }
@@ -200,7 +199,7 @@ class MediaUploadService {
     Function(double)? onProgress,
   }) async {
     try {
-      // Validar duración antes de subir
+      // Validar duraciÃ³n antes de subir
       final isValid = await validateVideoDuration(videoFile.path);
       if (!isValid) {
         debugPrint('Video excede los 30 segundos');
@@ -256,7 +255,7 @@ class MediaUploadService {
   /// Limpiar todos los medios de un producto
   Future<void> cleanupProductMedia(String productId) async {
     try {
-      // Eliminar imágenes
+      // Eliminar imÃ¡genes
       final imagesRef = _storage.ref().child('products/$productId/images');
       final imagesList = await imagesRef.listAll();
       for (var item in imagesList.items) {

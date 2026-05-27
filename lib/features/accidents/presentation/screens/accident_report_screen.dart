@@ -1,6 +1,5 @@
 ﻿import 'dart:io';
 import 'package:permission_handler/permission_handler.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
@@ -939,7 +938,7 @@ class _AccidentReportScreenState extends State<AccidentReportScreen>
 
           SizedBox(height: 20),
 
-          // â”€â”€ Ubicación â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+          // â”€â”€ UbicaciÃ³n â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
           Text(
             l.t('accident_location_section'),
             style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
@@ -1079,7 +1078,7 @@ class _AccidentReportScreenState extends State<AccidentReportScreen>
 
           SizedBox(height: 20),
 
-          // â”€â”€ Descripción â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+          // â”€â”€ DescripciÃ³n â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
           Text(
             l.t('description_section'),
             style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
@@ -1191,7 +1190,7 @@ class _AccidentReportScreenState extends State<AccidentReportScreen>
 
           const SizedBox(height: 24),
 
-          // â”€â”€ Botón enviar â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+          // â”€â”€ BotÃ³n enviar â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
           SizedBox(
             width: double.infinity,
             height: 52,

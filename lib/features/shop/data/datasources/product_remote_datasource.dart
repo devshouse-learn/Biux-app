@@ -1,6 +1,5 @@
 ﻿import 'dart:async';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:biux/features/shop/data/models/product_model.dart';
 import 'package:biux/features/shop/data/datasources/mock_products.dart';
 
@@ -22,7 +21,7 @@ class ProductRemoteDataSource {
         .toList();
   }
 
-  /// Obtener productos por categoría
+  /// Obtener productos por categorÃ­a
   Future<List<ProductModel>> getProductsByCategory(String category) async {
     try {
       final snapshot = await _firestore
@@ -36,7 +35,7 @@ class ProductRemoteDataSource {
           .map((doc) => ProductModel.fromFirestore(doc))
           .toList();
     } on FirebaseException catch (e) {
-      throw Exception('Error al obtener productos por categoría: $e');
+      throw Exception('Error al obtener productos por categorÃ­a: $e');
     }
   }
 
@@ -55,7 +54,7 @@ class ProductRemoteDataSource {
     }
   }
 
-  /// Buscar productos por nombre o descripción
+  /// Buscar productos por nombre o descripciÃ³n
   Future<List<ProductModel>> searchProducts(String query) async {
     try {
       final snapshot = await _firestore

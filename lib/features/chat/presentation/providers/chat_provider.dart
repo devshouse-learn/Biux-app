@@ -2,7 +2,6 @@
 import 'dart:io';
 import 'dart:typed_data';
 import 'package:firebase_storage/firebase_storage.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -25,7 +24,7 @@ class ChatProvider extends ChangeNotifier {
   Timer? _typingTimer;
   StreamSubscription<Map<String, bool>>? _typingSub;
 
-  // IDs de mensajes optimistas pendientes de confirmación
+  // IDs de mensajes optimistas pendientes de confirmaciÃ³n
   final Set<String> _pendingOptimisticIds = {};
 
   StreamSubscription<List<ChatEntity>>? _chatsSub;
@@ -61,7 +60,7 @@ class ChatProvider extends ChangeNotifier {
         .getMessages(chatId)
         .listen(
           (list) {
-            // Detectar qué optimistic ya fueron confirmados por Firestore
+            // Detectar quÃ© optimistic ya fueron confirmados por Firestore
             // comparando contenido (ya que los IDs no coinciden)
             final confirmedTempIds = <String>{};
             for (final tempId in _pendingOptimisticIds) {
@@ -88,7 +87,7 @@ class ChatProvider extends ChangeNotifier {
           onError: (error) {
             debugPrint('âŒ Error al escuchar mensajes del chat $chatId: $error');
             _error =
-                'No se pudieron cargar los mensajes. Verifica tu conexión.';
+                'No se pudieron cargar los mensajes. Verifica tu conexiÃ³n.';
             notifyListeners();
           },
         );
@@ -330,7 +329,7 @@ class ChatProvider extends ChangeNotifier {
     }
   }
 
-  /// Envía mÃºltiples archivos de media (imágenes, videos y/o audios) en paralelo.
+  /// EnvÃ­a mÃºltiples archivos de media (imÃ¡genes, videos y/o audios) en paralelo.
   Future<void> sendMediaFiles({
     required String chatId,
     required List<File> files,
@@ -372,7 +371,7 @@ class ChatProvider extends ChangeNotifier {
     await Future.wait(futures);
   }
 
-  /// Envía un archivo de audio almacenado (no grabación de voz).
+  /// EnvÃ­a un archivo de audio almacenado (no grabaciÃ³n de voz).
   Future<void> sendAudioFileMessage({
     required String chatId,
     required File audioFile,
@@ -653,7 +652,7 @@ class ChatProvider extends ChangeNotifier {
     );
   }
 
-  /// Envío legacy con parámetros posicionales (compatibilidad)
+  /// EnvÃ­o legacy con parÃ¡metros posicionales (compatibilidad)
 
   Future<void> sendPollMessage({
     required String chatId,
@@ -674,7 +673,7 @@ class ChatProvider extends ChangeNotifier {
       senderId: currentUid,
       senderName: senderName,
       senderAvatar: senderAvatar,
-      content: '“Š $question',
+      content: 'ðŸ“Š $question',
       type: MessageType.poll,
       sentAt: DateTime.now(),
       pollQuestion: question,

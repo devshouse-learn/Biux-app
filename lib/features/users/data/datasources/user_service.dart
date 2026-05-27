@@ -1,7 +1,6 @@
 ﻿import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:image_picker/image_picker.dart';
@@ -58,7 +57,7 @@ class UserService {
     }
   }
 
-  /// Actualizar el nÃºmero de teléfono del usuario en Firestore
+  /// Actualizar el nÃºmero de telÃ©fono del usuario en Firestore
   Future<void> updatePhoneNumber(String uid, String phoneNumber) async {
     try {
       await _firestore.collection('users').doc(uid).update({
@@ -138,7 +137,7 @@ class UserService {
 
     try {
       if (uid.isEmpty) {
-        AppLogger.warning('UID vacío en updateUserProfile', tag: 'UserService');
+        AppLogger.warning('UID vacÃ­o en updateUserProfile', tag: 'UserService');
         return false;
       }
 
@@ -225,7 +224,7 @@ class UserService {
       return true;
     } on FirebaseException catch (e) {
       AppLogger.error(
-        'Error solicitando eliminación',
+        'Error solicitando eliminaciÃ³n',
         tag: 'UserService',
         error: e,
       );
@@ -401,7 +400,7 @@ class UserService {
       followers.remove(currentUserId);
       int newFollowerSCount = followers.length;
 
-      // Validación: asegurar que el contador no sea negativo
+      // ValidaciÃ³n: asegurar que el contador no sea negativo
       if (newFollowerSCount < 0) newFollowerSCount = 0;
       if (newFollowingCount < 0) newFollowingCount = 0;
 

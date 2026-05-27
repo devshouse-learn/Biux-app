@@ -257,7 +257,7 @@ class _ManageProductsSheetState extends State<_ManageProductsSheet> {
 
                       const SizedBox(height: 16),
 
-                      // Actualización rápida de precios
+                      // ActualizaciÃ³n rÃ¡pida de precios
                       _buildPriceUpdateCard(products),
                     ],
                   ),
@@ -294,7 +294,7 @@ class _ManageProductsSheetState extends State<_ManageProductsSheet> {
           style: TextStyle(fontWeight: FontWeight.w600),
         ),
         subtitle: Text(
-          '\$${product.price.toStringAsFixed(2)} · Stock: ${product.stock}',
+          '\$${product.price.toStringAsFixed(2)} Â· Stock: ${product.stock}',
         ),
         trailing: Row(
           mainAxisSize: MainAxisSize.min,
@@ -745,7 +745,7 @@ class _ManageSellersSheetState extends State<_ManageSellersSheet> {
                             s['name'],
                             style: const TextStyle(fontWeight: FontWeight.w600),
                           ),
-                          subtitle: Text('${s['role']} · ${s['email']}'),
+                          subtitle: Text('${s['role']} Â· ${s['email']}'),
                           trailing: IconButton(
                             icon: const Icon(Icons.delete, color: Colors.red),
                             onPressed: () => _removeSeller(s),
@@ -1221,8 +1221,8 @@ class _ReportsSheetState extends State<_ReportsSheet> {
         case 'inventario':
           final total = products.fold<int>(0, (s, p) => s + p.stock);
           report =
-              '“¦ ${l.t('admin_total_inventory')}: $total ${l.t('admin_units_in')} ${products.length} ${l.t('admin_products_label')}.\n'
-              '✓ ${l.t('admin_active')}: ${products.where((p) => p.isActive).length}\n'
+              'ðŸ“¦ ${l.t('admin_total_inventory')}: $total ${l.t('admin_units_in')} ${products.length} ${l.t('admin_products_label')}.\n'
+              'âœ… ${l.t('admin_active')}: ${products.where((p) => p.isActive).length}\n'
               'âŒ ${l.t('admin_inactive')}: ${products.where((p) => !p.isActive).length}\n'
               'âš ï¸ ${l.t('admin_out_of_stock')}: ${products.where((p) => p.stock <= 0).length}';
           break;
@@ -1234,7 +1234,7 @@ class _ReportsSheetState extends State<_ReportsSheet> {
               ? 0.0
               : products.map((p) => p.price).reduce((a, b) => a > b ? a : b);
           report =
-              '’° ${l.t('admin_price_list')}:\n'
+              'ðŸ’° ${l.t('admin_price_list')}:\n'
               '${l.t('admin_min_price')}: \$${min.toStringAsFixed(2)}\n'
               '${l.t('admin_max_price')}: \$${max.toStringAsFixed(2)}\n'
               '${l.t('admin_products_label')}: ${products.length}';
@@ -1247,14 +1247,14 @@ class _ReportsSheetState extends State<_ReportsSheet> {
             report += '  â€¢ ${p.name}\n';
           }
           if (outOfStock.isEmpty)
-            report += '  ${l.t('admin_no_out_of_stock')} Ž‰';
+            report += '  ${l.t('admin_no_out_of_stock')} ðŸŽ‰';
           break;
         case 'categorias':
           final categories = <String, int>{};
           for (var p in products) {
             categories[p.category] = (categories[p.category] ?? 0) + 1;
           }
-          report = '“Š ${l.t('admin_products_by_category')}:\n';
+          report = 'ðŸ“Š ${l.t('admin_products_by_category')}:\n';
           categories.forEach(
             (k, v) => report += '  â€¢ $k: $v ${l.t('admin_products_label')}\n',
           );
@@ -1267,7 +1267,7 @@ class _ReportsSheetState extends State<_ReportsSheet> {
         _isGenerating = false;
       });
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('${l.t('admin_report_generated_success')} ✓')),
+        SnackBar(content: Text('${l.t('admin_report_generated_success')} âœ…')),
       );
     });
   }
@@ -1615,7 +1615,7 @@ class _RequestsSheetState extends State<_RequestsSheet> {
       _requestDescController.clear();
     });
     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('${l.t('admin_request_created')} ✓')),
+      SnackBar(content: Text('${l.t('admin_request_created')} âœ…')),
     );
   }
 
@@ -1846,7 +1846,7 @@ class _StatsSheetState extends State<_StatsSheet> {
                                   child: Padding(
                                     padding: const EdgeInsets.all(12),
                                     child: Text(
-                                      '“Š ${l.t('admin_in_this_period')}:\n'
+                                      'ðŸ“Š ${l.t('admin_in_this_period')}:\n'
                                       'â€¢ ${inRange.length} ${l.t('admin_products_created')}\n'
                                       'â€¢ ${l.t('admin_total_value')}: \$${inRange.fold<double>(0, (s, p) => s + p.price).toStringAsFixed(2)}',
                                       style: const TextStyle(fontSize: 14),
@@ -1862,7 +1862,7 @@ class _StatsSheetState extends State<_StatsSheet> {
                   ),
                   SizedBox(height: 16),
 
-                  // Distribución por categoría
+                  // DistribuciÃ³n por categorÃ­a
                   Text(
                     l.t('admin_distribution_by_category'),
                     style: const TextStyle(
@@ -2053,7 +2053,7 @@ class _SecuritySheetState extends State<_SecuritySheet> {
                             ScaffoldMessenger.of(context).showSnackBar(
                               SnackBar(
                                 content: Text(
-                                  '2FA ${v ? '${l.t('admin_enabled')} ✓' : '${l.t('admin_disabled')} âŒ'}',
+                                  '2FA ${v ? '${l.t('admin_enabled')} âœ…' : '${l.t('admin_disabled')} âŒ'}',
                                 ),
                               ),
                             );
@@ -2070,7 +2070,7 @@ class _SecuritySheetState extends State<_SecuritySheet> {
                             ScaffoldMessenger.of(context).showSnackBar(
                               SnackBar(
                                 content: Text(
-                                  '${l.t('admin_notifications')} ${v ? '${l.t('admin_enabled')} ✓' : '${l.t('admin_disabled')} âŒ'}',
+                                  '${l.t('admin_notifications')} ${v ? '${l.t('admin_enabled')} âœ…' : '${l.t('admin_disabled')} âŒ'}',
                                 ),
                               ),
                             );
@@ -2087,7 +2087,7 @@ class _SecuritySheetState extends State<_SecuritySheet> {
                             ScaffoldMessenger.of(context).showSnackBar(
                               SnackBar(
                                 content: Text(
-                                  'Log ${v ? '${l.t('admin_enabled')} ✓' : '${l.t('admin_disabled')} âŒ'}',
+                                  'Log ${v ? '${l.t('admin_enabled')} âœ…' : '${l.t('admin_disabled')} âŒ'}',
                                 ),
                               ),
                             );
@@ -2104,7 +2104,7 @@ class _SecuritySheetState extends State<_SecuritySheet> {
                             ScaffoldMessenger.of(context).showSnackBar(
                               SnackBar(
                                 content: Text(
-                                  '${l.t('admin_lock')} ${v ? '${l.t('admin_enabled')} ✓' : '${l.t('admin_disabled')} âŒ'}',
+                                  '${l.t('admin_lock')} ${v ? '${l.t('admin_enabled')} âœ…' : '${l.t('admin_disabled')} âŒ'}',
                                 ),
                               ),
                             );
@@ -2116,7 +2116,7 @@ class _SecuritySheetState extends State<_SecuritySheet> {
                   ),
                   SizedBox(height: 16),
 
-                  // Cambiar contraseña funcional
+                  // Cambiar contraseÃ±a funcional
                   Card(
                     elevation: 2,
                     shape: RoundedRectangleBorder(
@@ -2239,7 +2239,7 @@ class _SecuritySheetState extends State<_SecuritySheet> {
                   ),
                   SizedBox(height: 16),
 
-                  // Sesión activa
+                  // SesiÃ³n activa
                   Text(
                     l.t('admin_active_sessions'),
                     style: TextStyle(
@@ -2287,7 +2287,7 @@ class _SecuritySheetState extends State<_SecuritySheet> {
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(
                             content: Text(
-                              '${l.t('admin_all_remote_sessions_closed')} ✓',
+                              '${l.t('admin_all_remote_sessions_closed')} âœ…',
                             ),
                           ),
                         );
@@ -2348,7 +2348,7 @@ class _SecuritySheetState extends State<_SecuritySheet> {
       _newPasswordController.clear();
       _confirmPasswordController.clear();
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('${l.t('admin_password_updated_success')} ✓')),
+        SnackBar(content: Text('${l.t('admin_password_updated_success')} âœ…')),
       );
     });
   }

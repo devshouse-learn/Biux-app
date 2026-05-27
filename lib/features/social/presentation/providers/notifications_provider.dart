@@ -26,7 +26,7 @@ class NotificationsProvider extends ChangeNotifier {
   bool get hasUnread => _unreadCount > 0;
 
   void _init() {
-    debugPrint('”” NotificationsProvider._init() para userId: $userId');
+    debugPrint('ðŸ”” NotificationsProvider._init() para userId: $userId');
 
     // Escuchar notificaciones
     _repository
@@ -34,7 +34,7 @@ class NotificationsProvider extends ChangeNotifier {
         .listen(
           (notifications) {
             debugPrint(
-              '”” Notificaciones recibidas: ${notifications.length} para userId: $userId',
+              'ðŸ”” Notificaciones recibidas: ${notifications.length} para userId: $userId',
             );
             for (final n in notifications) {
               debugPrint(
@@ -51,7 +51,7 @@ class NotificationsProvider extends ChangeNotifier {
           },
         );
 
-    // Escuchar contador de no leídas
+    // Escuchar contador de no leÃ­das
     _repository
         .watchUnreadCount(userId)
         .listen(
@@ -66,7 +66,7 @@ class NotificationsProvider extends ChangeNotifier {
         );
   }
 
-  /// Marca una notificación como leída
+  /// Marca una notificaciÃ³n como leÃ­da
   Future<void> markAsRead(String notificationId) async {
     try {
       await _repository.markAsRead(userId, notificationId);
@@ -76,7 +76,7 @@ class NotificationsProvider extends ChangeNotifier {
     }
   }
 
-  /// Marca todas las notificaciones como leídas
+  /// Marca todas las notificaciones como leÃ­das
   Future<void> markAllAsRead() async {
     try {
       _isLoading = true;
@@ -93,7 +93,7 @@ class NotificationsProvider extends ChangeNotifier {
     }
   }
 
-  /// Elimina una notificación
+  /// Elimina una notificaciÃ³n
   Future<void> deleteNotification(String notificationId) async {
     try {
       await _repository.deleteNotification(userId, notificationId);

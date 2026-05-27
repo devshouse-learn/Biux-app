@@ -1,5 +1,4 @@
 ﻿import 'package:biux/features/eps/data/models/eps.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:biux/features/eps/domain/repositories/eps_repository_abstract.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 

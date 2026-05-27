@@ -1,5 +1,4 @@
 ﻿import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import "package:flutter/foundation.dart";
 
@@ -29,16 +28,16 @@ class ProfileCompletionService {
 
       final userData = userDoc.data() ?? {};
 
-      // Verificar que todos los campos requeridos estén presentes y no estén vacíos
+      // Verificar que todos los campos requeridos estÃ©n presentes y no estÃ©n vacÃ­os
       for (String field in _requiredFields) {
         final value = userData[field];
         if (value == null || (value is String && value.trim().isEmpty)) {
-          debugPrint('âŒ Campo faltante o vacío: $field');
+          debugPrint('âŒ Campo faltante o vacÃ­o: $field');
           return false;
         }
       }
 
-      debugPrint('✓ Perfil completo para usuario: $uid');
+      debugPrint('âœ… Perfil completo para usuario: $uid');
       return true;
     } on FirebaseException catch (e) {
       debugPrint('âš ï¸ Error verificando perfil: $e');
@@ -46,7 +45,7 @@ class ProfileCompletionService {
     }
   }
 
-  /// Obtiene un resumen de qué campos le faltan completar al usuario
+  /// Obtiene un resumen de quÃ© campos le faltan completar al usuario
   static Future<List<String>> getMissingFields({String? userId}) async {
     try {
       final uid = userId ?? FirebaseAuth.instance.currentUser?.uid;

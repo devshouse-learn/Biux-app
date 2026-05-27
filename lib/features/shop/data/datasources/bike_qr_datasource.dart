@@ -1,18 +1,17 @@
 ﻿import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 import 'dart:typed_data';
 import 'dart:ui' as ui;
 import 'package:flutter/material.dart';
 
-/// Servicio para generar códigos QR para bicicletas verificadas
+/// Servicio para generar cÃ³digos QR para bicicletas verificadas
 class BikeQRService {
-  /// Genera un código QR con la información de una bicicleta verificada
+  /// Genera un cÃ³digo QR con la informaciÃ³n de una bicicleta verificada
   ///
   /// El QR contiene:
   /// - ID del producto
   /// - NÃºmero de serie
-  /// - Fecha de verificación
+  /// - Fecha de verificaciÃ³n
   /// - UID del verificador (admin)
   static String generateQRData({
     required String productId,
@@ -105,14 +104,14 @@ class BikeQRService {
     }
   }
 
-  /// Verifica la autenticidad de un código QR escaneado
+  /// Verifica la autenticidad de un cÃ³digo QR escaneado
   static Future<QRVerificationResult> verifyQRCode(String qrData) async {
     try {
       final decodedData = decodeQRData(qrData);
       if (decodedData == null) {
         return QRVerificationResult(
           isValid: false,
-          message: 'Código QR inválido',
+          message: 'CÃ³digo QR invÃ¡lido',
         );
       }
 
@@ -142,23 +141,23 @@ class BikeQRService {
           isValid: false,
           message: 'El nÃºmero de serie no coincide',
           details:
-              'El QR podría haber sido alterado. No compres esta bicicleta.',
+              'El QR podrÃ­a haber sido alterado. No compres esta bicicleta.',
         );
       }
 
-      // Verificar que esté marcada como verificada
+      // Verificar que estÃ© marcada como verificada
       if (productData['isVerifiedNotStolen'] != true) {
         return QRVerificationResult(
           isValid: false,
-          message: 'Esta bicicleta no está verificada como segura',
-          details: 'La verificación puede haber expirado o sido revocada.',
+          message: 'Esta bicicleta no estÃ¡ verificada como segura',
+          details: 'La verificaciÃ³n puede haber expirado o sido revocada.',
         );
       }
 
       // Todo correcto
       return QRVerificationResult(
         isValid: true,
-        message: '✓ Bicicleta verificada como NO robada',
+        message: 'âœ… Bicicleta verificada como NO robada',
         details:
             'Marca: ${productData['bikeBrand'] ?? 'N/A'}\n'
             'Modelo: ${productData['bikeModel'] ?? 'N/A'}\n'
@@ -171,7 +170,7 @@ class BikeQRService {
       debugPrint('âŒ Error verificando QR: $e');
       return QRVerificationResult(
         isValid: false,
-        message: 'Error al verificar el código QR',
+        message: 'Error al verificar el cÃ³digo QR',
         details: e.toString(),
       );
     }
@@ -190,7 +189,7 @@ class BikeQRService {
             'qrCode': qrData,
             'qrGeneratedAt': FieldValue.serverTimestamp(),
           });
-      debugPrint('✓ QR guardado en producto $productId');
+      debugPrint('âœ… QR guardado en producto $productId');
     } on FirebaseException catch (e) {
       debugPrint('âŒ Error guardando QR: $e');
     }
@@ -228,7 +227,7 @@ class BikeQRService {
   }
 }
 
-/// Resultado de la verificación de un código QR
+/// Resultado de la verificaciÃ³n de un cÃ³digo QR
 class QRVerificationResult {
   final bool isValid;
   final String message;

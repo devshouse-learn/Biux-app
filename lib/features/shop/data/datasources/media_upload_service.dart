@@ -1,47 +1,46 @@
 ﻿import 'dart:io';
 import 'package:flutter/foundation.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:video_player/video_player.dart';
 import 'package:biux/core/services/image_compression_service.dart';
 
-/// Servicio para selección y subida de media (imágenes/videos) para la tienda.
+/// Servicio para selecciÃ³n y subida de media (imÃ¡genes/videos) para la tienda.
 class MediaUploadService {
   MediaUploadService();
 
   final ImagePicker _picker = ImagePicker();
   static final FirebaseStorage _storage = FirebaseStorage.instance;
 
-  /// Duración máxima permitida para videos de productos (en segundos).
+  /// DuraciÃ³n mÃ¡xima permitida para videos de productos (en segundos).
   static const int maxVideoDurationSeconds = 60;
 
-  /// Selecciona imagen desde la cámara.
+  /// Selecciona imagen desde la cÃ¡mara.
   Future<XFile?> pickImageFromCamera() async {
     try {
       return await _picker.pickImage(source: ImageSource.camera);
     } on FirebaseException catch (e) {
-      debugPrint('Error al abrir cámara: $e');
+      debugPrint('Error al abrir cÃ¡mara: $e');
       return null;
     }
   }
 
-  /// Selecciona imagen desde la galería.
+  /// Selecciona imagen desde la galerÃ­a.
   Future<XFile?> pickImageFromGallery() async {
     try {
       return await _picker.pickImage(source: ImageSource.gallery);
     } on FirebaseException catch (e) {
-      debugPrint('Error al abrir galería: $e');
+      debugPrint('Error al abrir galerÃ­a: $e');
       return null;
     }
   }
 
-  /// Selecciona mÃºltiples imágenes desde la galería.
+  /// Selecciona mÃºltiples imÃ¡genes desde la galerÃ­a.
   Future<List<XFile>> pickMultipleImages() async {
     try {
       return await _picker.pickMultiImage();
     } on FirebaseException catch (e) {
-      debugPrint('Error al seleccionar mÃºltiples imágenes: $e');
+      debugPrint('Error al seleccionar mÃºltiples imÃ¡genes: $e');
       return [];
     }
   }
@@ -104,7 +103,7 @@ class MediaUploadService {
     }
   }
 
-  /// Selecciona video desde la cámara.
+  /// Selecciona video desde la cÃ¡mara.
   Future<XFile?> pickVideoFromCamera() async {
     try {
       return await _picker.pickVideo(source: ImageSource.camera);
@@ -114,7 +113,7 @@ class MediaUploadService {
     }
   }
 
-  /// Selecciona video desde la galería.
+  /// Selecciona video desde la galerÃ­a.
   Future<XFile?> pickVideoFromGallery() async {
     try {
       return await _picker.pickVideo(source: ImageSource.gallery);
@@ -124,7 +123,7 @@ class MediaUploadService {
     }
   }
 
-  /// Valida que la duración del video esté dentro del límite.
+  /// Valida que la duraciÃ³n del video estÃ© dentro del lÃ­mite.
   /// Retorna `true` si el video dura [maxVideoDurationSeconds] segundos o menos.
   Future<bool> validateVideoDuration(String videoPath) async {
     VideoPlayerController? controller;
@@ -134,7 +133,7 @@ class MediaUploadService {
       final duration = controller.value.duration;
       return duration.inSeconds <= maxVideoDurationSeconds;
     } on FirebaseException catch (e) {
-      debugPrint('Error al validar duración del video: $e');
+      debugPrint('Error al validar duraciÃ³n del video: $e');
       // En caso de error, permitimos el video para no bloquear al usuario
       return true;
     } finally {

@@ -1,5 +1,4 @@
 ﻿import 'package:biux/features/members/data/models/member.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:biux/features/members/domain/repositories/members_repository_abstract.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 

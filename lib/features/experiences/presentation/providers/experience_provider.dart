@@ -217,7 +217,7 @@ class ExperienceNotifier extends StateNotifier<ExperienceState> {
     }
   }
 
-  /// Agregar reacción
+  /// Agregar reacciÃ³n
   Future<void> addReaction(String experienceId, ReactionType reaction) async {
     try {
       await _repository.addReaction(experienceId, reaction);
@@ -227,7 +227,7 @@ class ExperienceNotifier extends StateNotifier<ExperienceState> {
     }
   }
 
-  /// Remover reacción
+  /// Remover reacciÃ³n
   Future<void> removeReaction(String experienceId) async {
     try {
       await _repository.removeReaction(experienceId);

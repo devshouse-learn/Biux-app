@@ -4,13 +4,13 @@ import 'package:video_player/video_player.dart';
 import 'package:biux/core/design_system/locale_notifier.dart';
 
 /// Widget para reproducir videos en las experiencias
-/// Soporta videos de hasta 30 segundos con controles automáticos
+/// Soporta videos de hasta 30 segundos con controles automÃ¡ticos
 class VideoPlayerWidget extends StatefulWidget {
   final String videoUrl;
   final VoidCallback? onFinished;
   final VoidCallback? onTap;
   final VoidCallback?
-  onVideoReady; // Nuevo callback para cuando el video esté listo
+  onVideoReady; // Nuevo callback para cuando el video estÃ© listo
   final bool autoPlay;
   final bool showControls;
   final bool isPlaying;
@@ -20,7 +20,7 @@ class VideoPlayerWidget extends StatefulWidget {
     required this.videoUrl,
     this.onFinished,
     this.onTap,
-    this.onVideoReady, // Agregar nuevo parámetro
+    this.onVideoReady, // Agregar nuevo parÃ¡metro
     this.autoPlay = true,
     this.showControls = false,
     this.isPlaying = true,
@@ -47,13 +47,13 @@ class _VideoPlayerWidgetState extends State<VideoPlayerWidget> {
   void didUpdateWidget(VideoPlayerWidget oldWidget) {
     super.didUpdateWidget(oldWidget);
 
-    // Si cambió la URL del video, reinicializar
+    // Si cambiÃ³ la URL del video, reinicializar
     if (oldWidget.videoUrl != widget.videoUrl) {
       _disposeController();
       _initializeVideo();
     }
 
-    // Controlar reproducción basado en isPlaying
+    // Controlar reproducciÃ³n basado en isPlaying
     if (oldWidget.isPlaying != widget.isPlaying && _isInitialized) {
       if (widget.isPlaying) {
         _controller.play();
@@ -73,7 +73,7 @@ class _VideoPlayerWidgetState extends State<VideoPlayerWidget> {
 
       // Validar URL
       if (widget.videoUrl.isEmpty) {
-        throw Exception('URL del video está vacía');
+        throw Exception('URL del video estÃ¡ vacÃ­a');
       }
 
       // Crear controlador
@@ -96,10 +96,10 @@ class _VideoPlayerWidgetState extends State<VideoPlayerWidget> {
         _isLoading = false;
       });
 
-      // Notificar que el video está listo
+      // Notificar que el video estÃ¡ listo
       widget.onVideoReady?.call();
 
-      // Auto-reproducir si está habilitado
+      // Auto-reproducir si estÃ¡ habilitado
       if (widget.autoPlay && widget.isPlaying) {
         await _controller.play();
       }
@@ -114,7 +114,7 @@ class _VideoPlayerWidgetState extends State<VideoPlayerWidget> {
   }
 
   void _videoListener() {
-    // Verificar si el video terminó
+    // Verificar si el video terminÃ³
     if (_controller.value.position >= _controller.value.duration) {
       widget.onFinished?.call();
     }
@@ -224,7 +224,7 @@ class _VideoPlayerWidgetState extends State<VideoPlayerWidget> {
         // Controles opcionales
         if (widget.showControls) _buildControls(),
 
-        // Indicador de pausa (solo visible cuando está pausado)
+        // Indicador de pausa (solo visible cuando estÃ¡ pausado)
         if (!_controller.value.isPlaying && !_isLoading)
           Center(
             child: Container(
@@ -270,11 +270,11 @@ class _VideoPlayerWidgetState extends State<VideoPlayerWidget> {
             ),
             const SizedBox(height: 8),
 
-            // Controles de reproducción
+            // Controles de reproducciÃ³n
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                // Tiempo actual / duración
+                // Tiempo actual / duraciÃ³n
                 ValueListenableBuilder(
                   valueListenable: _controller,
                   builder: (context, value, child) {
@@ -287,7 +287,7 @@ class _VideoPlayerWidgetState extends State<VideoPlayerWidget> {
                   },
                 ),
 
-                // Botón play/pause
+                // BotÃ³n play/pause
                 IconButton(
                   onPressed: () {
                     if (_controller.value.isPlaying) {

@@ -1,6 +1,5 @@
 ﻿import 'dart:async';
 import 'package:biux/core/config/strings.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:biux/core/models/common/response.dart';
 import 'package:biux/features/members/data/models/user_membership.dart';
 import 'package:biux/features/users/data/models/user.dart';
@@ -201,12 +200,12 @@ class UserFirebaseRepository extends UserRepositoryAbstract {
   @override
   Future<BiuxUser> updateUser(BiuxUser user) async {
     try {
-      debugPrint('“ Guardando datos en Firestore:');
+      debugPrint('ðŸ“ Guardando datos en Firestore:');
       debugPrint('   - ID: ${user.id}');
       debugPrint('   - Nombre: ${user.fullName}');
-      debugPrint('   - Teléfono: ${user.whatsapp}');
+      debugPrint('   - TelÃ©fono: ${user.whatsapp}');
       debugPrint('   - Ciudad: ${user.cityId.name}');
-      debugPrint('   - Descripción: ${user.description}');
+      debugPrint('   - DescripciÃ³n: ${user.description}');
 
       await firestore.collection(collection).doc(user.id).update({
         AppStrings.fullName: user.fullName,
@@ -215,9 +214,9 @@ class UserFirebaseRepository extends UserRepositoryAbstract {
         AppStrings.description: user.description,
       });
 
-      debugPrint('✓ Datos guardados en Firestore correctamente');
+      debugPrint('âœ… Datos guardados en Firestore correctamente');
       final response = await this.getUserId(user.id);
-      debugPrint('✓ Datos recuperados: ${response.fullName}');
+      debugPrint('âœ… Datos recuperados: ${response.fullName}');
       return response;
     } on FirebaseException catch (e) {
       debugPrint('âŒ Error al actualizar en Firestore: $e');
@@ -270,7 +269,7 @@ class UserFirebaseRepository extends UserRepositoryAbstract {
         await firestore.collection(collection).doc(id).update({
           'profileCover': downloadUrl,
         });
-        debugPrint('✓ profileCover actualizado en Firestore: $downloadUrl');
+        debugPrint('âœ… profileCover actualizado en Firestore: $downloadUrl');
       }
     } on FirebaseException catch (e) {
       debugPrint('âŒ Error al subir foto de portada: $e');

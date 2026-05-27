@@ -1,5 +1,4 @@
 ﻿import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_core/firebase_core.dart';
 
 import 'package:biux/features/rides/data/models/ride_model.dart';
 import "package:flutter/foundation.dart";
@@ -20,7 +19,7 @@ class RideRepository {
     }
   }
 
-  // Obtener rodadas de un grupo específico
+  // Obtener rodadas de un grupo especÃ­fico
   Stream<List<RideModel>> getGroupRides(String groupId) {
     return _firestore
         .collection('rides')
@@ -47,7 +46,7 @@ class RideRepository {
         );
   }
 
-  // Obtener una rodada específica
+  // Obtener una rodada especÃ­fica
   Future<RideModel?> getRideById(String rideId) async {
     try {
       final doc = await _firestore.collection('rides').doc(rideId).get();
@@ -156,7 +155,7 @@ class RideRepository {
         );
   }
 
-  // Obtener próximas rodadas (todas)
+  // Obtener prÃ³ximas rodadas (todas)
   Stream<List<RideModel>> getUpcomingRides() {
     final now = DateTime.now();
     return _firestore

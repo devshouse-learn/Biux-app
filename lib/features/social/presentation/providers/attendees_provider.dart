@@ -1,23 +1,22 @@
 ﻿import 'package:flutter/foundation.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:biux/features/social/domain/entities/attendee_entity.dart';
 import 'package:biux/features/social/domain/repositories/attendees_repository.dart';
-// import 'package:biux/features/social/domain/repositories/notifications_repository.dart'; // ✓ Not needed - Cloud Functions handle notifications
-// import 'package:biux/features/social/domain/entities/notification_entity.dart'; // ✓ Not needed - Cloud Functions handle notifications
+// import 'package:biux/features/social/domain/repositories/notifications_repository.dart'; // âœ… Not needed - Cloud Functions handle notifications
+// import 'package:biux/features/social/domain/entities/notification_entity.dart'; // âœ… Not needed - Cloud Functions handle notifications
 import 'package:biux/features/social/data/datasources/attendees_firestore_adapter.dart';
 import 'package:biux/features/users/domain/repositories/user_repository.dart';
 
 /// Provider para gestionar asistentes a rodadas
 class AttendeesProvider extends ChangeNotifier {
   final AttendeesRepository _repository;
-  // final NotificationsRepository _notificationsRepository; // ✓ Not needed - Cloud Functions handle notifications
+  // final NotificationsRepository _notificationsRepository; // âœ… Not needed - Cloud Functions handle notifications
   final AttendeesFirestoreAdapter _firestoreAdapter;
   final UserRepository? _userRepository;
   final String userId;
 
-  // Variables para caché de datos del usuario
+  // Variables para cachÃ© de datos del usuario
   String? _cachedUserName;
   String? _cachedUserPhoto;
   bool _userDataLoaded = false;
@@ -27,12 +26,12 @@ class AttendeesProvider extends ChangeNotifier {
 
   AttendeesProvider({
     required AttendeesRepository repository,
-    // required NotificationsRepository notificationsRepository, // ✓ Not needed
+    // required NotificationsRepository notificationsRepository, // âœ… Not needed
     AttendeesFirestoreAdapter? firestoreAdapter,
     UserRepository? userRepository,
     required this.userId,
   }) : _repository = repository,
-       // _notificationsRepository = notificationsRepository, // ✓ Not needed
+       // _notificationsRepository = notificationsRepository, // âœ… Not needed
        _firestoreAdapter = firestoreAdapter ?? AttendeesFirestoreAdapter(),
        _userRepository = userRepository;
 
@@ -117,7 +116,7 @@ class AttendeesProvider extends ChangeNotifier {
   }) async {
     if (_isJoining) return;
 
-    // Cargar datos del usuario si no están cargados
+    // Cargar datos del usuario si no estÃ¡n cargados
     await _loadUserData();
 
     try {
@@ -125,7 +124,7 @@ class AttendeesProvider extends ChangeNotifier {
       _error = null;
       notifyListeners();
 
-      // âš ï¸ Obtener datos completos del usuario de Firestore si está disponible
+      // âš ï¸ Obtener datos completos del usuario de Firestore si estÃ¡ disponible
       String finalUserName = _cachedUserName ?? 'Usuario';
       String? finalUserPhoto = _cachedUserPhoto;
       String? finalFullName = fullName;
@@ -159,13 +158,13 @@ class AttendeesProvider extends ChangeNotifier {
         status: status,
       );
 
-      // ✓ NOTIFICATIONS NOW CREATED BY CLOUD FUNCTIONS
+      // âœ… NOTIFICATIONS NOW CREATED BY CLOUD FUNCTIONS
       // Cloud Function onRideJoinCreated handles notifications automatically
       // when a user joins a ride at: /attendees/rides/{rideId}/{userId}
 
-      // Crear notificación solo si no es el propio usuario
+      // Crear notificaciÃ³n solo si no es el propio usuario
       // if (rideOwnerId != userId) {
-      //   // âš ï¸ Asegurar que userName no esté vacío (Firebase rules lo requieren)
+      //   // âš ï¸ Asegurar que userName no estÃ© vacÃ­o (Firebase rules lo requieren)
       //   final safeUserName = (_cachedUserName ?? '').trim().isNotEmpty
       //       ? _cachedUserName!
       //       : userId.split('_').last; // Fallback: usar parte del userId
@@ -249,7 +248,7 @@ class AttendeesProvider extends ChangeNotifier {
     return _repository.watchConfirmedCount(rideId);
   }
 
-  /// Stream para verificar si el usuario está asistiendo
+  /// Stream para verificar si el usuario estÃ¡ asistiendo
   Stream<bool> watchUserIsAttending(String rideId) {
     _ensureSync(rideId);
     return _repository.watchUserIsAttending(rideId, userId);
@@ -261,7 +260,7 @@ class AttendeesProvider extends ChangeNotifier {
     return _repository.watchUserAttendanceStatus(rideId, userId);
   }
 
-  /// Asegura que la sincronización esté activa para esta rodada
+  /// Asegura que la sincronizaciÃ³n estÃ© activa para esta rodada
   void _ensureSync(String rideId) {
     if (!_syncedRides.contains(rideId)) {
       _firestoreAdapter.startSyncForRide(rideId);

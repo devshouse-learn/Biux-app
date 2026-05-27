@@ -1,12 +1,11 @@
 ﻿import 'dart:io';
 import 'package:image_picker/image_picker.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:video_player/video_player.dart';
 import "package:flutter/foundation.dart";
 
-/// Servicio optimizado para gestión de videos en experiencias
-/// Maneja compresión, subida y gestión de videos hasta 30 segundos
+/// Servicio optimizado para gestiÃ³n de videos en experiencias
+/// Maneja compresiÃ³n, subida y gestiÃ³n de videos hasta 30 segundos
 class VideoExperienceService {
   static const int maxVideoDurationSeconds = 30;
   static const int maxVideoSizeMB = 50;
@@ -15,7 +14,7 @@ class VideoExperienceService {
   final FirebaseStorage _storage = FirebaseStorage.instance;
   final ImagePicker _picker = ImagePicker();
 
-  /// Selecciona un video de la galería con validaciones
+  /// Selecciona un video de la galerÃ­a con validaciones
   Future<XFile?> pickVideoFromGallery() async {
     try {
       final video = await _picker.pickVideo(
@@ -24,19 +23,19 @@ class VideoExperienceService {
       );
 
       if (video != null) {
-        // Validar tamaño del archivo
+        // Validar tamaÃ±o del archivo
         final file = File(video.path);
         final fileSizeBytes = await file.length();
         final fileSizeMB = fileSizeBytes / (1024 * 1024);
 
         if (fileSizeMB > maxVideoSizeMB) {
           throw VideoTooLargeException(
-            'El video es demasiado grande. Máximo permitido: ${maxVideoSizeMB}MB',
+            'El video es demasiado grande. MÃ¡ximo permitido: ${maxVideoSizeMB}MB',
           );
         }
 
         debugPrint(
-          'Ž¥ Video seleccionado: ${video.path}, Tamaño: ${fileSizeMB.toStringAsFixed(2)}MB',
+          'ðŸŽ¥ Video seleccionado: ${video.path}, TamaÃ±o: ${fileSizeMB.toStringAsFixed(2)}MB',
         );
       }
 
@@ -47,7 +46,7 @@ class VideoExperienceService {
     }
   }
 
-  /// Graba un nuevo video con la cámara
+  /// Graba un nuevo video con la cÃ¡mara
   Future<XFile?> recordVideo() async {
     try {
       final video = await _picker.pickVideo(
@@ -56,7 +55,7 @@ class VideoExperienceService {
       );
 
       if (video != null) {
-        debugPrint('Ž¥ Video grabado: ${video.path}');
+        debugPrint('ðŸŽ¥ Video grabado: ${video.path}');
       }
 
       return video;
@@ -74,7 +73,7 @@ class VideoExperienceService {
     Function(double)? onProgress,
   }) async {
     try {
-      debugPrint('“¤ Iniciando subida de video...');
+      debugPrint('ðŸ“¤ Iniciando subida de video...');
 
       final fileName =
           '${DateTime.now().millisecondsSinceEpoch}_${videoFile.name}';
@@ -90,7 +89,7 @@ class VideoExperienceService {
         final progress = snapshot.bytesTransferred / snapshot.totalBytes;
         onProgress?.call(progress);
         debugPrint(
-          '“¤ Progreso subida: ${(progress * 100).toStringAsFixed(1)}%',
+          'ðŸ“¤ Progreso subida: ${(progress * 100).toStringAsFixed(1)}%',
         );
       });
 
@@ -98,7 +97,7 @@ class VideoExperienceService {
       final snapshot = await uploadTask;
       final downloadUrl = await snapshot.ref.getDownloadURL();
 
-      debugPrint('✓ Video subido exitosamente: $downloadUrl');
+      debugPrint('âœ… Video subido exitosamente: $downloadUrl');
 
       return VideoUploadResult(
         videoUrl: downloadUrl,
@@ -113,7 +112,7 @@ class VideoExperienceService {
 
   /// Genera un thumbnail para el video subiendo el primer frame como imagen.
   ///
-  /// Requiere que el video ya esté subido a Firebase Storage.
+  /// Requiere que el video ya estÃ© subido a Firebase Storage.
   /// Retorna la URL del thumbnail o null si no se pudo generar.
   Future<String?> generateThumbnail({
     required String videoUrl,
@@ -121,7 +120,7 @@ class VideoExperienceService {
   }) async {
     VideoPlayerController? controller;
     try {
-      debugPrint('–¼ï¸ Generando thumbnail para: $videoUrl');
+      debugPrint('ðŸ–¼ï¸ Generando thumbnail para: $videoUrl');
 
       controller = VideoPlayerController.networkUrl(Uri.parse(videoUrl));
       await controller.initialize();
@@ -141,7 +140,7 @@ class VideoExperienceService {
     }
   }
 
-  /// Valida que la duración del video no exceda [maxVideoDurationSeconds].
+  /// Valida que la duraciÃ³n del video no exceda [maxVideoDurationSeconds].
   Future<bool> validateVideoDuration(XFile videoFile) async {
     VideoPlayerController? controller;
     try {
@@ -152,27 +151,27 @@ class VideoExperienceService {
       final isValid = duration.inSeconds <= maxVideoDurationSeconds;
 
       debugPrint(
-        'â±ï¸ Duración del video: ${duration.inSeconds}s '
-        '(max: ${maxVideoDurationSeconds}s) â€“ ${isValid ? "✓ válido" : "âŒ excede"}',
+        'â±ï¸ DuraciÃ³n del video: ${duration.inSeconds}s '
+        '(max: ${maxVideoDurationSeconds}s) â€“ ${isValid ? "âœ… vÃ¡lido" : "âŒ excede"}',
       );
 
       if (!isValid) {
         throw VideoTooLongException(
-          'El video dura ${duration.inSeconds}s, máximo permitido: ${maxVideoDurationSeconds}s',
+          'El video dura ${duration.inSeconds}s, mÃ¡ximo permitido: ${maxVideoDurationSeconds}s',
         );
       }
 
       return true;
     } on FirebaseException catch (e) {
       if (e is VideoTooLongException) rethrow;
-      debugPrint('âŒ Error validando duración: $e');
+      debugPrint('âŒ Error validando duraciÃ³n: $e');
       return false;
     } finally {
       await controller?.dispose();
     }
   }
 
-  /// Obtiene información real de un video (duración, dimensiones, tamaño).
+  /// Obtiene informaciÃ³n real de un video (duraciÃ³n, dimensiones, tamaÃ±o).
   Future<VideoInfo?> getVideoInfo(XFile videoFile) async {
     VideoPlayerController? controller;
     try {
@@ -208,7 +207,7 @@ class VideoExperienceService {
         final file = File(path);
         if (await file.exists()) {
           await file.delete();
-          debugPrint('§¹ Archivo temporal eliminado: $path');
+          debugPrint('ðŸ§¹ Archivo temporal eliminado: $path');
         }
       } on FirebaseException catch (e) {
         debugPrint('âš ï¸ Error eliminando archivo temporal $path: $e');
@@ -232,7 +231,7 @@ class VideoUploadResult {
   double get sizeMB => sizeBytes / (1024 * 1024);
 }
 
-/// Información de un video
+/// InformaciÃ³n de un video
 class VideoInfo {
   final String path;
   final int sizeBytes;

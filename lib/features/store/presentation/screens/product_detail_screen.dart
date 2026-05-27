@@ -27,7 +27,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
       appBar: AppBar(
         title: Text(widget.product.nombre),
         actions: [
-          // Botón del carrito
+          // BotÃ³n del carrito
           Consumer<CartProvider>(
             builder: (context, cart, child) {
               return Stack(
@@ -73,10 +73,10 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Galería de imágenes
+            // GalerÃ­a de imÃ¡genes
             _buildImageGallery(),
 
-            // Información del producto
+            // InformaciÃ³n del producto
             Padding(
               padding: const EdgeInsets.all(16),
               child: Column(
@@ -93,7 +93,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
 
                   SizedBox(height: 8),
 
-                  // Categoría
+                  // CategorÃ­a
                   Chip(
                     label: Text(l.t(widget.product.categoria.displayName)),
                     backgroundColor: Colors.blue[100],
@@ -151,7 +151,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                   const SizedBox(height: 24),
                   Divider(),
 
-                  // Descripción
+                  // DescripciÃ³n
                   Text(
                     l.t('description'),
                     style: const TextStyle(
@@ -226,7 +226,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                     ),
                   ],
 
-                  const SizedBox(height: 100), // Espacio para el botón flotante
+                  const SizedBox(height: 100), // Espacio para el botÃ³n flotante
                 ],
               ),
             ),
@@ -234,7 +234,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
         ),
       ),
 
-      // Barra inferior con selector de cantidad y botón agregar
+      // Barra inferior con selector de cantidad y botÃ³n agregar
       bottomNavigationBar: widget.product.disponible ? _buildBottomBar() : null,
     );
   }
@@ -279,7 +279,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
           ),
         ),
 
-        // Indicadores de página
+        // Indicadores de pÃ¡gina
         if (images.length > 1)
           Padding(
             padding: const EdgeInsets.all(8),
@@ -455,7 +455,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
 
             const SizedBox(width: 16),
 
-            // Botón agregar al carrito
+            // BotÃ³n agregar al carrito
             Expanded(
               child: ElevatedButton.icon(
                 onPressed: () {

@@ -1,5 +1,4 @@
 ﻿import 'package:flutter/material.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:provider/provider.dart';
 import 'package:biux/core/design_system/color_tokens.dart';
 import 'package:biux/core/design_system/locale_notifier.dart';
@@ -305,7 +304,7 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen> {
     final firebaseUser = FirebaseAuth.instance.currentUser;
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
-    // Obtener info de la sesión
+    // Obtener info de la sesiÃ³n
     final creationTime = firebaseUser?.metadata.creationTime;
     final lastSignIn = firebaseUser?.metadata.lastSignInTime;
     final providers = firebaseUser?.providerData ?? [];
@@ -373,7 +372,7 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen> {
             ),
             SizedBox(height: 20),
 
-            // Fecha de creación
+            // Fecha de creaciÃ³n
             _buildActivityRow(
               icon: Icons.calendar_today,
               label: l.t('account_created_date'),
@@ -384,7 +383,7 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen> {
             ),
             SizedBox(height: 12),
 
-            // Ãšltimo inicio de sesión
+            // Ãšltimo inicio de sesiÃ³n
             _buildActivityRow(
               icon: Icons.access_time,
               label: l.t('last_login_date'),
@@ -512,7 +511,7 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen> {
   bool _isAccountVerified() {
     final firebaseUser = FirebaseAuth.instance.currentUser;
     if (firebaseUser == null) return false;
-    // Si tiene teléfono verificado, está verificado
+    // Si tiene telÃ©fono verificado, estÃ¡ verificado
     if (firebaseUser.phoneNumber != null &&
         firebaseUser.phoneNumber!.isNotEmpty) {
       return true;
@@ -582,7 +581,7 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen> {
             ),
             SizedBox(height: 20),
 
-            // Estado de verificación por teléfono
+            // Estado de verificaciÃ³n por telÃ©fono
             if (isPhoneVerified)
               _buildVerificationRow(
                 icon: Icons.phone_android,
@@ -592,7 +591,7 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen> {
                 isDark: isDark,
               ),
 
-            // Estado de verificación por email
+            // Estado de verificaciÃ³n por email
             if (hasEmail) ...[
               SizedBox(height: 12),
               _buildVerificationRow(
@@ -604,7 +603,7 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen> {
               ),
             ],
 
-            // Botón para enviar verificación de email si no está verificado
+            // BotÃ³n para enviar verificaciÃ³n de email si no estÃ¡ verificado
             if (hasEmail && !isEmailVerified) ...[
               const SizedBox(height: 20),
               SizedBox(

@@ -1,24 +1,23 @@
 ﻿import 'package:flutter/material.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:biux/core/design_system/color_tokens.dart';
 import 'package:biux/features/social/data/datasources/report_datasource.dart';
 import 'package:biux/core/design_system/locale_notifier.dart';
 import 'package:provider/provider.dart';
 
-/// Diálogo para reportar contenido (posts, comentarios, usuarios, rodadas)
+/// DiÃ¡logo para reportar contenido (posts, comentarios, usuarios, rodadas)
 class ReportContentDialog {
   static const _reasons = [
     'Contenido inapropiado',
     'Spam o publicidad',
     'Acoso o bullying',
-    'Información falsa',
+    'InformaciÃ³n falsa',
     'Contenido violento',
-    'Suplantación de identidad',
+    'SuplantaciÃ³n de identidad',
     'Otro',
   ];
 
-  /// Mostrar diálogo de reporte
+  /// Mostrar diÃ¡logo de reporte
   static void show({
     required BuildContext context,
     required String contentId,
@@ -66,7 +65,7 @@ class ReportContentDialog {
               ),
               SizedBox(height: 16),
 
-              // Título
+              // TÃ­tulo
               Row(
                 children: [
                   Icon(Icons.flag_outlined, color: ColorTokens.error50),
@@ -79,7 +78,7 @@ class ReportContentDialog {
               ),
               SizedBox(height: 8),
               Text(
-                '¿Por qué deseas reportar este contenido?',
+                'Â¿Por quÃ© deseas reportar este contenido?',
                 style: TextStyle(fontSize: 14, color: Colors.grey.shade600),
               ),
               SizedBox(height: 16),
@@ -122,7 +121,7 @@ class ReportContentDialog {
               ],
               SizedBox(height: 16),
 
-              // Botón enviar
+              // BotÃ³n enviar
               SizedBox(
                 width: double.infinity,
                 child: ElevatedButton(

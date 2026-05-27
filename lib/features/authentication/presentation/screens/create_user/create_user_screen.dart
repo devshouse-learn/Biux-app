@@ -1,7 +1,6 @@
 ﻿// ignore_for_file: must_be_immutable
 import 'dart:io';
 
-import 'package:firebase_core/firebase_core.dart';
 import 'package:biux/core/design_system/color_tokens.dart';
 import 'package:biux/core/config/images.dart';
 import 'package:biux/core/config/router/app_routes.dart';
@@ -459,8 +458,8 @@ class _CreateUserScreenState extends State<CreateUserScreen> {
                                       ],
                                     ),
                                     content: const Text(
-                                      'Lo sentimos, Biux está disponible '
-                                      'Ãºnicamente para usuarios mayores de 13 años.',
+                                      'Lo sentimos, Biux estÃ¡ disponible '
+                                      'Ãºnicamente para usuarios mayores de 13 aÃ±os.',
                                       style: TextStyle(height: 1.5),
                                     ),
                                     actions: [

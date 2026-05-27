@@ -1,5 +1,4 @@
 ﻿import 'package:flutter/material.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:provider/provider.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -394,25 +393,25 @@ class _ChatListScreenState extends State<ChatListScreen>
                               lastMsgRaw['content'] as String? ?? '';
                           switch (type) {
                             case 'voice':
-                              lastMsg = 'Ž¤ Audio';
+                              lastMsg = 'ðŸŽ¤ Audio';
                               break;
                             case 'image':
-                              lastMsg = '“· Imagen';
+                              lastMsg = 'ðŸ“· Imagen';
                               break;
                             case 'video':
-                              lastMsg = 'Ž¬ Video';
+                              lastMsg = 'ðŸŽ¬ Video';
                               break;
                             case 'location':
-                              lastMsg = '“ Ubicación';
+                              lastMsg = 'ðŸ“ UbicaciÃ³n';
                               break;
                             case 'gif':
-                              lastMsg = 'Žžï¸ GIF';
+                              lastMsg = 'ðŸŽžï¸ GIF';
                               break;
                             case 'file':
-                              lastMsg = '“Ž Archivo';
+                              lastMsg = 'ðŸ“Ž Archivo';
                               break;
                             case 'deleted':
-                              lastMsg = 'š« Mensaje eliminado';
+                              lastMsg = 'ðŸš« Mensaje eliminado';
                               break;
                             default:
                               lastMsg = content;
@@ -434,7 +433,7 @@ class _ChatListScreenState extends State<ChatListScreen>
                               ? Future.value({})
                               : _getUserData(otherUid),
                           builder: (context, userSnap) {
-                            // No renderizar hasta que la data del usuario esté lista
+                            // No renderizar hasta que la data del usuario estÃ© lista
                             if (!isGroup &&
                                 userSnap.connectionState !=
                                     ConnectionState.done) {

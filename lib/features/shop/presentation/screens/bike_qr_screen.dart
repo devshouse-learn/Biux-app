@@ -10,7 +10,7 @@ import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:biux/shared/services/permission_service.dart';
 
-/// Pantalla que muestra el código QR de una bicicleta verificada
+/// Pantalla que muestra el cÃ³digo QR de una bicicleta verificada
 class BikeQRScreen extends StatefulWidget {
   final String productId;
   final String frameSerial;
@@ -75,7 +75,7 @@ class _BikeQRScreenState extends State<BikeQRScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            // Badge de verificación
+            // Badge de verificaciÃ³n
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
               decoration: BoxDecoration(
@@ -101,7 +101,7 @@ class _BikeQRScreenState extends State<BikeQRScreen> {
             ),
             const SizedBox(height: 24),
 
-            // Información de la bicicleta
+            // InformaciÃ³n de la bicicleta
             Card(
               elevation: 2,
               shape: RoundedRectangleBorder(
@@ -113,7 +113,7 @@ class _BikeQRScreenState extends State<BikeQRScreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'Información de la Bicicleta',
+                      'InformaciÃ³n de la Bicicleta',
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
                         fontSize: 16,
@@ -147,14 +147,14 @@ class _BikeQRScreenState extends State<BikeQRScreen> {
                     const Divider(height: 16),
                     _buildInfoRow(
                       Icons.calendar_today,
-                      'Fecha de Verificación',
+                      'Fecha de VerificaciÃ³n',
                       DateFormat(
                         'dd/MM/yyyy HH:mm',
                       ).format(widget.verificationDate),
                     ),
                     _buildInfoRow(
                       Icons.shield_outlined,
-                      'ID de Verificación',
+                      'ID de VerificaciÃ³n',
                       widget.verifierUid.substring(0, 12) + '...',
                     ),
                   ],
@@ -163,9 +163,9 @@ class _BikeQRScreenState extends State<BikeQRScreen> {
             ),
             const SizedBox(height: 32),
 
-            // Código QR
+            // CÃ³digo QR
             Text(
-              'Escanea este código QR para verificar',
+              'Escanea este cÃ³digo QR para verificar',
               style: TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.w500,
@@ -207,7 +207,7 @@ class _BikeQRScreenState extends State<BikeQRScreen> {
                       Icon(Icons.info_outline, color: ColorTokens.primary40),
                       const SizedBox(width: 8),
                       Text(
-                        '¿Cómo usar este QR?',
+                        'Â¿CÃ³mo usar este QR?',
                         style: TextStyle(
                           fontWeight: FontWeight.bold,
                           color: ColorTokens.primary30,
@@ -218,7 +218,7 @@ class _BikeQRScreenState extends State<BikeQRScreen> {
                   const SizedBox(height: 12),
                   _buildInstructionItem(
                     '1',
-                    'Pega este código QR en tu bicicleta (en el cuadro o el manubrio)',
+                    'Pega este cÃ³digo QR en tu bicicleta (en el cuadro o el manubrio)',
                   ),
                   _buildInstructionItem(
                     '2',
@@ -237,7 +237,7 @@ class _BikeQRScreenState extends State<BikeQRScreen> {
             ),
             const SizedBox(height: 24),
 
-            // Botones de acción
+            // Botones de acciÃ³n
             Row(
               children: [
                 Expanded(
@@ -345,7 +345,7 @@ class _BikeQRScreenState extends State<BikeQRScreen> {
           if (!granted && mounted) return;
         }
 
-        // Guardar en el directorio de descargas/imágenes
+        // Guardar en el directorio de descargas/imÃ¡genes
         final dir = Platform.isAndroid
             ? Directory('/storage/emulated/0/Pictures/Biux')
             : await getApplicationDocumentsDirectory();
@@ -384,14 +384,14 @@ class _BikeQRScreenState extends State<BikeQRScreen> {
     try {
       final shareText =
           '''
-š´ Bicicleta Verificada en Biux 
+ðŸš´ Bicicleta Verificada en Biux 
 
-✓ Esta bicicleta ha sido verificada como NO ROBADA
+âœ… Esta bicicleta ha sido verificada como NO ROBADA
 
-“‹ Información:
+ðŸ“‹ InformaciÃ³n:
 â€¢ NÃºmero de Serie: ${widget.frameSerial}
 ${widget.bikeBrand != null ? 'â€¢ Marca: ${widget.bikeBrand}\n' : ''}${widget.bikeModel != null ? 'â€¢ Modelo: ${widget.bikeModel}\n' : ''}
-” Escaneá el código QR en la app Biux para confirmar
+ðŸ” EscaneÃ¡ el cÃ³digo QR en la app Biux para confirmar
 
 Verificada el: ${DateFormat('dd/MM/yyyy').format(widget.verificationDate)}
 ''';

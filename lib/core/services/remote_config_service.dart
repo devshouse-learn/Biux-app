@@ -1,9 +1,8 @@
 ﻿import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:biux/core/services/app_logger.dart';
 
-/// Servicio de configuración remota usando Firestore.
-/// Permite configurar valores dinámicamente sin recompilar la app.
+/// Servicio de configuraciÃ³n remota usando Firestore.
+/// Permite configurar valores dinÃ¡micamente sin recompilar la app.
 class RemoteConfigService {
   static final RemoteConfigService _instance = RemoteConfigService._internal();
   factory RemoteConfigService() => _instance;
@@ -13,7 +12,7 @@ class RemoteConfigService {
   Map<String, dynamic> _config = {};
   bool _isInitialized = false;
 
-  /// Inicializa cargando la configuración desde Firestore
+  /// Inicializa cargando la configuraciÃ³n desde Firestore
   Future<void> initialize() async {
     if (_isInitialized) return;
 
@@ -38,7 +37,7 @@ class RemoteConfigService {
     }
   }
 
-  /// Obtiene la lista de teléfonos admin (Firestore: app_config/settings.adminPhones)
+  /// Obtiene la lista de telÃ©fonos admin (Firestore: app_config/settings.adminPhones)
   List<String> get adminPhones {
     final phones = _config['adminPhones'];
     if (phones is List) {
@@ -47,7 +46,7 @@ class RemoteConfigService {
     return [];
   }
 
-  /// Verifica si un nÃºmero de teléfono es admin
+  /// Verifica si un nÃºmero de telÃ©fono es admin
   bool isAdminPhone(String phone) {
     final cleaned = phone.replaceAll('+', '').replaceAll(' ', '').trim();
     return adminPhones.any((adminPhone) {
@@ -76,7 +75,7 @@ class RemoteConfigService {
     return _config[key] as int? ?? defaultValue;
   }
 
-  /// Verificar si una feature está habilitada (usa Firestore config)
+  /// Verificar si una feature estÃ¡ habilitada (usa Firestore config)
   bool getFeatureFlag(String key, {bool defaultValue = true}) {
     return _config[key] as bool? ?? defaultValue;
   }
@@ -89,5 +88,4 @@ class RemoteConfigService {
   bool get isAchievementsEnabled =>
       getFeatureFlag('achievements_enabled', defaultValue: true);
 }
-
 

@@ -1,5 +1,4 @@
 ﻿import 'package:firebase_analytics/firebase_analytics.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:biux/core/services/app_logger.dart';
 
 /// Servicio centralizado de analytics con eventos tipados.
@@ -17,7 +16,7 @@ class AnalyticsService {
       FirebaseAnalyticsObserver(analytics: _analytics);
 
   // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
-  // Autenticación
+  // AutenticaciÃ³n
   // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 
   static Future<void> logLogin(String method) async {
@@ -184,7 +183,7 @@ class AnalyticsService {
   }
 
   // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
-  // Pantallas y navegación
+  // Pantallas y navegaciÃ³n
   // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 
   static Future<void> logScreenView({

@@ -2,13 +2,13 @@
 import 'dart:convert';
 import "package:flutter/foundation.dart";
 
-/// Servicio para gestionar el estado de visualización de historias en almacenamiento local
-/// Similar a Instagram, marca qué historias ya fueron vistas por el usuario actual
+/// Servicio para gestionar el estado de visualizaciÃ³n de historias en almacenamiento local
+/// Similar a Instagram, marca quÃ© historias ya fueron vistas por el usuario actual
 class StoryViewsLocalService {
   static const String _viewedStoriesKey = 'viewed_stories';
   static const String _lastCleanupKey = 'last_cleanup_date';
 
-  // Las vistas expiran después de 24 horas (como Instagram)
+  // Las vistas expiran despuÃ©s de 24 horas (como Instagram)
   static const Duration _viewExpirationDuration = Duration(hours: 24);
 
   /// Obtiene todas las historias vistas (con sus timestamps)
@@ -65,7 +65,7 @@ class StoryViewsLocalService {
     final viewedAt = viewedStories[storyId]!;
     final now = DateTime.now();
 
-    // Si la vista expiró (más de 24 horas), considerarla como no vista
+    // Si la vista expirÃ³ (mÃ¡s de 24 horas), considerarla como no vista
     if (now.difference(viewedAt) > _viewExpirationDuration) {
       await _removeExpiredView(storyId);
       return false;
@@ -74,7 +74,7 @@ class StoryViewsLocalService {
     return true;
   }
 
-  /// Verifica qué historias de una lista fueron vistas
+  /// Verifica quÃ© historias de una lista fueron vistas
   Future<Map<String, bool>> areStoriesViewed(List<String> storyIds) async {
     final viewedStories = await getViewedStories();
     final now = DateTime.now();
@@ -88,7 +88,7 @@ class StoryViewsLocalService {
 
       final viewedAt = viewedStories[storyId]!;
 
-      // Verificar si la vista expiró
+      // Verificar si la vista expirÃ³
       if (now.difference(viewedAt) > _viewExpirationDuration) {
         result[storyId] = false;
         await _removeExpiredView(storyId);
@@ -100,7 +100,7 @@ class StoryViewsLocalService {
     return result;
   }
 
-  /// Limpia las vistas expiradas (más de 24 horas)
+  /// Limpia las vistas expiradas (mÃ¡s de 24 horas)
   Future<void> cleanupExpiredViews() async {
     final viewedStories = await getViewedStories();
     final now = DateTime.now();
@@ -122,7 +122,7 @@ class StoryViewsLocalService {
     await prefs.remove(_viewedStoriesKey);
   }
 
-  /// Verifica si es necesario hacer limpieza automática
+  /// Verifica si es necesario hacer limpieza automÃ¡tica
   Future<bool> needsCleanup() async {
     final prefs = await SharedPreferences.getInstance();
     final String? lastCleanupStr = prefs.getString(_lastCleanupKey);
@@ -145,7 +145,7 @@ class StoryViewsLocalService {
     }
   }
 
-  // --- Métodos privados ---
+  // --- MÃ©todos privados ---
 
   /// Guarda el mapa de historias vistas en SharedPreferences
   Future<void> _saveViewedStories(Map<String, DateTime> viewedStories) async {

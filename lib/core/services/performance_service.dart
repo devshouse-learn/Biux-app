@@ -1,5 +1,4 @@
 ﻿import 'package:firebase_performance/firebase_performance.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:biux/core/services/app_logger.dart';
 
 /// Servicio de monitoreo de rendimiento con Firebase Performance.
@@ -7,7 +6,7 @@ import 'package:biux/core/services/app_logger.dart';
 /// Uso:
 /// ```dart
 /// final trace = await PerformanceService.startTrace('load_rides');
-/// // ... operación pesada ...
+/// // ... operaciÃ³n pesada ...
 /// await PerformanceService.stopTrace(trace);
 /// ```
 class PerformanceService {
@@ -34,7 +33,7 @@ class PerformanceService {
     }
   }
 
-  /// Detiene la traza de carga de la app (llamar cuando la primera pantalla esté lista)
+  /// Detiene la traza de carga de la app (llamar cuando la primera pantalla estÃ© lista)
   static Future<void> stopAppLoadTrace() async {
     try {
       await _appLoadTrace?.stop();
@@ -90,7 +89,7 @@ class PerformanceService {
     }
   }
 
-  /// Agrega una métrica a una traza
+  /// Agrega una mÃ©trica a una traza
   static void setTraceMetric(Trace? trace, String name, int value) {
     try {
       trace?.setMetric(name, value);
@@ -103,7 +102,7 @@ class PerformanceService {
     }
   }
 
-  /// Mide el tiempo de ejecución de una función async
+  /// Mide el tiempo de ejecuciÃ³n de una funciÃ³n async
   static Future<T> measureAsync<T>(
     String traceName,
     Future<T> Function() operation,

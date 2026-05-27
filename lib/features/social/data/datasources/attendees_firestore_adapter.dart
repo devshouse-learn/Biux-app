@@ -1,5 +1,4 @@
 ﻿import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:biux/features/social/data/models/attendee_model.dart';
 import "package:flutter/foundation.dart";
@@ -71,7 +70,7 @@ class AttendeesFirestoreAdapter {
   }
 
   /// Migra un asistente de Firestore â†’ Realtime DB
-  /// Ãštil para migración inicial de datos existentes
+  /// Ãštil para migraciÃ³n inicial de datos existentes
   Future<void> migrateFromFirestore(String rideId) async {
     try {
       final doc = await _firestore.collection('rides').doc(rideId).get();
@@ -90,7 +89,7 @@ class AttendeesFirestoreAdapter {
           userId: userId,
           status: 'confirmed',
           joinedAt: DateTime.now().millisecondsSinceEpoch,
-          userName: '', // Se actualizará desde el perfil
+          userName: '', // Se actualizarÃ¡ desde el perfil
           userPhoto: null,
         );
 
@@ -115,7 +114,7 @@ class AttendeesFirestoreAdapter {
       }
 
       debugPrint(
-        '✓ Migrados $rideId: ${participants.length} confirmados, ${maybeParticipants.length} tal vez',
+        'âœ… Migrados $rideId: ${participants.length} confirmados, ${maybeParticipants.length} tal vez',
       );
     } on FirebaseException catch (e) {
       debugPrint('âŒ Error migrando rodada $rideId: $e');
@@ -128,7 +127,7 @@ class AttendeesFirestoreAdapter {
       final ridesSnapshot = await _firestore.collection('rides').get();
 
       debugPrint(
-        'š€ Iniciando migración de ${ridesSnapshot.docs.length} rodadas...',
+        'ðŸš€ Iniciando migraciÃ³n de ${ridesSnapshot.docs.length} rodadas...',
       );
 
       for (final doc in ridesSnapshot.docs) {
@@ -138,9 +137,9 @@ class AttendeesFirestoreAdapter {
         ); // Evitar rate limiting
       }
 
-      debugPrint('✓ Migración completada!');
+      debugPrint('âœ… MigraciÃ³n completada!');
     } on FirebaseException catch (e) {
-      debugPrint('âŒ Error en migración masiva: $e');
+      debugPrint('âŒ Error en migraciÃ³n masiva: $e');
     }
   }
 
@@ -170,7 +169,7 @@ class AttendeesFirestoreAdapter {
     }
 
     debugPrint(
-      '§¹ Limpiados $toRemove.length asistentes cancelados de $rideId',
+      'ðŸ§¹ Limpiados $toRemove.length asistentes cancelados de $rideId',
     );
   }
 }

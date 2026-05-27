@@ -1,5 +1,4 @@
 ﻿import 'package:flutter/material.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
@@ -189,7 +188,7 @@ class _GlobalSearchScreenState extends State<GlobalSearchScreen>
             style: TextStyle(color: Colors.grey[400]),
           ),
           SizedBox(height: 32),
-          // Sugerencias rápidas
+          // Sugerencias rÃ¡pidas
           Wrap(
             spacing: 8,
             runSpacing: 8,

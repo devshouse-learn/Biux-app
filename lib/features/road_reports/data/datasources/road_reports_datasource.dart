@@ -1,5 +1,4 @@
 ﻿import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart';
 
 class RoadReportsDatasource {
@@ -87,7 +86,7 @@ class RoadReportsDatasource {
         return false;
       }
 
-      // Agregar confirmacion con arrayUnion (atómico, evita duplicados)
+      // Agregar confirmacion con arrayUnion (atÃ³mico, evita duplicados)
       await docRef.update({
         'confirmations': FieldValue.increment(1),
         'confirmedBy': FieldValue.arrayUnion([userId]),

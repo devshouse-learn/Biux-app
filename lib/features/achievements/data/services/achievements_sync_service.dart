@@ -1,5 +1,4 @@
 ﻿import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -19,11 +18,11 @@ class AchievementsSyncService {
 
       if (daysSinceSync >= _syncIntervalDays) {
         debugPrint(
-          '”„ Logros: Sincronizando (ultima vez hace \${daysSinceSync.toInt()} dias)',
+          'ðŸ”„ Logros: Sincronizando (ultima vez hace \${daysSinceSync.toInt()} dias)',
         );
         await fullSync(userId);
         await prefs.setInt(_lastSyncKey, now);
-        debugPrint('✓ Logros: Sincronizacion semanal completada');
+        debugPrint('âœ… Logros: Sincronizacion semanal completada');
       } else {
         debugPrint(
           'â­ï¸ Logros: No necesita sincronizar (faltan \${(_syncIntervalDays - daysSinceSync).toInt()} dias)',
@@ -198,7 +197,7 @@ class AchievementsSyncService {
         .set(updates, SetOptions(merge: true));
 
     debugPrint(
-      '“Š Sync completo: \${accumKm.toStringAsFixed(1)} km, \$totalRides rodadas, max \${bestMaxSpeed.toStringAsFixed(1)} km/h, racha \$streak dias, \$groupCount grupos',
+      'ðŸ“Š Sync completo: \${accumKm.toStringAsFixed(1)} km, \$totalRides rodadas, max \${bestMaxSpeed.toStringAsFixed(1)} km/h, racha \$streak dias, \$groupCount grupos',
     );
   }
 
@@ -255,5 +254,4 @@ class AchievementsSyncService {
     return streak;
   }
 }
-
 

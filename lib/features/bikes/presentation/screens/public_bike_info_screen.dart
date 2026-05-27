@@ -1,5 +1,4 @@
 ﻿import 'package:flutter/material.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:provider/provider.dart';
 import 'package:biux/core/design_system/color_tokens.dart';
 import 'package:biux/core/design_system/locale_notifier.dart';
@@ -10,8 +9,8 @@ import 'package:biux/features/bikes/domain/entities/bike_entity.dart';
 import 'package:biux/features/bikes/domain/entities/bike_enums.dart';
 import 'package:biux/shared/widgets/images/optimized_image_picker.dart';
 
-/// Pantalla pÃºblica de información de bicicleta accesible por QR
-/// Muestra información básica sin datos personales
+/// Pantalla pÃºblica de informaciÃ³n de bicicleta accesible por QR
+/// Muestra informaciÃ³n bÃ¡sica sin datos personales
 class PublicBikeInfoScreen extends StatefulWidget {
   final String qrCode;
 

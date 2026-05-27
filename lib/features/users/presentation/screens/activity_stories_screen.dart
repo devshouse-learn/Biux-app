@@ -1,5 +1,4 @@
 ﻿import 'package:flutter/material.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:go_router/go_router.dart';
@@ -42,7 +41,7 @@ class _ActivityStoriesScreenState extends State<ActivityStoriesScreen> {
       final List<_StoryItem> items = [];
 
       // 1. Stories del sistema nuevo (experiences con format=story)
-      // No usar orderBy para evitar requerir índice compuesto
+      // No usar orderBy para evitar requerir Ã­ndice compuesto
       try {
         final expSnapshot = await _firestore
             .collection('experiences')
@@ -88,8 +87,8 @@ class _ActivityStoriesScreenState extends State<ActivityStoriesScreen> {
         );
       }
 
-      // 2. Stories del sistema legacy (colección stories)
-      // No usar orderBy para evitar requerir índice compuesto
+      // 2. Stories del sistema legacy (colecciÃ³n stories)
+      // No usar orderBy para evitar requerir Ã­ndice compuesto
       try {
         final storiesSnapshot = await _firestore
             .collection('stories')
@@ -432,7 +431,7 @@ class _ActivityStoriesScreenState extends State<ActivityStoriesScreen> {
 
   String _formatDate(DateTime date) {
     final diff = DateTime.now().difference(date);
-    if (diff.inDays > 365) return 'Hace ${diff.inDays ~/ 365} año(s)';
+    if (diff.inDays > 365) return 'Hace ${diff.inDays ~/ 365} aÃ±o(s)';
     if (diff.inDays > 30) return 'Hace ${diff.inDays ~/ 30} mes(es)';
     if (diff.inDays > 0) return 'Hace ${diff.inDays}d';
     if (diff.inHours > 0) return 'Hace ${diff.inHours}h';

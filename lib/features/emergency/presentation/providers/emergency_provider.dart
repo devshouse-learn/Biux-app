@@ -15,14 +15,14 @@ class EmergencyProvider with ChangeNotifier {
   String? _activeSosId;
   String? _error;
 
-  // Ubicación en tiempo real durante SOS
+  // UbicaciÃ³n en tiempo real durante SOS
   StreamSubscription<Position>? _sosPosSubscription;
   Position? _lastSosPosition;
   Timer? _sosTimer;
   int _sosCountdown = 10;
   bool _sosCountingDown = false;
 
-  // Detección de caída
+  // DetecciÃ³n de caÃ­da
   bool _fallDetectionEnabled = false;
   DateTime? _lastFallAlert;
 
@@ -57,7 +57,7 @@ class EmergencyProvider with ChangeNotifier {
     });
   }
 
-  /// Dispara SOS inmediatamente sin countdown (usado desde botón drawer)
+  /// Dispara SOS inmediatamente sin countdown (usado desde botÃ³n drawer)
   Future<void> triggerSosImmediate({
     required String userId,
     required String userName,
@@ -68,7 +68,7 @@ class EmergencyProvider with ChangeNotifier {
     await _triggerSOS(
       userId: userId,
       userName: userName,
-      message: 'SOS activado desde botón rápido',
+      message: 'SOS activado desde botÃ³n rÃ¡pido',
     );
   }
 
@@ -109,7 +109,7 @@ class EmergencyProvider with ChangeNotifier {
       _sosActive = true;
       notifyListeners();
 
-      // Actualizar ubicación cada 30 segundos mientras SOS activo
+      // Actualizar ubicaciÃ³n cada 30 segundos mientras SOS activo
       _sosPosSubscription =
           Geolocator.getPositionStream(
             locationSettings: const LocationSettings(
@@ -136,7 +136,7 @@ class EmergencyProvider with ChangeNotifier {
     }
   }
 
-  /// Notificar posible caída detectada por acelerómetro
+  /// Notificar posible caÃ­da detectada por acelerÃ³metro
   Future<void> notifyPossibleFall({
     required String userId,
     required String userName,

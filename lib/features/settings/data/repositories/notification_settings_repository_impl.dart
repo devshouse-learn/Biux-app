@@ -1,5 +1,4 @@
 ﻿import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:biux/features/settings/domain/entities/notification_settings_entity.dart';
 import 'package:biux/features/settings/domain/repositories/notification_settings_repository.dart';
@@ -35,7 +34,7 @@ class NotificationSettingsRepositoryImpl
         return defaults;
       }
     } on FirebaseException catch (e) {
-      debugPrint('Error al obtener configuración de notificaciones: $e');
+      debugPrint('Error al obtener configuraciÃ³n de notificaciones: $e');
       return NotificationSettingsEntity.defaults();
     }
   }
@@ -54,12 +53,12 @@ class NotificationSettingsRepositoryImpl
           .doc('notifications')
           .set(settings.toMap(), SetOptions(merge: true));
 
-      // También actualizar en el documento principal del usuario para fácil acceso del backend
+      // TambiÃ©n actualizar en el documento principal del usuario para fÃ¡cil acceso del backend
       await _firestore.collection('users').doc(_userId).update({
         'notificationSettings': settings.toMap(),
       });
     } on FirebaseException catch (e) {
-      debugPrint('Error al actualizar configuración de notificaciones: $e');
+      debugPrint('Error al actualizar configuraciÃ³n de notificaciones: $e');
       rethrow;
     }
   }

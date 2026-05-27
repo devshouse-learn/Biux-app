@@ -1,6 +1,5 @@
 ﻿import "package:flutter/foundation.dart";
 import 'package:firebase_database/firebase_database.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:biux/features/social/data/models/like_model.dart';
 
@@ -65,7 +64,7 @@ class LikesRealtimeDatasource {
     return ref.onValue.map((event) {
       if (event.snapshot.value == null) return false;
 
-      // Verificar si está expirado (solo para stories)
+      // Verificar si estÃ¡ expirado (solo para stories)
       if (type == 'story') {
         final data = event.snapshot.value as Map<dynamic, dynamic>;
         final expiresAt = data['expiresAt'] as int?;
@@ -88,20 +87,20 @@ class LikesRealtimeDatasource {
     final path = '${_getBasePath(type)}/$targetId/${like.userId}';
     final jsonData = like.toJson();
 
-    debugPrint('” DEBUG DATASOURCE - Path: $path');
-    debugPrint('” DEBUG DATASOURCE - JSON: $jsonData');
+    debugPrint('ðŸ” DEBUG DATASOURCE - Path: $path');
+    debugPrint('ðŸ” DEBUG DATASOURCE - JSON: $jsonData');
 
     // Verificar auth
     final currentUser = FirebaseAuth.instance.currentUser;
-    debugPrint('” DEBUG AUTH - currentUser.uid: ${currentUser?.uid}');
-    debugPrint('” DEBUG AUTH - like.userId: ${like.userId}');
-    debugPrint('” DEBUG AUTH - Match: ${currentUser?.uid == like.userId}');
+    debugPrint('ðŸ” DEBUG AUTH - currentUser.uid: ${currentUser?.uid}');
+    debugPrint('ðŸ” DEBUG AUTH - like.userId: ${like.userId}');
+    debugPrint('ðŸ” DEBUG AUTH - Match: ${currentUser?.uid == like.userId}');
 
     final ref = _database.ref(path);
 
     try {
       await ref.set(jsonData);
-      debugPrint('✓ LIKE GUARDADO EXITOSAMENTE');
+      debugPrint('âœ… LIKE GUARDADO EXITOSAMENTE');
     } on FirebaseException catch (e) {
       debugPrint('âŒ ERROR AL GUARDAR LIKE: $e');
       rethrow;
@@ -118,7 +117,7 @@ class LikesRealtimeDatasource {
     await ref.remove();
   }
 
-  /// Obtiene un like específico
+  /// Obtiene un like especÃ­fico
   Future<LikeModel?> getLike({
     required String type,
     required String targetId,

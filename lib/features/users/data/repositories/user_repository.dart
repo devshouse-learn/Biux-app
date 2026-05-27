@@ -1,5 +1,4 @@
 ﻿import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_core/firebase_core.dart';
 
 import 'package:biux/features/users/data/models/user_model.dart';
 import "package:flutter/foundation.dart";
@@ -60,7 +59,7 @@ class UserRepository {
     try {
       List<UserModel> users = [];
 
-      // Firestore permite máximo 30 elementos en whereIn
+      // Firestore permite mÃ¡ximo 30 elementos en whereIn
       List<List<String>> chunks = [];
       for (int i = 0; i < uids.length; i += 30) {
         chunks.add(

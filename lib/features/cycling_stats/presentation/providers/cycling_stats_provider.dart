@@ -1,4 +1,4 @@
-import 'package:flutter/foundation.dart';
+﻿import 'package:flutter/foundation.dart';
 import 'package:biux/features/cycling_stats/domain/entities/cycling_stats_entity.dart';
 import 'package:biux/features/cycling_stats/data/datasources/cycling_stats_datasource.dart';
 
@@ -69,7 +69,7 @@ class CyclingStatsProvider with ChangeNotifier {
         );
       }
       _lastUpdated = DateTime.now();
-    } catch (e) {
+    } on Exception catch (e) {
       _error = 'stats_error_load';
     }
 
@@ -85,7 +85,7 @@ class CyclingStatsProvider with ChangeNotifier {
       await loadStats(userId);
       await loadLeaderboard();
       _lastUpdated = DateTime.now();
-    } catch (e) {
+    } on Exception catch (e) {
       _error = 'stats_error_refresh';
     }
 
@@ -111,7 +111,7 @@ class CyclingStatsProvider with ChangeNotifier {
         minutes: minutes,
       );
       await loadStats(userId);
-    } catch (e) {
+    } on Exception catch (e) {
       _error = 'stats_error_add_ride';
       notifyListeners();
     }
@@ -121,7 +121,7 @@ class CyclingStatsProvider with ChangeNotifier {
     try {
       _leaderboard = await _datasource.getLeaderboard();
       notifyListeners();
-    } catch (e) {
+    } on Exception catch (e) {
       _error = 'stats_error_leaderboard';
       notifyListeners();
     }
@@ -131,9 +131,72 @@ class CyclingStatsProvider with ChangeNotifier {
     try {
       _friendsLeaderboard = await _datasource.getLeaderboardForUsers(friendIds);
       notifyListeners();
-    } catch (e) {
+    } on Exception catch (e) {
       _error = 'stats_error_leaderboard';
       notifyListeners();
     }
   }
+
+  // Progreso semanal (ÃƒÂºltimas 8 semanas)
+  List<Map<String, dynamic>> _weeklyProgress = [];
+  List<Map<String, dynamic>> get weeklyProgress => _weeklyProgress;
+
+  /// RÃƒÂ©cords personales
+  Map<String, dynamic> get personalRecords {
+    if (_stats == null) return {};
+    return {
+      'maxSpeed': _stats!.maxSpeed,
+      'longestRide': _stats!.totalKm > 0 ? _stats!.totalKm : 0,
+      'bestStreak': _stats!.streak,
+      'totalCalories': _stats!.totalCalories,
+    };
+  }
+
+  void computeWeeklyProgress(List<Map<String, dynamic>> rides) {
+    final now = DateTime.now();
+    final weeks = <String, double>{};
+
+    for (int i = 7; i >= 0; i--) {
+      final weekStart = now.subtract(Duration(days: now.weekday - 1 + i * 7));
+      final key = "${weekStart.day}/${weekStart.month}";
+      weeks[key] = 0;
+    }
+
+    for (final ride in rides) {
+      try {
+        final date = (ride["startTime"] as dynamic).toDate() as DateTime;
+        final km = (ride["km"] as num?)?.toDouble() ?? 0;
+        final weekStart = date.subtract(Duration(days: date.weekday - 1));
+        final key = "${weekStart.day}/${weekStart.month}";
+        if (weeks.containsKey(key)) {
+          weeks[key] = (weeks[key] ?? 0) + km;
+        }
+      } catch (_) {}
+    }
+
+    _weeklyProgress = weeks.entries
+        .map((e) => {"week": e.key, "km": e.value})
+        .toList();
+    notifyListeners();
+  }
+
+  List<Map<String, dynamic>> _heatmapPoints = [];
+  List<Map<String, dynamic>> get heatmapPoints => _heatmapPoints;
+
+  Future<void> loadHeatmap(String userId) async {
+    try {
+      final tracks = await _datasource.getUserTracks(userId);
+      _heatmapPoints = [];
+      for (final track in tracks) {
+        final points = List<Map<String, dynamic>>.from(track['points'] ?? []);
+        _heatmapPoints.addAll(
+          points.map((p) => {'lat': p['lat'], 'lng': p['lng'], 'weight': 1.0}),
+        );
+      }
+      notifyListeners();
+    } on Exception catch (e) {
+      debugPrint('Error cargando heatmap: $e');
+    }
+  }
 }
+

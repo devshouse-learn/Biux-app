@@ -1,5 +1,4 @@
 ﻿import 'package:biux/features/groups/data/models/group.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:biux/features/roads/data/models/road.dart';
 import 'package:biux/features/roads/data/models/competitor_road.dart';
 import 'dart:io';

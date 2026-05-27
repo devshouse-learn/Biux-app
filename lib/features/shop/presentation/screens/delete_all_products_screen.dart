@@ -1,5 +1,4 @@
 ﻿import 'package:flutter/material.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
@@ -54,7 +53,7 @@ class _DeleteAllProductsScreenState extends State<DeleteAllProductsScreen> {
 
   Future<void> _deleteAllProducts() async {
     final messenger = ScaffoldMessenger.of(context);
-    // Confirmación
+    // ConfirmaciÃ³n
     final l = Provider.of<LocaleNotifier>(context, listen: false);
     final confirmed = await showDialog<bool>(
       context: context,
@@ -93,7 +92,7 @@ class _DeleteAllProductsScreenState extends State<DeleteAllProductsScreen> {
       final firestore = FirebaseFirestore.instance;
       final snapshot = await firestore.collection('products').get();
 
-      // Eliminar en lotes de 500 (límite de Firestore)
+      // Eliminar en lotes de 500 (lÃ­mite de Firestore)
       final batch = firestore.batch();
       int count = 0;
 
@@ -120,15 +119,15 @@ class _DeleteAllProductsScreenState extends State<DeleteAllProductsScreen> {
 
       setState(() {
         _isDeleting = false;
-        _status = '✓ $_deletedProducts ${l.t('products_deleted_successfully')}';
+        _status = 'âœ… $_deletedProducts ${l.t('products_deleted_successfully')}';
         _totalProducts = 0;
       });
 
-      // Mostrar mensaje de éxito
+      // Mostrar mensaje de Ã©xito
       if (mounted) {
         messenger.showSnackBar(
           SnackBar(
-            content: Text('✓ $_deletedProducts ${l.t('products_eliminated')}'),
+            content: Text('âœ… $_deletedProducts ${l.t('products_eliminated')}'),
             backgroundColor: Colors.green,
             duration: const Duration(seconds: 3),
           ),
@@ -177,7 +176,7 @@ class _DeleteAllProductsScreenState extends State<DeleteAllProductsScreen> {
             ),
             SizedBox(height: 24),
 
-            // Título
+            // TÃ­tulo
             Text(
               'âš ï¸ ${l.t('danger_zone')}',
               style: const TextStyle(
@@ -189,7 +188,7 @@ class _DeleteAllProductsScreenState extends State<DeleteAllProductsScreen> {
             ),
             SizedBox(height: 16),
 
-            // Descripción
+            // DescripciÃ³n
             Text(
               l.t('danger_zone_desc'),
               textAlign: TextAlign.center,
@@ -231,7 +230,7 @@ class _DeleteAllProductsScreenState extends State<DeleteAllProductsScreen> {
             ),
             const SizedBox(height: 32),
 
-            // Botón de actualizar conteo
+            // BotÃ³n de actualizar conteo
             OutlinedButton.icon(
               onPressed: _isDeleting ? null : _countProducts,
               icon: Icon(Icons.refresh),
@@ -242,7 +241,7 @@ class _DeleteAllProductsScreenState extends State<DeleteAllProductsScreen> {
             ),
             SizedBox(height: 16),
 
-            // Botón de eliminar
+            // BotÃ³n de eliminar
             ElevatedButton.icon(
               onPressed: (_isDeleting || _totalProducts == 0)
                   ? null

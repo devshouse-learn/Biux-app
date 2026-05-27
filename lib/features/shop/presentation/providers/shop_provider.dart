@@ -1,5 +1,4 @@
 ﻿import 'package:flutter/foundation.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:biux/features/shop/domain/entities/product_entity.dart';
 import 'package:biux/features/shop/data/models/product_model.dart';
 import 'package:biux/features/shop/domain/entities/category_entity.dart';
@@ -8,11 +7,11 @@ import 'package:biux/features/shop/domain/entities/order_entity.dart';
 import 'package:biux/features/shop/domain/repositories/product_repository.dart';
 import 'package:biux/features/shop/domain/repositories/order_repository.dart';
 
-/// Datos de un cupón de descuento
+/// Datos de un cupÃ³n de descuento
 class CouponData {
   final double discount; // Porcentaje de descuento (0.0 - 1.0)
   final String description;
-  final double? minPurchase; // Compra mínima requerida (opcional)
+  final double? minPurchase; // Compra mÃ­nima requerida (opcional)
 
   const CouponData({
     required this.discount,
@@ -49,7 +48,7 @@ class ShopProvider with ChangeNotifier {
   double _couponDiscount = 0.0;
   String? _couponErrorMessage;
 
-  // Estado de órdenes
+  // Estado de Ã³rdenes
   List<OrderEntity> _userOrders = [];
   bool _isLoadingOrders = false;
 
@@ -92,7 +91,7 @@ class ShopProvider with ChangeNotifier {
     }
   }
 
-  /// Filtrar por categoría
+  /// Filtrar por categorÃ­a
   void filterByCategory(String category) {
     _selectedCategory = category;
     _applyFilters();
@@ -109,7 +108,7 @@ class ShopProvider with ChangeNotifier {
   /// Aplicar todos los filtros
   void _applyFilters() {
     _filteredProducts = _allProducts.where((product) {
-      // Filtro por categoría
+      // Filtro por categorÃ­a
       final matchesCategory =
           _selectedCategory == ProductCategories.all ||
           product.category == _selectedCategory;
@@ -136,12 +135,12 @@ class ShopProvider with ChangeNotifier {
 
   /// Agregar producto al carrito
   void addToCart(ProductEntity product, {String? selectedSize}) {
-    debugPrint('›’ ShopProvider.addToCart llamado:');
+    debugPrint('ðŸ›’ ShopProvider.addToCart llamado:');
     debugPrint('  - Producto: ${product.name} (ID: ${product.id})');
     debugPrint('  - Talla: $selectedSize');
     debugPrint('  - Carrito actual: ${_cartItems.length} items');
 
-    // Verificar si el producto ya está en el carrito
+    // Verificar si el producto ya estÃ¡ en el carrito
     final existingIndex = _cartItems.indexWhere(
       (item) =>
           item.product.id == product.id && item.selectedSize == selectedSize,
@@ -171,7 +170,7 @@ class ShopProvider with ChangeNotifier {
     debugPrint('  - Total items: $cartItemCount');
     debugPrint('  - Total precio: \$$cartTotal');
     notifyListeners();
-    debugPrint('  ✓ notifyListeners() llamado');
+    debugPrint('  âœ… notifyListeners() llamado');
   }
 
   /// Remover producto del carrito
@@ -214,7 +213,7 @@ class ShopProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  /// Aplicar cupón de descuento (solo para compras)
+  /// Aplicar cupÃ³n de descuento (solo para compras)
   bool applyCoupon(String couponCode) {
     _couponErrorMessage = null;
 
@@ -225,16 +224,16 @@ class ShopProvider with ChangeNotifier {
       return false;
     }
 
-    // Validar compra mínima
-    const double minimumPurchase = 50000; // Compra mínima 50.000 COP
+    // Validar compra mÃ­nima
+    const double minimumPurchase = 50000; // Compra mÃ­nima 50.000 COP
     if (cartTotal < minimumPurchase) {
       _couponErrorMessage =
-          'Compra mínima: \$${minimumPurchase.toStringAsFixed(0)} COP';
+          'Compra mÃ­nima: \$${minimumPurchase.toStringAsFixed(0)} COP';
       notifyListeners();
       return false;
     }
 
-    // Cupones organizados por categoría
+    // Cupones organizados por categorÃ­a
     final Map<String, CouponData> validCoupons = {
       // Cupones generales
       'BIUX10': CouponData(
@@ -295,10 +294,10 @@ class ShopProvider with ChangeNotifier {
       return false;
     }
 
-    // Validar compra mínima específica del cupón
+    // Validar compra mÃ­nima especÃ­fica del cupÃ³n
     if (couponData.minPurchase != null && cartTotal < couponData.minPurchase!) {
       _couponErrorMessage =
-          'Compra mínima para este cupón: \$${couponData.minPurchase!.toStringAsFixed(0)} COP';
+          'Compra mÃ­nima para este cupÃ³n: \$${couponData.minPurchase!.toStringAsFixed(0)} COP';
       notifyListeners();
       return false;
     }
@@ -308,13 +307,13 @@ class ShopProvider with ChangeNotifier {
     _appliedCoupon = couponCode.toUpperCase();
 
     debugPrint(
-      'ŽŸï¸ Cupón aplicado: $_appliedCoupon (${couponData.description})',
+      'ðŸŽŸï¸ CupÃ³n aplicado: $_appliedCoupon (${couponData.description})',
     );
     debugPrint(
-      '’° Descuento: \$${_couponDiscount.toStringAsFixed(0)} COP (${(couponData.discount * 100).toStringAsFixed(0)}%)',
+      'ðŸ’° Descuento: \$${_couponDiscount.toStringAsFixed(0)} COP (${(couponData.discount * 100).toStringAsFixed(0)}%)',
     );
     debugPrint(
-      '’µ Total con descuento: \$${cartTotalWithDiscount.toStringAsFixed(0)} COP',
+      'ðŸ’µ Total con descuento: \$${cartTotalWithDiscount.toStringAsFixed(0)} COP',
     );
 
     notifyListeners();
@@ -370,12 +369,12 @@ class ShopProvider with ChangeNotifier {
           {
             'code': 'VERANO2026',
             'discount': '25%',
-            'description': 'Promoción verano',
+            'description': 'PromociÃ³n verano',
           },
           {
             'code': 'ENERO2026',
             'discount': '20%',
-            'description': 'Promoción enero',
+            'description': 'PromociÃ³n enero',
           },
         ],
       },
@@ -385,19 +384,19 @@ class ShopProvider with ChangeNotifier {
           {
             'code': 'VIP30',
             'discount': '30%',
-            'description': 'Compra mínima \$200.000',
+            'description': 'Compra mÃ­nima \$200.000',
           },
           {
             'code': 'ELITE40',
             'discount': '40%',
-            'description': 'Compra mínima \$500.000',
+            'description': 'Compra mÃ­nima \$500.000',
           },
         ],
       },
     ];
   }
 
-  /// Remover cupón aplicado
+  /// Remover cupÃ³n aplicado
   void removeCoupon() {
     _appliedCoupon = null;
     _couponDiscount = 0.0;
@@ -420,14 +419,14 @@ class ShopProvider with ChangeNotifier {
     }
 
     try {
-      // Calcular total final (con descuento de cupón si aplica)
+      // Calcular total final (con descuento de cupÃ³n si aplica)
       final finalTotal = cartTotalWithDiscount;
 
-      // Agregar info del cupón a las notas si se aplicó uno
+      // Agregar info del cupÃ³n a las notas si se aplicÃ³ uno
       String finalNotes = notes ?? '';
       if (_appliedCoupon != null) {
         final couponInfo =
-            '\nŽŸï¸ Cupón aplicado: $_appliedCoupon (Descuento: \$${_couponDiscount.toStringAsFixed(0)} COP)';
+            '\nðŸŽŸï¸ CupÃ³n aplicado: $_appliedCoupon (Descuento: \$${_couponDiscount.toStringAsFixed(0)} COP)';
         finalNotes = finalNotes.isEmpty ? couponInfo : '$finalNotes$couponInfo';
       }
 
@@ -452,7 +451,7 @@ class ShopProvider with ChangeNotifier {
         await productRepository.updateStock(item.product.id, newStock);
       }
 
-      // Limpiar carrito (y cupón)
+      // Limpiar carrito (y cupÃ³n)
       clearCart();
 
       // Recargar productos para actualizar stock
@@ -531,7 +530,7 @@ class ShopProvider with ChangeNotifier {
     }
   }
 
-  /// Cargar órdenes del usuario
+  /// Cargar Ã³rdenes del usuario
   Future<void> loadUserOrders(String userId) async {
     _isLoadingOrders = true;
     notifyListeners();
@@ -552,7 +551,7 @@ class ShopProvider with ChangeNotifier {
     try {
       await orderRepository.cancelOrder(orderId);
 
-      // Actualizar lista de órdenes
+      // Actualizar lista de Ã³rdenes
       final index = _userOrders.indexWhere((order) => order.id == orderId);
       if (index >= 0) {
         _userOrders[index] = _userOrders[index].copyWith(
@@ -618,15 +617,15 @@ class ShopProvider with ChangeNotifier {
     }
   }
 
-  /// Eliminar TODOS los productos sin imágenes (función de limpieza)
+  /// Eliminar TODOS los productos sin imÃ¡genes (funciÃ³n de limpieza)
   Future<int> deleteProductsWithoutImages() async {
     int deletedCount = 0;
 
     try {
-      // Recargar productos para tener la lista más actualizada
+      // Recargar productos para tener la lista mÃ¡s actualizada
       await loadProducts();
 
-      // Encontrar productos sin imágenes válidas
+      // Encontrar productos sin imÃ¡genes vÃ¡lidas
       final productsToDelete = _allProducts.where((product) {
         if (product.images.isEmpty) return true;
         return !product.images.any(
@@ -635,14 +634,14 @@ class ShopProvider with ChangeNotifier {
       }).toList();
 
       debugPrint(
-        '—‘ï¸ Productos sin imágenes encontrados: ${productsToDelete.length}',
+        'ðŸ—‘ï¸ Productos sin imÃ¡genes encontrados: ${productsToDelete.length}',
       );
 
       // Eliminar cada producto sin imagen
       for (final product in productsToDelete) {
         try {
           debugPrint(
-            '—‘ï¸ Eliminando producto sin imagen: ${product.name} (${product.id})',
+            'ðŸ—‘ï¸ Eliminando producto sin imagen: ${product.name} (${product.id})',
           );
           await productRepository.deleteProduct(product.id);
           deletedCount++;
@@ -651,10 +650,10 @@ class ShopProvider with ChangeNotifier {
         }
       }
 
-      // Recargar productos después de la limpieza
+      // Recargar productos despuÃ©s de la limpieza
       await loadProducts();
 
-      debugPrint('✓ Productos eliminados: $deletedCount');
+      debugPrint('âœ… Productos eliminados: $deletedCount');
       return deletedCount;
     } on FirebaseException catch (e) {
       _errorMessage = 'shop_cleanup_error';
@@ -663,7 +662,7 @@ class ShopProvider with ChangeNotifier {
     }
   }
 
-  /// Dar like/unlike a un producto (operación atómica en Firestore)
+  /// Dar like/unlike a un producto (operaciÃ³n atÃ³mica en Firestore)
   Future<bool> toggleProductLike(String productId, String userId) async {
     try {
       debugPrint(
@@ -678,7 +677,7 @@ class ShopProvider with ChangeNotifier {
       final product = _allProducts[productIndex];
       final likedByUsers = List<String>.from(product.likedByUsers);
 
-      // Actualizar localmente PRIMERO (respuesta instantánea)
+      // Actualizar localmente PRIMERO (respuesta instantÃ¡nea)
       if (likedByUsers.contains(userId)) {
         likedByUsers.remove(userId);
       } else {

@@ -1,5 +1,4 @@
 ﻿import 'package:biux/features/users/presentation/providers/user_provider.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:biux/features/users/data/models/user.dart';
 import 'package:biux/features/experiences/presentation/providers/experience_classic_provider.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -21,7 +20,7 @@ import 'package:biux/shared/widgets/loading/shimmer_loading.dart';
 import 'package:biux/core/design_system/locale_notifier.dart';
 
 class ProfileScreen extends StatelessWidget {
-  // Función para formatear nÃºmero de teléfono colombiano
+  // FunciÃ³n para formatear nÃºmero de telÃ©fono colombiano
   String _formatColombianPhoneNumber(String phoneNumber) {
     String cleanNumber = phoneNumber.replaceAll(RegExp(r'[^\d]'), '');
 
@@ -88,7 +87,7 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    // Detectar si el feed cambió (nuevo post creado) para refrescar experiencias
+    // Detectar si el feed cambiÃ³ (nuevo post creado) para refrescar experiencias
     final feedLength = context.watch<ExperienceProvider>().experiences.length;
     if (_lastKnownFeedLength >= 0 && feedLength != _lastKnownFeedLength) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -216,7 +215,7 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
       final currentUser = FirebaseAuth.instance.currentUser;
 
       if (currentUser != null) {
-        debugPrint('”„ Cargando datos del usuario...');
+        debugPrint('ðŸ”„ Cargando datos del usuario...');
         await widget.userProvider.loadUserData();
 
         if (widget.userProvider.user == null) {
@@ -226,12 +225,12 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
             currentUser.uid,
             formattedPhone,
           );
-          // Recargar datos después de crear el usuario
+          // Recargar datos despuÃ©s de crear el usuario
           await widget.userProvider.loadUserData();
         }
 
         if (widget.userProvider.user != null && mounted) {
-          debugPrint('✓ Inicializando campos con datos del usuario:');
+          debugPrint('âœ… Inicializando campos con datos del usuario:');
           debugPrint('   Nombre: "${widget.userProvider.user?.name ?? ''}"');
           debugPrint('   Email: "${widget.userProvider.user?.email ?? ''}"');
           setState(() {
@@ -243,7 +242,7 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
     });
   }
 
-  // Función temporal para actualizar ciudades con departamentos
+  // FunciÃ³n temporal para actualizar ciudades con departamentos
 
   void _showFollowersModal(BuildContext context) {
     final followers = widget.userProvider.user?.followers ?? {};
@@ -322,26 +321,26 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
                         ),
                         subtitle: Text('@${user.userName}'),
                         onTap: () {
-                          debugPrint('” DEBUG: Intentando navegar a usuario');
+                          debugPrint('ðŸ” DEBUG: Intentando navegar a usuario');
                           debugPrint('  User ID: "${user.id}"');
                           debugPrint('  User ID isEmpty: ${user.id.isEmpty}');
                           debugPrint('  User ID length: ${user.id.length}');
 
                           if (user.id.isNotEmpty) {
                             final route = '/user-profile/${user.id.trim()}';
-                            debugPrint('” DEBUG: Ruta a navegar: $route');
+                            debugPrint('ðŸ” DEBUG: Ruta a navegar: $route');
                             Navigator.of(context).pop();
                             WidgetsBinding.instance.addPostFrameCallback((_) {
                               if (context.mounted) {
                                 debugPrint(
-                                  '” DEBUG: Ejecutando navegación: $route',
+                                  'ðŸ” DEBUG: Ejecutando navegaciÃ³n: $route',
                                 );
                                 context.push(route);
                               }
                             });
                           } else {
                             debugPrint(
-                              'âŒ ERROR: User ID está vacío, no se puede navegar',
+                              'âŒ ERROR: User ID estÃ¡ vacÃ­o, no se puede navegar',
                             );
                             ScaffoldMessenger.of(context).showSnackBar(
                               SnackBar(
@@ -439,26 +438,26 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
                         ),
                         subtitle: Text('@${user.userName}'),
                         onTap: () {
-                          debugPrint('” DEBUG: Intentando navegar a usuario');
+                          debugPrint('ðŸ” DEBUG: Intentando navegar a usuario');
                           debugPrint('  User ID: "${user.id}"');
                           debugPrint('  User ID isEmpty: ${user.id.isEmpty}');
                           debugPrint('  User ID length: ${user.id.length}');
 
                           if (user.id.isNotEmpty) {
                             final route = '/user-profile/${user.id.trim()}';
-                            debugPrint('” DEBUG: Ruta a navegar: $route');
+                            debugPrint('ðŸ” DEBUG: Ruta a navegar: $route');
                             Navigator.of(context).pop();
                             WidgetsBinding.instance.addPostFrameCallback((_) {
                               if (context.mounted) {
                                 debugPrint(
-                                  '” DEBUG: Ejecutando navegación: $route',
+                                  'ðŸ” DEBUG: Ejecutando navegaciÃ³n: $route',
                                 );
                                 context.push(route);
                               }
                             });
                           } else {
                             debugPrint(
-                              'âŒ ERROR: User ID está vacío, no se puede navegar',
+                              'âŒ ERROR: User ID estÃ¡ vacÃ­o, no se puede navegar',
                             );
                             ScaffoldMessenger.of(context).showSnackBar(
                               SnackBar(
@@ -488,9 +487,9 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
 
       if (userDoc.exists) {
         final data = userDoc.data() as Map<String, dynamic>;
-        // Asegurar que el ID está incluido en los datos
+        // Asegurar que el ID estÃ¡ incluido en los datos
         data['id'] = userDoc.id;
-        debugPrint('✓ Usuario cargado con ID: ${userDoc.id}');
+        debugPrint('âœ… Usuario cargado con ID: ${userDoc.id}');
         return BiuxUser.fromJsonMap(data);
       } else {
         debugPrint('âŒ Usuario no encontrado: $userId');
@@ -546,7 +545,7 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
                       child: OptimizedImagePicker(
                         currentImageUrl: selectedProfileImageUrl != null
                             ? (selectedProfileImageUrl?.isEmpty ?? false)
-                                  ? null // Cadena vacía = sin foto
+                                  ? null // Cadena vacÃ­a = sin foto
                                   : selectedProfileImageUrl // Tiene URL
                             : widget
                                   .userProvider
@@ -730,7 +729,7 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
                 ),
                 ElevatedButton.icon(
                   onPressed: () async {
-                    // Guardar referencias antes de cerrar el diálogo
+                    // Guardar referencias antes de cerrar el diÃ¡logo
                     final name = nameController.text.trim();
                     final username = usernameController.text.trim();
                     final description = descriptionController.text.trim();
@@ -748,7 +747,7 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
                       email: email,
                     );
 
-                    // Cerrar el diálogo
+                    // Cerrar el diÃ¡logo
                     if (mounted) {
                       Navigator.of(dialogContext).pop();
                     }
@@ -789,7 +788,7 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
     );
   }
 
-  // Función temporal para actualizar ciudades con departamentos
+  // FunciÃ³n temporal para actualizar ciudades con departamentos
 
   @override
   Widget build(BuildContext context) {
@@ -859,7 +858,7 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
                         padding: EdgeInsets.fromLTRB(16, 16, 16, 20),
                         child: Column(
                           children: [
-                            // Primera fila: Botón (+) izquierda y controles derecha
+                            // Primera fila: BotÃ³n (+) izquierda y controles derecha
                             Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
@@ -923,7 +922,7 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
                                   ],
                                 ),
 
-                                // Botones derechos: Editar + Configuración
+                                // Botones derechos: Editar + ConfiguraciÃ³n
                                 Row(
                                   mainAxisSize: MainAxisSize.min,
                                   children: [
@@ -1068,7 +1067,7 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
 
                             SizedBox(height: 16),
 
-                            // Tercera fila: Estadísticas
+                            // Tercera fila: EstadÃ­sticas
                             Row(
                               mainAxisAlignment: MainAxisAlignment.spaceAround,
                               children: [
@@ -1159,7 +1158,7 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
 
                             SizedBox(height: 12),
 
-                            // Descripción - Debajo de la foto, alineada a izquierda
+                            // DescripciÃ³n - Debajo de la foto, alineada a izquierda
                             if (widget.userProvider.user?.description != null &&
                                 widget
                                     .userProvider
@@ -1318,7 +1317,7 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
                               );
                             }
 
-                            // Sin datos o lista vacía
+                            // Sin datos o lista vacÃ­a
                             if (!snapshot.hasData ||
                                 snapshot.data == null ||
                                 (snapshot.data as dynamic).isEmpty) {
@@ -1363,7 +1362,7 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
                               );
                             }
 
-                            // Filtrar experiencias válidas
+                            // Filtrar experiencias vÃ¡lidas
                             final allExperiences = snapshot.data as dynamic;
                             final experiences = allExperiences.where((exp) {
                               // Filtrar historias (solo mostrar posts)
@@ -1378,7 +1377,7 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
                                 if (!url.startsWith('http://') &&
                                     !url.startsWith('https://'))
                                   return false;
-                                // Para videos: validar que tenga thumbnail o URL válida
+                                // Para videos: validar que tenga thumbnail o URL vÃ¡lida
                                 if (media.mediaType == MediaType.video) {
                                   final thumb = media.thumbnailUrl ?? '';
                                   return thumb.isNotEmpty &&
@@ -1391,7 +1390,7 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
                               }
                             }).toList();
 
-                            // Eliminar publicaciones con imágenes que fallaron al cargar
+                            // Eliminar publicaciones con imÃ¡genes que fallaron al cargar
                             experiences.removeWhere(
                               (exp) =>
                                   _failedImageIds.contains(exp.id.toString()),
@@ -1418,7 +1417,7 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
                               });
                             }
 
-                            // Si después de filtrar no hay experiencias, mostrar el mensaje
+                            // Si despuÃ©s de filtrar no hay experiencias, mostrar el mensaje
                             if (experiences.isEmpty) {
                               return Container(
                                 width: double.infinity,
@@ -1619,7 +1618,7 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
                                                   color: ColorTokens.neutral60,
                                                 ),
                                               ),
-                                        // Badge de repost con línea diagonal (quitar repost al tocar)
+                                        // Badge de repost con lÃ­nea diagonal (quitar repost al tocar)
                                         if (_selectedTab == 1)
                                           Positioned(
                                             top: 4,
@@ -1721,7 +1720,7 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
                                               ),
                                             ),
                                           ),
-                                        // Botón de 3 puntos (menÃº)
+                                        // BotÃ³n de 3 puntos (menÃº)
                                         Positioned(
                                           top: 4,
                                           right: 4,
@@ -1748,7 +1747,7 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
                                             ),
                                           ),
                                         ),
-                                        // Indicador de mÃºltiples imágenes
+                                        // Indicador de mÃºltiples imÃ¡genes
                                         if (experience.media.length > 1)
                                           Positioned(
                                             bottom: 4,

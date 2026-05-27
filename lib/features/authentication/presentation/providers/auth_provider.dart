@@ -1,7 +1,6 @@
 ﻿import 'dart:async';
 
 import 'package:biux/features/authentication/domain/repositories/auth_repository_interface.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:biux/core/services/app_logger.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -58,18 +57,18 @@ class AuthProvider extends ChangeNotifier {
   }
 
   Future<void> sendCode(String phoneNumber) async {
-    // Validar formato de teléfono
+    // Validar formato de telÃ©fono
     final phoneRegex = RegExp(r'^\+?[0-9]{10,15}$');
     final cleanPhone = phoneNumber.trim().replaceAll(' ', '');
     if (cleanPhone.isEmpty || !phoneRegex.hasMatch(cleanPhone)) {
-      _errorMessage = 'NÃºmero de teléfono inválido';
+      _errorMessage = 'NÃºmero de telÃ©fono invÃ¡lido';
       _state = AuthState.error;
       notifyListeners();
       return;
     }
     try {
-      AppLogger.debug('“² [AuthProvider] Iniciando proceso de envío de código');
-      AppLogger.debug('   Teléfono: $phoneNumber');
+      AppLogger.debug('ðŸ“² [AuthProvider] Iniciando proceso de envÃ­o de cÃ³digo');
+      AppLogger.debug('   TelÃ©fono: $phoneNumber');
       AppLogger.debug('   Intento: ${_sendAttempts + 1}/$_maxSendAttempts');
 
       _state = AuthState.loading;
@@ -82,25 +81,25 @@ class AuthProvider extends ChangeNotifier {
         AppLogger.debug('   âš ï¸ Este es reintento #${_sendAttempts}');
       }
 
-      AppLogger.debug('“¤ Enviando request a N8N...');
+      AppLogger.debug('ðŸ“¤ Enviando request a N8N...');
       await _authRepository.sendOTP(phoneNumber);
 
-      _sendAttempts = 0; // Reset en caso de éxito
+      _sendAttempts = 0; // Reset en caso de Ã©xito
       _state = AuthState.codeSent;
-      AppLogger.info('✓ [AuthProvider] Código enviado - Esperando validación');
+      AppLogger.info('âœ… [AuthProvider] CÃ³digo enviado - Esperando validaciÃ³n');
       _startResendTimer();
     } on FirebaseException catch (e) {
       _sendAttempts++;
       _state = AuthState.error;
       _errorMessage = e.toString();
 
-      AppLogger.error('âŒ [AuthProvider] Error al enviar código:');
+      AppLogger.error('âŒ [AuthProvider] Error al enviar cÃ³digo:');
       AppLogger.debug('   Mensaje: $_errorMessage');
       AppLogger.debug(
         '   Intentos realizados: $_sendAttempts/$_maxSendAttempts',
       );
 
-      // Limpiar el mensaje de excepción si empieza con "Exception: "
+      // Limpiar el mensaje de excepciÃ³n si empieza con "Exception: "
       if (_errorMessage?.startsWith('Exception: ') ?? false) {
         _errorMessage = _errorMessage?.replaceFirst('Exception: ', '');
       }
@@ -114,7 +113,7 @@ class AuthProvider extends ChangeNotifier {
 
   Future<void> validateCode(String code) async {
     if (_phoneNumber == null) {
-      AppLogger.error('âŒ [AuthProvider] No hay nÃºmero de teléfono registrado');
+      AppLogger.error('âŒ [AuthProvider] No hay nÃºmero de telÃ©fono registrado');
       _state = AuthState.error;
       _errorMessage = 'err_no_phone_found';
       notifyListeners();
@@ -122,26 +121,26 @@ class AuthProvider extends ChangeNotifier {
     }
 
     if (_state == AuthState.loading) {
-      AppLogger.debug('â³ [AuthProvider] Ya hay una validación en proceso');
+      AppLogger.debug('â³ [AuthProvider] Ya hay una validaciÃ³n en proceso');
       return;
     }
 
     try {
-      AppLogger.debug('” [AuthProvider] Iniciando validación de código');
-      AppLogger.debug('   Teléfono: $_phoneNumber');
-      AppLogger.debug('   Código: ${code.replaceAll(RegExp(r'.'), '*')}');
+      AppLogger.debug('ðŸ” [AuthProvider] Iniciando validaciÃ³n de cÃ³digo');
+      AppLogger.debug('   TelÃ©fono: $_phoneNumber');
+      AppLogger.debug('   CÃ³digo: ${code.replaceAll(RegExp(r'.'), '*')}');
 
       _state = AuthState.loading;
       _errorMessage = null;
       notifyListeners();
 
-      AppLogger.debug('“¤ Enviando validación a N8N...');
+      AppLogger.debug('ðŸ“¤ Enviando validaciÃ³n a N8N...');
       final authResponse = await _authRepository.validateOTP(
         _phoneNumber!,
         code,
       );
 
-      AppLogger.info('✓ [AuthProvider] Código validado correctamente');
+      AppLogger.info('âœ… [AuthProvider] CÃ³digo validado correctamente');
 
       if (authResponse.token == null || authResponse.token!.isEmpty) {
         _state = AuthState.error;
@@ -151,25 +150,25 @@ class AuthProvider extends ChangeNotifier {
       }
 
       AppLogger.debug(
-        '”‘ Token recibido: ${authResponse.token!.substring(0, 20)}...',
+        'ðŸ”‘ Token recibido: ${authResponse.token!.substring(0, 20)}...',
       );
 
       // Autenticar con Firebase
-      AppLogger.debug('” Autenticando con Firebase...');
+      AppLogger.debug('ðŸ” Autenticando con Firebase...');
       final userCredential = await _auth.signInWithCustomToken(
         authResponse.token!,
       );
       final user = userCredential.user;
 
-      AppLogger.info('✓ [AuthProvider] Usuario autenticado en Firebase');
+      AppLogger.info('âœ… [AuthProvider] Usuario autenticado en Firebase');
       AppLogger.debug('   UID: ${user?.uid}');
 
       // Obtener token ID para base de datos
       final idToken = await user?.getIdToken();
-      AppLogger.debug('Ž« Token ID obtenido: ${idToken?.substring(0, 50)}...');
+      AppLogger.debug('ðŸŽ« Token ID obtenido: ${idToken?.substring(0, 50)}...');
 
       // Reinicializar servicio de notificaciones con el usuario autenticado
-      AppLogger.debug('“¢ Reinicializando servicio de notificaciones...');
+      AppLogger.debug('ðŸ“¢ Reinicializando servicio de notificaciones...');
       await NotificationService().reinitializeAfterLogin();
 
       // Verificar si el usuario necesita completar su perfil
@@ -177,16 +176,16 @@ class AuthProvider extends ChangeNotifier {
 
       _state = AuthState.authenticated;
       AppLogger.info(
-        '✓ [AuthProvider] ¡Autenticación completada exitosamente!',
+        'âœ… [AuthProvider] Â¡AutenticaciÃ³n completada exitosamente!',
       );
     } on FirebaseException catch (e) {
       _state = AuthState.codeSent;
       _errorMessage = e.toString();
 
-      AppLogger.error('âŒ [AuthProvider] Error en validación:');
+      AppLogger.error('âŒ [AuthProvider] Error en validaciÃ³n:');
       AppLogger.debug('   Mensaje: $_errorMessage');
 
-      // Limpiar el mensaje de excepción si empieza con "Exception: "
+      // Limpiar el mensaje de excepciÃ³n si empieza con "Exception: "
       if (_errorMessage?.startsWith('Exception: ') ?? false) {
         _errorMessage = _errorMessage?.replaceFirst('Exception: ', '');
       }
@@ -196,41 +195,41 @@ class AuthProvider extends ChangeNotifier {
 
   Future<void> resendCode() async {
     if (_phoneNumber != null && _canResendCode) {
-      AppLogger.debug('”„ [AuthProvider] Reenviando código a: $_phoneNumber');
+      AppLogger.debug('ðŸ”„ [AuthProvider] Reenviando cÃ³digo a: $_phoneNumber');
       await sendCode(_phoneNumber!);
     }
   }
 
   Future<void> signInAsGuest() async {
     try {
-      AppLogger.debug('‘¤ [AuthProvider] Iniciando sesión como invitado');
+      AppLogger.debug('ðŸ‘¤ [AuthProvider] Iniciando sesiÃ³n como invitado');
       _state = AuthState.loading;
       _errorMessage = null;
       notifyListeners();
 
-      // Usar Firebase Auth anónima
+      // Usar Firebase Auth anÃ³nima
       final userCredential = await _auth.signInAnonymously();
       final user = userCredential.user;
 
-      AppLogger.debug('‘¤ Usuario invitado autenticado: ${user?.uid}');
+      AppLogger.debug('ðŸ‘¤ Usuario invitado autenticado: ${user?.uid}');
 
       // Reinicializar servicio de notificaciones
       await NotificationService().reinitializeAfterLogin();
 
       _state = AuthState.authenticated;
-      AppLogger.info('✓ Sesión de invitado iniciada correctamente');
+      AppLogger.info('âœ… SesiÃ³n de invitado iniciada correctamente');
     } on FirebaseException catch (e) {
       _state = AuthState.error;
       _errorMessage = 'err_guest_login';
-      AppLogger.error('âŒ Error en sesión de invitado: $e');
+      AppLogger.error('âŒ Error en sesiÃ³n de invitado: $e');
     }
     notifyListeners();
   }
 
   Future<void> signOut() async {
     try {
-      AppLogger.debug('šª [AuthProvider] Cerrando sesión...');
-      // Forzar eliminación completa de la sesión
+      AppLogger.debug('ðŸšª [AuthProvider] Cerrando sesiÃ³n...');
+      // Forzar eliminaciÃ³n completa de la sesiÃ³n
       final currentUser = _auth.currentUser;
       if (currentUser != null) {
         AppLogger.debug('   Usuario: ${currentUser.uid}');
@@ -242,12 +241,12 @@ class AuthProvider extends ChangeNotifier {
         });
       }
       await _auth.signOut();
-      AppLogger.info('✓ Sesión cerrada completamente');
+      AppLogger.info('âœ… SesiÃ³n cerrada completamente');
       _state = AuthState.initial;
       _sendAttempts = 0;
       notifyListeners();
     } on FirebaseException catch (e) {
-      AppLogger.error('âŒ Error al cerrar sesión: $e');
+      AppLogger.error('âŒ Error al cerrar sesiÃ³n: $e');
       _errorMessage = 'err_sign_out';
       notifyListeners();
     }
@@ -256,7 +255,7 @@ class AuthProvider extends ChangeNotifier {
   /// Verifica si el usuario necesita completar su perfil
   Future<void> _checkProfileSetup(String uid) async {
     try {
-      AppLogger.debug('” Verificando perfil del usuario: $uid');
+      AppLogger.debug('ðŸ” Verificando perfil del usuario: $uid');
       final doc = await _firestore.collection('users').doc(uid).get();
 
       if (doc.exists) {
@@ -271,7 +270,7 @@ class AuthProvider extends ChangeNotifier {
           AppLogger.warning('âš ï¸ Usuario necesita completar perfil');
         } else {
           _needsProfileSetup = false;
-          AppLogger.info('✓ Usuario tiene perfil completo');
+          AppLogger.info('âœ… Usuario tiene perfil completo');
         }
       } else {
         // Si el documento no existe, necesita crear perfil
@@ -284,123 +283,6 @@ class AuthProvider extends ChangeNotifier {
       AppLogger.error('âŒ Error verificando perfil: $e');
       _needsProfileSetup = false; // En caso de error, no bloquear
     }
-  }
-
-  Future<void> loginWithEmail(String email, String password) async {
-    try {
-      AppLogger.debug('📧 [AuthProvider] Iniciando login con email');
-      AppLogger.debug('   Email: $email');
-
-      _state = AuthState.loading;
-      _errorMessage = null;
-      notifyListeners();
-
-      AppLogger.debug('🔤 Autenticando con Firebase Auth...');
-      final userCredential = await _auth.signInWithEmailAndPassword(
-        email: email,
-        password: password,
-      );
-      final user = userCredential.user;
-
-      if (user == null) {
-        _state = AuthState.error;
-        _errorMessage = 'err_login_failed';
-        AppLogger.error('❌ Usuario nulo después del login');
-        notifyListeners();
-        return;
-      }
-
-      AppLogger.debug('✅ Usuario autenticado: ${user.uid}');
-
-      // Reinicializar servicio de notificaciones
-      await NotificationService().reinitializeAfterLogin();
-
-      // Verificar si perfil está completo
-      await _checkProfileSetup(user.uid);
-
-      _state = AuthState.authenticated;
-      AppLogger.info('✅ Login con email completado');
-    } on FirebaseException catch (e) {
-      _state = AuthState.error;
-      if (e.code == 'user-not-found') {
-        _errorMessage = 'err_user_not_found';
-      } else if (e.code == 'wrong-password') {
-        _errorMessage = 'err_wrong_password';
-      } else {
-        _errorMessage = e.message ?? 'err_login_failed';
-      }
-      AppLogger.error('❌ Error en login: $e');
-    } catch (e) {
-      _state = AuthState.error;
-      _errorMessage = 'err_login_failed';
-      AppLogger.error('❌ Error inesperado en login: $e');
-    }
-    notifyListeners();
-  }
-
-  Future<void> registerWithEmail(String email, String password) async {
-    try {
-      AppLogger.debug('📧 [AuthProvider] Iniciando registro con email');
-      AppLogger.debug('   Email: $email');
-
-      _state = AuthState.loading;
-      _errorMessage = null;
-      notifyListeners();
-
-      AppLogger.debug('🔤 Registrando nuevo usuario en Firebase Auth...');
-      final userCredential = await _auth.createUserWithEmailAndPassword(
-        email: email,
-        password: password,
-      );
-      final user = userCredential.user;
-
-      if (user == null) {
-        _state = AuthState.error;
-        _errorMessage = 'err_register_failed';
-        AppLogger.error('❌ Usuario nulo después del registro');
-        notifyListeners();
-        return;
-      }
-
-      AppLogger.debug('✅ Usuario registrado: ${user.uid}');
-
-      // Crear documento básico de usuario
-      AppLogger.debug('📝 Creando documento de usuario en Firestore...');
-      await _firestore.collection('users').doc(user.uid).set({
-        'uid': user.uid,
-        'email': email,
-        'createdAt': DateTime.now().millisecondsSinceEpoch,
-        'updatedAt': DateTime.now().millisecondsSinceEpoch,
-      }, SetOptions(merge: true));
-
-      AppLogger.debug('✅ Documento de usuario creado');
-
-      // Reinicializar servicio de notificaciones
-      await NotificationService().reinitializeAfterLogin();
-
-      // Marcar que necesita completar perfil
-      _needsProfileSetup = true;
-
-      _state = AuthState.authenticated;
-      AppLogger.info('✅ Registro completado, usuario necesita completar perfil');
-    } on FirebaseException catch (e) {
-      _state = AuthState.error;
-      if (e.code == 'email-already-in-use') {
-        _errorMessage = 'err_email_exists';
-      } else if (e.code == 'weak-password') {
-        _errorMessage = 'err_weak_password';
-      } else if (e.code == 'invalid-email') {
-        _errorMessage = 'err_invalid_email';
-      } else {
-        _errorMessage = e.message ?? 'err_register_failed';
-      }
-      AppLogger.error('❌ Error en registro: $e');
-    } catch (e) {
-      _state = AuthState.error;
-      _errorMessage = 'err_register_failed';
-      AppLogger.error('❌ Error inesperado en registro: $e');
-    }
-    notifyListeners();
   }
 
   @override

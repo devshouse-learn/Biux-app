@@ -1,5 +1,4 @@
 ﻿import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:biux/core/services/app_logger.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
@@ -21,7 +20,7 @@ import 'package:biux/features/groups/domain/usecases/reject_join_request_usecase
 import 'package:biux/features/groups/domain/usecases/cancel_join_request_usecase.dart';
 import 'package:biux/features/groups/domain/usecases/search_groups_usecase.dart';
 
-// Repositories (para creación de use cases y operaciones cross-feature)
+// Repositories (para creaciÃ³n de use cases y operaciones cross-feature)
 import 'package:biux/features/groups/data/repositories/group_repository.dart';
 import 'package:biux/features/rides/data/repositories/ride_repository.dart';
 import 'package:biux/features/users/data/repositories/user_repository.dart';
@@ -57,7 +56,7 @@ class GroupProvider extends ChangeNotifier {
   GroupModel? _selectedGroup;
   final Map<String, UserModel> _userCache = {};
 
-  // â”€â”€â”€ Constructor (compatible sin parámetros para main.dart) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // â”€â”€â”€ Constructor (compatible sin parÃ¡metros para main.dart) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   GroupProvider({
     GroupRepository? repository,
     UserRepository? userRepository,
@@ -424,7 +423,7 @@ class GroupProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  // â”€â”€â”€ Estado de membresía (lógica pura, sin repositorio) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // â”€â”€â”€ Estado de membresÃ­a (lÃ³gica pura, sin repositorio) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
   GroupMembershipStatus getUserStatus(GroupModel group) {
     if (currentUserId == null) return GroupMembershipStatus.notMember;
@@ -577,7 +576,7 @@ class GroupProvider extends ChangeNotifier {
     }
   }
 
-  // â”€â”€â”€ Métodos privados â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // â”€â”€â”€ MÃ©todos privados â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
   void _setLoading(bool loading) {
     _isLoading = loading;

@@ -76,7 +76,7 @@ class NotificationService {
     const androidChannel = AndroidNotificationChannel(
       'biux_notifications', // id
       'Notificaciones de Biux', // nombre
-      description: 'Notificaciones generales de la aplicación',
+      description: 'Notificaciones generales de la aplicaciÃ³n',
       importance: Importance.high,
       playSound: true,
       enableVibration: true,
@@ -102,59 +102,59 @@ class NotificationService {
     );
 
     AppLogger.debug(
-      'Permisos de notificación: ${settings.authorizationStatus}',
+      'Permisos de notificaciÃ³n: ${settings.authorizationStatus}',
       tag: 'Notifications',
     );
   }
 
   /// Configura los manejadores de FCM
   void _configureFCMHandlers() {
-    // Mensaje recibido cuando la app está en foreground
+    // Mensaje recibido cuando la app estÃ¡ en foreground
     _onMessageSubscription = FirebaseMessaging.onMessage.listen(_handleForegroundMessage);
 
-    // Mensaje tocado cuando la app está en background/terminated
+    // Mensaje tocado cuando la app estÃ¡ en background/terminated
     _onMessageOpenedAppSubscription = FirebaseMessaging.onMessageOpenedApp.listen(_handleMessageOpenedApp);
 
-    // Verificar si la app se abrió desde una notificación
+    // Verificar si la app se abriÃ³ desde una notificaciÃ³n
     _checkInitialMessage();
   }
 
-  /// Maneja mensajes cuando la app está en primer plano
+  /// Maneja mensajes cuando la app estÃ¡ en primer plano
   Future<void> _handleForegroundMessage(RemoteMessage message) async {
     AppLogger.debug(
-      'Notificación foreground: ${message.messageId}',
+      'NotificaciÃ³n foreground: ${message.messageId}',
       tag: 'Notifications',
     );
 
-    // Crear notificación en Firestore
+    // Crear notificaciÃ³n en Firestore
     await _saveNotificationToFirestore(message);
 
-    // Mostrar notificación local
+    // Mostrar notificaciÃ³n local
     await _showLocalNotification(message);
 
     // Emitir evento para actualizar UI
     _notificationStreamController.add(message.data);
   }
 
-  /// Maneja cuando el usuario toca una notificación (app en background)
+  /// Maneja cuando el usuario toca una notificaciÃ³n (app en background)
   void _handleMessageOpenedApp(RemoteMessage message) {
     AppLogger.debug(
-      'Notificación tocada (background): ${message.messageId}',
+      'NotificaciÃ³n tocada (background): ${message.messageId}',
       tag: 'Notifications',
     );
 
-    // Agregar delay para asegurar que el contexto esté listo
+    // Agregar delay para asegurar que el contexto estÃ© listo
     Future.delayed(const Duration(milliseconds: 500), () {
       _notificationStreamController.add({...message.data, 'opened': true});
     });
   }
 
-  /// Verifica si la app se abrió desde una notificación
+  /// Verifica si la app se abriÃ³ desde una notificaciÃ³n
   Future<void> _checkInitialMessage() async {
     final initialMessage = await _fcm.getInitialMessage();
     if (initialMessage != null) {
       AppLogger.debug(
-        'App abierta desde notificación (terminated)',
+        'App abierta desde notificaciÃ³n (terminated)',
         tag: 'Notifications',
       );
 
@@ -168,7 +168,7 @@ class NotificationService {
     }
   }
 
-  /// Guarda la notificación en Firestore
+  /// Guarda la notificaciÃ³n en Firestore
   Future<void> _saveNotificationToFirestore(RemoteMessage message) async {
     try {
       final userId = FirebaseAuth.instance.currentUser?.uid;
@@ -198,19 +198,19 @@ class NotificationService {
           });
 
       AppLogger.debug(
-        'Notificación guardada en Firestore',
+        'NotificaciÃ³n guardada en Firestore',
         tag: 'Notifications',
       );
     } on FirebaseException catch (e) {
       AppLogger.error(
-        'Error guardando notificación en Firestore',
+        'Error guardando notificaciÃ³n en Firestore',
         tag: 'Notifications',
         error: e,
       );
     }
   }
 
-  /// Muestra una notificación local
+  /// Muestra una notificaciÃ³n local
   Future<void> _showLocalNotification(RemoteMessage message) async {
     final notification = message.notification;
     final data = message.data;
@@ -220,7 +220,7 @@ class NotificationService {
     const androidDetails = AndroidNotificationDetails(
       'biux_notifications',
       'Notificaciones de Biux',
-      channelDescription: 'Notificaciones generales de la aplicación',
+      channelDescription: 'Notificaciones generales de la aplicaciÃ³n',
       importance: Importance.high,
       priority: Priority.high,
       showWhen: true,
@@ -247,7 +247,7 @@ class NotificationService {
     );
   }
 
-  /// Maneja cuando se toca una notificación local
+  /// Maneja cuando se toca una notificaciÃ³n local
   // ignore: unused_element
   void _onNotificationTapped(NotificationResponse response) {
     if (response.payload != null) {
@@ -256,7 +256,7 @@ class NotificationService {
         _notificationStreamController.add({...data, 'opened': true});
       } on FirebaseException catch (e) {
         AppLogger.error(
-          'Error procesando payload de notificación',
+          'Error procesando payload de notificaciÃ³n',
           tag: 'Notifications',
           error: e,
         );
@@ -311,7 +311,7 @@ class NotificationService {
     }
   }
 
-  /// Reinicializa el servicio después del login (guarda token del usuario actual)
+  /// Reinicializa el servicio despuÃ©s del login (guarda token del usuario actual)
   Future<void> reinitializeAfterLogin() async {
     try {
       final userId = FirebaseAuth.instance.currentUser?.uid;
@@ -323,7 +323,7 @@ class NotificationService {
       // Obtener y guardar token
       await _saveDeviceToken();
 
-      // Inicializar preferencias de notificación si no existen
+      // Inicializar preferencias de notificaciÃ³n si no existen
       await _ensureNotificationSettings(userId);
 
       AppLogger.info(
@@ -339,7 +339,7 @@ class NotificationService {
     }
   }
 
-  /// Asegura que el usuario tenga preferencias de notificación configuradas
+  /// Asegura que el usuario tenga preferencias de notificaciÃ³n configuradas
   Future<void> _ensureNotificationSettings(String userId) async {
     try {
       final userDoc = await FirebaseFirestore.instance
@@ -368,7 +368,7 @@ class NotificationService {
           'notificationSettings': defaultSettings,
         }, SetOptions(merge: true));
 
-        // También guardar en la subcolección
+        // TambiÃ©n guardar en la subcolecciÃ³n
         await FirebaseFirestore.instance
             .collection('users')
             .doc(userId)
@@ -377,7 +377,7 @@ class NotificationService {
             .set(defaultSettings);
 
         AppLogger.debug(
-          'Preferencias de notificación inicializadas',
+          'Preferencias de notificaciÃ³n inicializadas',
           tag: 'Notifications',
         );
       }
@@ -395,7 +395,7 @@ class NotificationService {
     await _localNotifications.cancelAll();
   }
 
-  /// Cancela una notificación específica
+  /// Cancela una notificaciÃ³n especÃ­fica
   Future<void> cancelNotification(int id) async {
     await _localNotifications.cancel(id: id);
   }
@@ -445,7 +445,7 @@ class NotificationService {
   // NUEVAS FUNCIONALIDADES: Sistema Anti-Robo
   // ========================================
 
-  /// Envía notificación al propietario cuando alguien intenta vender su bici robada
+  /// EnvÃ­a notificaciÃ³n al propietario cuando alguien intenta vender su bici robada
   Future<void> notifyStolenBikeSaleAttempt({
     required String bikeOwnerId,
     required String bikeFrameSerial,
@@ -485,7 +485,7 @@ class NotificationService {
         return;
       }
 
-      // Crear notificación en Firestore
+      // Crear notificaciÃ³n en Firestore
       await FirebaseFirestore.instance
           .collection('users')
           .doc(bikeOwnerId)
@@ -507,7 +507,7 @@ class NotificationService {
             'createdAt': FieldValue.serverTimestamp(),
           });
 
-      // Crear alerta en la colección de alertas de administración
+      // Crear alerta en la colecciÃ³n de alertas de administraciÃ³n
       await FirebaseFirestore.instance.collection('theft_alerts').add({
         'bikeOwnerId': bikeOwnerId,
         'sellerUid': sellerUid,
@@ -594,6 +594,6 @@ class NotificationService {
 /// Manejador de mensajes en background (debe estar fuera de la clase)
 @pragma('vm:entry-point')
 Future<void> firebaseMessagingBackgroundHandler(RemoteMessage message) async {
-  // Background handler - no se puede usar AppLogger aquí (isolate separado)
+  // Background handler - no se puede usar AppLogger aquÃ­ (isolate separado)
 }
 

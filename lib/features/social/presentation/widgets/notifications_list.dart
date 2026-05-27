@@ -77,7 +77,7 @@ class NotificationsList extends StatelessWidget {
   }
 }
 
-/// Widget de elemento de notificación individual
+/// Widget de elemento de notificaciÃ³n individual
 class NotificationItem extends StatefulWidget {
   final NotificationEntity notification;
 
@@ -95,7 +95,7 @@ class _NotificationItemState extends State<NotificationItem> {
 
   @override
   Widget build(BuildContext context) {
-    // Configurar locale español para timeago
+    // Configurar locale espaÃ±ol para timeago
     timeago.setLocaleMessages('es', timeago.EsMessages());
 
     final provider = context.read<NotificationsProvider>();
@@ -254,7 +254,7 @@ class _NotificationItemState extends State<NotificationItem> {
             ? Colors.grey[900]
             : Colors.blue[50],
         onTap: () {
-          // Marcar como leída
+          // Marcar como leÃ­da
           if (!widget.notification.isRead) {
             provider.markAsRead(widget.notification.id);
           }
@@ -284,7 +284,7 @@ class _NotificationItemState extends State<NotificationItem> {
         });
 
         if (success) {
-          // Marcar la notificación como leída
+          // Marcar la notificaciÃ³n como leÃ­da
           context.read<NotificationsProvider>().markAsRead(
             widget.notification.id,
           );
@@ -320,7 +320,7 @@ class _NotificationItemState extends State<NotificationItem> {
         });
 
         if (success) {
-          // Marcar la notificación como leída
+          // Marcar la notificaciÃ³n como leÃ­da
           context.read<NotificationsProvider>().markAsRead(
             widget.notification.id,
           );
@@ -373,7 +373,7 @@ class _NotificationItemState extends State<NotificationItem> {
     }
 
     switch (widget.notification.type) {
-      // LIKES - Navegar al contenido específico
+      // LIKES - Navegar al contenido especÃ­fico
       case NotificationType.likePost:
         // Para posts, ir al detalle del post
         context.push('/post-detail/${widget.notification.targetId}');
@@ -422,7 +422,7 @@ class _NotificationItemState extends State<NotificationItem> {
         context.push('/user-profile/${widget.notification.fromUserId}');
         break;
 
-      // COMENTARIOS - Navegar directamente a la sección de comentarios
+      // COMENTARIOS - Navegar directamente a la secciÃ³n de comentarios
       case NotificationType.commentPost:
         // Para comentarios en posts, ir al detalle del post
         context.push('/post-detail/${widget.notification.targetId}');

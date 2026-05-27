@@ -1,5 +1,4 @@
 ﻿import 'package:flutter/material.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:provider/provider.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:video_player/video_player.dart';
@@ -37,7 +36,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
   @override
   void initState() {
     super.initState();
-    // No llamar _loadProduct aquí para evitar usar context antes de que el widget esté montado
+    // No llamar _loadProduct aquÃ­ para evitar usar context antes de que el widget estÃ© montado
   }
 
   @override
@@ -57,31 +56,31 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
   Future<void> _loadProduct() async {
     final l = Provider.of<LocaleNotifier>(context, listen: false);
     try {
-      debugPrint('” Buscando producto con ID: ${widget.productId}');
+      debugPrint('ðŸ” Buscando producto con ID: ${widget.productId}');
       final shopProvider = context.read<ShopProvider>();
 
-      // Asegurarse de que los productos estén cargados
+      // Asegurarse de que los productos estÃ©n cargados
       if (shopProvider.products.isEmpty) {
-        debugPrint('“¦ Cargando productos desde Firebase...');
+        debugPrint('ðŸ“¦ Cargando productos desde Firebase...');
         await shopProvider.loadProducts();
-        debugPrint('✓ Productos cargados: ${shopProvider.products.length}');
+        debugPrint('âœ… Productos cargados: ${shopProvider.products.length}');
       } else {
         debugPrint(
-          '“¦ Ya hay ${shopProvider.products.length} productos cargados',
+          'ðŸ“¦ Ya hay ${shopProvider.products.length} productos cargados',
         );
       }
 
-      // Buscar el producto específico
+      // Buscar el producto especÃ­fico
       ProductEntity? product;
       try {
         product = shopProvider.products.firstWhere(
           (p) => p.id == widget.productId,
         );
-        debugPrint('✓ Producto encontrado: ${product.name}');
+        debugPrint('âœ… Producto encontrado: ${product.name}');
       } on FirebaseException catch (e) {
         debugPrint('âŒ Producto con ID ${widget.productId} no encontrado');
         debugPrint(
-          '“‹ IDs disponibles: ${shopProvider.products.map((p) => p.id).join(", ")}',
+          'ðŸ“‹ IDs disponibles: ${shopProvider.products.map((p) => p.id).join(", ")}',
         );
 
         if (!mounted) return;
@@ -91,7 +90,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
           _hasError = true;
         });
 
-        // Mostrar snackbar solo si el widget está montado
+        // Mostrar snackbar solo si el widget estÃ¡ montado
         WidgetsBinding.instance.addPostFrameCallback((_) {
           if (mounted) {
             if (context.mounted)
@@ -103,7 +102,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                 ),
               );
 
-            // Regresar a la tienda después de mostrar el error
+            // Regresar a la tienda despuÃ©s de mostrar el error
             Future.delayed(const Duration(seconds: 2), () {
               if (mounted) {
                 debugPrint('â¬…ï¸ Regresando a la tienda...');
@@ -130,7 +129,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
       if (product.hasVideo &&
           product.videoUrl != null &&
           product.videoUrl!.isNotEmpty) {
-        debugPrint('Ž¥ Inicializando video: ${product.videoUrl}');
+        debugPrint('ðŸŽ¥ Inicializando video: ${product.videoUrl}');
         _initializeVideo(product.videoUrl!);
       }
     } on FirebaseException catch (e) {
@@ -191,7 +190,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
       return;
     }
 
-    debugPrint('›’ Intentando agregar al carrito: ${_product!.name}');
+    debugPrint('ðŸ›’ Intentando agregar al carrito: ${_product!.name}');
     debugPrint('  - ID: ${_product!.id}');
     debugPrint('  - Precio: \$${_product!.price}');
     debugPrint('  - Cantidad: $_quantity');
@@ -210,14 +209,14 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
     }
 
     final shopProvider = context.read<ShopProvider>();
-    debugPrint('“¦ Carrito antes: ${shopProvider.cartItems.length} items');
+    debugPrint('ðŸ“¦ Carrito antes: ${shopProvider.cartItems.length} items');
 
     for (int i = 0; i < _quantity; i++) {
       shopProvider.addToCart(_product!, selectedSize: _selectedSize);
     }
 
-    debugPrint('“¦ Carrito después: ${shopProvider.cartItems.length} items');
-    debugPrint('✓ Producto agregado exitosamente');
+    debugPrint('ðŸ“¦ Carrito despuÃ©s: ${shopProvider.cartItems.length} items');
+    debugPrint('âœ… Producto agregado exitosamente');
 
     if (mounted) {
       if (context.mounted)
@@ -574,7 +573,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                   );
                 },
               ),
-              // Botón de opciones para el vendedor
+              // BotÃ³n de opciones para el vendedor
               Consumer<UserProvider>(
                 builder: (context, userProvider, child) {
                   final currentUser = userProvider.user;
@@ -632,7 +631,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // Indicador de imágenes/video
+                  // Indicador de imÃ¡genes/video
                   if (_product!.images.length > 1 || _product!.hasVideo)
                     _buildMediaIndicator(),
                   const SizedBox(height: 20),
@@ -734,7 +733,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                               _selectedSize = size;
                             });
                           },
-                          // ✓ Colores con buen contraste para leer las tallas
+                          // âœ… Colores con buen contraste para leer las tallas
                           selectedColor: ColorTokens.primary30,
                           backgroundColor: Colors.grey[100],
                           labelStyle: TextStyle(
@@ -754,7 +753,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                     SizedBox(height: 24),
                   ],
 
-                  // Descripción detallada
+                  // DescripciÃ³n detallada
                   Text(
                     l.t('description'),
                     style: const TextStyle(
@@ -804,15 +803,15 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
         }
       },
       itemBuilder: (context, index) {
-        // Mostrar video en el Ãºltimo índice si existe
+        // Mostrar video en el Ãºltimo Ã­ndice si existe
         if (_product!.hasVideo && index == _product!.images.length) {
           return _buildVideoPlayer();
         }
 
-        // Mostrar imágenes
+        // Mostrar imÃ¡genes
         final imageUrl = _product!.images[index];
 
-        // ✓ Soportar imágenes locales con protocolo asset://
+        // âœ… Soportar imÃ¡genes locales con protocolo asset://
         if (imageUrl.startsWith('asset://')) {
           final assetPath = imageUrl.replaceFirst('asset://', '');
           return Image.asset(
@@ -829,7 +828,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
           );
         }
 
-        // ✓ Soportar mock placeholders
+        // âœ… Soportar mock placeholders
         if (imageUrl.startsWith('mock://')) {
           return Container(
             color: Colors.grey[200],
@@ -1039,10 +1038,10 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
             ),
             const SizedBox(height: 16),
 
-            // Botones de acción
+            // Botones de acciÃ³n
             Row(
               children: [
-                // Botón Agregar al carrito
+                // BotÃ³n Agregar al carrito
                 Expanded(
                   child: OutlinedButton.icon(
                     onPressed: _product!.isAvailable ? _addToCart : null,
@@ -1060,7 +1059,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                 ),
                 const SizedBox(width: 12),
 
-                // Botón Comprar ahora
+                // BotÃ³n Comprar ahora
                 Expanded(
                   child: ElevatedButton.icon(
                     onPressed: _product!.isAvailable ? _buyNow : null,
@@ -1079,7 +1078,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
               ],
             ),
 
-            // NUEVA FUNCIONALIDAD: Botón para ver código QR (solo para bicis verificadas)
+            // NUEVA FUNCIONALIDAD: BotÃ³n para ver cÃ³digo QR (solo para bicis verificadas)
             if (_product!.isBicycle && _product!.isVerifiedNotStolen) ...[
               const SizedBox(height: 16),
               Container(

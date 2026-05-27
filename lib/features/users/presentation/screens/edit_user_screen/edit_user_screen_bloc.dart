@@ -1,7 +1,6 @@
 ﻿import 'dart:io';
 
 import 'package:biux/features/cities/data/models/city.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:biux/features/users/data/models/user.dart';
 import 'package:biux/features/authentication/data/repositories/authentication_repository.dart';
 import 'package:biux/features/cities/data/repositories/cities_firebase_repository.dart';
@@ -70,13 +69,13 @@ class EditUserScreenBloc extends ChangeNotifier {
     return image;
   }
 
-  /// Nuevo método para manejar imagen ya procesada desde ProfileImagePicker
+  /// Nuevo mÃ©todo para manejar imagen ya procesada desde ProfileImagePicker
   void setProcessedImage(File processedImage) {
     imageNew = processedImage;
     notifyListeners();
   }
 
-  /// Método para establecer la foto de portada
+  /// MÃ©todo para establecer la foto de portada
   void setProfileCoverImage(File coverImage) {
     profileCoverNew = coverImage;
     notifyListeners();
@@ -119,7 +118,7 @@ class EditUserScreenBloc extends ChangeNotifier {
 
   Future<void> uploadUpdate(BuildContext context) async {
     try {
-      debugPrint('“ Preparando actualización de perfil...');
+      debugPrint('ðŸ“ Preparando actualizaciÃ³n de perfil...');
 
       // Crear usuario con todos los datos (preservar los que no cambian)
       final uploadUser = BiuxUser(
@@ -133,7 +132,7 @@ class EditUserScreenBloc extends ChangeNotifier {
         gender: user.gender,
         dateBirth: user.dateBirth,
         facebook: user.facebook,
-        photo: user.photo, // Foto actual (será reemplazada si hay imagen nueva)
+        photo: user.photo, // Foto actual (serÃ¡ reemplazada si hay imagen nueva)
         token: user.token,
         modality: user.modality,
         premium: user.premium,
@@ -146,36 +145,36 @@ class EditUserScreenBloc extends ChangeNotifier {
         situationAccident: user.situationAccident,
       );
 
-      debugPrint('“¤ Enviando datos a Firebase...');
+      debugPrint('ðŸ“¤ Enviando datos a Firebase...');
       await UserFirebaseRepository().updateUser(uploadUser);
 
-      debugPrint('“· Verificando si hay foto nueva para subir...');
+      debugPrint('ðŸ“· Verificando si hay foto nueva para subir...');
       if (imageNew != null) {
-        debugPrint('“¤ Subiendo foto de perfil...');
+        debugPrint('ðŸ“¤ Subiendo foto de perfil...');
         await UserFirebaseRepository().uploadPhoto(user.id, imageNew);
-        debugPrint('✓ Foto subida correctamente');
+        debugPrint('âœ… Foto subida correctamente');
       } else {
         debugPrint('â„¹ï¸ No hay foto nueva');
       }
 
       // Verificar si hay foto de portada nueva para subir
-      debugPrint('–¼ï¸ Verificando si hay foto de portada nueva...');
+      debugPrint('ðŸ–¼ï¸ Verificando si hay foto de portada nueva...');
       if (profileCoverNew != null) {
-        debugPrint('“¤ Subiendo foto de portada...');
+        debugPrint('ðŸ“¤ Subiendo foto de portada...');
         await UserFirebaseRepository().uploadProfileCover(
           user.id,
           profileCoverNew,
         );
-        debugPrint('✓ Foto de portada subida correctamente');
+        debugPrint('âœ… Foto de portada subida correctamente');
       } else {
         debugPrint('â„¹ï¸ No hay foto de portada nueva');
       }
 
-      // Recargar datos del usuario para asegurar sincronización
-      debugPrint('”„ Recargando datos del perfil...');
+      // Recargar datos del usuario para asegurar sincronizaciÃ³n
+      debugPrint('ðŸ”„ Recargando datos del perfil...');
       await getUser();
 
-      debugPrint('✓ Perfil actualizado completamente');
+      debugPrint('âœ… Perfil actualizado completamente');
       notifyListeners();
     } on FirebaseException catch (e) {
       debugPrint('âŒ Error al actualizar perfil: $e');

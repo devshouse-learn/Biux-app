@@ -22,7 +22,7 @@ class SellerRequestProvider with ChangeNotifier {
 
   /// Inicializa los listeners de solicitudes
   void initialize() {
-    debugPrint('”” Inicializando SellerRequestProvider');
+    debugPrint('ðŸ”” Inicializando SellerRequestProvider');
     _listenToPendingRequests();
     _listenToAllRequests();
     _listenToPendingCount();
@@ -34,7 +34,7 @@ class SellerRequestProvider with ChangeNotifier {
       (requests) {
         _pendingRequests = requests;
         debugPrint(
-          '“‹ Solicitudes pendientes actualizadas: ${requests.length}',
+          'ðŸ“‹ Solicitudes pendientes actualizadas: ${requests.length}',
         );
         notifyListeners();
       },
@@ -51,7 +51,7 @@ class SellerRequestProvider with ChangeNotifier {
     _service.getAllRequests().listen(
       (requests) {
         _requests = requests;
-        debugPrint('“‹ Todas las solicitudes actualizadas: ${requests.length}');
+        debugPrint('ðŸ“‹ Todas las solicitudes actualizadas: ${requests.length}');
         notifyListeners();
       },
       onError: (error) {

@@ -14,7 +14,7 @@ class LocationProvider extends ChangeNotifier {
   bool get hasPermission => _hasPermission;
   bool get permissionRequested => _permissionRequested;
 
-  /// Solicita permisos de ubicación solo cuando se necesite
+  /// Solicita permisos de ubicaciÃ³n solo cuando se necesite
   Future<bool> requestLocationPermission() async {
     if (_permissionRequested && _hasPermission) {
       return true;
@@ -25,11 +25,11 @@ class LocationProvider extends ChangeNotifier {
     _error = null;
 
     try {
-      // Verificar si el servicio de ubicación está habilitado
+      // Verificar si el servicio de ubicaciÃ³n estÃ¡ habilitado
       bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
       if (!serviceEnabled) {
         _error =
-            'El servicio de ubicación está deshabilitado. Actívalo en configuración.';
+            'El servicio de ubicaciÃ³n estÃ¡ deshabilitado. ActÃ­valo en configuraciÃ³n.';
         _setLoading(false);
         return false;
       }
@@ -40,7 +40,7 @@ class LocationProvider extends ChangeNotifier {
       if (permission == LocationPermission.denied) {
         permission = await Geolocator.requestPermission();
         if (permission == LocationPermission.denied) {
-          _error = 'Permisos de ubicación denegados';
+          _error = 'Permisos de ubicaciÃ³n denegados';
           _setLoading(false);
           return false;
         }
@@ -48,7 +48,7 @@ class LocationProvider extends ChangeNotifier {
 
       if (permission == LocationPermission.deniedForever) {
         _error =
-            'Permisos de ubicación denegados permanentemente. Ve a configuración para habilitarlos.';
+            'Permisos de ubicaciÃ³n denegados permanentemente. Ve a configuraciÃ³n para habilitarlos.';
         _setLoading(false);
         return false;
       }
@@ -63,7 +63,7 @@ class LocationProvider extends ChangeNotifier {
     }
   }
 
-  /// Obtiene la ubicación actual del usuario
+  /// Obtiene la ubicaciÃ³n actual del usuario
   Future<Position?> getCurrentLocation() async {
     if (!_hasPermission) {
       bool granted = await requestLocationPermission();
@@ -85,20 +85,20 @@ class LocationProvider extends ChangeNotifier {
       _setLoading(false);
       return position;
     } on Exception catch (e) {
-      _error = 'Error al obtener ubicación: $e';
+      _error = 'Error al obtener ubicaciÃ³n: $e';
       _setLoading(false);
       return null;
     }
   }
 
-  /// Centra el mapa en la ubicación del usuario si tiene permisos
+  /// Centra el mapa en la ubicaciÃ³n del usuario si tiene permisos
   Future<Position?> getLocationForMap() async {
-    // Solo solicitar ubicación si el usuario ya está en el mapa
+    // Solo solicitar ubicaciÃ³n si el usuario ya estÃ¡ en el mapa
     if (_hasPermission || _permissionRequested) {
       return await getCurrentLocation();
     }
 
-    // Si no se han solicitado permisos, devolver null para usar ubicación por defecto
+    // Si no se han solicitado permisos, devolver null para usar ubicaciÃ³n por defecto
     return null;
   }
 
