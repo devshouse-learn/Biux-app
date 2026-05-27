@@ -1,5 +1,6 @@
 ﻿import 'dart:async';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:biux/core/services/app_logger.dart';
 import 'package:biux/features/store/domain/entities/coupon_entity.dart';
 import 'package:biux/features/store/data/datasources/coupon_datasource.dart';

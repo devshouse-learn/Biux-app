@@ -1,6 +1,7 @@
 ﻿import 'dart:io';
 
 import 'package:biux/features/cities/data/models/city.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:biux/features/users/data/models/user.dart';
 import 'package:biux/features/authentication/data/repositories/authentication_repository.dart';
 import 'package:biux/features/cities/data/repositories/cities_firebase_repository.dart';

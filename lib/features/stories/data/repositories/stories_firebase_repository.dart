@@ -1,6 +1,7 @@
 ﻿import 'dart:io';
 
 import 'package:biux/core/config/strings.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:biux/features/stories/data/models/story.dart';
 import 'package:biux/features/authentication/data/repositories/authentication_repository.dart';
 import 'package:biux/core/utils/bytes_utils.dart';

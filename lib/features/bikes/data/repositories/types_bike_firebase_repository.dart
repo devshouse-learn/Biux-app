@@ -1,4 +1,5 @@
 ﻿import 'package:biux/features/bikes/data/models/type_bike.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:biux/features/bikes/domain/repositories/types_bike_repository_abstract.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 

@@ -1,6 +1,7 @@
 ﻿import 'dart:async';
 
 import 'package:biux/features/authentication/domain/repositories/auth_repository_interface.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:biux/core/services/app_logger.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -283,6 +284,123 @@ class AuthProvider extends ChangeNotifier {
       AppLogger.error('âŒ Error verificando perfil: $e');
       _needsProfileSetup = false; // En caso de error, no bloquear
     }
+  }
+
+  Future<void> loginWithEmail(String email, String password) async {
+    try {
+      AppLogger.debug('📧 [AuthProvider] Iniciando login con email');
+      AppLogger.debug('   Email: $email');
+
+      _state = AuthState.loading;
+      _errorMessage = null;
+      notifyListeners();
+
+      AppLogger.debug('🔤 Autenticando con Firebase Auth...');
+      final userCredential = await _auth.signInWithEmailAndPassword(
+        email: email,
+        password: password,
+      );
+      final user = userCredential.user;
+
+      if (user == null) {
+        _state = AuthState.error;
+        _errorMessage = 'err_login_failed';
+        AppLogger.error('❌ Usuario nulo después del login');
+        notifyListeners();
+        return;
+      }
+
+      AppLogger.debug('✅ Usuario autenticado: ${user.uid}');
+
+      // Reinicializar servicio de notificaciones
+      await NotificationService().reinitializeAfterLogin();
+
+      // Verificar si perfil está completo
+      await _checkProfileSetup(user.uid);
+
+      _state = AuthState.authenticated;
+      AppLogger.info('✅ Login con email completado');
+    } on FirebaseException catch (e) {
+      _state = AuthState.error;
+      if (e.code == 'user-not-found') {
+        _errorMessage = 'err_user_not_found';
+      } else if (e.code == 'wrong-password') {
+        _errorMessage = 'err_wrong_password';
+      } else {
+        _errorMessage = e.message ?? 'err_login_failed';
+      }
+      AppLogger.error('❌ Error en login: $e');
+    } catch (e) {
+      _state = AuthState.error;
+      _errorMessage = 'err_login_failed';
+      AppLogger.error('❌ Error inesperado en login: $e');
+    }
+    notifyListeners();
+  }
+
+  Future<void> registerWithEmail(String email, String password) async {
+    try {
+      AppLogger.debug('📧 [AuthProvider] Iniciando registro con email');
+      AppLogger.debug('   Email: $email');
+
+      _state = AuthState.loading;
+      _errorMessage = null;
+      notifyListeners();
+
+      AppLogger.debug('🔤 Registrando nuevo usuario en Firebase Auth...');
+      final userCredential = await _auth.createUserWithEmailAndPassword(
+        email: email,
+        password: password,
+      );
+      final user = userCredential.user;
+
+      if (user == null) {
+        _state = AuthState.error;
+        _errorMessage = 'err_register_failed';
+        AppLogger.error('❌ Usuario nulo después del registro');
+        notifyListeners();
+        return;
+      }
+
+      AppLogger.debug('✅ Usuario registrado: ${user.uid}');
+
+      // Crear documento básico de usuario
+      AppLogger.debug('📝 Creando documento de usuario en Firestore...');
+      await _firestore.collection('users').doc(user.uid).set({
+        'uid': user.uid,
+        'email': email,
+        'createdAt': DateTime.now().millisecondsSinceEpoch,
+        'updatedAt': DateTime.now().millisecondsSinceEpoch,
+      }, SetOptions(merge: true));
+
+      AppLogger.debug('✅ Documento de usuario creado');
+
+      // Reinicializar servicio de notificaciones
+      await NotificationService().reinitializeAfterLogin();
+
+      // Marcar que necesita completar perfil
+      _needsProfileSetup = true;
+
+      _state = AuthState.authenticated;
+      AppLogger.info('✅ Registro completado, usuario necesita completar perfil');
+    } on FirebaseException catch (e) {
+      _state = AuthState.error;
+      if (e.code == 'email-already-in-use') {
+        _errorMessage = 'err_email_exists';
+      } else if (e.code == 'weak-password') {
+        _errorMessage = 'err_weak_password';
+      } else if (e.code == 'invalid-email') {
+        _errorMessage = 'err_invalid_email';
+      } else {
+        _errorMessage = e.message ?? 'err_register_failed';
+      }
+      AppLogger.error('❌ Error en registro: $e');
+    } catch (e) {
+      _state = AuthState.error;
+      _errorMessage = 'err_register_failed';
+      AppLogger.error('❌ Error inesperado en registro: $e');
+    }
+    notifyListeners();
   }
 
   @override

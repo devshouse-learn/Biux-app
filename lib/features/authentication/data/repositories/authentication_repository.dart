@@ -1,5 +1,6 @@
 ﻿import 'dart:async';
 import 'package:biux/core/services/local_storage.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:biux/core/models/common/response.dart';
 import 'package:biux/features/authentication/domain/entities/auth_entity.dart';
 import 'package:biux/features/authentication/domain/repositories/auth_repository_interface.dart';

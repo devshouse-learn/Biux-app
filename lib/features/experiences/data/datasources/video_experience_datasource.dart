@@ -1,5 +1,6 @@
 ﻿import 'dart:io';
 import 'package:image_picker/image_picker.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:video_player/video_player.dart';
 import "package:flutter/foundation.dart";

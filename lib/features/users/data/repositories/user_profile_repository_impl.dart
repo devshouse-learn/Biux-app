@@ -1,4 +1,5 @@
 ﻿import 'package:biux/features/users/data/models/user.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:biux/features/users/domain/repositories/user_profile_repository.dart';
 import 'package:biux/features/social/domain/entities/notification_entity.dart';
 import 'package:biux/features/social/data/repositories/notifications_repository_impl.dart';

@@ -1,4 +1,5 @@
 ﻿import 'package:biux/features/cities/data/models/city.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:biux/features/cities/domain/repositories/cities_repository_abstract.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 

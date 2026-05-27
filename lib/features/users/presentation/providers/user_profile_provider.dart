@@ -1,5 +1,6 @@
 ﻿import 'dart:async';
 import 'package:biux/features/users/data/models/user.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:biux/features/users/data/repositories/user_profile_repository_impl.dart';
 import 'package:biux/features/users/domain/repositories/user_profile_repository.dart';
 import 'package:biux/features/experiences/domain/repositories/experience_repository.dart';

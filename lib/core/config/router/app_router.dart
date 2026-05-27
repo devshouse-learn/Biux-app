@@ -1,4 +1,5 @@
 ﻿import 'package:biux/features/shop/presentation/screens/add_product_screen.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:biux/core/services/app_logger.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -1279,4 +1280,5 @@ extension AppRouterExtension on BuildContext {
   void goToRideAttendees(String rideId, String ownerId) =>
       go('/rides/$rideId/attendees?ownerId=$ownerId');
 }
+
 

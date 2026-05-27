@@ -1,4 +1,5 @@
 ﻿import 'package:shared_preferences/shared_preferences.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:biux/features/users/data/models/user_model.dart';
 import 'package:biux/core/services/app_logger.dart';
 import 'package:biux/features/users/data/datasources/user_service.dart';

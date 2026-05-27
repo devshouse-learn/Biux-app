@@ -1,5 +1,6 @@
 ﻿import 'dart:async';
 import 'package:biux/core/config/strings.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:biux/core/models/common/response.dart';
 import 'package:biux/features/members/data/models/user_membership.dart';
 import 'package:biux/features/users/data/models/user.dart';

@@ -1,4 +1,5 @@
 ﻿import 'package:firebase_analytics/firebase_analytics.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:biux/core/services/app_logger.dart';
 
 /// Servicio centralizado de analytics con eventos tipados.
