@@ -101,7 +101,6 @@ import 'auth_notifier.dart';
 import 'package:biux/features/onboarding/presentation/screens/onboarding_screen.dart';
 import 'package:biux/features/onboarding/presentation/screens/welcome_screen.dart';
 import 'package:biux/features/search/presentation/screens/global_search_screen.dart';
-import 'package:biux/features/social/presentation/screens/followers_screen.dart';
 import 'package:biux/features/weather/presentation/screens/weather_screen.dart';
 import 'package:biux/features/ride_recommendations/presentation/screens/my_recommendations_screen.dart';
 import 'package:biux/features/accidents/presentation/screens/accident_report_screen.dart';
