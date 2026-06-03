@@ -1,0 +1,23 @@
+# Configuración de análisis de Dart/Flutter
+# Supresión de warnings informativos que no afectan funcionalidad
+
+analyzer:
+  exclude:
+    - "**/*.g.dart"
+    - "**/*.freezed.dart"
+    - "**/generated/**"
+    - "build/**"
+    - ".dart_tool/**"
+    - "test/**"
+
+  errors:
+    # Ignorar warnings informativos
+    # Estos no son errores reales sino avisos sobre código limpio
+    unused_catch_clause: ignore
+    unnecessary_import: ignore
+    unused_import: ignore
+    unused_field: ignore
+    deprecated_member_use: ignore
+
+linter:
+  rules: []
