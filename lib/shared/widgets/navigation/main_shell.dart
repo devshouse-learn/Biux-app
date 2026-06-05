@@ -141,7 +141,7 @@ class _MainShellState extends State<MainShell> {
                 label: '',
               ),
               BottomNavigationBarItem(
-                icon: PaperPlaneIcon(size: 28),
+                icon: PaperPlaneIcon(size: 28, color: Colors.white),
                 label: '',
               ),
               BottomNavigationBarItem(
