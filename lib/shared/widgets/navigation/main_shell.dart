@@ -81,10 +81,16 @@ class _MainShellState extends State<MainShell> {
           appBar: AppBar(
             backgroundColor: appBarColor,
             foregroundColor: textColor,
-            title: Text(
-              _titleForIndex(_selectedIndex, l, context),
-              style: Styles.mainMenuTextBiux,
-            ),
+            title: _selectedIndex == 4
+                ? Text(
+                    _titleForIndex(_selectedIndex, l, context),
+                    style: Styles.mainMenuTextBiux,
+                  )
+                : Image.asset(
+                    'img/biux_logo_biux_only.png',
+                    height: 40,
+                    fit: BoxFit.contain,
+                  ),
             actions: [
               // Buscar usuarios (solo en tab de inicio)
               if (_selectedIndex == 0)
