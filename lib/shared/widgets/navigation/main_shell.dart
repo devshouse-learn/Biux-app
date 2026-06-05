@@ -6,6 +6,7 @@ import 'package:biux/core/utils/responsive_helper.dart';
 import 'package:biux/core/design_system/locale_notifier.dart';
 import 'package:biux/features/social/presentation/providers/notifications_provider.dart';
 import 'package:biux/features/users/presentation/providers/user_provider.dart';
+import 'package:biux/shared/widgets/icons/paper_plane_icon.dart';
 import 'app_drawer.dart';
 import 'package:flutter/material.dart';
 import 'package:biux/core/design_system/color_tokens.dart';
@@ -88,7 +89,7 @@ class _MainShellState extends State<MainShell> {
                   )
                 : Image.asset(
                     'img/biux_logo_biux_only.png',
-                    height: 40,
+                    height: 28,
                     fit: BoxFit.contain,
                   ),
             actions: [
@@ -140,7 +141,7 @@ class _MainShellState extends State<MainShell> {
                 label: '',
               ),
               BottomNavigationBarItem(
-                icon: Icon(Icons.north_east, size: 28),
+                icon: PaperPlaneIcon(size: 28),
                 label: '',
               ),
               BottomNavigationBarItem(
