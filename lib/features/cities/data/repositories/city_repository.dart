@@ -36,17 +36,25 @@ class CityRepository {
     }
   }
 
-  // Crear mÃºltiples ciudades (para el script inicial)
+  // RENDIMIENTO: Chunk batch operations (max 500 per batch)
   Future<bool> createCities(List<CityModel> cities) async {
     try {
-      WriteBatch batch = _firestore.batch();
+      const int batchSize = 500;
 
-      for (CityModel city in cities) {
-        DocumentReference docRef = _firestore.collection(_collection).doc();
-        batch.set(docRef, city.toFirestore());
+      for (int i = 0; i < cities.length; i += batchSize) {
+        WriteBatch batch = _firestore.batch();
+        final chunk = cities.sublist(
+          i,
+          (i + batchSize).clamp(0, cities.length),
+        );
+
+        for (CityModel city in chunk) {
+          DocumentReference docRef = _firestore.collection(_collection).doc();
+          batch.set(docRef, city.toFirestore());
+        }
+
+        await batch.commit();
       }
-
-      await batch.commit();
       return true;
     } on FirebaseException catch (e) {
       debugPrint('Error creando ciudades en lote: $e');

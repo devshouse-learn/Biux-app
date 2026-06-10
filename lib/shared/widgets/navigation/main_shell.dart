@@ -81,10 +81,28 @@ class _MainShellState extends State<MainShell> {
           appBar: AppBar(
             backgroundColor: appBarColor,
             foregroundColor: textColor,
-            title: Text(
-              _titleForIndex(_selectedIndex, l, context),
-              style: Styles.mainMenuTextBiux,
-            ),
+            title: _selectedIndex == 4
+                ? Row(
+                    children: [
+                      Text(
+                        _titleForIndex(_selectedIndex, l, context),
+                        style: Styles.mainMenuTextBiux,
+                      ),
+                      const SizedBox(width: 8),
+                      Icon(
+                        userProvider.user?.profileVisibility == 'private'
+                            ? Icons.lock_rounded
+                            : Icons.lock_open_rounded,
+                        size: 20,
+                        color: textColor,
+                      ),
+                    ],
+                  )
+                : Image.asset(
+                    'img/biux_logo_biux_only.png',
+                    height: 28,
+                    fit: BoxFit.contain,
+                  ),
             actions: [
               // Buscar usuarios (solo en tab de inicio)
               if (_selectedIndex == 0)
@@ -134,7 +152,7 @@ class _MainShellState extends State<MainShell> {
                 label: '',
               ),
               BottomNavigationBarItem(
-                icon: Icon(Icons.north_east, size: 28),
+                icon: Icon(Icons.message, size: 28),
                 label: '',
               ),
               BottomNavigationBarItem(

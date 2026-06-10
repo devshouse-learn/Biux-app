@@ -368,7 +368,7 @@ class _CreateExperienceScreenState extends State<CreateExperienceScreen> {
                 scrollDirection: Axis.horizontal,
                 padding: const EdgeInsets.symmetric(horizontal: 16),
                 itemCount: provider.mediaItems.length,
-                onReorder: provider.reorderMediaItems,
+                onReorderItem: provider.reorderMediaItems,
                 itemBuilder: (context, index) {
                   final item = provider.mediaItems[index];
                   return MediaItemWidget(

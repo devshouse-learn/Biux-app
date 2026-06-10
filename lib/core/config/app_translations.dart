@@ -1805,6 +1805,20 @@ class AppTranslations {
     'faq_text_posts_q': '¿Puedo publicar posts sin fotos?',
     'faq_text_posts_a':
         'Sí, pero solo los posts de texto son permanentes. Si agregas multimedia, se publicará automáticamente como historia (24 horas).',
+    'faq_private_account_q': '¿Qué es una cuenta privada?',
+    'faq_private_account_a':
+        'Una cuenta privada significa que solo tus seguidores aprobados pueden ver tus historias y publicaciones. Los demás usuarios deben solicitar seguirte.',
+    'faq_follow_request_q': '¿Cómo funciona una solicitud de seguimiento?',
+    'faq_follow_request_a':
+        'Si alguien tiene cuenta privada, cuando intentas seguirlo debe aprobar tu solicitud. Verá tu solicitud en las notificaciones y podrá aceptarla o rechazarla.',
+    'public_account': 'Cuenta Pública',
+    'public_account_desc':
+        'Cualquiera puede ver tu perfil, historias y publicaciones. Los usuarios pueden seguirte sin necesidad de aprobación.',
+    'private_account': 'Cuenta Privada',
+    'private_account_desc':
+        'Solo los usuarios que apruebes pueden ver tus historias y publicaciones. Los demás deben solicitar seguirte y esperar tu aprobación.',
+    'follow_requests_desc':
+        'Las solicitudes de seguimiento aparecen en tus notificaciones. Puedes aceptarlas para que la persona te siga, o rechazarlas.',
     'feature_stories_title': 'Historias y Experiencias',
     'feature_stories_desc':
         'Comparte momentos de tus rodadas con fotos y videos. Las historias duran 24 horas.',
@@ -18114,7 +18128,6 @@ class AppTranslations {
     'follow_request_sent': 'Solicitud de seguimiento enviada',
     'follow_request_pending': 'Solicitud pendiente',
     'requested': 'Solicitado',
-    'follow_requests': 'Solicitudes de seguimiento',
 
     // Information
     'about_app': 'Acerca della App',

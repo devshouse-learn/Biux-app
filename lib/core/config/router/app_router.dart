@@ -35,7 +35,7 @@ import 'package:biux/features/groups/presentation/screens/group_list/group_list_
 import 'package:biux/features/groups/presentation/screens/my_groups/my_groups_screen.dart';
 import 'package:biux/features/groups/presentation/screens/view_group/view_group_screen.dart';
 import 'package:biux/features/authentication/presentation/screens/create_user/create_user_screen.dart';
-import 'package:biux/features/authentication/presentation/screens/login_phone_screen.dart';
+import 'package:biux/features/authentication/presentation/screens/login_email_screen.dart';
 import 'package:biux/features/maps/presentation/screens/map_screen.dart';
 import 'package:biux/features/rides/presentation/screens/create_ride/ride_create_screen.dart';
 import 'package:biux/features/rides/presentation/screens/detail_ride/ride_detail_screen.dart';
@@ -339,11 +339,11 @@ final GoRouter _router = GoRouter(
       builder: (context, state) => const OnboardingScreen(),
     ),
 
-    // Ruta de login (N8N Webhook original)
+    // Ruta de login (Email y contraseña)
     GoRoute(
       path: AppRoutes.login,
       name: AppRoutes.loginName,
-      builder: (context, state) => LoginPhonePage(),
+      builder: (context, state) => LoginEmailPage(),
     ),
 
     // Ruta de crear usuario

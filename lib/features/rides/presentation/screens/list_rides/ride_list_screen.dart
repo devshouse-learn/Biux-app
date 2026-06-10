@@ -69,6 +69,17 @@ class _RideListScreenState extends State<RideListScreen>
     // Vista principal: solo grupos
     return Consumer2<GroupProvider, RideProvider>(
       builder: (context, groupProvider, rideProvider, child) {
+        // Mostrar error si algún provider falló
+        if (rideProvider.error != null) {
+          return _buildEmptyState(
+            Icons.error_outline,
+            'Error al cargar',
+            rideProvider.error ?? 'Algo salió mal',
+            onAction: () => _loadData(),
+            actionText: 'Reintentar',
+          );
+        }
+
         return Column(
           children: [
             // ── Barra de búsqueda ──

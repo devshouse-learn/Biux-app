@@ -12,6 +12,7 @@ class AchievementsProvider with ChangeNotifier {
   bool _isSyncing = false;
   String? _newlyUnlocked;
   List<AchievementEntity> _recentlyUnlocked = [];
+  String? _error;
 
   List<AchievementEntity> get achievements => _achievements;
   List<AchievementEntity> get unlockedAchievements =>
@@ -21,6 +22,7 @@ class AchievementsProvider with ChangeNotifier {
   bool get isSyncing => _isSyncing;
   String? get newlyUnlocked => _newlyUnlocked;
   List<AchievementEntity> get recentlyUnlocked => _recentlyUnlocked;
+  String? get error => _error;
 
   void clearNewlyUnlocked() {
     _newlyUnlocked = null;
@@ -30,6 +32,7 @@ class AchievementsProvider with ChangeNotifier {
 
   Future<void> loadAchievements(String userId) async {
     _isLoading = true;
+    _error = null;
     notifyListeners();
     try {
       await _syncIfNeeded(userId);
@@ -47,8 +50,9 @@ class AchievementsProvider with ChangeNotifier {
         }
         return a;
       }).toList();
-    } on FirebaseException catch (_) {
-      debugPrint('Error loading achievements: \$e');
+    } catch (e) {
+      debugPrint('Error loading achievements: $e');
+      _error = 'Error al cargar logros: $e';
     }
     _isLoading = false;
     notifyListeners();
@@ -122,8 +126,8 @@ class AchievementsProvider with ChangeNotifier {
           }, SetOptions(merge: true));
         }
         await batch.commit();
-      } on FirebaseException catch (_) {
-        debugPrint('Error saving achievements: \$e');
+      } catch (e) {
+        debugPrint('Error saving achievements: $e');
       }
     }
 
@@ -135,7 +139,7 @@ class AchievementsProvider with ChangeNotifier {
     notifyListeners();
     try {
       await AchievementsSyncService.syncIfNeeded(userId);
-    } on FirebaseException catch (e) {
+    } catch (e) {
       debugPrint('Sync error: $e');
     }
     _isSyncing = false;

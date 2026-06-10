@@ -27,6 +27,7 @@ class UserEntity {
   final bool autorizadoPorAdmin; // Si fue autorizado por un administrador
   final bool isAdmin; // Campo legacy - para compatibilidad
   final bool canSellProducts; // Campo legacy - para compatibilidad
+  final String profileVisibility; // 'public' o 'private' - determina quién puede seguir
 
   const UserEntity({
     required this.id,
@@ -38,6 +39,7 @@ class UserEntity {
     this.autorizadoPorAdmin = false,
     this.isAdmin = false, // Legacy
     this.canSellProducts = false, // Legacy
+    this.profileVisibility = 'public', // Por defecto pública
   });
 
   // Getters basados en el nuevo sistema de roles

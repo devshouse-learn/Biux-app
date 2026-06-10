@@ -30,24 +30,44 @@ class AccidentDatasource {
     await _fs.collection(_col).doc(id).update({'resolved': true});
   }
 
+  /// RENDIMIENTO: Chunk batch operations (max 500 per batch)
   Future<void> deleteAllAccidents() async {
     final snapshot = await _fs.collection(_col).get();
-    final batch = _fs.batch();
-    for (final doc in snapshot.docs) {
-      batch.delete(doc.reference);
+    const int batchSize = 500;
+
+    for (int i = 0; i < snapshot.docs.length; i += batchSize) {
+      final batch = _fs.batch();
+      final chunk = snapshot.docs.sublist(
+        i,
+        (i + batchSize).clamp(0, snapshot.docs.length),
+      );
+
+      for (final doc in chunk) {
+        batch.delete(doc.reference);
+      }
+      await batch.commit();
     }
-    await batch.commit();
   }
 
+  /// RENDIMIENTO: Chunk batch operations (max 500 per batch)
   Future<void> deleteResolvedAccidents() async {
     final snapshot = await _fs
         .collection(_col)
         .where('resolved', isEqualTo: true)
         .get();
-    final batch = _fs.batch();
-    for (final doc in snapshot.docs) {
-      batch.delete(doc.reference);
+    const int batchSize = 500;
+
+    for (int i = 0; i < snapshot.docs.length; i += batchSize) {
+      final batch = _fs.batch();
+      final chunk = snapshot.docs.sublist(
+        i,
+        (i + batchSize).clamp(0, snapshot.docs.length),
+      );
+
+      for (final doc in chunk) {
+        batch.delete(doc.reference);
+      }
+      await batch.commit();
     }
-    await batch.commit();
   }
 }

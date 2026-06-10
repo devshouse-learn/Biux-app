@@ -308,15 +308,19 @@ class _PublicUserProfileScreenState extends State<PublicUserProfileScreen> {
                                     ),
                                     SizedBox(height: 4),
                                     if (user.userName.isNotEmpty)
-                                      Text(
-                                        '@${user.userName}',
-                                        style: TextStyle(
-                                          fontSize: 13,
-                                          color: ColorTokens.neutral100
-                                              .withValues(alpha: 0.7),
-                                        ),
-                                        maxLines: 1,
-                                        overflow: TextOverflow.ellipsis,
+                                      Row(
+                                        children: [
+                                          Text(
+                                            '@${user.userName}',
+                                            style: TextStyle(
+                                              fontSize: 13,
+                                              color: ColorTokens.neutral100
+                                                  .withValues(alpha: 0.7),
+                                            ),
+                                            maxLines: 1,
+                                            overflow: TextOverflow.ellipsis,
+                                          ),
+                                        ],
                                       ),
                                   ],
                                 ),

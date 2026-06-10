@@ -9,6 +9,9 @@ import 'package:biux/features/users/domain/repositories/user_repository_abstract
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import "package:flutter/foundation.dart";
+import 'package:biux/core/exceptions/authorization_exceptions.dart';
+import 'package:biux/core/services/authorization_service.dart';
+import 'package:biux/core/services/app_logger.dart';
 
 class UserFirebaseRepository extends UserRepositoryAbstract {
   static final collection = 'users';
@@ -25,7 +28,7 @@ class UserFirebaseRepository extends UserRepositoryAbstract {
           .where('id', isEqualTo: userMembership.id)
           .get();
       return UserMembership.fromJsonMap(response.docs.first.data());
-    } on FirebaseException catch (_) {
+    } on FirebaseException catch (e) {
       return UserMembership();
     }
   }
@@ -40,7 +43,7 @@ class UserFirebaseRepository extends UserRepositoryAbstract {
       return result.docs
           .map((e) => UserMembership.fromJsonMap(e.data()))
           .toList();
-    } on FirebaseException catch (_) {
+    } on FirebaseException catch (e) {
       return List.empty();
     }
   }
@@ -54,7 +57,7 @@ class UserFirebaseRepository extends UserRepositoryAbstract {
           .where('userId', isEqualTo: id)
           .get();
       return UserMembership.fromJsonMap(result.docs.first.data());
-    } on FirebaseException catch (_) {
+    } on FirebaseException catch (e) {
       return UserMembership();
     }
   }
@@ -67,7 +70,7 @@ class UserFirebaseRepository extends UserRepositoryAbstract {
           .where('user', isEqualTo: nUsername)
           .get();
       return BiuxUser.fromJsonMap(result.docs.first.data());
-    } on FirebaseException catch (_) {
+    } on FirebaseException catch (e) {
       return BiuxUser();
     }
   }
@@ -80,7 +83,7 @@ class UserFirebaseRepository extends UserRepositoryAbstract {
           .where('userName', isEqualTo: username)
           .get();
       return BiuxUser.fromJsonMap(result.docs.first.data());
-    } on FirebaseException catch (_) {
+    } on FirebaseException catch (e) {
       return BiuxUser();
     }
   }
@@ -92,7 +95,7 @@ class UserFirebaseRepository extends UserRepositoryAbstract {
           .where('id', isEqualTo: id)
           .get();
       return BiuxUser.fromJsonMap(result.docs.first.data());
-    } on FirebaseException catch (_) {
+    } on FirebaseException catch (e) {
       return BiuxUser();
     }
   }
@@ -105,7 +108,7 @@ class UserFirebaseRepository extends UserRepositoryAbstract {
           .where('stateMembership', isEqualTo: true)
           .get();
       return result.docs.map((e) => BiuxUser.fromJsonMap(e.data())).toList();
-    } on FirebaseException catch (_) {
+    } on FirebaseException catch (e) {
       return List.empty();
     }
   }
@@ -113,9 +116,36 @@ class UserFirebaseRepository extends UserRepositoryAbstract {
   @override
   Future<List<BiuxUser>> getUsers(int limit, int offset) async {
     try {
-      final result = await firestore.collection(collection).get();
-      return result.docs.map((e) => BiuxUser.fromJsonMap(e.data())).toList();
-    } on FirebaseException catch (_) {
+      // CRÍTICO #1: Verificar que solo admins puedan listar todos los usuarios
+      final authService = AuthorizationService();
+      await authService.requireCanListUsers();
+
+      AppLogger.info('Listado de usuarios iniciado por admin', tag: 'getUsers');
+
+      // Implementar paginación correctamente en Firestore
+      // Obtener con límite mayor para hacer skip en cliente
+      final result = await firestore
+          .collection(collection)
+          .limit(limit + offset)
+          .get();
+
+      // Hacer skip en cliente (offset)
+      final paginatedDocs = result.docs.skip(offset).take(limit).toList();
+
+      AppLogger.info(
+          'Se obtuvieron ${paginatedDocs.length} usuarios (limit: $limit, offset: $offset)');
+      return paginatedDocs.map((e) => BiuxUser.fromJsonMap(e.data())).toList();
+    } on UnauthorizedException catch (e) {
+      AppLogger.warning('Intento de acceso no autorizado a getUsers: ${e.message}');
+      rethrow;
+    } on NotAuthenticatedException catch (e) {
+      AppLogger.warning('Usuario no autenticado en getUsers: ${e.message}');
+      rethrow;
+    } on FirebaseException catch (e) {
+      AppLogger.error('Error de Firebase en getUsers: ${e.message}');
+      return List.empty();
+    } catch (e) {
+      AppLogger.error('Error inesperado en getUsers: $e');
       return List.empty();
     }
   }
@@ -128,7 +158,7 @@ class UserFirebaseRepository extends UserRepositoryAbstract {
           .where('email', isEqualTo: email)
           .get();
       return BiuxUser.fromJsonMap(result.docs.first.data());
-    } on FirebaseException catch (_) {
+    } on FirebaseException catch (e) {
       return BiuxUser();
     }
   }
@@ -141,7 +171,7 @@ class UserFirebaseRepository extends UserRepositoryAbstract {
           .where('facebook', isEqualTo: facebook)
           .get();
       return BiuxUser.fromJsonMap(result.docs.first.data());
-    } on FirebaseException catch (_) {
+    } on FirebaseException catch (e) {
       return BiuxUser();
     }
   }
@@ -158,7 +188,7 @@ class UserFirebaseRepository extends UserRepositoryAbstract {
       } else {
         return true;
       }
-    } on FirebaseException catch (_) {
+    } on FirebaseException catch (e) {
       return false;
     }
   }
@@ -231,7 +261,7 @@ class UserFirebaseRepository extends UserRepositoryAbstract {
           .where('id', isEqualTo: id)
           .get();
       return BiuxUser.fromJsonMap(response.docs.first.data());
-    } on FirebaseException catch (_) {
+    } on FirebaseException catch (e) {
       return BiuxUser();
     }
   }
@@ -282,7 +312,7 @@ class UserFirebaseRepository extends UserRepositoryAbstract {
       // LocalStorage().saveUserEmail(user.email);
       // LocalStorage().saveUserId(user.id);
       return ResponseRepo(status: true, message: '', statusCode: 200);
-    } on FirebaseException catch (_) {
+    } on FirebaseException catch (e) {
       return ResponseRepo(status: false, message: '', statusCode: 500);
     }
   }
