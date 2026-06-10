@@ -10,6 +10,8 @@ import 'package:biux/features/bikes/data/models/bike_model.dart';
 import 'package:biux/features/bikes/data/models/bike_theft_model.dart';
 import 'package:biux/features/bikes/data/models/bike_transfer_model.dart';
 import "package:flutter/foundation.dart";
+import 'package:biux/core/services/app_logger.dart';
+import 'package:biux/core/exceptions/authorization_exceptions.dart';
 
 /// Implementación del repositorio de bicicletas con Firebase Firestore
 class BikeRepositoryImpl implements BikeRepository {
@@ -21,6 +23,7 @@ class BikeRepositoryImpl implements BikeRepository {
   static const String _sightingsCollection = 'bike_sightings';
   static const String _verificationsCollection = 'bike_verifications';
 
+  /// ALTO: Mejor error handling con logging
   @override
   Future<BikeEntity> registerBike(BikeEntity bike) async {
     try {
@@ -30,9 +33,13 @@ class BikeRepositoryImpl implements BikeRepository {
       final bikeWithId = bikeModel.copyWith(id: docRef.id);
       await docRef.set(bikeWithId.toJson());
 
+      AppLogger.info('Bicicleta registrada: ${bikeWithId.id}',
+          tag: 'BikeRepository');
       return bikeWithId.toEntity();
     } on FirebaseException catch (e) {
-      throw Exception('Error al registrar bicicleta: $e');
+      AppLogger.error('Error registrando bicicleta: $e',
+          tag: 'BikeRepository', error: e);
+      throw Exception('Failed to register bike');
     }
   }
 

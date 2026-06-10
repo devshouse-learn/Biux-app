@@ -10,6 +10,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:biux/core/config/api_config.dart';
+import 'package:biux/core/exceptions/authorization_exceptions.dart';
+import 'package:biux/core/services/app_logger.dart';
 
 class AuthenticationRepository implements AuthRepositoryInterface {
   final FirebaseAuth _auth = FirebaseAuth.instance;
@@ -141,9 +143,15 @@ class AuthenticationRepository implements AuthRepositoryInterface {
   @override
   String? get currentUserId => _auth.currentUser?.uid;
 
+  /// ALTO: Validar entrada y no loguear respuestas sensibles
   @override
   Future<bool> sendOTP(String phoneNumber) async {
     try {
+      // Validar que el teléfono no esté vacío
+      if (phoneNumber.isEmpty) {
+        throw ValidationException('phoneNumber', 'Número de teléfono no puede estar vacío');
+      }
+
       final response = await http.post(
         Uri.parse(ApiConfig.sendOtp),
         headers: {'Content-Type': 'application/json'},
@@ -152,28 +160,50 @@ class AuthenticationRepository implements AuthRepositoryInterface {
         }),
       ).timeout(
         const Duration(seconds: 30),
-        onTimeout: () => throw Exception('Timeout sending OTP'),
+        onTimeout: () {
+          AppLogger.warning('Timeout enviando OTP', tag: 'AuthenticationRepository');
+          return throw Exception('OTP request timeout');
+        },
       );
 
       if (response.statusCode == 200 || response.statusCode == 201) {
         final data = jsonDecode(response.body);
         _verificationId = data['verificationId'] ?? data['id'] ?? phoneNumber;
+        AppLogger.info('OTP enviado exitosamente', tag: 'AuthenticationRepository');
         return true;
       } else {
-        throw Exception(
-          'Error sending OTP: ${response.statusCode} - ${response.body}',
-        );
+        // ALTO: No loguear respuesta completa que puede contener datos sensibles
+        AppLogger.warning('Error enviando OTP: código ${response.statusCode}',
+            tag: 'AuthenticationRepository');
+        throw Exception('Error sending OTP');
       }
+    } on ValidationException catch (e) {
+      AppLogger.warning('Validación fallida: ${e.message}',
+          tag: 'AuthenticationRepository');
+      rethrow;
     } on FirebaseException catch (e) {
-      throw Exception('Error sending OTP: $e');
+      AppLogger.error('Error de Firebase enviando OTP: $e',
+          tag: 'AuthenticationRepository', error: e);
+      throw Exception('Firebase error sending OTP');
+    } catch (e) {
+      AppLogger.error('Error inesperado enviando OTP: $e',
+          tag: 'AuthenticationRepository', error: e);
+      throw Exception('Error sending OTP');
     }
   }
 
+  /// ALTO: Validar entrada y no loguear datos sensibles en respuesta
   @override
   Future<AuthEntity> validateOTP(String phoneNumber, String code) async {
     try {
+      // Validar entrada
+      if (phoneNumber.isEmpty || code.isEmpty) {
+        throw ValidationException('input',
+            'Número de teléfono y código no pueden estar vacíos');
+      }
+
       if (_verificationId == null || _verificationId!.isEmpty) {
-        throw Exception('Verification ID not found');
+        throw ValidationException('verificationId', 'ID de verificación no encontrado');
       }
 
       final response = await http.post(
@@ -186,7 +216,10 @@ class AuthenticationRepository implements AuthRepositoryInterface {
         }),
       ).timeout(
         const Duration(seconds: 30),
-        onTimeout: () => throw Exception('Timeout validating OTP'),
+        onTimeout: () {
+          AppLogger.warning('Timeout validando OTP', tag: 'AuthenticationRepository');
+          return throw Exception('OTP validation timeout');
+        },
       );
 
       if (response.statusCode == 200 || response.statusCode == 201) {
@@ -195,8 +228,13 @@ class AuthenticationRepository implements AuthRepositoryInterface {
         final uid = data['uid'] ?? data['userId'];
 
         if (token == null || uid == null) {
-          throw Exception('Invalid response: missing token or uid');
+          AppLogger.warning('Respuesta inválida: falta token o uid',
+              tag: 'AuthenticationRepository');
+          throw ValidationException('response', 'Respuesta inválida del servidor');
         }
+
+        AppLogger.info('OTP validado exitosamente',
+            tag: 'AuthenticationRepository');
 
         return AuthEntity(
           uid: uid,
@@ -204,12 +242,23 @@ class AuthenticationRepository implements AuthRepositoryInterface {
           phoneNumber: phoneNumber,
         );
       } else {
-        throw Exception(
-          'Error validating OTP: ${response.statusCode} - ${response.body}',
-        );
+        // ALTO: No loguear respuesta que contiene tokens/datos sensibles
+        AppLogger.warning('Error validando OTP: código ${response.statusCode}',
+            tag: 'AuthenticationRepository');
+        throw Exception('OTP validation failed');
       }
+    } on ValidationException catch (e) {
+      AppLogger.warning('Validación fallida: ${e.message}',
+          tag: 'AuthenticationRepository');
+      rethrow;
     } on FirebaseException catch (e) {
-      throw Exception('OTP validation failed: $e');
+      AppLogger.error('Error de Firebase validando OTP: $e',
+          tag: 'AuthenticationRepository', error: e);
+      throw Exception('Firebase error validating OTP');
+    } catch (e) {
+      AppLogger.error('Error inesperado validando OTP: $e',
+          tag: 'AuthenticationRepository', error: e);
+      throw Exception('OTP validation failed');
     }
   }
 }

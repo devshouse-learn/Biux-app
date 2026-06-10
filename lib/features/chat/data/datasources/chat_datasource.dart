@@ -1,6 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:biux/features/chat/domain/entities/message_entity.dart';
+import 'package:biux/core/services/app_logger.dart';
+import 'package:biux/core/exceptions/authorization_exceptions.dart';
 
 enum ChatType { direct, group, ride }
 
@@ -77,22 +79,36 @@ class ChatDatasource {
         });
   }
 
+  /// ALTO: Validar entrada y agregar límite
   Stream<List<MessageEntity>> getMessages(String chatId) {
+    if (chatId.isEmpty) {
+      AppLogger.warning('Chat ID vacío en getMessages',
+          tag: 'ChatDatasource');
+      return const Stream.empty();
+    }
+
     return _db
         .collection('chats')
         .doc(chatId)
         .collection('messages')
         .orderBy('sentAt', descending: false)
+        .limit(500)  // ALTO: Evitar cargar infinitos mensajes
         .snapshots()
         .map(
           (snap) => snap.docs
               .map((d) => MessageEntity.fromMap(d.data(), d.id))
               .toList(),
-        );
+        )
+        .handleError((e) {
+          AppLogger.error('Error en getMessages: $e',
+              tag: 'ChatDatasource', error: e);
+          return [];
+        });
   }
 
   // ── Mutations ──────────────────────────────────────────────────────────────
 
+  /// ALTO: Validar entrada y agregar logging
   Future<String> createChat({
     required List<String> participantIds,
     required ChatType type,
@@ -100,61 +116,108 @@ class ChatDatasource {
     String? photoUrl,
     String? rideId,
   }) async {
-    final ref = _db.collection('chats').doc();
-    await ref.set({
-      'id': ref.id,
-      'name': name,
-      'photoUrl': photoUrl,
-      'type': type.name,
-      'participantIds': participantIds,
-      'updatedAt': FieldValue.serverTimestamp(),
-      'unreadCount': {for (final id in participantIds) id: 0},
-      if (rideId != null) 'rideId': rideId,
-    });
-    return ref.id;
+    try {
+      if (participantIds.isEmpty || name.isEmpty) {
+        throw ValidationException('input',
+            'Participantes y nombre son requeridos');
+      }
+
+      if (participantIds.any((id) => id.isEmpty)) {
+        throw ValidationException('participantIds',
+            'Ningún ID de participante puede estar vacío');
+      }
+
+      final ref = _db.collection('chats').doc();
+      await ref.set({
+        'id': ref.id,
+        'name': name,
+        'photoUrl': photoUrl,
+        'type': type.name,
+        'participantIds': participantIds,
+        'updatedAt': FieldValue.serverTimestamp(),
+        'unreadCount': {for (final id in participantIds) id: 0},
+        if (rideId != null) 'rideId': rideId,
+      });
+
+      AppLogger.info('Chat creado: ${ref.id}',
+          tag: 'ChatDatasource');
+      return ref.id;
+    } on ValidationException catch (e) {
+      AppLogger.warning('Validación fallida: ${e.message}',
+          tag: 'ChatDatasource');
+      rethrow;
+    } on FirebaseException catch (e) {
+      AppLogger.error('Error creando chat: $e',
+          tag: 'ChatDatasource', error: e);
+      rethrow;
+    }
   }
 
+  /// ALTO: Validar entrada y agregar logging
   Future<void> sendMessage({
     required String chatId,
     required MessageEntity message,
   }) async {
-    final ref = _db
-        .collection('chats')
-        .doc(chatId)
-        .collection('messages')
-        .doc();
-    final data = message.toMap();
-    data['id'] = ref.id;
-    await ref.set(data);
-
-    // Obtener participantIds para incrementar unread del receptor
-    final chatDoc = await _db.collection('chats').doc(chatId).get();
-    final participants = List<String>.from(
-      chatDoc.data()?['participantIds'] ?? [],
-    );
-    final unreadUpdate = <String, dynamic>{};
-    for (final uid in participants) {
-      if (uid != message.senderId) {
-        unreadUpdate['unreadCount.$uid'] = FieldValue.increment(1);
+    try {
+      if (chatId.isEmpty || message.senderId.isEmpty) {
+        throw ValidationException('input',
+            'Chat ID y sender ID son requeridos');
       }
+
+      if (message.content.isEmpty) {
+        throw ValidationException('content',
+            'El mensaje no puede estar vacío');
+      }
+
+      final ref = _db
+          .collection('chats')
+          .doc(chatId)
+          .collection('messages')
+          .doc();
+      final data = message.toMap();
+      data['id'] = ref.id;
+      await ref.set(data);
+
+      // Obtener participantIds para incrementar unread del receptor
+      final chatDoc = await _db.collection('chats').doc(chatId).get();
+      final participants = List<String>.from(
+        chatDoc.data()?['participantIds'] ?? [],
+      );
+      final unreadUpdate = <String, dynamic>{};
+      for (final uid in participants) {
+        if (uid != message.senderId) {
+          unreadUpdate['unreadCount.$uid'] = FieldValue.increment(1);
+        }
+      }
+
+      // Preview de última mensaje para la lista de chats
+      final previewContent = _previewForType(message.type.name, message.content);
+
+      await _db.collection('chats').doc(chatId).update({
+        'lastMessage': {
+          'id': data['id'],
+          'senderId': message.senderId,
+          'senderName': message.senderName,
+          'content': previewContent,
+          'type': message.type.name,
+          'sentAt': FieldValue.serverTimestamp(),
+          if (message.mediaUrl != null) 'mediaUrl': message.mediaUrl,
+        },
+        'updatedAt': FieldValue.serverTimestamp(),
+        ...unreadUpdate,
+      });
+
+      AppLogger.debug('Mensaje enviado a chat: $chatId',
+          tag: 'ChatDatasource');
+    } on ValidationException catch (e) {
+      AppLogger.warning('Validación fallida: ${e.message}',
+          tag: 'ChatDatasource');
+      rethrow;
+    } on FirebaseException catch (e) {
+      AppLogger.error('Error enviando mensaje: $e',
+          tag: 'ChatDatasource', error: e);
+      rethrow;
     }
-
-    // Preview de última mensaje para la lista de chats
-    final previewContent = _previewForType(message.type.name, message.content);
-
-    await _db.collection('chats').doc(chatId).update({
-      'lastMessage': {
-        'id': data['id'],
-        'senderId': message.senderId,
-        'senderName': message.senderName,
-        'content': previewContent,
-        'type': message.type.name,
-        'sentAt': FieldValue.serverTimestamp(),
-        if (message.mediaUrl != null) 'mediaUrl': message.mediaUrl,
-      },
-      'updatedAt': FieldValue.serverTimestamp(),
-      ...unreadUpdate,
-    });
   }
 
   Future<void> markMessagesAsRead(String chatId) async {
@@ -365,17 +428,36 @@ class ChatDatasource {
 
   // ── Editar mensaje ────────────────────────────────────────────────────────
 
+  /// ALTO: Validar entrada y agregar logging
   Future<void> editMessage({
     required String chatId,
     required String messageId,
     required String newContent,
   }) async {
-    await _db
-        .collection('chats')
-        .doc(chatId)
-        .collection('messages')
-        .doc(messageId)
-        .update({'content': newContent, 'isEdited': true});
+    try {
+      if (chatId.isEmpty || messageId.isEmpty || newContent.isEmpty) {
+        throw ValidationException('input',
+            'Chat ID, message ID y contenido son requeridos');
+      }
+
+      await _db
+          .collection('chats')
+          .doc(chatId)
+          .collection('messages')
+          .doc(messageId)
+          .update({'content': newContent, 'isEdited': true});
+
+      AppLogger.debug('Mensaje editado: $messageId',
+          tag: 'ChatDatasource');
+    } on ValidationException catch (e) {
+      AppLogger.warning('Validación fallida: ${e.message}',
+          tag: 'ChatDatasource');
+      rethrow;
+    } catch (e) {
+      AppLogger.error('Error editando mensaje: $e',
+          tag: 'ChatDatasource', error: e);
+      rethrow;
+    }
   }
 
   // ── Fijar mensaje ─────────────────────────────────────────────────────────
@@ -491,17 +573,37 @@ class ChatDatasource {
     });
   }
 
+  /// ALTO: Validar entrada y agregar logging
   Future<void> setTyping({
     required String chatId,
     required bool isTyping,
   }) async {
-    final uid = _auth.currentUser?.uid;
-    if (uid == null) return;
     try {
+      if (chatId.isEmpty) {
+        throw ValidationException('chatId', 'Chat ID no puede estar vacío');
+      }
+
+      final uid = _auth.currentUser?.uid;
+      if (uid == null) {
+        throw NotAuthenticatedException();
+      }
+
       await _db.collection('chats').doc(chatId).update({
         'typing.\$uid': isTyping,
       });
-    } catch (_) {}
+
+      AppLogger.debug('Typing actualizado: $chatId',
+          tag: 'ChatDatasource');
+    } on ValidationException catch (e) {
+      AppLogger.warning('Validación fallida: ${e.message}',
+          tag: 'ChatDatasource');
+    } on NotAuthenticatedException {
+      AppLogger.warning('Usuario no autenticado para setTyping',
+          tag: 'ChatDatasource');
+    } catch (e) {
+      AppLogger.debug('Error no crítico en setTyping: $e',
+          tag: 'ChatDatasource');
+    }
   }
 
   // ── Helpers ────────────────────────────────────────────────────────────────

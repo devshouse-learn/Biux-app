@@ -9,6 +9,7 @@ import 'package:biux/features/experiences/domain/repositories/experience_reposit
 import 'package:biux/features/experiences/data/models/experience_model.dart';
 import 'package:biux/features/users/domain/entities/user_entity.dart';
 import "package:flutter/foundation.dart";
+import 'package:biux/core/services/app_logger.dart';
 
 /// Implementación del repository para experiencias usando Firebase
 class ExperienceRepositoryImpl implements ExperienceRepository {
@@ -167,11 +168,9 @@ class ExperienceRepositoryImpl implements ExperienceRepository {
   @override
   Future<List<ExperienceEntity>> getFollowingExperiences(String userId) async {
     try {
-      debugPrint(
-        'dŸ” REPO: Obteniendo experiencias de usuarios seguidos para: $userId',
-      );
+      AppLogger.info('Obteniendo experiencias de usuarios seguidos',
+          tag: 'ExperienceRepository');
 
-      // Primero intentar obtener de subcolección
       final followingSnapshot = await _firestore
           .collection('users')
           .doc(userId)
@@ -181,60 +180,53 @@ class ExperienceRepositoryImpl implements ExperienceRepository {
       List<String> followingIds = followingSnapshot.docs
           .map((doc) => doc.id)
           .toList();
-      debugPrint(
-        'dŸ” REPO: Usuarios seguidos en subcolección: ${followingIds.length}',
-      );
 
-      // Si no hay en subcolección, intentar desde el documento principal
-      if (followingIds.isEmpty) {
-        debugPrint('dŸ” REPO: Buscando en documento principal del usuario...');
-        final userDoc = await _firestore.collection('users').doc(userId).get();
-
-        if (userDoc.exists) {
-          final userData = userDoc.data()!;
-
-          // Verificar si hay campo "following" como Map
-          if (userData['following'] is Map) {
-            final followingMap = userData['following'] as Map;
-            followingIds = followingMap.keys.cast<String>().toList();
-            debugPrint(
-              'dŸ” REPO: Usuarios seguidos en documento principal: ${followingIds.length}',
-            );
-            debugPrint('dŸ” REPO: Following map: $followingMap');
-          }
-        }
-      }
-
-      debugPrint('dŸ” REPO: Total IDs de usuarios seguidos: $followingIds');
+      AppLogger.debug('Usuarios seguidos encontrados: ${followingIds.length}',
+          tag: 'ExperienceRepository');
 
       if (followingIds.isEmpty) {
-        debugPrint('aš ï¸ REPO: No hay usuarios seguidos, retornando lista vacía');
         return [];
       }
 
-      // Obtener experiencias de usuarios seguidos
-      final snapshot = await _firestore
-          .collection('experiences')
-          .where('user.id', whereIn: followingIds)
-          .orderBy('createdAt', descending: true)
-          .limit(50)
-          .get();
+      final List<ExperienceEntity> allExperiences = [];
+      const int chunkSize = 10;
 
-      debugPrint(
-        'dŸ” REPO: Experiencias de seguidos encontradas: ${snapshot.docs.length}',
-      );
+      for (int i = 0; i < followingIds.length; i += chunkSize) {
+        final chunk = followingIds.sublist(
+          i,
+          (i + chunkSize).clamp(0, followingIds.length),
+        );
 
-      return snapshot.docs
-          .map(
-            (doc) => ExperienceModel.fromJson({
-              ...doc.data(),
-              'id': doc.id,
-            }).toEntity(),
-          )
-          .toList();
+        final snapshot = await _firestore
+            .collection('experiences')
+            .where('user.id', whereIn: chunk)
+            .orderBy('createdAt', descending: true)
+            .limit(50)
+            .get();
+
+        allExperiences.addAll(
+          snapshot.docs
+              .map(
+                (doc) => ExperienceModel.fromJson({
+                  ...doc.data(),
+                  'id': doc.id,
+                }).toEntity(),
+              )
+              .toList(),
+        );
+      }
+
+      // Ordenar por fecha descendente (más recientes primero)
+      allExperiences.sort((a, b) => b.createdAt.compareTo(a.createdAt));
+
+      AppLogger.info('Experiencias encontradas: ${allExperiences.length}',
+          tag: 'ExperienceRepository');
+
+      return allExperiences;
     } on FirebaseException catch (e) {
-      debugPrint('aŒ REPO: Error obteniendo experiencias de seguidores: $e');
-      throw Exception('Error obteniendo experiencias de seguidores: $e');
+      AppLogger.error('Error obteniendo experiencias de seguidos: $e',
+          tag: 'ExperienceRepository', error: e);
+      return [];
     }
   }
 
@@ -882,5 +874,6 @@ class ExperienceRepositoryImpl implements ExperienceRepository {
     }
   }
 }
+
 
 

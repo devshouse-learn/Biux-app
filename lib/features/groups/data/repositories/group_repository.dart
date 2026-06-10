@@ -10,6 +10,7 @@ import 'package:biux/features/groups/data/models/group_model.dart';
 import 'package:biux/features/groups/domain/repositories/group_repository_interface.dart';
 import 'package:biux/core/exceptions/authorization_exceptions.dart';
 import 'package:biux/core/services/authorization_service.dart';
+import 'package:flutter/foundation.dart';
 
 class GroupRepository implements GroupRepositoryInterface {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;

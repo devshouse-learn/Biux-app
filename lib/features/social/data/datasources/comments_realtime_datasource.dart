@@ -23,8 +23,9 @@ class CommentsRealtimeDatasource {
     }
   }
 
-  /// Stream de comentarios de un contenido
-  Stream<List<CommentModel>> watchComments(String type, String targetId) {
+  /// RENDIMIENTO: Stream de comentarios sin límite → Carga todos sin filtro
+  /// SOLUCIÓN: Agregar límite en cliente (Realtime DB no soporta limit como Firestore)
+  Stream<List<CommentModel>> watchComments(String type, String targetId, {int limit = 50}) {
     final ref = _database.ref('${_getBasePath(type)}/$targetId');
 
     return ref.orderByChild('createdAt').onValue.map((event) {
@@ -46,7 +47,8 @@ class CommentsRealtimeDatasource {
       // Ordenar por fecha de creación ascendente
       comments.sort((a, b) => a.createdAt.compareTo(b.createdAt));
 
-      return comments;
+      // RENDIMIENTO: Limitar comentarios devueltos para evitar UI lag
+      return comments.length > limit ? comments.sublist(0, limit) : comments;
     });
   }
 
