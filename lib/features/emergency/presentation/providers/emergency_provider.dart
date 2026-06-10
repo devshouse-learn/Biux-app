@@ -1,6 +1,5 @@
 ﻿import 'dart:async';
 import 'package:flutter/foundation.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:biux/features/emergency/domain/entities/emergency_contact_entity.dart';
@@ -130,7 +129,7 @@ class EmergencyProvider with ChangeNotifier {
             }
             notifyListeners();
           });
-    } on FirebaseException catch (e) {
+    } on FirebaseException catch (_) {
       _error = 'Error al enviar SOS: \$e';
       notifyListeners();
     }
@@ -156,7 +155,7 @@ class EmergencyProvider with ChangeNotifier {
     try {
       final data = await _datasource.getContacts(userId);
       _contacts = data.map((m) => EmergencyContactEntity.fromMap(m)).toList();
-    } on FirebaseException catch (e) {
+    } on FirebaseException catch (_) {
       _error = '\$e';
     }
     _isLoading = false;
@@ -181,7 +180,7 @@ class EmergencyProvider with ChangeNotifier {
         userId,
         _contacts.map((c) => c.toMap()).toList(),
       );
-    } on FirebaseException catch (e) {
+    } on FirebaseException catch (_) {
       _error = 'Error al guardar: \$e';
       notifyListeners();
     }

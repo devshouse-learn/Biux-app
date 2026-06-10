@@ -23,7 +23,7 @@ class PaymentsRepository {
       // return json.decode(uriResponse.body);
       final decodeData = json.decode(uriResponse.body);
       return decodeData['url'];
-    } on SocketException catch (e) {
+    } on SocketException catch (_) {
       return '';
     }
   }

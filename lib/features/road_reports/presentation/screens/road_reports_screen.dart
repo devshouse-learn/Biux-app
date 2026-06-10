@@ -69,7 +69,7 @@ class _RoadReportsScreenState extends State<RoadReportsScreen> {
         _addressCache[key] = result;
         return result;
       }
-    } catch (_) {}
+    } catch (e) {}
     return 'Lat ${lat.toStringAsFixed(4)}, Lon ${lon.toStringAsFixed(4)}';
   }
 

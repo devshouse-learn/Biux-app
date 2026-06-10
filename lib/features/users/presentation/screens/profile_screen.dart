@@ -1380,7 +1380,7 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
                                       url.isNotEmpty;
                                 }
                                 return true;
-                              } on FirebaseException catch (e) {
+                              } on FirebaseException catch (_) {
                                 return false;
                               }
                             }).toList();

@@ -341,7 +341,7 @@ class CommentsProvider extends ChangeNotifier {
 
       _isEditing = false;
       notifyListeners();
-    } on FirebaseException catch (e) {
+    } on FirebaseException catch (_) {
       _error = 'comments_edit_error';
       _isEditing = false;
       notifyListeners();

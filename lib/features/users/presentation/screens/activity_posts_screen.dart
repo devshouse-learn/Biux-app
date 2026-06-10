@@ -65,7 +65,7 @@ class _ActivityPostsScreenState extends State<ActivityPostsScreen> {
           _isLoading = false;
         });
       }
-    } on FirebaseException catch (e) {
+    } on FirebaseException catch (_) {
       if (mounted) setState(() => _isLoading = false);
     }
   }

@@ -310,7 +310,7 @@ class UserProvider extends ChangeNotifier {
 
       _setLoading(false);
       return false;
-    } on FirebaseException catch (e) {
+    } on FirebaseException catch (_) {
       _error = 'user_error_upload_image';
       _setLoading(false);
       return false;
@@ -335,7 +335,7 @@ class UserProvider extends ChangeNotifier {
 
       _setLoading(false);
       return success;
-    } on FirebaseException catch (e) {
+    } on FirebaseException catch (_) {
       _error = 'user_error_request_deletion';
       _setLoading(false);
       return false;
@@ -375,7 +375,7 @@ class UserProvider extends ChangeNotifier {
       _setLoading(false);
       notifyListeners();
       return success;
-    } on FirebaseException catch (e) {
+    } on FirebaseException catch (_) {
       _error = 'user_error_authorize_seller';
       _setLoading(false);
       notifyListeners();
@@ -405,7 +405,7 @@ class UserProvider extends ChangeNotifier {
       _setLoading(false);
       notifyListeners();
       return success;
-    } on FirebaseException catch (e) {
+    } on FirebaseException catch (_) {
       _error = 'user_error_revoke_permission';
       _setLoading(false);
       notifyListeners();
@@ -424,7 +424,7 @@ class UserProvider extends ChangeNotifier {
 
     try {
       return await _userService!.getAllUsers();
-    } on FirebaseException catch (e) {
+    } on FirebaseException catch (_) {
       _error = 'user_error_load_users';
       notifyListeners();
       return [];
@@ -485,7 +485,7 @@ class UserProvider extends ChangeNotifier {
       _setLoading(false);
       notifyListeners();
       return success;
-    } on FirebaseException catch (e) {
+    } on FirebaseException catch (_) {
       _error = 'user_error_follow';
       _setLoading(false);
       notifyListeners();
@@ -528,7 +528,7 @@ class UserProvider extends ChangeNotifier {
       _setLoading(false);
       notifyListeners();
       return success;
-    } on FirebaseException catch (e) {
+    } on FirebaseException catch (_) {
       _error = 'user_error_unfollow';
       _setLoading(false);
       notifyListeners();

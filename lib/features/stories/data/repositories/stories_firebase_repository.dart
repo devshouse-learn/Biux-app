@@ -1,7 +1,6 @@
 ﻿import 'dart:io';
 
 import 'package:biux/core/config/strings.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:biux/features/stories/data/models/story.dart';
 import 'package:biux/features/authentication/data/repositories/authentication_repository.dart';
 import 'package:biux/core/utils/bytes_utils.dart';
@@ -67,7 +66,7 @@ class StoriesFirebaseRepository extends StoriesRepositoryAbstract {
           .orderBy('creationDate', descending: true)
           .get();
       return result.docs.map((e) => Story.fromJson(e.data(), e.id)).toList();
-    } on FirebaseException catch (e) {
+    } on FirebaseException catch (_) {
       return [];
     }
   }
@@ -144,7 +143,7 @@ class StoriesFirebaseRepository extends StoriesRepositoryAbstract {
           .doc(id)
           .update(story.toJson());
       return true;
-    } on FirebaseException catch (e) {
+    } on FirebaseException catch (_) {
       return false;
     }
   }
@@ -156,7 +155,7 @@ class StoriesFirebaseRepository extends StoriesRepositoryAbstract {
           .where('user.id', isEqualTo: id)
           .get();
       return response.docs.map((e) => Story.fromJson(e.data(), e.id)).toList();
-    } on FirebaseException catch (e) {
+    } on FirebaseException catch (_) {
       return List.empty();
     }
   }

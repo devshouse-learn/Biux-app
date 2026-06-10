@@ -14,7 +14,7 @@ class StoleBikesFirebaseRepository extends StoleBikesRepositoryAbstract {
       return response.docs
           .map((doc) => StoleBikes.fromjson(doc.data()))
           .toList();
-    } on FirebaseException catch (e) {
+    } on FirebaseException catch (_) {
       return [];
     }
   }
@@ -27,7 +27,7 @@ class StoleBikesFirebaseRepository extends StoleBikesRepositoryAbstract {
           .where('id', isEqualTo: id.toString())
           .get();
       return StoleBikes.fromjson(response.docs.first.data());
-    } on FirebaseException catch (e) {
+    } on FirebaseException catch (_) {
       return StoleBikes();
     }
   }
@@ -43,7 +43,7 @@ class StoleBikesFirebaseRepository extends StoleBikesRepositoryAbstract {
           AppStrings.idText: docId,
         });
       });
-    } on FirebaseException catch (e) {}
+    } on FirebaseException catch (_) {}
   }
 
   @override
@@ -53,7 +53,7 @@ class StoleBikesFirebaseRepository extends StoleBikesRepositoryAbstract {
           .collection(collection)
           .doc(stoleBikes.id)
           .update(stoleBikes.toJson());
-    } on FirebaseException catch (e) {}
+    } on FirebaseException catch (_) {}
   }
 }
 

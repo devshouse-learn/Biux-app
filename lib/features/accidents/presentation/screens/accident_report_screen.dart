@@ -259,7 +259,7 @@ class _AccidentReportScreenState extends State<AccidentReportScreen>
         final userProvider = context.read<UserProvider>();
         userName =
             userProvider.user?.name ?? user?.displayName ?? l.t('anonymous');
-      } catch (_) {
+      } catch (e) {
         userName = user?.displayName ?? l.t('anonymous');
       }
 

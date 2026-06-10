@@ -150,7 +150,7 @@ class ReportContentDialog {
                                 ),
                               );
                             }
-                          } on FirebaseException catch (e) {
+                          } on FirebaseException catch (_) {
                             if (context.mounted) {
                               ScaffoldMessenger.of(context).showSnackBar(
                                 SnackBar(

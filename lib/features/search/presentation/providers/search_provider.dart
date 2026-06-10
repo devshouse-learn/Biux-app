@@ -46,7 +46,7 @@ class SearchProvider extends ChangeNotifier {
       _users = results[0];
       _groups = results[1];
       _rides = results[2];
-    } on Exception catch (e) {
+    } on Exception catch (_) {
       // Keep previous results on error
     }
 

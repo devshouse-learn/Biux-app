@@ -12,7 +12,7 @@ class TrademarkBikeFirebaseRepository extends TrademarkBikeRepositoryAbstract {
       return result.docs
           .map((e) => TrademarkBike.fromJsonMap(e.data()))
           .toList();
-    } on FirebaseException catch (e) {
+    } on FirebaseException catch (_) {
       return List.empty();
     }
   }
@@ -27,7 +27,7 @@ class TrademarkBikeFirebaseRepository extends TrademarkBikeRepositoryAbstract {
       return result.docs
           .map((e) => TrademarkBike.fromJsonMap(e.data()))
           .toList();
-    } on FirebaseException catch (e) {
+    } on FirebaseException catch (_) {
       return List.empty();
     }
   }
@@ -39,7 +39,7 @@ class TrademarkBikeFirebaseRepository extends TrademarkBikeRepositoryAbstract {
           .collection(collection)
           .doc(trademarkBike.id.toString())
           .set(trademarkBike.toJson());
-    } on FirebaseException catch (e) {}
+    } on FirebaseException catch (_) {}
   }
 }
 

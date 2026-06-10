@@ -295,7 +295,7 @@ class _NotificationItemState extends State<NotificationItem> {
           );
         }
       }
-    } on Exception catch (e) {
+    } on Exception catch (_) {
       if (mounted) {
         setState(() => _isProcessing = false);
         ScaffoldMessenger.of(context).showSnackBar(
@@ -331,7 +331,7 @@ class _NotificationItemState extends State<NotificationItem> {
           );
         }
       }
-    } on Exception catch (e) {
+    } on Exception catch (_) {
       if (mounted) {
         setState(() => _isProcessing = false);
         ScaffoldMessenger.of(context).showSnackBar(

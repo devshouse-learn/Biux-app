@@ -129,7 +129,7 @@ class UserProfileRepositoryImpl implements UserProfileRepository {
         return BiuxUser.fromJsonMap(userData);
       }
       return null;
-    } on FirebaseException catch (e) {
+    } on FirebaseException catch (_) {
       return null;
     }
   }

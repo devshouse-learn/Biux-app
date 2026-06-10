@@ -70,7 +70,7 @@ class NotificationsProvider extends ChangeNotifier {
   Future<void> markAsRead(String notificationId) async {
     try {
       await _repository.markAsRead(userId, notificationId);
-    } on Exception catch (e) {
+    } on Exception catch (_) {
       _error = 'notif_mark_read_error';
       notifyListeners();
     }
@@ -86,7 +86,7 @@ class NotificationsProvider extends ChangeNotifier {
 
       _isLoading = false;
       notifyListeners();
-    } on Exception catch (e) {
+    } on Exception catch (_) {
       _error = 'notif_mark_all_read_error';
       _isLoading = false;
       notifyListeners();
@@ -97,7 +97,7 @@ class NotificationsProvider extends ChangeNotifier {
   Future<void> deleteNotification(String notificationId) async {
     try {
       await _repository.deleteNotification(userId, notificationId);
-    } on Exception catch (e) {
+    } on Exception catch (_) {
       _error = 'notif_delete_error';
       notifyListeners();
     }
@@ -113,7 +113,7 @@ class NotificationsProvider extends ChangeNotifier {
 
       _isLoading = false;
       notifyListeners();
-    } on Exception catch (e) {
+    } on Exception catch (_) {
       _error = 'notif_delete_all_error';
       _isLoading = false;
       notifyListeners();

@@ -1,6 +1,5 @@
 ﻿import 'dart:async';
 import 'package:flutter/material.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:provider/provider.dart';
 import 'package:go_router/go_router.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -668,7 +667,7 @@ class _ExperienceCard extends StatelessWidget {
                                 ),
                               );
                             }
-                          } catch (_) {}
+                          } catch (e) {}
                         }
                       : null,
                 );
@@ -1050,7 +1049,7 @@ class _RepostBanner extends StatelessWidget {
             context.push('/user-profile/$foundId');
           }
         }
-      } catch (_) {}
+      } catch (e) {}
     }
   }
 

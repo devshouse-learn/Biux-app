@@ -123,7 +123,7 @@ class UserProfileProvider extends ChangeNotifier {
       });
 
       _searchResults = filtered;
-    } on FirebaseException catch (e) {
+    } on FirebaseException catch (_) {
       _searchResults = [];
     } finally {
       _isSearching = false;
@@ -179,7 +179,7 @@ class UserProfileProvider extends ChangeNotifier {
           _userStories = [];
         }
       }
-    } on FirebaseException catch (e) {
+    } on FirebaseException catch (_) {
       _error = 'user_error_load_profile';
       _currentProfile = null;
       _isFollowing = false;
@@ -272,7 +272,7 @@ class UserProfileProvider extends ChangeNotifier {
                     exp.media.first.url.startsWith('https://')),
           )
           .toList();
-    } on FirebaseException catch (e) {
+    } on FirebaseException catch (_) {
       _userPosts = [];
       _userStories = [];
     } finally {
@@ -314,7 +314,7 @@ class UserProfileProvider extends ChangeNotifier {
         await refreshProfileQuick(userId);
       }
       return success;
-    } on FirebaseException catch (e) {
+    } on FirebaseException catch (_) {
       return false;
     } finally {
       _isProcessingFollow = false;
@@ -336,7 +336,7 @@ class UserProfileProvider extends ChangeNotifier {
         notifyListeners();
       }
       return success;
-    } on FirebaseException catch (e) {
+    } on FirebaseException catch (_) {
       return false;
     } finally {
       _isProcessingFollow = false;
@@ -353,7 +353,7 @@ class UserProfileProvider extends ChangeNotifier {
         notifyListeners();
       }
       return success;
-    } on FirebaseException catch (e) {
+    } on FirebaseException catch (_) {
       return false;
     }
   }
@@ -367,7 +367,7 @@ class UserProfileProvider extends ChangeNotifier {
         notifyListeners();
       }
       return success;
-    } on FirebaseException catch (e) {
+    } on FirebaseException catch (_) {
       return false;
     }
   }
@@ -379,7 +379,7 @@ class UserProfileProvider extends ChangeNotifier {
 
     try {
       _followRequests = await _repository.getFollowRequests();
-    } on FirebaseException catch (e) {
+    } on FirebaseException catch (_) {
       _followRequests = [];
     } finally {
       _isLoadingFollowRequests = false;
@@ -403,7 +403,7 @@ class UserProfileProvider extends ChangeNotifier {
         await refreshProfileQuick(userId);
       }
       return success;
-    } on FirebaseException catch (e) {
+    } on FirebaseException catch (_) {
       return false;
     } finally {
       _isProcessingFollow = false;
@@ -418,7 +418,7 @@ class UserProfileProvider extends ChangeNotifier {
 
     try {
       _followers = await _repository.getFollowers(userId);
-    } on FirebaseException catch (e) {
+    } on FirebaseException catch (_) {
       _followers = [];
     } finally {
       _isLoadingFollowers = false;
@@ -433,7 +433,7 @@ class UserProfileProvider extends ChangeNotifier {
 
     try {
       _following = await _repository.getFollowing(userId);
-    } on FirebaseException catch (e) {
+    } on FirebaseException catch (_) {
       _following = [];
     } finally {
       _isLoadingFollowing = false;

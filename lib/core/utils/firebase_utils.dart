@@ -1,7 +1,6 @@
 ﻿import 'dart:io';
 
 import 'package:biux/core/config/strings.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:biux/core/utils/bytes_utils.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 //import 'package:flutter_native_image/flutter_native_image.dart';
@@ -27,7 +26,7 @@ class FirebaseUtils {
       UploadTask uploadTask = ref.putFile(image);
       String downloadUrl = await (await uploadTask).ref.getDownloadURL();
       return downloadUrl;
-    } on FirebaseException catch (e) {
+    } on FirebaseException catch (_) {
       return '';
     }
   }

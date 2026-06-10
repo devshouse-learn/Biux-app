@@ -10,7 +10,7 @@ class SitesFirebaseRepository extends SitesRepositoryAbstract {
     try {
       final result = await firestore.collection(collection).get();
       return result.docs.map((e) => Sites.fromJson(json: e.data())).toList();
-    } on FirebaseException catch (e) {
+    } on FirebaseException catch (_) {
       return List.empty();
     }
   }
@@ -19,7 +19,7 @@ class SitesFirebaseRepository extends SitesRepositoryAbstract {
     try {
       await firestore.collection(collection).add(sites.toJson());
       return true;
-    } on FirebaseException catch (e) {
+    } on FirebaseException catch (_) {
       return false;
     }
   }
@@ -32,7 +32,7 @@ class SitesFirebaseRepository extends SitesRepositoryAbstract {
           .where('typesSites.type', isEqualTo: 'Negocio')
           .get();
       return result.docs.map((e) => Sites.fromJson(json: e.data())).toList();
-    } on FirebaseException catch (e) {
+    } on FirebaseException catch (_) {
       return List.empty();
     }
   }

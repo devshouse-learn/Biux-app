@@ -25,7 +25,7 @@ class UserFirebaseRepository extends UserRepositoryAbstract {
           .where('id', isEqualTo: userMembership.id)
           .get();
       return UserMembership.fromJsonMap(response.docs.first.data());
-    } on FirebaseException catch (e) {
+    } on FirebaseException catch (_) {
       return UserMembership();
     }
   }
@@ -40,7 +40,7 @@ class UserFirebaseRepository extends UserRepositoryAbstract {
       return result.docs
           .map((e) => UserMembership.fromJsonMap(e.data()))
           .toList();
-    } on FirebaseException catch (e) {
+    } on FirebaseException catch (_) {
       return List.empty();
     }
   }
@@ -54,7 +54,7 @@ class UserFirebaseRepository extends UserRepositoryAbstract {
           .where('userId', isEqualTo: id)
           .get();
       return UserMembership.fromJsonMap(result.docs.first.data());
-    } on FirebaseException catch (e) {
+    } on FirebaseException catch (_) {
       return UserMembership();
     }
   }
@@ -67,7 +67,7 @@ class UserFirebaseRepository extends UserRepositoryAbstract {
           .where('user', isEqualTo: nUsername)
           .get();
       return BiuxUser.fromJsonMap(result.docs.first.data());
-    } on FirebaseException catch (e) {
+    } on FirebaseException catch (_) {
       return BiuxUser();
     }
   }
@@ -80,7 +80,7 @@ class UserFirebaseRepository extends UserRepositoryAbstract {
           .where('userName', isEqualTo: username)
           .get();
       return BiuxUser.fromJsonMap(result.docs.first.data());
-    } on FirebaseException catch (e) {
+    } on FirebaseException catch (_) {
       return BiuxUser();
     }
   }
@@ -92,7 +92,7 @@ class UserFirebaseRepository extends UserRepositoryAbstract {
           .where('id', isEqualTo: id)
           .get();
       return BiuxUser.fromJsonMap(result.docs.first.data());
-    } on FirebaseException catch (e) {
+    } on FirebaseException catch (_) {
       return BiuxUser();
     }
   }
@@ -105,7 +105,7 @@ class UserFirebaseRepository extends UserRepositoryAbstract {
           .where('stateMembership', isEqualTo: true)
           .get();
       return result.docs.map((e) => BiuxUser.fromJsonMap(e.data())).toList();
-    } on FirebaseException catch (e) {
+    } on FirebaseException catch (_) {
       return List.empty();
     }
   }
@@ -115,7 +115,7 @@ class UserFirebaseRepository extends UserRepositoryAbstract {
     try {
       final result = await firestore.collection(collection).get();
       return result.docs.map((e) => BiuxUser.fromJsonMap(e.data())).toList();
-    } on FirebaseException catch (e) {
+    } on FirebaseException catch (_) {
       return List.empty();
     }
   }
@@ -128,7 +128,7 @@ class UserFirebaseRepository extends UserRepositoryAbstract {
           .where('email', isEqualTo: email)
           .get();
       return BiuxUser.fromJsonMap(result.docs.first.data());
-    } on FirebaseException catch (e) {
+    } on FirebaseException catch (_) {
       return BiuxUser();
     }
   }
@@ -141,7 +141,7 @@ class UserFirebaseRepository extends UserRepositoryAbstract {
           .where('facebook', isEqualTo: facebook)
           .get();
       return BiuxUser.fromJsonMap(result.docs.first.data());
-    } on FirebaseException catch (e) {
+    } on FirebaseException catch (_) {
       return BiuxUser();
     }
   }
@@ -158,7 +158,7 @@ class UserFirebaseRepository extends UserRepositoryAbstract {
       } else {
         return true;
       }
-    } on FirebaseException catch (e) {
+    } on FirebaseException catch (_) {
       return false;
     }
   }
@@ -231,7 +231,7 @@ class UserFirebaseRepository extends UserRepositoryAbstract {
           .where('id', isEqualTo: id)
           .get();
       return BiuxUser.fromJsonMap(response.docs.first.data());
-    } on FirebaseException catch (e) {
+    } on FirebaseException catch (_) {
       return BiuxUser();
     }
   }
@@ -282,7 +282,7 @@ class UserFirebaseRepository extends UserRepositoryAbstract {
       // LocalStorage().saveUserEmail(user.email);
       // LocalStorage().saveUserId(user.id);
       return ResponseRepo(status: true, message: '', statusCode: 200);
-    } on FirebaseException catch (e) {
+    } on FirebaseException catch (_) {
       return ResponseRepo(status: false, message: '', statusCode: 500);
     }
   }

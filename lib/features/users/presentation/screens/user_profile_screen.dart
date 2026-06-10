@@ -636,7 +636,7 @@ class _UserProfileScreenState extends State<UserProfileScreen>
                   url.isNotEmpty;
             }
             return true;
-          } on Exception catch (e) {
+          } on Exception catch (_) {
             return false;
           }
         }).toList();

@@ -174,7 +174,7 @@ class BiuxUser {
       } else {
         return const City();
       }
-    } on Exception catch (e) {
+    } on Exception catch (_) {
       return const City();
     }
   }
@@ -193,7 +193,7 @@ class BiuxUser {
       } else {
         return const SituationAccident();
       }
-    } on Exception catch (e) {
+    } on Exception catch (_) {
       return const SituationAccident();
     }
   }

@@ -47,7 +47,7 @@ class ExperienceRepositoryImpl implements ExperienceRepository {
             firebaseUser.photoURL ??
             '',
       );
-    } on FirebaseException catch (e) {
+    } on FirebaseException catch (_) {
       // Si hay error obteniendo desde Firestore, usar datos básicos de Firebase Auth
       return UserModel(
         id: firebaseUser.uid,
@@ -114,7 +114,7 @@ class ExperienceRepositoryImpl implements ExperienceRepository {
         );
       }
       return results;
-    } on FirebaseException catch (e) {
+    } on FirebaseException catch (_) {
       return [];
     }
   }

@@ -47,7 +47,7 @@ class AchievementsProvider with ChangeNotifier {
         }
         return a;
       }).toList();
-    } on FirebaseException catch (e) {
+    } on FirebaseException catch (_) {
       debugPrint('Error loading achievements: \$e');
     }
     _isLoading = false;
@@ -122,7 +122,7 @@ class AchievementsProvider with ChangeNotifier {
           }, SetOptions(merge: true));
         }
         await batch.commit();
-      } on FirebaseException catch (e) {
+      } on FirebaseException catch (_) {
         debugPrint('Error saving achievements: \$e');
       }
     }

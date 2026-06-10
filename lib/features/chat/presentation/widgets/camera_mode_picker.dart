@@ -87,7 +87,7 @@ class _CameraModePickerState extends State<CameraModePicker>
     try {
       await controller.initialize();
       await controller.setFlashMode(_flashMode);
-    } on Exception catch (e) {
+    } on Exception catch (_) {
       if (mounted) Navigator.pop(context);
       return;
     }

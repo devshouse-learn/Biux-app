@@ -110,7 +110,7 @@ class RideTrackerProvider with ChangeNotifier {
             _livePosition = LatLng(p.latitude, p.longitude);
             notifyListeners();
           });
-    } on FirebaseException catch (e) {
+    } on FirebaseException catch (_) {
       debugPrint('initLivePosition error: $e');
     }
   }
@@ -159,7 +159,7 @@ class RideTrackerProvider with ChangeNotifier {
         notifyListeners();
         return true;
       }
-    } on FirebaseException catch (e) {
+    } on FirebaseException catch (_) {
       debugPrint('fetchAndSetRoute error: $e');
     }
     _routeLoading = false;
@@ -227,7 +227,7 @@ class RideTrackerProvider with ChangeNotifier {
       } else {
         debugPrint('aš ï¸ No se pudo recalcular ruta');
       }
-    } on FirebaseException catch (e) {
+    } on FirebaseException catch (_) {
       debugPrint('_rerouteFrom error: $e');
     } finally {
       _isRerouting = false;
@@ -468,7 +468,7 @@ class RideTrackerProvider with ChangeNotifier {
         _resetTrackingState();
         _saveBackgroundData(userId, trackId, savedPoints, savedStart);
         return true;
-      } on FirebaseException catch (e) {
+      } on FirebaseException catch (_) {
         debugPrint('Error Firestore, guardando offline: $e');
         return _saveOffline(
           userId,
@@ -533,7 +533,7 @@ class RideTrackerProvider with ChangeNotifier {
       _resetTrackingState();
       debugPrint('Rodada guardada offline: ${offlineRide.id}');
       return true;
-    } on FirebaseException catch (e) {
+    } on FirebaseException catch (_) {
       debugPrint('Error guardando offline: $e');
       _isSaving = false;
       notifyListeners();
@@ -596,7 +596,7 @@ class RideTrackerProvider with ChangeNotifier {
         await OfflineRideDatasource.markSynced(ride.id);
         synced++;
         debugPrint('Rodada sincronizada: ${ride.id} -> $trackId');
-      } on FirebaseException catch (e) {
+      } on FirebaseException catch (_) {
         debugPrint('Error sincronizando ${ride.id}: $e');
       }
     }
@@ -620,7 +620,7 @@ class RideTrackerProvider with ChangeNotifier {
           );
           debugPrint('[BG] Puntos GPS guardados: ${savedPoints.length}');
         }
-      } on FirebaseException catch (e) {
+      } on FirebaseException catch (_) {
         debugPrint('[BG] Error guardando puntos: $e');
       }
 
@@ -676,7 +676,7 @@ class RideTrackerProvider with ChangeNotifier {
           startTime,
         );
         debugPrint('[BG] Stats y logros actualizados');
-      } on FirebaseException catch (e) {
+      } on FirebaseException catch (_) {
         debugPrint('[BG] Error actualizando stats: $e');
       }
     });
@@ -697,7 +697,7 @@ class RideTrackerProvider with ChangeNotifier {
           .where('members', arrayContains: userId)
           .get();
       groupCount = gs.docs.length;
-    } on FirebaseException catch (e) {
+    } on FirebaseException catch (_) {
       debugPrint('Error: ' + e.toString());
     }
 
@@ -830,7 +830,7 @@ class RideTrackerProvider with ChangeNotifier {
     try {
       final data = await _ds.getUserTracks(userId);
       _history = _mapHistory(data);
-    } on FirebaseException catch (e) {
+    } on FirebaseException catch (_) {
       debugPrint('Error loading history: $e');
       // Fallback sin orderBy (no requiere índice compuesto)
       try {
@@ -872,7 +872,7 @@ class RideTrackerProvider with ChangeNotifier {
       await _ds.deleteTrack(trackId);
       _history.removeWhere((r) => r.id == trackId);
       notifyListeners();
-    } on FirebaseException catch (e) {
+    } on FirebaseException catch (_) {
       debugPrint('Error deleting ride: $e');
     }
   }
@@ -885,7 +885,7 @@ class RideTrackerProvider with ChangeNotifier {
         _history[idx] = _history[idx].copyWith(name: newName);
         notifyListeners();
       }
-    } on FirebaseException catch (e) {
+    } on FirebaseException catch (_) {
       debugPrint('Error renaming ride: $e');
     }
   }
@@ -942,7 +942,7 @@ class RideTrackerProvider with ChangeNotifier {
       }, SetOptions(merge: true));
       await batch.commit();
       _points.removeRange(0, pointsToFlush.length);
-    } on FirebaseException catch (e) {
+    } on FirebaseException catch (_) {
       AppLogger.error('No se pudo hacer flush de puntos GPS: \$e');
     }
   }

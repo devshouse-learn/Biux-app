@@ -12,7 +12,7 @@ class EpsFirebaseRepository extends EpsRepositoryAbstract {
       return result.docs
           .map((doc) => Eps.fromJson(json: doc.data(), docId: doc.id))
           .toList();
-    } on FirebaseException catch (e) {
+    } on FirebaseException catch (_) {
       return [];
     }
   }

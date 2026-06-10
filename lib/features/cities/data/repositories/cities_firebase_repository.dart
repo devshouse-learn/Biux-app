@@ -14,7 +14,7 @@ class CitiesFirebaseRepository extends CitiesRepositoryAbstract {
           .orderBy("name", descending: false)
           .get();
       return result.docs.map((e) => City.fromJson(json: e.data())).toList();
-    } on FirebaseException catch (e) {
+    } on FirebaseException catch (_) {
       return List.empty();
     }
   }
@@ -27,7 +27,7 @@ class CitiesFirebaseRepository extends CitiesRepositoryAbstract {
           .where('id', isEqualTo: cityId)
           .get();
       return City.fromJson(json: response.docs.first.data());
-    } on FirebaseException catch (e) {
+    } on FirebaseException catch (_) {
       return City();
     }
   }
@@ -40,7 +40,7 @@ class CitiesFirebaseRepository extends CitiesRepositoryAbstract {
           .where('id', isEqualTo: id)
           .get();
       return City.fromJson(json: result.docs.first.data());
-    } on FirebaseException catch (e) {
+    } on FirebaseException catch (_) {
       return City();
     }
   }

@@ -28,7 +28,7 @@ class AchievementsSyncService {
           'a­ï¸ Logros: No necesita sincronizar (faltan \${(_syncIntervalDays - daysSinceSync).toInt()} dias)',
         );
       }
-    } on FirebaseException catch (e) {
+    } on FirebaseException catch (_) {
       debugPrint('aŒ Error en sincronizacion semanal de logros: \$e');
     }
   }
@@ -66,7 +66,7 @@ class AchievementsSyncService {
           rideDates.add(DateTime.fromMillisecondsSinceEpoch(startMs));
         }
       }
-    } on FirebaseException catch (e) {
+    } on FirebaseException catch (_) {
       debugPrint('Error obteniendo historial de rodadas: \$e');
     }
 

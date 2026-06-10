@@ -158,7 +158,7 @@ class _ChatScreenState extends State<ChatScreen> {
               _lastSeen = lastSeenTs?.toDate();
             });
           });
-    } on FirebaseException catch (e) {
+    } on FirebaseException catch (_) {
       if (mounted) setState(() => _loadingProfile = false);
     }
   }
@@ -503,7 +503,7 @@ class _ChatScreenState extends State<ChatScreen> {
         ScaffoldMessenger.of(context).hideCurrentSnackBar();
         lat = pos.latitude;
         lng = pos.longitude;
-      } on FirebaseException catch (e) {
+      } on FirebaseException catch (_) {
         if (mounted) {
           ScaffoldMessenger.of(context).hideCurrentSnackBar();
           ScaffoldMessenger.of(context).showSnackBar(

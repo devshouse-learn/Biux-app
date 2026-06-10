@@ -23,7 +23,7 @@ class MembersFirebaseRepository extends MembersRepositoryAbstract {
           .where('id', isEqualTo: memberId)
           .get();
       return Member.fromJson(response.docs.first.data());
-    } on FirebaseException catch (e) {
+    } on FirebaseException catch (_) {
       return Member();
     }
   }
@@ -38,7 +38,7 @@ class MembersFirebaseRepository extends MembersRepositoryAbstract {
           .where('userId', isEqualTo: userId)
           .get();
       return Member.fromJson(response.docs.first.data());
-    } on FirebaseException catch (e) {
+    } on FirebaseException catch (_) {
       return Member();
     }
   }
@@ -48,7 +48,7 @@ class MembersFirebaseRepository extends MembersRepositoryAbstract {
     try {
       final result = await firestore.collectionGroup(subcollection).get();
       return result.docs.map((e) => Member.fromJson(e.data())).toList();
-    } on FirebaseException catch (e) {
+    } on FirebaseException catch (_) {
       return List.empty();
     }
   }
@@ -61,7 +61,7 @@ class MembersFirebaseRepository extends MembersRepositoryAbstract {
           .collection(subcollection)
           .get();
       return result.docs.map((e) => Member.fromJson(e.data())).toList();
-    } on FirebaseException catch (e) {
+    } on FirebaseException catch (_) {
       return List.empty();
     }
   }
@@ -74,7 +74,7 @@ class MembersFirebaseRepository extends MembersRepositoryAbstract {
           .where('id', isEqualTo: groupId)
           .get();
       return result.docs.map((e) => Member.fromJson(e.data())).toList();
-    } on FirebaseException catch (e) {
+    } on FirebaseException catch (_) {
       return List.empty();
     }
   }
@@ -105,7 +105,7 @@ class MembersFirebaseRepository extends MembersRepositoryAbstract {
         'numberMembers': numberMember + 1,
       });
       return docId;
-    } on FirebaseException catch (e) {
+    } on FirebaseException catch (_) {
       return '';
     }
   }
@@ -122,7 +122,7 @@ class MembersFirebaseRepository extends MembersRepositoryAbstract {
         'numberMembers': numberMember - 1,
       });
       return true;
-    } on FirebaseException catch (e) {
+    } on FirebaseException catch (_) {
       return false;
     }
   }

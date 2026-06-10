@@ -1030,7 +1030,7 @@ class _ChatListScreenState extends State<ChatListScreen>
           ),
         );
       }
-    } on FirebaseException catch (e) {
+    } on FirebaseException catch (_) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(

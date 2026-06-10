@@ -1,6 +1,5 @@
 ﻿import 'dart:async';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:biux/core/services/app_logger.dart';
 
 /// Repositorio de pagos con persistencia en Firestore.

@@ -69,7 +69,7 @@ class CyclingStatsProvider with ChangeNotifier {
         );
       }
       _lastUpdated = DateTime.now();
-    } on Exception catch (e) {
+    } on Exception catch (_) {
       _error = 'stats_error_load';
     }
 
@@ -85,7 +85,7 @@ class CyclingStatsProvider with ChangeNotifier {
       await loadStats(userId);
       await loadLeaderboard();
       _lastUpdated = DateTime.now();
-    } on Exception catch (e) {
+    } on Exception catch (_) {
       _error = 'stats_error_refresh';
     }
 
@@ -111,7 +111,7 @@ class CyclingStatsProvider with ChangeNotifier {
         minutes: minutes,
       );
       await loadStats(userId);
-    } on Exception catch (e) {
+    } on Exception catch (_) {
       _error = 'stats_error_add_ride';
       notifyListeners();
     }
@@ -121,7 +121,7 @@ class CyclingStatsProvider with ChangeNotifier {
     try {
       _leaderboard = await _datasource.getLeaderboard();
       notifyListeners();
-    } on Exception catch (e) {
+    } on Exception catch (_) {
       _error = 'stats_error_leaderboard';
       notifyListeners();
     }
@@ -131,7 +131,7 @@ class CyclingStatsProvider with ChangeNotifier {
     try {
       _friendsLeaderboard = await _datasource.getLeaderboardForUsers(friendIds);
       notifyListeners();
-    } on Exception catch (e) {
+    } on Exception catch (_) {
       _error = 'stats_error_leaderboard';
       notifyListeners();
     }

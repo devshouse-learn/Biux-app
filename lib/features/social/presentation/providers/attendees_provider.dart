@@ -182,7 +182,7 @@ class AttendeesProvider extends ChangeNotifier {
 
       _isJoining = false;
       notifyListeners();
-    } on FirebaseException catch (e) {
+    } on FirebaseException catch (_) {
       _error = 'attendees_join_error';
       _isJoining = false;
       notifyListeners();
@@ -209,7 +209,7 @@ class AttendeesProvider extends ChangeNotifier {
 
       _isUpdating = false;
       notifyListeners();
-    } on FirebaseException catch (e) {
+    } on FirebaseException catch (_) {
       _error = 'attendees_update_error';
       _isUpdating = false;
       notifyListeners();
@@ -229,7 +229,7 @@ class AttendeesProvider extends ChangeNotifier {
 
       _isLeaving = false;
       notifyListeners();
-    } on FirebaseException catch (e) {
+    } on FirebaseException catch (_) {
       _error = 'attendees_leave_error';
       _isLeaving = false;
       notifyListeners();

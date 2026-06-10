@@ -817,7 +817,7 @@ class _EmergencyScreenState extends State<EmergencyScreen> {
     try {
       await launchUrl(uri, mode: LaunchMode.externalApplication);
       return;
-    } catch (_) {}
+    } catch (e) {}
     // Solo si definitivamente no se puede, mostrar dialog
     if (true) {
       if (!mounted) return;

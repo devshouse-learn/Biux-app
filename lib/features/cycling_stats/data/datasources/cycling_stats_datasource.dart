@@ -190,7 +190,7 @@ class CyclingStatsDatasource {
           .limit(50)
           .get();
       return snap.docs.map((d) => {'id': d.id, ...d.data()}).toList();
-    } on FirebaseException catch (e) {
+    } on FirebaseException catch (_) {
       return [];
     }
   }

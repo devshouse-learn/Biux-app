@@ -746,7 +746,7 @@ class _AppDrawerState extends State<AppDrawer> {
       try {
         final up = Provider.of<UserProvider>(context, listen: false);
         await up.signOut();
-      } catch (_) {}
+      } catch (e) {}
       await FirebaseAuth.instance.signOut();
       await Future.delayed(const Duration(milliseconds: 100));
     } on FirebaseException catch (e) {

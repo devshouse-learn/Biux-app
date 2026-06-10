@@ -10,7 +10,7 @@ class TypesBikeFirebaseRepository extends TypesBikeRepositoryAbstract {
     try {
       final result = await firestore.collection(collection).get();
       return result.docs.map((e) => TypeBike.fromJsonMap(e.data())).toList();
-    } on FirebaseException catch (e) {
+    } on FirebaseException catch (_) {
       return List.empty();
     }
   }
@@ -23,7 +23,7 @@ class TypesBikeFirebaseRepository extends TypesBikeRepositoryAbstract {
           .where('id', isEqualTo: id)
           .get();
       return result.docs.map((e) => TypeBike.fromJsonMap(e.data())).toList();
-    } on FirebaseException catch (e) {
+    } on FirebaseException catch (_) {
       return List.empty();
     }
   }

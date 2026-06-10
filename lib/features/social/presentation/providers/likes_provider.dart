@@ -335,7 +335,7 @@ class LikesProvider extends ChangeNotifier {
 
       _isProcessing = false;
       notifyListeners();
-    } on FirebaseException catch (e) {
+    } on FirebaseException catch (_) {
       _error = 'likes_error';
       _isProcessing = false;
       notifyListeners();
@@ -391,7 +391,7 @@ class LikesProvider extends ChangeNotifier {
 
       _isProcessing = false;
       notifyListeners();
-    } on FirebaseException catch (e) {
+    } on FirebaseException catch (_) {
       _error = 'likes_unlike_error';
       _isProcessing = false;
       notifyListeners();
