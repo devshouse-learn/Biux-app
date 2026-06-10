@@ -37,6 +37,31 @@ class HelpScreen extends StatelessWidget {
           _buildFAQItem(l.t('faq_create_group_q'), l.t('faq_create_group_a')),
           _buildFAQItem(l.t('faq_media_space_q'), l.t('faq_media_space_a')),
           _buildFAQItem(l.t('faq_text_posts_q'), l.t('faq_text_posts_a')),
+          _buildFAQItem(l.t('faq_private_account_q'), l.t('faq_private_account_a')),
+          _buildFAQItem(l.t('faq_follow_request_q'), l.t('faq_follow_request_a')),
+
+          SizedBox(height: 24),
+
+          // Sistema de Privacidad y Cuentas
+          _buildSectionTitle(l.t('privacy_security')),
+          _buildFeatureCard(
+            icon: Icons.lock_open,
+            title: l.t('public_account'),
+            description: l.t('public_account_desc'),
+            color: Colors.green,
+          ),
+          _buildFeatureCard(
+            icon: Icons.lock,
+            title: l.t('private_account'),
+            description: l.t('private_account_desc'),
+            color: Colors.orange,
+          ),
+          _buildFeatureCard(
+            icon: Icons.person_add,
+            title: l.t('follow_requests'),
+            description: l.t('follow_requests_desc'),
+            color: ColorTokens.primary30,
+          ),
 
           SizedBox(height: 24),
 

@@ -1044,15 +1044,30 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
                                               .user!
                                               .username!
                                               .isNotEmpty)
-                                        Text(
-                                          '@${widget.userProvider.user!.username}',
-                                          style: TextStyle(
-                                            fontSize: 13,
-                                            color: ColorTokens.neutral100
-                                                .withValues(alpha: 0.7),
-                                          ),
-                                          maxLines: 1,
-                                          overflow: TextOverflow.ellipsis,
+                                        Row(
+                                          children: [
+                                            Text(
+                                              '@${widget.userProvider.user!.username}',
+                                              style: TextStyle(
+                                                fontSize: 13,
+                                                color: ColorTokens.neutral100
+                                                    .withValues(alpha: 0.7),
+                                              ),
+                                              maxLines: 1,
+                                              overflow: TextOverflow.ellipsis,
+                                            ),
+                                            SizedBox(width: 6),
+                                            Icon(
+                                              widget.userProvider.user
+                                                          ?.profileVisibility ==
+                                                      'private'
+                                                  ? Icons.lock_rounded
+                                                  : Icons.lock_open_rounded,
+                                              size: 14,
+                                              color: ColorTokens.neutral100
+                                                  .withValues(alpha: 0.6),
+                                            ),
+                                          ],
                                         ),
                                     ],
                                   ),
