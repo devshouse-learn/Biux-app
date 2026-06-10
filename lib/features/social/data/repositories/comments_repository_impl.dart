@@ -3,6 +3,8 @@ import 'package:biux/features/social/domain/entities/comment_entity.dart';
 import 'package:biux/features/social/domain/repositories/comments_repository.dart';
 import 'package:biux/features/social/data/datasources/comments_realtime_datasource.dart';
 import 'package:biux/features/social/data/models/comment_model.dart';
+import 'package:biux/core/exceptions/authorization_exceptions.dart';
+import 'package:biux/core/services/app_logger.dart';
 
 /// Implementación del repositorio de comentarios
 class CommentsRepositoryImpl implements CommentsRepository {
@@ -92,23 +94,49 @@ class CommentsRepositoryImpl implements CommentsRepository {
     required String userId,
     required String newText,
   }) async {
-    // Verificar que el usuario es el autor
-    final comment = await _datasource.getComment(
-      type: _typeToString(type),
-      targetId: targetId,
-      commentId: commentId,
-    );
+    try {
+      // CRÍTICO #5: Verificar ownership y manejar casos de inconsistencia
+      final comment = await _datasource.getComment(
+        type: _typeToString(type),
+        targetId: targetId,
+        commentId: commentId,
+      );
 
-    if (comment == null || comment.userId != userId) {
-      throw Exception('No tienes permiso para editar este comentario');
+      if (comment == null) {
+        AppLogger.warning('Intento de actualizar comentario eliminado: $commentId',
+            tag: 'CommentsRepositoryImpl');
+        throw ResourceNotFoundException('Comentario');
+      }
+
+      if (comment.userId != userId) {
+        AppLogger.warning(
+            'Intento de actualizar comentario ajeno - Usuario: $userId, Propietario: ${comment.userId}',
+            tag: 'CommentsRepositoryImpl');
+        throw UnauthorizedException('editar este comentario');
+      }
+
+      // Actualizar comentario
+      await _datasource.updateComment(
+        type: _typeToString(type),
+        targetId: targetId,
+        commentId: commentId,
+        newText: newText,
+      );
+
+      AppLogger.info('Comentario actualizado: $commentId', tag: 'CommentsRepositoryImpl');
+    } on UnauthorizedException catch (e) {
+      AppLogger.warning('Operación no autorizada: ${e.message}',
+          tag: 'CommentsRepositoryImpl');
+      rethrow;
+    } on ResourceNotFoundException catch (e) {
+      AppLogger.warning('Recurso no encontrado: ${e.message}',
+          tag: 'CommentsRepositoryImpl');
+      rethrow;
+    } catch (e) {
+      AppLogger.error('Error actualizando comentario: $e',
+          tag: 'CommentsRepositoryImpl', error: e);
+      rethrow;
     }
-
-    return _datasource.updateComment(
-      type: _typeToString(type),
-      targetId: targetId,
-      commentId: commentId,
-      newText: newText,
-    );
   }
 
   @override
