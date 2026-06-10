@@ -38,10 +38,11 @@ class _AchievementsScreenState extends State<AchievementsScreen>
   @override
   void initState() {
     super.initState();
-    _tabCtrl = TabController(length: _categories.length, vsync: this);
+    _tabCtrl = TabController(length: 8, vsync: this);
     _tabCtrl.addListener(() {
       if (!_tabCtrl.indexIsChanging) {
-        setState(() => _selectedCategory = _categories[_tabCtrl.index]['id']!);
+        final categories = _categories;
+        setState(() => _selectedCategory = categories[_tabCtrl.index]['id']!);
       }
     });
     WidgetsBinding.instance.addPostFrameCallback((_) {
