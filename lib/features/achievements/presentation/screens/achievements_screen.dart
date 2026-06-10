@@ -67,6 +67,41 @@ class _AchievementsScreenState extends State<AchievementsScreen>
             return ShimmerListLoading();
           }
 
+          if (provider.error != null) {
+            return Center(
+              child: Padding(
+                padding: const EdgeInsets.all(32),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(Icons.error_outline, size: 64, color: ColorTokens.error50),
+                    const SizedBox(height: 16),
+                    Text(
+                      'Error al cargar logros',
+                      style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      provider.error ?? '',
+                      textAlign: TextAlign.center,
+                      style: const TextStyle(color: Colors.grey),
+                    ),
+                    const SizedBox(height: 24),
+                    ElevatedButton(
+                      onPressed: () {
+                        final uid = FirebaseAuth.instance.currentUser?.uid;
+                        if (uid != null) {
+                          context.read<AchievementsProvider>().loadAchievements(uid);
+                        }
+                      },
+                      child: const Text('Reintentar'),
+                    ),
+                  ],
+                ),
+              ),
+            );
+          }
+
           final allInCategory = _selectedCategory == 'all'
               ? provider.achievements
               : provider.achievements
