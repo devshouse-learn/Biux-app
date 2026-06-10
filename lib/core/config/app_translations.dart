@@ -1811,7 +1811,6 @@ class AppTranslations {
     'faq_follow_request_q': '¿Cómo funciona una solicitud de seguimiento?',
     'faq_follow_request_a':
         'Si alguien tiene cuenta privada, cuando intentas seguirlo debe aprobar tu solicitud. Verá tu solicitud en las notificaciones y podrá aceptarla o rechazarla.',
-    'privacy_security': 'Privacidad y Seguridad',
     'public_account': 'Cuenta Pública',
     'public_account_desc':
         'Cualquiera puede ver tu perfil, historias y publicaciones. Los usuarios pueden seguirte sin necesidad de aprobación.',
