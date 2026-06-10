@@ -108,30 +108,39 @@ class GroupProvider extends ChangeNotifier {
   // a”€a”€a”€ Cargar grupos (Use Case: GetGroupsUseCase) a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€
 
   void loadAllGroups() {
-    _getGroupsUseCase.call().listen((groups) {
-      groups.sort((a, b) => b.memberIds.length.compareTo(a.memberIds.length));
-      _allGroups = groups;
-      notifyListeners();
-    });
+    _getGroupsUseCase.call().listen(
+      (groups) {
+        groups.sort((a, b) => b.memberIds.length.compareTo(a.memberIds.length));
+        _allGroups = groups;
+        notifyListeners();
+      },
+      onError: (error) => AppLogger.error('Error loading all groups', error: error),
+    );
   }
 
   void loadUserGroups() {
     if (currentUserId != null) {
-      _getGroupsUseCase.byUser(currentUserId!).listen((groups) {
-        groups.sort((a, b) => b.memberIds.length.compareTo(a.memberIds.length));
-        _userGroups = groups;
-        notifyListeners();
-      });
+      _getGroupsUseCase.byUser(currentUserId!).listen(
+        (groups) {
+          groups.sort((a, b) => b.memberIds.length.compareTo(a.memberIds.length));
+          _userGroups = groups;
+          notifyListeners();
+        },
+        onError: (error) => AppLogger.error('Error loading user groups', error: error),
+      );
     }
   }
 
   void loadAdminGroups() {
     if (currentUserId != null) {
-      _getGroupsUseCase.adminGroups(currentUserId!).listen((groups) {
-        groups.sort((a, b) => b.memberIds.length.compareTo(a.memberIds.length));
-        _adminGroups = groups;
-        notifyListeners();
-      });
+      _getGroupsUseCase.adminGroups(currentUserId!).listen(
+        (groups) {
+          groups.sort((a, b) => b.memberIds.length.compareTo(a.memberIds.length));
+          _adminGroups = groups;
+          notifyListeners();
+        },
+        onError: (error) => AppLogger.error('Error loading admin groups', error: error),
+      );
     }
   }
 

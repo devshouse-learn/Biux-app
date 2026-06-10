@@ -62,7 +62,7 @@ class RideProvider extends ChangeNotifier {
           .toList();
 
       _setLoading(false);
-    } on FirebaseException catch (e) {
+    } catch (e) {
       _setError('Error al cargar las rodadas: $e');
       _setLoading(false);
     }
@@ -88,7 +88,7 @@ class RideProvider extends ChangeNotifier {
           .toList();
 
       _setLoading(false);
-    } on FirebaseException catch (e) {
+    } catch (e) {
       _setError('Error al cargar las rodadas del grupo: $e');
       _setLoading(false);
     }
@@ -595,7 +595,7 @@ class RideProvider extends ChangeNotifier {
           .toList();
 
       _setLoading(false);
-    } on FirebaseException catch (e) {
+    } catch (e) {
       _setError('Error al cargar las rodadas del grupo: $e');
       _setLoading(false);
     }
