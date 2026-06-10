@@ -1056,17 +1056,6 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
                                               maxLines: 1,
                                               overflow: TextOverflow.ellipsis,
                                             ),
-                                            SizedBox(width: 6),
-                                            Icon(
-                                              widget.userProvider.user
-                                                          ?.profileVisibility ==
-                                                      'private'
-                                                  ? Icons.lock_rounded
-                                                  : Icons.lock_open_rounded,
-                                              size: 14,
-                                              color: ColorTokens.neutral100
-                                                  .withValues(alpha: 0.6),
-                                            ),
                                           ],
                                         ),
                                     ],

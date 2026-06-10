@@ -82,9 +82,21 @@ class _MainShellState extends State<MainShell> {
             backgroundColor: appBarColor,
             foregroundColor: textColor,
             title: _selectedIndex == 4
-                ? Text(
-                    _titleForIndex(_selectedIndex, l, context),
-                    style: Styles.mainMenuTextBiux,
+                ? Row(
+                    children: [
+                      Text(
+                        _titleForIndex(_selectedIndex, l, context),
+                        style: Styles.mainMenuTextBiux,
+                      ),
+                      const SizedBox(width: 8),
+                      Icon(
+                        userProvider.user?.profileVisibility == 'private'
+                            ? Icons.lock_rounded
+                            : Icons.lock_open_rounded,
+                        size: 20,
+                        color: textColor,
+                      ),
+                    ],
                   )
                 : Image.asset(
                     'img/biux_logo_biux_only.png',
