@@ -57,7 +57,58 @@ class UserService {
     }
   }
 
-  /// Actualizar el nÃºmero de teléfono del usuario en Firestore
+  /// CRÍTICO #12: Sanitiza datos sensibles según permisos del usuario
+  /// Solo devuelve phoneNumber si el usuario consultante es el propietario
+  UserModel _sanitizeUserData(UserModel user, String? requestingUserId) {
+    if (requestingUserId != null && requestingUserId == user.uid) {
+      // El usuario puede ver su propio teléfono
+      return user;
+    }
+
+    // Para otros usuarios, remover el teléfono
+    return UserModel(
+      uid: user.uid,
+      phoneNumber: '', // Remover teléfono
+      name: user.name,
+      email: '', // También remover email por seguridad
+      photoUrl: user.photoUrl,
+      isAdmin: user.isAdmin,
+    );
+  }
+
+  /// Obtener usuario con datos sanitizados según permisos
+  Future<UserModel?> getUserWithPermissions(String uid,
+      {String? requestingUserId}) async {
+    try {
+      final snapshot =
+          await _firestore.collection('users').doc(uid).get();
+
+      if (snapshot.exists) {
+        final data = snapshot.data() as Map<String, dynamic>;
+        try {
+          final user = UserModel.fromMap(data);
+          // CRÍTICO #12: Sanitizar datos sensibles
+          return _sanitizeUserData(user, requestingUserId);
+        } catch (parseError) {
+          AppLogger.warning(
+            'Error parseando datos del usuario',
+            tag: 'UserService',
+            error: parseError,
+          );
+        }
+      }
+      return null;
+    } catch (e) {
+      AppLogger.error(
+        'Error obteniendo usuario con permisos',
+        tag: 'UserService',
+        error: e,
+      );
+      return null;
+    }
+  }
+
+  /// Actualizar el número de teléfono del usuario en Firestore
   Future<void> updatePhoneNumber(String uid, String phoneNumber) async {
     try {
       await _firestore.collection('users').doc(uid).update({
