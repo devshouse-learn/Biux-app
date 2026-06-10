@@ -1,7 +1,11 @@
 ﻿import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 import 'package:biux/features/rides/data/models/ride_model.dart';
 import "package:flutter/foundation.dart";
+import 'package:biux/core/exceptions/authorization_exceptions.dart';
+import 'package:biux/core/services/authorization_service.dart';
+import 'package:biux/core/services/app_logger.dart';
 
 class RideRepository {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
@@ -133,10 +137,40 @@ class RideRepository {
   // Eliminar una rodada
   Future<bool> deleteRide(String rideId) async {
     try {
+      final authService = AuthorizationService();
+      final currentUserId = authService.getCurrentUserId();
+
+      // CRÍTICO #2: Verificar que el usuario sea el creador de la rodada
+      final rideDoc =
+          await _firestore.collection('rides').doc(rideId).get();
+
+      if (!rideDoc.exists) {
+        throw ResourceNotFoundException('Rodada');
+      }
+
+      final rideData = rideDoc.data();
+      final rideCreatorId = rideData?['createdBy'] ?? rideData?['userId'];
+
+      if (rideCreatorId != currentUserId) {
+        AppLogger.warning(
+            'Intento de eliminar rodada ajena - Usuario: $currentUserId, Propietario: $rideCreatorId');
+        throw UnauthorizedException('eliminar esta rodada');
+      }
+
       await _firestore.collection('rides').doc(rideId).delete();
+      AppLogger.info('Rodada eliminada exitosamente', tag: 'deleteRide');
       return true;
+    } on UnauthorizedException catch (e) {
+      AppLogger.warning('Operación no autorizada: ${e.message}');
+      return false;
+    } on NotAuthenticatedException catch (e) {
+      AppLogger.warning('Usuario no autenticado: ${e.message}');
+      return false;
     } on FirebaseException catch (e) {
-      debugPrint('Error deleting ride: $e');
+      AppLogger.error('Error de Firebase eliminando rodada: ${e.message}');
+      return false;
+    } catch (e) {
+      AppLogger.error('Error inesperado eliminando rodada: $e');
       return false;
     }
   }

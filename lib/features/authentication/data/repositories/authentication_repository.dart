@@ -92,6 +92,8 @@ class AuthenticationRepository implements AuthRepositoryInterface {
             password: user.password,
           );
       final String uid = userCredential.user!.uid;
+      // CRÍTICO #11: NUNCA guardar passwords en Firestore
+      // Firebase Auth ya gestiona la autenticación de manera segura
       final BiuxUser biuxUser = BiuxUser(
         id: uid,
         fullName: user.fullName,
@@ -106,7 +108,7 @@ class AuthenticationRepository implements AuthRepositoryInterface {
         groupId: user.groupId,
         instagram: user.instagram,
         modality: user.modality,
-        password: user.password,
+        // REMOVER: password: user.password,  <- Nunca guardar en Firestore
         photo: user.photo,
         premium: user.premium,
         profileCover: user.profileCover,

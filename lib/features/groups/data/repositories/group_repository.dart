@@ -3,11 +3,13 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:biux/core/services/app_logger.dart';
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:image_picker/image_picker.dart';
 
 import 'package:biux/features/groups/data/models/group_model.dart';
-
 import 'package:biux/features/groups/domain/repositories/group_repository_interface.dart';
+import 'package:biux/core/exceptions/authorization_exceptions.dart';
+import 'package:biux/core/services/authorization_service.dart';
 
 class GroupRepository implements GroupRepositoryInterface {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
@@ -312,6 +314,11 @@ class GroupRepository implements GroupRepositoryInterface {
     XFile? coverFile,
   }) async {
     try {
+      final authService = AuthorizationService();
+
+      // CRÍTICO #3: Verificar que el usuario sea admin del grupo
+      await authService.requireGroupAdmin(groupId);
+
       Map<String, dynamic> updates = {
         'updatedAt': Timestamp.fromDate(DateTime.now()),
       };
@@ -332,9 +339,19 @@ class GroupRepository implements GroupRepositoryInterface {
       }
 
       await _firestore.collection(_collection).doc(groupId).update(updates);
+      AppLogger.info('Grupo actualizado exitosamente', tag: 'updateGroup');
       return true;
+    } on UnauthorizedException catch (e) {
+      AppLogger.warning('Operación no autorizada: ${e.message}');
+      return false;
+    } on NotAuthenticatedException catch (e) {
+      AppLogger.warning('Usuario no autenticado: ${e.message}');
+      return false;
     } on FirebaseException catch (e) {
       AppLogger.debug('Error actualizando grupo: $e');
+      return false;
+    } catch (e) {
+      AppLogger.debug('Error inesperado actualizando grupo: $e');
       return false;
     }
   }
