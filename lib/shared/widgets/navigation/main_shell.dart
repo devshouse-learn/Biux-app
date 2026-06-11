@@ -83,6 +83,7 @@ class _MainShellState extends State<MainShell> {
             foregroundColor: textColor,
             title: _selectedIndex == 4
                 ? Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Text(
                         _titleForIndex(_selectedIndex, l, context),

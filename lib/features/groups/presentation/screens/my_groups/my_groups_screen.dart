@@ -42,12 +42,12 @@ class _MyGroupsScreenState extends State<MyGroupsScreen>
         foregroundColor: ColorTokens.neutral100,
         bottom: TabBar(
           controller: _tabController,
-          labelColor: ColorTokens.neutral100,
-          unselectedLabelColor: ColorTokens.neutral100.withValues(alpha: 0.7),
-          indicatorColor: ColorTokens.neutral100,
+          labelColor: Colors.white,
+          unselectedLabelColor: Colors.white,
+          indicatorColor: Colors.white,
           tabs: [
-            Tab(text: l.t('member')),
-            Tab(text: l.t('administered')),
+            Tab(text: 'Mis Grupos'),
+            Tab(text: 'Explorar'),
           ],
         ),
       ),
