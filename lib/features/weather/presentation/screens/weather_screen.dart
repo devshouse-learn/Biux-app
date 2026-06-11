@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:biux/core/design_system/color_tokens.dart';
 import 'package:biux/features/weather/presentation/providers/weather_provider.dart';
 import 'package:biux/core/design_system/locale_notifier.dart';
+import 'package:geolocator/geolocator.dart';
 
 class WeatherScreen extends StatefulWidget {
   const WeatherScreen({Key? key}) : super(key: key);
@@ -57,6 +58,9 @@ class _WeatherScreenState extends State<WeatherScreen> {
             );
           }
           if (wp.error != null) {
+            final isPermissionError = wp.error!.contains('permiso') ||
+                                      wp.error!.contains('permission') ||
+                                      wp.error!.contains('ubicación');
             return Center(
               child: Padding(
                 padding: const EdgeInsets.all(32),
@@ -80,9 +84,23 @@ class _WeatherScreenState extends State<WeatherScreen> {
                       textAlign: TextAlign.center,
                     ),
                     const SizedBox(height: 24),
+                    if (isPermissionError) ...[
+                      ElevatedButton.icon(
+                        onPressed: () async {
+                          await Geolocator.openAppSettings();
+                        },
+                        icon: const Icon(Icons.settings),
+                        label: const Text('Abrir Configuración'),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: ColorTokens.primary30,
+                          foregroundColor: Colors.white,
+                        ),
+                      ),
+                      const SizedBox(height: 12),
+                    ],
                     ElevatedButton.icon(
                       onPressed: () => wp.loadWeather(),
-                      icon: Icon(Icons.refresh),
+                      icon: const Icon(Icons.refresh),
                       label: Text(l.t('retry')),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: ColorTokens.primary30,
