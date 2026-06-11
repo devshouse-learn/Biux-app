@@ -65,6 +65,7 @@ import 'package:biux/features/ride_tracker/presentation/providers/ride_tracker_p
 import 'package:biux/features/ride_recommendations/presentation/providers/ride_recommendation_provider.dart';
 import 'package:biux/features/accidents/presentation/providers/accident_provider.dart';
 import 'package:biux/features/weather/presentation/providers/weather_provider.dart';
+import 'package:biux/features/promotions/presentation/providers/promotions_provider.dart';
 
 // Settings
 import 'package:biux/features/settings/presentation/providers/notification_settings_provider.dart';
@@ -196,6 +197,7 @@ class AppProviders {
     ChangeNotifierProvider(create: (_) => WeatherProvider()),
     ChangeNotifierProvider(create: (_) => AccidentProvider()),
     ChangeNotifierProvider(create: (_) => SafetyProvider()),
+    ChangeNotifierProvider(create: (_) => PromotionsProvider()),
   ];
 
   static List<SingleChildWidget> get _settingsProviders => [

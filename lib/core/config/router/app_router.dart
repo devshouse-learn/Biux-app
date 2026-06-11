@@ -105,6 +105,8 @@ import 'package:biux/features/weather/presentation/screens/weather_screen.dart';
 import 'package:biux/features/ride_recommendations/presentation/screens/my_recommendations_screen.dart';
 import 'package:biux/features/accidents/presentation/screens/accident_report_screen.dart';
 import 'package:biux/features/accidents/presentation/screens/accidents_list_screen.dart';
+import 'package:biux/features/shop/presentation/screens/stolen_bikes_screen.dart';
+import 'package:biux/features/shop/presentation/screens/admin_alerts_screen.dart';
 
 // Variables globales que persisten durante hot reload
 final GlobalKey<NavigatorState> _rootNavigatorKey = GlobalKey<NavigatorState>();
@@ -113,22 +115,22 @@ final AuthNotifier _authNotifier = AuthNotifier();
 /// Convierte URLs de dominio personalizado a rutas internas
 /// Ej: https://biux.devshouse.org/ride/123 a†’ /rides/123
 String? _convertDeepLinkToRoute(String location) {
-  AppLogger.debug('dŸ”— Intentando convertir deep link: $location');
+  AppLogger.debug('🔗”— Intentando convertir deep link: $location');
 
   try {
     final uri = Uri.parse(location);
 
     // Manejar dominio personalizado
     if (uri.scheme == 'https' && uri.host == 'biux.devshouse.org') {
-      AppLogger.debug('dŸ”— Detectado app link de biux.devshouse.org');
-      AppLogger.debug('dŸ”— Path: ${uri.path}, Segments: ${uri.pathSegments}');
+      AppLogger.debug('🔗”— Detectado app link de biux.devshouse.org');
+      AppLogger.debug('🔗”— Path: ${uri.path}, Segments: ${uri.pathSegments}');
 
       // https://biux.devshouse.org/ride/{rideId} a†’ /rides/{rideId}
       if (uri.path.startsWith('/ride/')) {
         final rideId = uri.pathSegments.length > 1 ? uri.pathSegments[1] : null;
         if (rideId != null && rideId.isNotEmpty) {
           final newRoute = '/rides/$rideId';
-          AppLogger.info('aœ… Ruta convertida: $location a†’ $newRoute');
+          AppLogger.info('✅ Ruta convertida: $location a†’ $newRoute');
           return newRoute;
         }
       }
@@ -138,20 +140,20 @@ String? _convertDeepLinkToRoute(String location) {
         final rideId = uri.pathSegments.length > 1 ? uri.pathSegments[1] : null;
         if (rideId != null && rideId.isNotEmpty) {
           final newRoute = '/rides/$rideId';
-          AppLogger.info('aœ… Ruta convertida: $location a†’ $newRoute');
+          AppLogger.info('✅ Ruta convertida: $location a†’ $newRoute');
           return newRoute;
         }
       }
 
       // https://biux.devshouse.org/posts/{postId} a†’ /stories
       if (uri.path.startsWith('/posts/')) {
-        AppLogger.info('aœ… Ruta convertida: $location a†’ /stories');
+        AppLogger.info('✅ Ruta convertida: $location a†’ /stories');
         return '/stories';
       }
 
       // https://biux.devshouse.org/stories/{storyId} a†’ /stories
       if (uri.path.startsWith('/stories/')) {
-        AppLogger.info('aœ… Ruta convertida: $location a†’ /stories');
+        AppLogger.info('✅ Ruta convertida: $location a†’ /stories');
         return '/stories';
       }
 
@@ -162,7 +164,7 @@ String? _convertDeepLinkToRoute(String location) {
             : null;
         if (groupId != null && groupId.isNotEmpty) {
           final newRoute = '/groups/$groupId';
-          AppLogger.info('aœ… Ruta convertida: $location a†’ $newRoute');
+          AppLogger.info('✅ Ruta convertida: $location a†’ $newRoute');
           return newRoute;
         }
       }
@@ -172,7 +174,7 @@ String? _convertDeepLinkToRoute(String location) {
         final userId = uri.pathSegments.length > 1 ? uri.pathSegments[1] : null;
         if (userId != null && userId.isNotEmpty) {
           final newRoute = '/user-profile/$userId';
-          AppLogger.info('aœ… Ruta convertida: $location a†’ $newRoute');
+          AppLogger.info('✅ Ruta convertida: $location a†’ $newRoute');
           return newRoute;
         }
       }
@@ -180,7 +182,7 @@ String? _convertDeepLinkToRoute(String location) {
 
     // Manejar esquema biux://
     if (uri.scheme == 'biux') {
-      AppLogger.debug('dŸ”— Detectado deep link con esquema biux://');
+      AppLogger.debug('🔗”— Detectado deep link con esquema biux://');
 
       // biux://ride/{rideId}
       if (uri.host == 'ride') {
@@ -189,7 +191,7 @@ String? _convertDeepLinkToRoute(String location) {
             : null;
         if (rideId != null && rideId.isNotEmpty) {
           final newRoute = '/rides/$rideId';
-          AppLogger.info('aœ… Ruta convertida: $location a†’ $newRoute');
+          AppLogger.info('✅ Ruta convertida: $location a†’ $newRoute');
           return newRoute;
         }
       }
@@ -201,7 +203,7 @@ String? _convertDeepLinkToRoute(String location) {
             : null;
         if (groupId != null && groupId.isNotEmpty) {
           final newRoute = '/groups/$groupId';
-          AppLogger.info('aœ… Ruta convertida: $location a†’ $newRoute');
+          AppLogger.info('✅ Ruta convertida: $location a†’ $newRoute');
           return newRoute;
         }
       }
@@ -213,7 +215,7 @@ String? _convertDeepLinkToRoute(String location) {
             : null;
         if (userId != null && userId.isNotEmpty) {
           final newRoute = '/user-profile/$userId';
-          AppLogger.info('aœ… Ruta convertida: $location a†’ $newRoute');
+          AppLogger.info('✅ Ruta convertida: $location a†’ $newRoute');
           return newRoute;
         }
       }
@@ -232,16 +234,16 @@ String? _guard(BuildContext context, GoRouterState state) {
   final String location = state.uri.toString();
 
   AppLogger.debug(
-    'dŸ” Router Guard - Location: $location, isLoggedIn: $isLoggedIn, uid: ${user?.uid}',
+    '🔗” Router Guard - Location: $location, isLoggedIn: $isLoggedIn, uid: ${user?.uid}',
   );
 
   // EN WEB: Permitir acceso sin autenticación
   if (kIsWeb) {
-    AppLogger.debug('dŸŒ WEB: Permitiendo acceso sin autenticación');
+    AppLogger.debug('🌐 WEB: Permitiendo acceso sin autenticación');
 
     // Si está en root, redirigir a las rutas
     if (location == '/') {
-      AppLogger.debug('dŸ“ Root en web, redirigiendo a rutas');
+      AppLogger.debug('🔗“ Root en web, redirigiendo a rutas');
       return '/roads';
     }
 
@@ -254,16 +256,16 @@ String? _guard(BuildContext context, GoRouterState state) {
   final convertedRoute = _convertDeepLinkToRoute(location);
   if (convertedRoute != null) {
     effectiveLocation = convertedRoute;
-    AppLogger.debug('dŸ”— Deep link convertido: $location a†’ $effectiveLocation');
+    AppLogger.debug('🔗”— Deep link convertido: $location a†’ $effectiveLocation');
   }
 
   // Si está en la ruta root '/', decidir dónde ir segÃºn autenticación
   if (effectiveLocation == '/') {
     if (isLoggedIn) {
-      AppLogger.debug('dŸ“ Usuario logueado en root, redirigiendo a inicio');
+      AppLogger.debug('🔗“ Usuario logueado en root, redirigiendo a inicio');
       return '/stories';
     } else {
-      AppLogger.debug('dŸ“ Usuario no logueado en root, redirigiendo al login');
+      AppLogger.debug('🔗“ Usuario no logueado en root, redirigiendo al login');
       return AppRoutes.login;
     }
   }
@@ -282,7 +284,7 @@ String? _guard(BuildContext context, GoRouterState state) {
     // Si está logueado y trata de ir al login, redirigir a experiencias
     if (isLoggedIn && effectiveLocation == AppRoutes.login) {
       AppLogger.debug(
-        'dŸ“ Usuario logueado intentando ir al login, redirigiendo a experiencias',
+        '🔗“ Usuario logueado intentando ir al login, redirigiendo a experiencias',
       );
       return '/stories';
     }
@@ -292,7 +294,7 @@ String? _guard(BuildContext context, GoRouterState state) {
 
   // Para rutas privadas, verificar autenticación
   if (!isLoggedIn) {
-    AppLogger.debug('dŸš« Usuario no autenticado, redirigiendo al login');
+    AppLogger.debug('🔗š« Usuario no autenticado, redirigiendo al login');
     return AppRoutes.login;
   }
 
@@ -300,12 +302,12 @@ String? _guard(BuildContext context, GoRouterState state) {
   // Si hubo conversión de deep link, redirigir a la ruta convertida
   if (convertedRoute != null) {
     AppLogger.debug(
-      'aœ… Usuario autenticado, redirigiendo a ruta convertida: $convertedRoute',
+      '✅ Usuario autenticado, redirigiendo a ruta convertida: $convertedRoute',
     );
     return convertedRoute;
   }
 
-  AppLogger.info('aœ… Usuario autenticado, permitiendo acceso');
+  AppLogger.info('✅ Usuario autenticado, permitiendo acceso');
   return null;
 }
 
@@ -930,6 +932,20 @@ final GoRouter _router = GoRouter(
       path: '/activity/screen-time',
       name: 'activityScreenTime',
       builder: (context, state) => const ActivityScreenTimeScreen(),
+    ),
+
+    // Shop - Bicicletas robadas
+    GoRoute(
+      path: AppRoutes.stolenBikes,
+      name: AppRoutes.stolenBikesName,
+      builder: (context, state) => const StolenBikesScreen(),
+    ),
+
+    // Shop - Alertas para admins
+    GoRoute(
+      path: AppRoutes.adminAlerts,
+      name: AppRoutes.adminAlertsName,
+      builder: (context, state) => const AdminAlertsScreen(),
     ),
 
   ],

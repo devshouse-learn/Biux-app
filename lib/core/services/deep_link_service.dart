@@ -37,12 +37,12 @@ class DeepLinkService {
   static Future<void> handleDeepLink(String? link, GoRouter router) async {
     if (link == null || link.isEmpty) return;
 
-    AppLogger.debug('dŸ”— Procesando deep link: $link');
+    AppLogger.debug('🔗”— Procesando deep link: $link');
 
     try {
       final uri = Uri.parse(link);
       AppLogger.debug(
-        'dŸ”— URI Schema: ${uri.scheme}, Host: ${uri.host}, Path: ${uri.path}',
+        '🔗”— URI Schema: ${uri.scheme}, Host: ${uri.host}, Path: ${uri.path}',
       );
 
       // Manejar esquema biux://
@@ -66,14 +66,14 @@ class DeepLinkService {
   }
 
   static Future<void> _handleBiuxDeepLink(Uri uri, GoRouter router) async {
-    AppLogger.debug('dŸ”— Manejando deep link biux: ${uri.toString()}');
+    AppLogger.debug('🔗”— Manejando deep link biux: ${uri.toString()}');
 
     // biux://ride/{rideId}
     if (uri.host == 'ride') {
       final segments = uri.pathSegments;
       if (segments.isNotEmpty) {
         final rideId = segments.first;
-        AppLogger.debug('dŸš´ Navegando a rodada: $rideId');
+        AppLogger.debug('🔗š´ Navegando a rodada: $rideId');
         router.push('/rides/$rideId');
       }
       return;
@@ -84,7 +84,7 @@ class DeepLinkService {
       final segments = uri.pathSegments;
       if (segments.isNotEmpty) {
         final postId = segments.first;
-        AppLogger.debug('dŸ“ Navegando a post: $postId');
+        AppLogger.debug('🔗“ Navegando a post: $postId');
         router.push('/stories');
       }
       return;
@@ -95,7 +95,7 @@ class DeepLinkService {
       final segments = uri.pathSegments;
       if (segments.isNotEmpty) {
         final groupId = segments.first;
-        AppLogger.debug('dŸ‘¥ Navegando a grupo: $groupId');
+        AppLogger.debug('🔗‘¥ Navegando a grupo: $groupId');
         router.push('/groups/$groupId');
       }
       return;
@@ -106,7 +106,7 @@ class DeepLinkService {
       final segments = uri.pathSegments;
       if (segments.isNotEmpty) {
         final userId = segments.first;
-        AppLogger.debug('dŸ‘¤ Navegando a perfil: $userId');
+        AppLogger.debug('🔗‘¤ Navegando a perfil: $userId');
         router.push('/user-profile/$userId');
       }
       return;
@@ -116,14 +116,14 @@ class DeepLinkService {
   }
 
   static Future<void> _handleAppLink(Uri uri, GoRouter router) async {
-    AppLogger.debug('dŸ”— Manejando app link: ${uri.toString()}');
-    AppLogger.debug('dŸ”— Path: ${uri.path}, Segments: ${uri.pathSegments}');
+    AppLogger.debug('🔗”— Manejando app link: ${uri.toString()}');
+    AppLogger.debug('🔗”— Path: ${uri.path}, Segments: ${uri.pathSegments}');
 
     // https://biux.devshouse.org/ride/{rideId}
     if (uri.path.startsWith('/ride/')) {
       final rideId = uri.pathSegments.length > 1 ? uri.pathSegments[1] : null;
       if (rideId != null && rideId.isNotEmpty) {
-        AppLogger.debug('dŸš´ Navegando a rodada desde app link: $rideId');
+        AppLogger.debug('🔗š´ Navegando a rodada desde app link: $rideId');
         router.push('/rides/$rideId');
       }
       return;
@@ -133,7 +133,7 @@ class DeepLinkService {
     if (uri.path.startsWith('/posts/')) {
       final postId = uri.pathSegments.length > 1 ? uri.pathSegments[1] : null;
       if (postId != null && postId.isNotEmpty) {
-        AppLogger.debug('dŸ“ Navegando a post desde app link: $postId');
+        AppLogger.debug('🔗“ Navegando a post desde app link: $postId');
         router.push('/stories');
       }
       return;
@@ -143,7 +143,7 @@ class DeepLinkService {
     if (uri.path.startsWith('/stories/')) {
       final storyId = uri.pathSegments.length > 1 ? uri.pathSegments[1] : null;
       if (storyId != null && storyId.isNotEmpty) {
-        AppLogger.debug('dŸ“¸ Navegando a historia desde app link: $storyId');
+        AppLogger.debug('🔗“¸ Navegando a historia desde app link: $storyId');
         router.push('/stories');
       }
       return;
@@ -153,7 +153,7 @@ class DeepLinkService {
     if (uri.path.startsWith('/group/')) {
       final groupId = uri.pathSegments.length > 1 ? uri.pathSegments[1] : null;
       if (groupId != null && groupId.isNotEmpty) {
-        AppLogger.debug('dŸ‘¥ Navegando a grupo desde app link: $groupId');
+        AppLogger.debug('🔗‘¥ Navegando a grupo desde app link: $groupId');
         router.push('/groups/$groupId');
       }
       return;
@@ -163,7 +163,7 @@ class DeepLinkService {
     if (uri.path.startsWith('/user/')) {
       final userId = uri.pathSegments.length > 1 ? uri.pathSegments[1] : null;
       if (userId != null && userId.isNotEmpty) {
-        AppLogger.debug('dŸ‘¤ Navegando a perfil desde app link: $userId');
+        AppLogger.debug('🔗‘¤ Navegando a perfil desde app link: $userId');
         router.push('/user-profile/$userId');
       }
       return;
@@ -181,13 +181,13 @@ class DeepLinkService {
     final link = generateRideAppLink(rideId);
 
     if (groupName != null) {
-      return 'dŸš´ a¡Ãšnete a la rodada "$rideName" con $groupName!\n\n'
-          'dŸ“ Tap para ver detalles e inscribirte:\n'
+      return '🔗š´ a¡Ãšnete a la rodada "$rideName" con $groupName!\n\n'
+          '🔗“ Tap para ver detalles e inscribirte:\n'
           '$link';
     }
 
-    return 'dŸš´ a¡Ãšnete a la rodada "$rideName"!\n\n'
-        'dŸ“ Tap para ver detalles e inscribirte:\n'
+    return '🔗š´ a¡Ãšnete a la rodada "$rideName"!\n\n'
+        '🔗“ Tap para ver detalles e inscribirte:\n'
         '$link';
   }
 
@@ -198,8 +198,8 @@ class DeepLinkService {
   }) {
     final link = generateStoryAppLink(storyId);
 
-    return 'dŸ“¸ a¡Mira la historia de $userName!\n\n'
-        'dŸ‘€ Tap para verla:\n'
+    return '🔗“¸ a¡Mira la historia de $userName!\n\n'
+        '🔗‘€ Tap para verla:\n'
         '$link';
   }
 
@@ -210,8 +210,8 @@ class DeepLinkService {
   }) {
     final link = generateGroupAppLink(groupId);
 
-    return 'dŸ‘¥ a¡Ãšnete al grupo "$groupName"!\n\n'
-        'dŸ”— Tap para más información:\n'
+    return '🔗‘¥ a¡Ãšnete al grupo "$groupName"!\n\n'
+        '🔗”— Tap para más información:\n'
         '$link';
   }
 
@@ -222,8 +222,8 @@ class DeepLinkService {
   }) {
     final link = generateUserAppLink(userId);
 
-    return 'dŸ‘¤ a¡Sigue a $userName en BIUX!\n\n'
-        'dŸ”— Tap para ver su perfil:\n'
+    return '🔗‘¤ a¡Sigue a $userName en BIUX!\n\n'
+        '🔗”— Tap para ver su perfil:\n'
         '$link';
   }
 }

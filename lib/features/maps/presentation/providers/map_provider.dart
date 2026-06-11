@@ -240,7 +240,7 @@ class MapProvider extends ChangeNotifier {
       );
 
       debugPrint(
-        'dŸ—ºï¸ Obteniendo ruta de ciclismo desde ${origin} hasta ${destination}',
+        '🔗—ºï¸ Obteniendo ruta de ciclismo desde ${origin} hasta ${destination}',
       );
 
       // Obtener la ruta real usando Google Directions API para ciclismo
@@ -252,7 +252,7 @@ class MapProvider extends ChangeNotifier {
 
       if (directionResult != null && directionResult.points.isNotEmpty) {
         debugPrint(
-          'aœ… Ruta obtenida exitosamente con ${directionResult.points.length} puntos',
+          '✅ Ruta obtenida exitosamente con ${directionResult.points.length} puntos',
         );
 
         final polylines = {
@@ -305,7 +305,7 @@ class MapProvider extends ChangeNotifier {
         }
       }
     } on Exception catch (e) {
-      debugPrint('dŸ’¥ Error seleccionando ruta: $e');
+      debugPrint('🔗’¥ Error seleccionando ruta: $e');
       _state = _state.copyWith(isLoading: false);
     }
 

@@ -216,14 +216,14 @@ class RideTrackerProvider with ChangeNotifier {
     notifyListeners();
 
     final destination = _fullPlannedRoute.last;
-    debugPrint('dŸ”„ Recalculando ruta desde $origin hasta $destination');
+    debugPrint('🔗”„ Recalculando ruta desde $origin hasta $destination');
 
     try {
       final points = await _fetchRoute(origin, destination);
       if (points != null && points.isNotEmpty) {
         _plannedRoute = points;
         _fullPlannedRoute = List.from(points);
-        debugPrint('aœ… Ruta recalculada con ${points.length} puntos');
+        debugPrint('✅ Ruta recalculada con ${points.length} puntos');
       } else {
         debugPrint('aš ï¸ No se pudo recalcular ruta');
       }

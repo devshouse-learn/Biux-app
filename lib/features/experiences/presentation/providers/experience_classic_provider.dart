@@ -148,11 +148,11 @@ class ExperienceProvider extends ChangeNotifier {
       final allExperiences = [...myExperiences, ...followingExperiences];
       allExperiences.sort((a, b) => b.createdAt.compareTo(a.createdAt));
 
-      // aœ… FILTRO TEMPORAL: Solo publicaciones de las Ãºltimas 72 horas
+      // ✅ FILTRO TEMPORAL: Solo publicaciones de las Ãºltimas 72 horas
       final cutoff = DateTime.now().subtract(const Duration(hours: 72));
       allExperiences.removeWhere((exp) => exp.createdAt.isBefore(cutoff));
 
-      // aœ… FILTRADO: Solo posts con media realmente válida (imágenes y videos)
+      // ✅ FILTRADO: Solo posts con media realmente válida (imágenes y videos)
       final validExperiences = <ExperienceEntity>[];
       for (var exp in allExperiences) {
         // ignore: unnecessary_null_comparison

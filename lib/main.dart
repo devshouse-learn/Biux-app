@@ -44,7 +44,7 @@ Future<void> _syncOfflineRides() async {
   try {
     final pending = await OfflineRideDatasource.getPending();
     if (pending.isNotEmpty) {
-      debugPrint('dŸ“¡ \${pending.length} rodadas pendientes de sincronizar');
+      debugPrint('🔗“¡ \${pending.length} rodadas pendientes de sincronizar');
     }
   } catch (_) {}
 }

@@ -1094,7 +1094,7 @@ class _UserProfileScreenState extends State<UserProfileScreen>
       final userName = user.userName.isNotEmpty ? user.userName : user.fullName;
       final shareUrl = 'https://biux.devshouse.org/user/${user.id}';
 
-      final shareText = 'dŸš´ Mira el perfil de $userName en Biux\n\n$shareUrl';
+      final shareText = '🔗š´ Mira el perfil de $userName en Biux\n\n$shareUrl';
 
       await SharePlus.instance.share(ShareParams(text: shareText));
     } on Exception catch (e) {

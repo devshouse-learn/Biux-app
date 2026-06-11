@@ -319,7 +319,7 @@ class UserProfileRepositoryImpl implements UserProfileRepository {
     try {
       if (_currentUserId == null || _currentUserId == userId) return false;
 
-      debugPrint('dŸ“¨ sendFollowRequest: de $_currentUserId a $userId');
+      debugPrint('🔗“¨ sendFollowRequest: de $_currentUserId a $userId');
 
       final currentUser = await _firestore
           .collection('users')
@@ -328,7 +328,7 @@ class UserProfileRepositoryImpl implements UserProfileRepository {
       final currentUserData = currentUser.data();
 
       debugPrint(
-        'dŸ“¨ currentUserData: fullName=${currentUserData?['fullName']}, userName=${currentUserData?['userName']}, photo=${currentUserData?['photo']}',
+        '🔗“¨ currentUserData: fullName=${currentUserData?['fullName']}, userName=${currentUserData?['userName']}, photo=${currentUserData?['photo']}',
       );
 
       // Create follow request document in the target user's subcollection
@@ -348,7 +348,7 @@ class UserProfileRepositoryImpl implements UserProfileRepository {
             'createdAt': FieldValue.serverTimestamp(),
           });
 
-      debugPrint('aœ… Follow request creado en Firestore');
+      debugPrint('✅ Follow request creado en Firestore');
 
       // Create notification in Realtime Database (where the app reads from)
       try {
@@ -359,7 +359,7 @@ class UserProfileRepositoryImpl implements UserProfileRepository {
         final fromUserPhoto = currentUserData?['photo'] as String?;
 
         debugPrint(
-          'dŸ“¨ Creando notificación en RTDB para userId: $userId, fromUserName: $fromUserName',
+          '🔗“¨ Creando notificación en RTDB para userId: $userId, fromUserName: $fromUserName',
         );
 
         final notificationsRepo = NotificationsRepositoryImpl();
@@ -372,7 +372,7 @@ class UserProfileRepositoryImpl implements UserProfileRepository {
           notificationId: 'follow_request_${_currentUserId}',
         );
         debugPrint(
-          'aœ… Notificación de follow_request creada en RTDB para $userId',
+          '✅ Notificación de follow_request creada en RTDB para $userId',
         );
       } catch (notifError) {
         debugPrint('aŒ Error creando notificación de solicitud: $notifError');

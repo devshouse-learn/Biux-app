@@ -26,7 +26,7 @@ class NotificationsProvider extends ChangeNotifier {
   bool get hasUnread => _unreadCount > 0;
 
   void _init() {
-    debugPrint('dŸ”” NotificationsProvider._init() para userId: $userId');
+    debugPrint('🔗”” NotificationsProvider._init() para userId: $userId');
 
     // Escuchar notificaciones
     _repository
@@ -34,7 +34,7 @@ class NotificationsProvider extends ChangeNotifier {
         .listen(
           (notifications) {
             debugPrint(
-              'dŸ”” Notificaciones recibidas: ${notifications.length} para userId: $userId',
+              '🔗”” Notificaciones recibidas: ${notifications.length} para userId: $userId',
             );
             for (final n in notifications) {
               debugPrint(

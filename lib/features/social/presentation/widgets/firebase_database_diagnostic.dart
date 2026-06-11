@@ -28,12 +28,12 @@ class _FirebaseDatabaseDiagnosticState
     try {
       // Test 1: Verificar instancia
       final database = FirebaseDatabase.instance;
-      setState(() => _status = 'aœ… 1/5: Instancia creada');
+      setState(() => _status = '✅ 1/5: Instancia creada');
       await Future.delayed(Duration(milliseconds: 500));
 
       // Test 2: Crear referencia
       final ref = database.ref('diagnostic_test');
-      setState(() => _status = 'aœ… 2/5: Referencia creada');
+      setState(() => _status = '✅ 2/5: Referencia creada');
       await Future.delayed(Duration(milliseconds: 500));
 
       // Test 3: Escribir dato
@@ -41,25 +41,25 @@ class _FirebaseDatabaseDiagnosticState
         'timestamp': DateTime.now().millisecondsSinceEpoch,
         'message': 'Test desde Flutter',
       });
-      setState(() => _status = 'aœ… 3/5: Escritura exitosa');
+      setState(() => _status = '✅ 3/5: Escritura exitosa');
       await Future.delayed(Duration(milliseconds: 500));
 
       // Test 4: Leer dato
       final snapshot = await ref.get();
       final value = snapshot.value;
-      setState(() => _status = 'aœ… 4/5: Lectura exitosa: $value');
+      setState(() => _status = '✅ 4/5: Lectura exitosa: $value');
       await Future.delayed(Duration(milliseconds: 500));
 
       // Test 5: Eliminar dato de prueba
       await ref.remove();
-      setState(() => _status = 'aœ… 5/5: TODO FUNCIONANDO!');
+      setState(() => _status = '✅ 5/5: TODO FUNCIONANDO!');
 
       // Verificar autenticación
       final user = FirebaseAuth.instance.currentUser;
       if (user != null) {
         setState(
           () => _status =
-              'aœ… COMPLETO: Firebase DB funciona! Usuario: ${user.uid}',
+              '✅ COMPLETO: Firebase DB funciona! Usuario: ${user.uid}',
         );
       } else {
         setState(() => _status = 'aš ï¸ DB funciona pero NO estás autenticado');
@@ -142,7 +142,7 @@ Soluciones:
                 fontSize: 14,
                 color: _status.startsWith('aŒ')
                     ? Colors.red
-                    : _status.startsWith('aœ…')
+                    : _status.startsWith('✅')
                     ? Colors.green
                     : Colors.blue,
               ),
@@ -171,7 +171,7 @@ Soluciones:
             ),
             const SizedBox(height: 8),
             const Text(
-              'dŸ’¡ Si aparece MissingPluginException, necesitas rebuild completo',
+              '🔗’¡ Si aparece MissingPluginException, necesitas rebuild completo',
               style: TextStyle(
                 fontSize: 12,
                 fontStyle: FontStyle.italic,

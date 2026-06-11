@@ -673,7 +673,7 @@ class ChatProvider extends ChangeNotifier {
       senderId: currentUid,
       senderName: senderName,
       senderAvatar: senderAvatar,
-      content: 'dŸ“Š $question',
+      content: '🔗“Š $question',
       type: MessageType.poll,
       sentAt: DateTime.now(),
       pollQuestion: question,

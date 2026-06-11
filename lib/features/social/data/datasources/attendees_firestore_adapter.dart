@@ -114,7 +114,7 @@ class AttendeesFirestoreAdapter {
       }
 
       debugPrint(
-        'aœ… Migrados $rideId: ${participants.length} confirmados, ${maybeParticipants.length} tal vez',
+        '✅ Migrados $rideId: ${participants.length} confirmados, ${maybeParticipants.length} tal vez',
       );
     } on FirebaseException catch (e) {
       debugPrint('aŒ Error migrando rodada $rideId: $e');
@@ -127,7 +127,7 @@ class AttendeesFirestoreAdapter {
       final ridesSnapshot = await _firestore.collection('rides').get();
 
       debugPrint(
-        'dŸš€ Iniciando migración de ${ridesSnapshot.docs.length} rodadas...',
+        '🔗š€ Iniciando migración de ${ridesSnapshot.docs.length} rodadas...',
       );
 
       for (final doc in ridesSnapshot.docs) {
@@ -137,7 +137,7 @@ class AttendeesFirestoreAdapter {
         ); // Evitar rate limiting
       }
 
-      debugPrint('aœ… Migración completada!');
+      debugPrint('✅ Migración completada!');
     } on FirebaseException catch (e) {
       debugPrint('aŒ Error en migración masiva: $e');
     }
@@ -169,7 +169,7 @@ class AttendeesFirestoreAdapter {
     }
 
     debugPrint(
-      'dŸ§¹ Limpiados $toRemove.length asistentes cancelados de $rideId',
+      '🔗§¹ Limpiados $toRemove.length asistentes cancelados de $rideId',
     );
   }
 }

@@ -212,7 +212,7 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
       final currentUser = FirebaseAuth.instance.currentUser;
 
       if (currentUser != null) {
-        debugPrint('dŸ”„ Cargando datos del usuario...');
+        debugPrint('🔗”„ Cargando datos del usuario...');
         await widget.userProvider.loadUserData();
 
         if (widget.userProvider.user == null) {
@@ -227,7 +227,7 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
         }
 
         if (widget.userProvider.user != null && mounted) {
-          debugPrint('aœ… Inicializando campos con datos del usuario:');
+          debugPrint('✅ Inicializando campos con datos del usuario:');
           debugPrint('   Nombre: "${widget.userProvider.user?.name ?? ''}"');
           debugPrint('   Email: "${widget.userProvider.user?.email ?? ''}"');
           setState(() {
@@ -318,19 +318,19 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
                         ),
                         subtitle: Text('@${user.userName}'),
                         onTap: () {
-                          debugPrint('dŸ” DEBUG: Intentando navegar a usuario');
+                          debugPrint('🔗” DEBUG: Intentando navegar a usuario');
                           debugPrint('  User ID: "${user.id}"');
                           debugPrint('  User ID isEmpty: ${user.id.isEmpty}');
                           debugPrint('  User ID length: ${user.id.length}');
 
                           if (user.id.isNotEmpty) {
                             final route = '/user-profile/${user.id.trim()}';
-                            debugPrint('dŸ” DEBUG: Ruta a navegar: $route');
+                            debugPrint('🔗” DEBUG: Ruta a navegar: $route');
                             Navigator.of(context).pop();
                             WidgetsBinding.instance.addPostFrameCallback((_) {
                               if (context.mounted) {
                                 debugPrint(
-                                  'dŸ” DEBUG: Ejecutando navegación: $route',
+                                  '🔗” DEBUG: Ejecutando navegación: $route',
                                 );
                                 context.push(route);
                               }
@@ -435,19 +435,19 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
                         ),
                         subtitle: Text('@${user.userName}'),
                         onTap: () {
-                          debugPrint('dŸ” DEBUG: Intentando navegar a usuario');
+                          debugPrint('🔗” DEBUG: Intentando navegar a usuario');
                           debugPrint('  User ID: "${user.id}"');
                           debugPrint('  User ID isEmpty: ${user.id.isEmpty}');
                           debugPrint('  User ID length: ${user.id.length}');
 
                           if (user.id.isNotEmpty) {
                             final route = '/user-profile/${user.id.trim()}';
-                            debugPrint('dŸ” DEBUG: Ruta a navegar: $route');
+                            debugPrint('🔗” DEBUG: Ruta a navegar: $route');
                             Navigator.of(context).pop();
                             WidgetsBinding.instance.addPostFrameCallback((_) {
                               if (context.mounted) {
                                 debugPrint(
-                                  'dŸ” DEBUG: Ejecutando navegación: $route',
+                                  '🔗” DEBUG: Ejecutando navegación: $route',
                                 );
                                 context.push(route);
                               }
@@ -486,7 +486,7 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
         final data = userDoc.data() as Map<String, dynamic>;
         // Asegurar que el ID está incluido en los datos
         data['id'] = userDoc.id;
-        debugPrint('aœ… Usuario cargado con ID: ${userDoc.id}');
+        debugPrint('✅ Usuario cargado con ID: ${userDoc.id}');
         return BiuxUser.fromJsonMap(data);
       } else {
         debugPrint('aŒ Usuario no encontrado: $userId');

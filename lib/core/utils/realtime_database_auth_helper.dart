@@ -31,14 +31,14 @@ class RealtimeDatabaseAuthHelper {
     }
 
     debugPrint(
-      'dŸ” RealtimeDB Auth: Verificando autenticación para ${currentUser.uid}',
+      '🔗” RealtimeDB Auth: Verificando autenticación para ${currentUser.uid}',
     );
 
     for (int attempt = 1; attempt <= maxAttempts; attempt++) {
       try {
         // 1. Forzar refresh del token
         debugPrint(
-          'dŸ”„ RealtimeDB Auth: Intento $attempt/$maxAttempts - Refrescando token...',
+          '🔗”„ RealtimeDB Auth: Intento $attempt/$maxAttempts - Refrescando token...',
         );
         final token = await currentUser.getIdToken(
           true,
@@ -56,7 +56,7 @@ class RealtimeDatabaseAuthHelper {
         }
 
         debugPrint(
-          'aœ… RealtimeDB Auth: Token obtenido (${token.substring(0, 20)}...)',
+          '✅ RealtimeDB Auth: Token obtenido (${token.substring(0, 20)}...)',
         );
 
         // 2. Verificar que Realtime Database reconoce la autenticación
@@ -66,7 +66,7 @@ class RealtimeDatabaseAuthHelper {
 
         if (snapshot.value == true) {
           debugPrint(
-            'aœ… RealtimeDB Auth: Realtime Database conectado y autenticado',
+            '✅ RealtimeDB Auth: Realtime Database conectado y autenticado',
           );
           return true;
         }

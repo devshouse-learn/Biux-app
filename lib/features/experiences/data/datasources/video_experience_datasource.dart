@@ -35,7 +35,7 @@ class VideoExperienceService {
         }
 
         debugPrint(
-          'dŸŽ¥ Video seleccionado: ${video.path}, Tamaño: ${fileSizeMB.toStringAsFixed(2)}MB',
+          '🔗Ž¥ Video seleccionado: ${video.path}, Tamaño: ${fileSizeMB.toStringAsFixed(2)}MB',
         );
       }
 
@@ -55,7 +55,7 @@ class VideoExperienceService {
       );
 
       if (video != null) {
-        debugPrint('dŸŽ¥ Video grabado: ${video.path}');
+        debugPrint('🔗Ž¥ Video grabado: ${video.path}');
       }
 
       return video;
@@ -73,7 +73,7 @@ class VideoExperienceService {
     Function(double)? onProgress,
   }) async {
     try {
-      debugPrint('dŸ“¤ Iniciando subida de video...');
+      debugPrint('🔗“¤ Iniciando subida de video...');
 
       final fileName =
           '${DateTime.now().millisecondsSinceEpoch}_${videoFile.name}';
@@ -89,7 +89,7 @@ class VideoExperienceService {
         final progress = snapshot.bytesTransferred / snapshot.totalBytes;
         onProgress?.call(progress);
         debugPrint(
-          'dŸ“¤ Progreso subida: ${(progress * 100).toStringAsFixed(1)}%',
+          '🔗“¤ Progreso subida: ${(progress * 100).toStringAsFixed(1)}%',
         );
       });
 
@@ -97,7 +97,7 @@ class VideoExperienceService {
       final snapshot = await uploadTask;
       final downloadUrl = await snapshot.ref.getDownloadURL();
 
-      debugPrint('aœ… Video subido exitosamente: $downloadUrl');
+      debugPrint('✅ Video subido exitosamente: $downloadUrl');
 
       return VideoUploadResult(
         videoUrl: downloadUrl,
@@ -120,7 +120,7 @@ class VideoExperienceService {
   }) async {
     VideoPlayerController? controller;
     try {
-      debugPrint('dŸ–¼ï¸ Generando thumbnail para: $videoUrl');
+      debugPrint('🔗–¼ï¸ Generando thumbnail para: $videoUrl');
 
       controller = VideoPlayerController.networkUrl(Uri.parse(videoUrl));
       await controller.initialize();
@@ -152,7 +152,7 @@ class VideoExperienceService {
 
       debugPrint(
         'a±ï¸ Duración del video: ${duration.inSeconds}s '
-        '(max: ${maxVideoDurationSeconds}s) a€“ ${isValid ? "aœ… válido" : "aŒ excede"}',
+        '(max: ${maxVideoDurationSeconds}s) a€“ ${isValid ? "✅ válido" : "aŒ excede"}',
       );
 
       if (!isValid) {
@@ -207,7 +207,7 @@ class VideoExperienceService {
         final file = File(path);
         if (await file.exists()) {
           await file.delete();
-          debugPrint('dŸ§¹ Archivo temporal eliminado: $path');
+          debugPrint('🔗§¹ Archivo temporal eliminado: $path');
         }
       } on FirebaseException catch (e) {
         debugPrint('aš ï¸ Error eliminando archivo temporal $path: $e');

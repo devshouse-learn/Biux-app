@@ -60,8 +60,8 @@ class GroupRepository implements GroupRepositoryInterface {
       await docRef.set(group.toFirestore());
 
       // Log para debug
-      AppLogger.info('aœ… Grupo creado exitosamente: ${docRef.id}');
-      AppLogger.debug('dŸ“‹ Datos del grupo: ${group.toFirestore()}');
+      AppLogger.info('✅ Grupo creado exitosamente: ${docRef.id}');
+      AppLogger.debug('🔗“‹ Datos del grupo: ${group.toFirestore()}');
 
       return docRef.id;
     } on FirebaseException catch (e) {
@@ -73,7 +73,7 @@ class GroupRepository implements GroupRepositoryInterface {
   // NUEVO: Obtener grupos por ciudad
   // No filtramos isActive en query para incluir docs antiguos sin ese campo
   Stream<List<GroupModel>> getGroupsByCity(String cityId) {
-    AppLogger.debug('dŸ” Obteniendo grupos de la ciudad: $cityId');
+    AppLogger.debug('🔗” Obteniendo grupos de la ciudad: $cityId');
 
     return _firestore
         .collection(_collection)
@@ -81,7 +81,7 @@ class GroupRepository implements GroupRepositoryInterface {
         .snapshots()
         .map((snapshot) {
           AppLogger.debug(
-            'dŸ“Š Grupos encontrados en la ciudad: ${snapshot.docs.length}',
+            '🔗“Š Grupos encontrados en la ciudad: ${snapshot.docs.length}',
           );
 
           final groups = snapshot.docs
@@ -101,7 +101,7 @@ class GroupRepository implements GroupRepositoryInterface {
           // Ordenar por fecha en memoria
           groups.sort((a, b) => b.createdAt.compareTo(a.createdAt));
 
-          AppLogger.info('aœ… Grupos procesados correctamente: ${groups.length}');
+          AppLogger.info('✅ Grupos procesados correctamente: ${groups.length}');
           return groups;
         });
   }
@@ -111,10 +111,10 @@ class GroupRepository implements GroupRepositoryInterface {
   // documentos antiguos pueden no tener ese campo y serían excluidos.
   // En su lugar, filtramos en memoria tratando ausencia como true.
   Stream<List<GroupModel>> getGroups() {
-    AppLogger.debug('dŸ” Obteniendo todos los grupos...');
+    AppLogger.debug('🔗” Obteniendo todos los grupos...');
 
     return _firestore.collection(_collection).snapshots().map((snapshot) {
-      AppLogger.debug('dŸ“Š Grupos encontrados: ${snapshot.docs.length}');
+      AppLogger.debug('🔗“Š Grupos encontrados: ${snapshot.docs.length}');
 
       final groups = snapshot.docs
           .map((doc) {
@@ -133,7 +133,7 @@ class GroupRepository implements GroupRepositoryInterface {
       // Ordenar por fecha en memoria
       groups.sort((a, b) => b.createdAt.compareTo(a.createdAt));
 
-      AppLogger.info('aœ… Grupos procesados correctamente: ${groups.length}');
+      AppLogger.info('✅ Grupos procesados correctamente: ${groups.length}');
       return groups;
     });
   }

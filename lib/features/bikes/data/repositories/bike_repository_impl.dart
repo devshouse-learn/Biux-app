@@ -46,7 +46,7 @@ class BikeRepositoryImpl implements BikeRepository {
   @override
   Future<List<BikeEntity>> getUserBikes(String userId) async {
     try {
-      debugPrint('dŸ“¦ Repository: Buscando bicicletas con ownerId: "$userId"');
+      debugPrint('🔗“¦ Repository: Buscando bicicletas con ownerId: "$userId"');
 
       final querySnapshot = await _firestore
           .collection(_bikesCollection)
@@ -55,12 +55,12 @@ class BikeRepositoryImpl implements BikeRepository {
           .get();
 
       debugPrint(
-        'dŸ“¦ Repository: Query devolvió ${querySnapshot.docs.length} documentos',
+        '🔗“¦ Repository: Query devolvió ${querySnapshot.docs.length} documentos',
       );
 
       if (querySnapshot.docs.isNotEmpty) {
         final firstDoc = querySnapshot.docs.first.data();
-        debugPrint('dŸ“¦ Primer documento - ownerId: "${firstDoc['ownerId']}"');
+        debugPrint('🔗“¦ Primer documento - ownerId: "${firstDoc['ownerId']}"');
       }
 
       // TEMPORAL: Verificar si hay bicis con ownerId "current-user-id"
@@ -70,7 +70,7 @@ class BikeRepositoryImpl implements BikeRepository {
           .get();
 
       debugPrint(
-        'dŸ“¦ Total de bicis en Firestore: ${allBikesSnapshot.docs.length}',
+        '🔗“¦ Total de bicis en Firestore: ${allBikesSnapshot.docs.length}',
       );
 
       int placeholderCount = 0;
@@ -89,7 +89,7 @@ class BikeRepositoryImpl implements BikeRepository {
           'aš ï¸ TOTAL de bicis con placeholder "current-user-id": $placeholderCount',
         );
         debugPrint(
-          'dŸ’¡ Estas bicis necesitan actualizar su ownerId a: "$userId"',
+          '🔗’¡ Estas bicis necesitan actualizar su ownerId a: "$userId"',
         );
       }
 

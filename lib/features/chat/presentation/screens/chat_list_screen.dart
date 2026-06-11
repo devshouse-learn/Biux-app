@@ -393,25 +393,25 @@ class _ChatListScreenState extends State<ChatListScreen>
                               lastMsgRaw['content'] as String? ?? '';
                           switch (type) {
                             case 'voice':
-                              lastMsg = 'dŸŽ¤ Audio';
+                              lastMsg = '🔗Ž¤ Audio';
                               break;
                             case 'image':
-                              lastMsg = 'dŸ“· Imagen';
+                              lastMsg = '🔗“· Imagen';
                               break;
                             case 'video':
-                              lastMsg = 'dŸŽ¬ Video';
+                              lastMsg = '🔗Ž¬ Video';
                               break;
                             case 'location':
-                              lastMsg = 'dŸ“ Ubicación';
+                              lastMsg = '🔗“ Ubicación';
                               break;
                             case 'gif':
-                              lastMsg = 'dŸŽžï¸ GIF';
+                              lastMsg = '🔗Žžï¸ GIF';
                               break;
                             case 'file':
-                              lastMsg = 'dŸ“Ž Archivo';
+                              lastMsg = '🔗“Ž Archivo';
                               break;
                             case 'deleted':
-                              lastMsg = 'dŸš« Mensaje eliminado';
+                              lastMsg = '🔗š« Mensaje eliminado';
                               break;
                             default:
                               lastMsg = content;

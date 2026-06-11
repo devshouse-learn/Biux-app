@@ -10,7 +10,7 @@ import 'package:biux/core/services/app_logger.dart';
 enum AuthState { initial, loading, codeSent, authenticated, error }
 
 /// Provider NUEVO con Firebase Phone Auth NATIVO
-/// aœ… Soporte para login automático de admin sin código
+/// ✅ Soporte para login automático de admin sin código
 class NativePhoneAuthProvider extends ChangeNotifier {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;

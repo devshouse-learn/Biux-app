@@ -230,7 +230,7 @@ class UserFirebaseRepository extends UserRepositoryAbstract {
   @override
   Future<BiuxUser> updateUser(BiuxUser user) async {
     try {
-      debugPrint('dŸ“ Guardando datos en Firestore:');
+      debugPrint('🔗“ Guardando datos en Firestore:');
       debugPrint('   - ID: ${user.id}');
       debugPrint('   - Nombre: ${user.fullName}');
       debugPrint('   - Teléfono: ${user.whatsapp}');
@@ -244,9 +244,9 @@ class UserFirebaseRepository extends UserRepositoryAbstract {
         AppStrings.description: user.description,
       });
 
-      debugPrint('aœ… Datos guardados en Firestore correctamente');
+      debugPrint('✅ Datos guardados en Firestore correctamente');
       final response = await this.getUserId(user.id);
-      debugPrint('aœ… Datos recuperados: ${response.fullName}');
+      debugPrint('✅ Datos recuperados: ${response.fullName}');
       return response;
     } on FirebaseException catch (e) {
       debugPrint('aŒ Error al actualizar en Firestore: $e');
@@ -299,7 +299,7 @@ class UserFirebaseRepository extends UserRepositoryAbstract {
         await firestore.collection(collection).doc(id).update({
           'profileCover': downloadUrl,
         });
-        debugPrint('aœ… profileCover actualizado en Firestore: $downloadUrl');
+        debugPrint('✅ profileCover actualizado en Firestore: $downloadUrl');
       }
     } on FirebaseException catch (e) {
       debugPrint('aŒ Error al subir foto de portada: $e');

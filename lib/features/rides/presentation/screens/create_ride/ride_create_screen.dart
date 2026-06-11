@@ -265,7 +265,7 @@ class _RideCreateScreenState extends State<RideCreateScreen> {
                                     borderRadius: BorderRadius.circular(8),
                                   ),
                                   child: Text(
-                                    safe ? 'aœ… Apto' : 'aš ï¸ Precaución',
+                                    safe ? '✅ Apto' : 'aš ï¸ Precaución',
                                     style: TextStyle(
                                       fontSize: 11,
                                       fontWeight: FontWeight.w700,
@@ -282,12 +282,12 @@ class _RideCreateScreenState extends State<RideCreateScreen> {
                               runSpacing: 6,
                               children: [
                                 _weatherDataChip(
-                                  'dŸ’¨',
+                                  '🔗’¨',
                                   '${wp.windSpeed.round()} km/h ${wp.windDirectionLabel}',
                                 ),
-                                _weatherDataChip('dŸ’§', '${wp.humidity}%'),
+                                _weatherDataChip('🔗’§', '${wp.humidity}%'),
                                 _weatherDataChip(
-                                  'dŸŒ¡ï¸',
+                                  '🌐¡ï¸',
                                   'ST ${wp.feelsLike.round()}a°C',
                                 ),
                                 if (wp.uvIndex > 0)
@@ -525,7 +525,7 @@ class _RideCreateScreenState extends State<RideCreateScreen> {
         ),
         SizedBox(height: 8),
 
-        // aœ… CAMPO DE TEXTO PARA NOMBRE MANUAL
+        // ✅ CAMPO DE TEXTO PARA NOMBRE MANUAL
         if (_customMeetingPointName != null)
           Container(
             width: double.infinity,
@@ -634,7 +634,7 @@ class _RideCreateScreenState extends State<RideCreateScreen> {
 
         SizedBox(height: 12),
 
-        // aœ… BOTÃ“N PARA AGREGAR PUNTO MANUAL
+        // ✅ BOTÃ“N PARA AGREGAR PUNTO MANUAL
         ElevatedButton.icon(
           onPressed: () => _showCustomMeetingPointDialog(),
           icon: Icon(Icons.add_location),

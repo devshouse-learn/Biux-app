@@ -67,7 +67,7 @@ class AuthProvider extends ChangeNotifier {
       return;
     }
     try {
-      AppLogger.debug('dŸ“² [AuthProvider] Iniciando proceso de envío de código');
+      AppLogger.debug('🔗“² [AuthProvider] Iniciando proceso de envío de código');
       AppLogger.debug('   Teléfono: $phoneNumber');
       AppLogger.debug('   Intento: ${_sendAttempts + 1}/$_maxSendAttempts');
 
@@ -81,12 +81,12 @@ class AuthProvider extends ChangeNotifier {
         AppLogger.debug('   aš ï¸ Este es reintento #${_sendAttempts}');
       }
 
-      AppLogger.debug('dŸ“¤ Enviando request a N8N...');
+      AppLogger.debug('🔗“¤ Enviando request a N8N...');
       await _authRepository.sendOTP(phoneNumber);
 
       _sendAttempts = 0; // Reset en caso de éxito
       _state = AuthState.codeSent;
-      AppLogger.info('aœ… [AuthProvider] Código enviado - Esperando validación');
+      AppLogger.info('✅ [AuthProvider] Código enviado - Esperando validación');
       _startResendTimer();
     } on FirebaseException catch (e) {
       _sendAttempts++;
@@ -126,7 +126,7 @@ class AuthProvider extends ChangeNotifier {
     }
 
     try {
-      AppLogger.debug('dŸ” [AuthProvider] Iniciando validación de código');
+      AppLogger.debug('🔗” [AuthProvider] Iniciando validación de código');
       AppLogger.debug('   Teléfono: $_phoneNumber');
       AppLogger.debug('   Código: ${code.replaceAll(RegExp(r'.'), '*')}');
 
@@ -134,13 +134,13 @@ class AuthProvider extends ChangeNotifier {
       _errorMessage = null;
       notifyListeners();
 
-      AppLogger.debug('dŸ“¤ Enviando validación a N8N...');
+      AppLogger.debug('🔗“¤ Enviando validación a N8N...');
       final authResponse = await _authRepository.validateOTP(
         _phoneNumber!,
         code,
       );
 
-      AppLogger.info('aœ… [AuthProvider] Código validado correctamente');
+      AppLogger.info('✅ [AuthProvider] Código validado correctamente');
 
       if (authResponse.token == null || authResponse.token!.isEmpty) {
         _state = AuthState.error;
@@ -150,25 +150,25 @@ class AuthProvider extends ChangeNotifier {
       }
 
       AppLogger.debug(
-        'dŸ”‘ Token recibido: ${authResponse.token!.substring(0, 20)}...',
+        '🔗”‘ Token recibido: ${authResponse.token!.substring(0, 20)}...',
       );
 
       // Autenticar con Firebase
-      AppLogger.debug('dŸ” Autenticando con Firebase...');
+      AppLogger.debug('🔗” Autenticando con Firebase...');
       final userCredential = await _auth.signInWithCustomToken(
         authResponse.token!,
       );
       final user = userCredential.user;
 
-      AppLogger.info('aœ… [AuthProvider] Usuario autenticado en Firebase');
+      AppLogger.info('✅ [AuthProvider] Usuario autenticado en Firebase');
       AppLogger.debug('   UID: ${user?.uid}');
 
       // Obtener token ID para base de datos
       final idToken = await user?.getIdToken();
-      AppLogger.debug('dŸŽ« Token ID obtenido: ${idToken?.substring(0, 50)}...');
+      AppLogger.debug('🔗Ž« Token ID obtenido: ${idToken?.substring(0, 50)}...');
 
       // Reinicializar servicio de notificaciones con el usuario autenticado
-      AppLogger.debug('dŸ“¢ Reinicializando servicio de notificaciones...');
+      AppLogger.debug('🔗“¢ Reinicializando servicio de notificaciones...');
       await NotificationService().reinitializeAfterLogin();
 
       // Verificar si el usuario necesita completar su perfil
@@ -176,7 +176,7 @@ class AuthProvider extends ChangeNotifier {
 
       _state = AuthState.authenticated;
       AppLogger.info(
-        'aœ… [AuthProvider] a¡Autenticación completada exitosamente!',
+        '✅ [AuthProvider] a¡Autenticación completada exitosamente!',
       );
     } on FirebaseException catch (e) {
       _state = AuthState.codeSent;
@@ -195,14 +195,14 @@ class AuthProvider extends ChangeNotifier {
 
   Future<void> resendCode() async {
     if (_phoneNumber != null && _canResendCode) {
-      AppLogger.debug('dŸ”„ [AuthProvider] Reenviando código a: $_phoneNumber');
+      AppLogger.debug('🔗”„ [AuthProvider] Reenviando código a: $_phoneNumber');
       await sendCode(_phoneNumber!);
     }
   }
 
   Future<void> signInAsGuest() async {
     try {
-      AppLogger.debug('dŸ‘¤ [AuthProvider] Iniciando sesión como invitado');
+      AppLogger.debug('🔗‘¤ [AuthProvider] Iniciando sesión como invitado');
       _state = AuthState.loading;
       _errorMessage = null;
       notifyListeners();
@@ -211,13 +211,13 @@ class AuthProvider extends ChangeNotifier {
       final userCredential = await _auth.signInAnonymously();
       final user = userCredential.user;
 
-      AppLogger.debug('dŸ‘¤ Usuario invitado autenticado: ${user?.uid}');
+      AppLogger.debug('🔗‘¤ Usuario invitado autenticado: ${user?.uid}');
 
       // Reinicializar servicio de notificaciones
       await NotificationService().reinitializeAfterLogin();
 
       _state = AuthState.authenticated;
-      AppLogger.info('aœ… Sesión de invitado iniciada correctamente');
+      AppLogger.info('✅ Sesión de invitado iniciada correctamente');
     } on FirebaseException catch (e) {
       _state = AuthState.error;
       _errorMessage = 'err_guest_login';
@@ -228,7 +228,7 @@ class AuthProvider extends ChangeNotifier {
 
   Future<void> signOut() async {
     try {
-      AppLogger.debug('dŸšª [AuthProvider] Cerrando sesión...');
+      AppLogger.debug('🔗šª [AuthProvider] Cerrando sesión...');
       // Forzar eliminación completa de la sesión
       final currentUser = _auth.currentUser;
       if (currentUser != null) {
@@ -241,7 +241,7 @@ class AuthProvider extends ChangeNotifier {
         });
       }
       await _auth.signOut();
-      AppLogger.info('aœ… Sesión cerrada completamente');
+      AppLogger.info('✅ Sesión cerrada completamente');
       _state = AuthState.initial;
       _sendAttempts = 0;
       notifyListeners();
@@ -255,7 +255,7 @@ class AuthProvider extends ChangeNotifier {
   /// Verifica si el usuario necesita completar su perfil
   Future<void> _checkProfileSetup(String uid) async {
     try {
-      AppLogger.debug('dŸ” Verificando perfil del usuario: $uid');
+      AppLogger.debug('🔗” Verificando perfil del usuario: $uid');
       final doc = await _firestore.collection('users').doc(uid).get();
 
       if (doc.exists) {
@@ -270,7 +270,7 @@ class AuthProvider extends ChangeNotifier {
           AppLogger.warning('aš ï¸ Usuario necesita completar perfil');
         } else {
           _needsProfileSetup = false;
-          AppLogger.info('aœ… Usuario tiene perfil completo');
+          AppLogger.info('✅ Usuario tiene perfil completo');
         }
       } else {
         // Si el documento no existe, necesita crear perfil

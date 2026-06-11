@@ -513,11 +513,11 @@ class _RoadReportsScreenState extends State<RoadReportsScreen> {
     final descCtrl = TextEditingController();
     bool isSending = false;
     final types = {
-      'pothole': 'dŸ•³ï¸ Hueco',
+      'pothole': '🔗•³ï¸ Hueco',
       'obstacle': 'aš ï¸ Obstáculo',
-      'danger': 'dŸš¨ Peligro',
-      'construction': 'dŸš§ Construcción',
-      'flooding': 'dŸŒŠ Inundación',
+      'danger': '🔗š¨ Peligro',
+      'construction': '🔗š§ Construcción',
+      'flooding': '🌐Š Inundación',
     };
 
     showModalBottomSheet(

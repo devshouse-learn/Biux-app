@@ -87,20 +87,20 @@ class LikesRealtimeDatasource {
     final path = '${_getBasePath(type)}/$targetId/${like.userId}';
     final jsonData = like.toJson();
 
-    debugPrint('dŸ” DEBUG DATASOURCE - Path: $path');
-    debugPrint('dŸ” DEBUG DATASOURCE - JSON: $jsonData');
+    debugPrint('🔗” DEBUG DATASOURCE - Path: $path');
+    debugPrint('🔗” DEBUG DATASOURCE - JSON: $jsonData');
 
     // Verificar auth
     final currentUser = FirebaseAuth.instance.currentUser;
-    debugPrint('dŸ” DEBUG AUTH - currentUser.uid: ${currentUser?.uid}');
-    debugPrint('dŸ” DEBUG AUTH - like.userId: ${like.userId}');
-    debugPrint('dŸ” DEBUG AUTH - Match: ${currentUser?.uid == like.userId}');
+    debugPrint('🔗” DEBUG AUTH - currentUser.uid: ${currentUser?.uid}');
+    debugPrint('🔗” DEBUG AUTH - like.userId: ${like.userId}');
+    debugPrint('🔗” DEBUG AUTH - Match: ${currentUser?.uid == like.userId}');
 
     final ref = _database.ref(path);
 
     try {
       await ref.set(jsonData);
-      debugPrint('aœ… LIKE GUARDADO EXITOSAMENTE');
+      debugPrint('✅ LIKE GUARDADO EXITOSAMENTE');
     } on FirebaseException catch (e) {
       debugPrint('aŒ ERROR AL GUARDAR LIKE: $e');
       rethrow;

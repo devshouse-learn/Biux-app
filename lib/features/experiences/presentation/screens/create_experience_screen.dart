@@ -664,7 +664,7 @@ class _CreateExperienceScreenState extends State<CreateExperienceScreen> {
           // Información segÃºn el tipo de contenido
           if (widget.textOnly) ...[
             _buildInfoItem(
-              'dŸ“ Post de solo texto',
+              '🔗“ Post de solo texto',
               'No se requiere ni permite multimedia. Solo escribe tu publicación.',
             ),
           ] else if (_contentType == 'story') ...[
@@ -673,16 +673,16 @@ class _CreateExperienceScreenState extends State<CreateExperienceScreen> {
               'Tu historia desaparecerá en 24 horas.',
             ),
             _buildInfoItem(
-              'dŸ“¸ Multimedia requerida',
+              '🔗“¸ Multimedia requerida',
               'Las historias requieren al menos una imagen o video (<30s).',
             ),
           ] else if (widget.experienceType == ExperienceType.ride) ...[
             _buildInfoItem(
-              'dŸ“¹ Videos de hasta 30 segundos',
+              '🔗“¹ Videos de hasta 30 segundos',
               'Los videos se comprimirán automáticamente para optimizar la calidad y el tamaño.',
             ),
             _buildInfoItem(
-              'dŸ“± Máximo 5 elementos',
+              '🔗“± Máximo 5 elementos',
               'Puedes agregar hasta 5 imágenes o videos en total.',
             ),
           ] else ...[

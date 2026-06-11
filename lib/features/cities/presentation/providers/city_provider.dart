@@ -37,19 +37,19 @@ class CityProvider extends ChangeNotifier {
         if (cachedCities.isNotEmpty) {
           _cities = cachedCities;
           _setLoading(false);
-          debugPrint('aœ… Ciudades cargadas desde caché: ${_cities.length}');
+          debugPrint('✅ Ciudades cargadas desde caché: ${_cities.length}');
           return;
         }
       }
 
       // Si no hay caché válido, cargar desde Firestore
-      debugPrint('dŸ”„ Cargando ciudades desde Firestore...');
+      debugPrint('🔗”„ Cargando ciudades desde Firestore...');
       final cities = await _repository.getCities();
 
       if (cities.isNotEmpty) {
         _cities = cities;
         await _saveToCache(cities);
-        debugPrint('aœ… Ciudades cargadas desde Firestore: ${_cities.length}');
+        debugPrint('✅ Ciudades cargadas desde Firestore: ${_cities.length}');
       } else {
         _setError('No se pudieron cargar las ciudades');
       }
@@ -67,7 +67,7 @@ class CityProvider extends ChangeNotifier {
       // Verificar si ya existen ciudades en Firestore
       final exist = await _repository.citiesExist();
       if (!exist) {
-        debugPrint('dŸ™ï¸ Creando ciudades iniciales...');
+        debugPrint('🔗™ï¸ Creando ciudades iniciales...');
         await _createInitialCities();
       }
 
@@ -156,7 +156,7 @@ class CityProvider extends ChangeNotifier {
 
     final success = await _repository.createCities(initialCities);
     if (success) {
-      debugPrint('aœ… Ciudades iniciales creadas exitosamente');
+      debugPrint('✅ Ciudades iniciales creadas exitosamente');
     } else {
       throw Exception('Error creando ciudades iniciales');
     }
@@ -203,7 +203,7 @@ class CityProvider extends ChangeNotifier {
       await prefs.setString(_cacheKey, json.encode(jsonList));
       await prefs.setInt(_cacheTimeKey, DateTime.now().millisecondsSinceEpoch);
 
-      debugPrint('dŸ’¾ Ciudades guardadas en caché');
+      debugPrint('🔗’¾ Ciudades guardadas en caché');
     } on Exception catch (e) {
       debugPrint('aŒ Error guardando caché de ciudades: $e');
     }
@@ -221,7 +221,7 @@ class CityProvider extends ChangeNotifier {
       final prefs = await SharedPreferences.getInstance();
       await prefs.remove(_cacheKey);
       await prefs.remove(_cacheTimeKey);
-      debugPrint('dŸ—‘ï¸ Caché de ciudades limpiado');
+      debugPrint('🔗—‘ï¸ Caché de ciudades limpiado');
     } on Exception catch (e) {
       debugPrint('aŒ Error limpiando caché: $e');
     }

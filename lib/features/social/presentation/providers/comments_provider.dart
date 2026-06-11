@@ -361,7 +361,7 @@ class CommentsProvider extends ChangeNotifier {
       _error = null;
       notifyListeners();
 
-      debugPrint('dŸ—‘ï¸ Intentando eliminar comentario:');
+      debugPrint('🔗—‘ï¸ Intentando eliminar comentario:');
       debugPrint('   Tipo: $type');
       debugPrint('   TargetId: $targetId');
       debugPrint('   CommentId: $commentId');
@@ -374,7 +374,7 @@ class CommentsProvider extends ChangeNotifier {
         userId: userId,
       );
 
-      debugPrint('aœ… Comentario eliminado correctamente');
+      debugPrint('✅ Comentario eliminado correctamente');
       _isDeleting = false;
       notifyListeners();
     } catch (e, st) {

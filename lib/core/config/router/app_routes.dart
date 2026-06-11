@@ -136,4 +136,10 @@ class AppRoutes {
   // Completitud de perfil
   static const String profileCompletion = '/profile/completion';
   static const String profileCompletionName = 'profileCompletion';
+
+  // Shop - Bicicletas robadas
+  static const String stolenBikes = '/shop/stolen-bikes';
+  static const String stolenBikesName = 'stolenBikes';
+  static const String adminAlerts = '/shop/admin-alerts';
+  static const String adminAlertsName = 'adminAlerts';
 }

@@ -1401,9 +1401,9 @@ class _PinnedMessageBanner extends StatelessWidget {
                   ),
                   Text(
                     message.type == MessageType.voice
-                        ? 'dŸŽ¤ Mensaje de voz'
+                        ? '🔗Ž¤ Mensaje de voz'
                         : message.type == MessageType.image
-                        ? 'dŸ–¼ï¸ Imagen'
+                        ? '🔗–¼ï¸ Imagen'
                         : message.content,
                     style: TextStyle(
                       fontSize: 12,

@@ -37,7 +37,7 @@ class ProfileCompletionService {
         }
       }
 
-      debugPrint('aœ… Perfil completo para usuario: $uid');
+      debugPrint('✅ Perfil completo para usuario: $uid');
       return true;
     } on FirebaseException catch (e) {
       debugPrint('aš ï¸ Error verificando perfil: $e');

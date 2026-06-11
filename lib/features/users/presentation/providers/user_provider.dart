@@ -22,12 +22,12 @@ class UserProvider extends ChangeNotifier {
   bool get isLoading => _isLoading;
   String? get error => _error;
 
-  // dŸ”´ Constructor que auto-inicializa en web
+  // 🔗”´ Constructor que auto-inicializa en web
   UserProvider() : _userService = UserService() {
-    AppLogger.debug('dŸŸ¦ UserProvider constructor llamado');
+    AppLogger.debug('🔗Ÿ¦ UserProvider constructor llamado');
     if (kIsWeb && !kReleaseMode) {
       AppLogger.debug(
-        'dŸŒ Es WEB - Creando usuario admin de prueba automáticamente',
+        '🌐 Es WEB - Creando usuario admin de prueba automáticamente',
       );
       _createWebTestUser();
     } else {
@@ -44,9 +44,9 @@ class UserProvider extends ChangeNotifier {
     _skipRemoteCalls = skipRemote;
   }
 
-  // dŸ”´ Crear usuario admin de prueba SOLO para Chrome web
+  // 🔗”´ Crear usuario admin de prueba SOLO para Chrome web
   Future<void> _createWebTestUser() async {
-    AppLogger.debug('dŸŸ¦ Creando usuario admin para CHROME web (desarrollo)...');
+    AppLogger.debug('🔗Ÿ¦ Creando usuario admin para CHROME web (desarrollo)...');
     _setLoading(true);
 
     try {
@@ -61,11 +61,11 @@ class UserProvider extends ChangeNotifier {
         canSellProducts: true,
       );
 
-      AppLogger.info('aœ… Usuario admin de Chrome creado (SOLO WEB)');
-      AppLogger.debug('dŸ‘¤ Nombre: ${_user!.name}');
-      AppLogger.debug('dŸ›¡ï¸ Es admin: ${_user!.isAdmin}');
-      AppLogger.debug('dŸ›’ Puede vender: ${_user!.canSellProducts}');
-      AppLogger.info('aœ… Puede crear productos: ${_user!.canCreateProducts}');
+      AppLogger.info('✅ Usuario admin de Chrome creado (SOLO WEB)');
+      AppLogger.debug('🔗‘¤ Nombre: ${_user!.name}');
+      AppLogger.debug('🔗›¡ï¸ Es admin: ${_user!.isAdmin}');
+      AppLogger.debug('🔗›’ Puede vender: ${_user!.canSellProducts}');
+      AppLogger.info('✅ Puede crear productos: ${_user!.canCreateProducts}');
       AppLogger.debug('');
       AppLogger.warning('aš ï¸  IMPORTANTE:');
       AppLogger.debug('   - Este admin SOLO funciona en Chrome web');
@@ -92,17 +92,17 @@ class UserProvider extends ChangeNotifier {
     AppLogger.debug('');
     AppLogger.debug('ï¿½' * 30);
     AppLogger.debug('ï¿½ SIMULADOR MÃ“VIL - Sistema de Permisos');
-    AppLogger.debug('dŸ“± TU UID ES: $uid');
+    AppLogger.debug('🔗“± TU UID ES: $uid');
     AppLogger.debug('ï¿½');
-    AppLogger.debug('dŸ“± aš ï¸  IMPORTANTE:');
-    AppLogger.debug('dŸ“± - Por defecto, NO eres administrador');
-    AppLogger.debug('dŸ“± - NO puedes subir productos automáticamente');
-    AppLogger.debug('dŸ“± - Debes solicitar permisos a un administrador');
-    AppLogger.debug('dŸ“±');
-    AppLogger.debug('dŸ“± Para solicitar permisos:');
-    AppLogger.debug('dŸ“± 1. Ve a tu perfil');
-    AppLogger.debug('dŸ“± 2. Solicita ser vendedor');
-    AppLogger.debug('dŸ“± 3. Un admin debe aprobar tu solicitud');
+    AppLogger.debug('🔗“± aš ï¸  IMPORTANTE:');
+    AppLogger.debug('🔗“± - Por defecto, NO eres administrador');
+    AppLogger.debug('🔗“± - NO puedes subir productos automáticamente');
+    AppLogger.debug('🔗“± - Debes solicitar permisos a un administrador');
+    AppLogger.debug('🔗“±');
+    AppLogger.debug('🔗“± Para solicitar permisos:');
+    AppLogger.debug('🔗“± 1. Ve a tu perfil');
+    AppLogger.debug('🔗“± 2. Solicita ser vendedor');
+    AppLogger.debug('🔗“± 3. Un admin debe aprobar tu solicitud');
     AppLogger.debug('ï¿½' * 30);
     AppLogger.debug('');
 
@@ -142,10 +142,10 @@ class UserProvider extends ChangeNotifier {
           }
         }
 
-        AppLogger.debug('dŸ‘¤ Usuario cargado: ${_user!.name ?? "Sin nombre"}');
-        AppLogger.debug('dŸ›¡ï¸ Es admin: ${_user!.isAdmin}');
-        AppLogger.debug('dŸ›’ Puede vender: ${_user!.canSellProducts}');
-        AppLogger.info('aœ… Puede crear productos: ${_user!.canCreateProducts}');
+        AppLogger.debug('🔗‘¤ Usuario cargado: ${_user!.name ?? "Sin nombre"}');
+        AppLogger.debug('🔗›¡ï¸ Es admin: ${_user!.isAdmin}');
+        AppLogger.debug('🔗›’ Puede vender: ${_user!.canSellProducts}');
+        AppLogger.info('✅ Puede crear productos: ${_user!.canCreateProducts}');
 
         if (!_user!.canCreateProducts) {
           AppLogger.debug('');
@@ -174,7 +174,7 @@ class UserProvider extends ChangeNotifier {
       _userService!.listenToUser(uid, (userData) {
         _user = userData;
         notifyListeners();
-        AppLogger.debug('dŸ”„ Datos de usuario actualizados en tiempo real');
+        AppLogger.debug('🔗”„ Datos de usuario actualizados en tiempo real');
       });
     } on FirebaseException catch (e) {
       AppLogger.debug('Error configurando listener: $e');
@@ -190,13 +190,13 @@ class UserProvider extends ChangeNotifier {
     String? coverPhotoUrl,
     DateTime? birthDate,
   }) async {
-    AppLogger.debug('dŸ” ====== USER PROVIDER: updateProfile ======');
-    AppLogger.debug('dŸ“ Nombre recibido: "$name"');
-    AppLogger.debug('dŸ“§ Email recibido: "$email"');
-    AppLogger.debug('dŸ“‹ Descripción recibida: "$description"');
-    AppLogger.debug('dŸ‘¤ Username recibido: "$username"');
-    AppLogger.debug('dŸ–¼ï¸ Foto de perfil recibida: "$photoUrl"');
-    AppLogger.debug('dŸžï¸ Foto de portada recibida: "$coverPhotoUrl"');
+    AppLogger.debug('🔗” ====== USER PROVIDER: updateProfile ======');
+    AppLogger.debug('🔗“ Nombre recibido: "$name"');
+    AppLogger.debug('🔗“§ Email recibido: "$email"');
+    AppLogger.debug('🔗“‹ Descripción recibida: "$description"');
+    AppLogger.debug('🔗‘¤ Username recibido: "$username"');
+    AppLogger.debug('🔗–¼ï¸ Foto de perfil recibida: "$photoUrl"');
+    AppLogger.debug('🔗žï¸ Foto de portada recibida: "$coverPhotoUrl"');
 
     // SIEMPRE usar Firebase Auth como fuente de verdad
     final firebaseUser = FirebaseAuth.instance.currentUser;
@@ -211,9 +211,9 @@ class UserProvider extends ChangeNotifier {
     }
 
     final uid = firebaseUser.uid;
-    AppLogger.info('aœ… Usuario autenticado encontrado');
-    AppLogger.debug('dŸ†” UID de Firebase Auth: $uid');
-    AppLogger.debug('dŸ“ž Teléfono: ${firebaseUser.phoneNumber}');
+    AppLogger.info('✅ Usuario autenticado encontrado');
+    AppLogger.debug('🔗†” UID de Firebase Auth: $uid');
+    AppLogger.debug('🔗“ž Teléfono: ${firebaseUser.phoneNumber}');
 
     // Validar que al menos uno de los campos tenga valor
     // Permitir null/empty para fotos (para poder eliminarlas)
@@ -240,7 +240,7 @@ class UserProvider extends ChangeNotifier {
     notifyListeners();
 
     try {
-      AppLogger.debug('dŸ“ Iniciando actualización de perfil...');
+      AppLogger.debug('🔗“ Iniciando actualización de perfil...');
       AppLogger.debug('   Foto de perfil: "$photoUrl"');
       AppLogger.debug('   Foto de portada: "$coverPhotoUrl"');
 
@@ -255,14 +255,14 @@ class UserProvider extends ChangeNotifier {
         birthDate: birthDate,
       );
 
-      AppLogger.debug('dŸ“Š Respuesta del servicio: $success');
+      AppLogger.debug('🔗“Š Respuesta del servicio: $success');
 
       if (success) {
-        AppLogger.info('aœ… Actualización exitosa, recargando datos...');
+        AppLogger.info('✅ Actualización exitosa, recargando datos...');
         // Recargar datos del usuario desde Firebase
         await loadUserData();
 
-        AppLogger.info('aœ… Datos recargados:');
+        AppLogger.info('✅ Datos recargados:');
         AppLogger.debug('   Nombre actual: ${_user?.name}');
         AppLogger.debug('   Email actual: ${_user?.email}');
         AppLogger.debug('   Username actual: ${_user?.username}');
@@ -279,7 +279,7 @@ class UserProvider extends ChangeNotifier {
       _setLoading(false);
       notifyListeners();
       AppLogger.debug(
-        'dŸ” ====== FIN updateProfile (${success ? "Ã‰XITO" : "ERROR"}) ======\n',
+        '🔗” ====== FIN updateProfile (${success ? "Ã‰XITO" : "ERROR"}) ======\n',
       );
       return success;
     } on FirebaseException catch (e) {
@@ -288,7 +288,7 @@ class UserProvider extends ChangeNotifier {
       _error = 'user_error_update_profile';
       _setLoading(false);
       notifyListeners();
-      AppLogger.debug('dŸ” ====== FIN updateProfile (EXCEPCIÃ“N) ======\n');
+      AppLogger.debug('🔗” ====== FIN updateProfile (EXCEPCIÃ“N) ======\n');
       return false;
     }
   }
@@ -443,7 +443,7 @@ class UserProvider extends ChangeNotifier {
 
     final currentUserId = currentUser.uid;
     AppLogger.debug(
-      'dŸ“± followUser: currentUserId=$currentUserId, userIdToFollow=$userIdToFollow',
+      '🔗“± followUser: currentUserId=$currentUserId, userIdToFollow=$userIdToFollow',
     );
 
     _setLoading(true);
@@ -466,7 +466,7 @@ class UserProvider extends ChangeNotifier {
             fromUserName: _user?.name ?? _user?.username ?? 'Usuario',
             fromUserPhoto: _user?.photoUrl,
           );
-          AppLogger.info('dŸ”” Notificación de follow enviada a $userIdToFollow');
+          AppLogger.info('🔗”” Notificación de follow enviada a $userIdToFollow');
         } on FirebaseException catch (e) {
           // No bloquear el follow si falla la notificación
           AppLogger.warning(
@@ -477,7 +477,7 @@ class UserProvider extends ChangeNotifier {
 
         // Actualizar la lista de seguidos localmente
         await loadUserData();
-        AppLogger.info('aœ… Ya sigues a $userIdToFollow');
+        AppLogger.info('✅ Ya sigues a $userIdToFollow');
       } else {
         _error = 'user_error_follow';
       }
@@ -505,7 +505,7 @@ class UserProvider extends ChangeNotifier {
 
     final currentUserId = currentUser.uid;
     AppLogger.debug(
-      'dŸ“± unfollowUser: currentUserId=$currentUserId, userIdToUnfollow=$userIdToUnfollow',
+      '🔗“± unfollowUser: currentUserId=$currentUserId, userIdToUnfollow=$userIdToUnfollow',
     );
 
     _setLoading(true);
@@ -520,7 +520,7 @@ class UserProvider extends ChangeNotifier {
       if (success) {
         // Actualizar la lista de seguidos localmente
         await loadUserData();
-        AppLogger.info('aœ… Dejaste de seguir a $userIdToUnfollow');
+        AppLogger.info('✅ Dejaste de seguir a $userIdToUnfollow');
       } else {
         _error = 'user_error_unfollow';
       }
