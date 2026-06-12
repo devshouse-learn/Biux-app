@@ -192,19 +192,12 @@ class _CreateUserScreenState extends State<CreateUserScreen> {
                                       color: ColorTokens.neutral60,
                                     ),
                                     validator: (value) {
-                                      if (!value!.contains(
-                                            AppStrings.gmailText,
-                                          ) &&
-                                          !value.contains(
-                                            AppStrings.hotmailText,
-                                          ) &&
-                                          !value.contains(
-                                            AppStrings.outlookText,
-                                          )) {
-                                        return '';
+                                      if (value == null || value.isEmpty) {
+                                        return l.t('email_required');
                                       }
-                                      if (value.isEmpty) {
-                                        return value;
+                                      final emailRegex = RegExp(r'^[^\s@]+@[^\s@]+\.[^\s@]+$');
+                                      if (!emailRegex.hasMatch(value)) {
+                                        return l.t('email_invalid_format');
                                       }
                                       return null;
                                     },
@@ -344,11 +337,11 @@ class _CreateUserScreenState extends State<CreateUserScreen> {
                                     ),
                                     obscureText: bloc.obscureText,
                                     validator: (value) {
-                                      if (value!.isEmpty) {
-                                        return value;
+                                      if (value == null || value.isEmpty) {
+                                        return l.t('password_confirm_required');
                                       }
                                       if (value != passwordController.text) {
-                                        return '';
+                                        return l.t('password_not_match');
                                       }
                                       return null;
                                     },
