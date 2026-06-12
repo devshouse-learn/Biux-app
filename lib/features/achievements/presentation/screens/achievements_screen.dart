@@ -95,7 +95,7 @@ class _AchievementsScreenState extends State<AchievementsScreen>
                           context.read<AchievementsProvider>().loadAchievements(uid);
                         }
                       },
-                      child: const Text('Reintentar'),
+                      child: Text(l.t('retry')),
                     ),
                   ],
                 ),
@@ -1056,7 +1056,7 @@ class _AchievementsScreenState extends State<AchievementsScreen>
                                         Icons.pedal_bike,
                                         size: 18,
                                       ),
-                                      label: const Text('Seguir pedaleando'),
+                                      label: Text(l.t('keep_pedaling')),
                                       style: OutlinedButton.styleFrom(
                                         foregroundColor: ColorTokens.primary30,
                                         padding: const EdgeInsets.symmetric(

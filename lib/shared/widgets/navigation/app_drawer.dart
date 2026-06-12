@@ -698,7 +698,7 @@ class _AppDrawerState extends State<AppDrawer> {
         actions: [
           TextButton(
             onPressed: () => Navigator.of(dc).pop(),
-            child: const Text('Cancelar'),
+            child: Text(l.t('cancel')),
           ),
           ElevatedButton(
             onPressed: () async {
