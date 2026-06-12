@@ -29,7 +29,7 @@ class _BlockedUsersScreenState extends State<BlockedUsersScreen> {
     return Scaffold(
       backgroundColor: isDark ? ColorTokens.primary10 : Colors.grey.shade50,
       appBar: AppBar(
-        title: const Text('Usuarios bloqueados'),
+        title: Text(l.t('blocked_users')),
         backgroundColor: ColorTokens.primary30,
         foregroundColor: Colors.white,
       ),
@@ -83,14 +83,14 @@ class _BlockedUsersScreenState extends State<BlockedUsersScreen> {
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: const Text('Desbloquear usuario'),
+        title: Text(l.t('unblock_user')),
         content: const Text(
           '¿Deseas desbloquear a este usuario? Podrá volver a enviarte mensajes.',
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(ctx).pop(),
-            child: const Text('Cancelar'),
+            child: Text(l.t('cancel')),
           ),
           TextButton(
             onPressed: () async {
@@ -98,7 +98,7 @@ class _BlockedUsersScreenState extends State<BlockedUsersScreen> {
               final uid = FirebaseAuth.instance.currentUser?.uid ?? '';
               await context.read<SafetyProvider>().unblockUser(uid, blockedId);
             },
-            child: const Text('Desbloquear'),
+            child: Text(l.t('unblock')),
           ),
         ],
       ),

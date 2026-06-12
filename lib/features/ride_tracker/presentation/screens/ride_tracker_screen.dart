@@ -2040,7 +2040,7 @@ class _RideTrackerScreenState extends State<RideTrackerScreen>
               Navigator.pop(ctx);
               _showNameDialog(p, exitAfter: true);
             },
-            child: const Text('Guardar y Salir'),
+            child: Text(l.t('save_and_exit')),
           ),
         ],
       ),

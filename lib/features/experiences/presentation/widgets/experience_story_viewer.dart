@@ -784,7 +784,7 @@ class _ExperienceStoryViewerState extends State<ExperienceStoryViewer>
                   l.t('share'),
                   style: TextStyle(fontWeight: FontWeight.w600),
                 ),
-                subtitle: const Text('Comparte esta historia'),
+                subtitle: Text(l.t('share')),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(12),
                 ),
@@ -814,7 +814,7 @@ class _ExperienceStoryViewerState extends State<ExperienceStoryViewer>
                     'Repostear',
                     style: TextStyle(fontWeight: FontWeight.w600),
                   ),
-                  subtitle: const Text('Agrega esta historia a las tuyas'),
+                  subtitle: Text(l.t('add_story_yours')),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(12),
                   ),

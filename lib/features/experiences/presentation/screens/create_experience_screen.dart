@@ -822,7 +822,7 @@ class _CreateExperienceScreenState extends State<CreateExperienceScreen> {
         Navigator.of(context).pop(true);
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content: Text('a¡Experiencia publicada exitosamente!'),
+            content: Text(l.t('experience_published')),
             backgroundColor: Colors.green,
           ),
         );
