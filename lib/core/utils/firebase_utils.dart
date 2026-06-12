@@ -26,7 +26,7 @@ class FirebaseUtils {
       UploadTask uploadTask = ref.putFile(image);
       String downloadUrl = await (await uploadTask).ref.getDownloadURL();
       return downloadUrl;
-    } on FirebaseException catch (_) {
+    } on FirebaseException catch (e) {
       return '';
     }
   }

@@ -45,7 +45,7 @@ class _ProfileHighlightsState extends State<ProfileHighlights> {
           _isLoading = false;
         });
       }
-    } on Exception catch (_) {
+    } on Exception catch (e) {
       if (mounted) setState(() => _isLoading = false);
     }
   }
@@ -449,7 +449,7 @@ class _ProfileHighlightsState extends State<ProfileHighlights> {
           ),
         ),
       );
-    } on Exception catch (_) {
+    } on Exception catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(

@@ -50,7 +50,7 @@ class _ActiveSessionsScreenState extends State<ActiveSessionsScreen> {
       await FirebaseFirestore.instance.collection('users').doc(user.uid).set({
         'sessions': FieldValue.arrayUnion([sessionEntry]),
       }, SetOptions(merge: true));
-    } catch (_) {}
+    } catch (e) {}
   }
 
   @override

@@ -89,14 +89,12 @@ class BikeProvider extends ChangeNotifier {
   /// Obtiene todas las bicicletas del usuario
   Future<void> loadUserBikes(String userId) async {
     try {
-      debugPrint('🔗š´ BikeProvider: Cargando bicicletas para userId: "$userId"');
       _setState(BikeProviderState.loading);
       _userBikes = await _getUserBikesUseCase(userId);
       debugPrint(
         '🔗š´ BikeProvider: Se encontraron ${_userBikes.length} bicicletas',
       );
       if (_userBikes.isNotEmpty) {
-        debugPrint('🔗š´ Primera bici - ownerId: "${_userBikes.first.ownerId}"');
       }
       _setState(BikeProviderState.loaded);
     } on Exception catch (e) {

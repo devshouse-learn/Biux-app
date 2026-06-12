@@ -35,11 +35,9 @@ class NotificationsRealtimeDatasource {
   /// Stream del conteo de notificaciones no leídas
   Stream<int> watchUnreadCount(String userId) {
     final ref = _database.ref('notifications/unread/$userId');
-    debugPrint('👀 Escuchando contador para userId: $userId en: ${ref.path}');
 
     return ref.onValue
         .map((event) {
-          debugPrint('📊 Evento de contador recibido para $userId');
           if (event.snapshot.value == null) {
             debugPrint('   Contador: 0 (null)');
             return 0;
@@ -52,7 +50,6 @@ class NotificationsRealtimeDatasource {
           return count;
         })
         .handleError((error) {
-          debugPrint('❌ Error en stream de contador para $userId: $error');
           // Retornar 0 en caso de error en vez de fallar
           return 0;
         });

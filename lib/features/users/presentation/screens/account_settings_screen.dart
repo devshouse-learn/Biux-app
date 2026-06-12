@@ -207,7 +207,7 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen> {
                       ),
                     );
                   }
-                } on FirebaseException catch (_) {
+                } on FirebaseException catch (e) {
                   if (mounted) {
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(
@@ -274,7 +274,7 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen> {
                       ),
                     );
                   }
-                } on FirebaseException catch (_) {
+                } on FirebaseException catch (e) {
                   if (mounted) {
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(
@@ -621,7 +621,7 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen> {
                           ),
                         );
                       }
-                    } on FirebaseException catch (_) {
+                    } on FirebaseException catch (e) {
                       if (mounted) {
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(

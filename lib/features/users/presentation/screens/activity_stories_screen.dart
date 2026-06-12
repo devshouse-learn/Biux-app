@@ -109,7 +109,7 @@ class _ActivityStoriesScreenState extends State<ActivityStoriesScreen> {
             DateTime? created;
             try {
               created = DateTime.tryParse(creationDate);
-            } catch (_) {}
+            } catch (e) {}
 
             items.add(
               _StoryItem(

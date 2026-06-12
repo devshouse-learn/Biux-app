@@ -1458,7 +1458,7 @@ class _AchievementsShareInAppSheetState
         _filtered = contacts;
         _isLoading = false;
       });
-    } on FirebaseException catch (_) {
+    } on FirebaseException catch (e) {
       setState(() => _isLoading = false);
     }
   }
@@ -1494,7 +1494,7 @@ class _AchievementsShareInAppSheetState
           ),
         );
       }
-    } on FirebaseException catch (_) {
+    } on FirebaseException catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(

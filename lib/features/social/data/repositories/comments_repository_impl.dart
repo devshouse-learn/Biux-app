@@ -147,7 +147,6 @@ class CommentsRepositoryImpl implements CommentsRepository {
     required String userId,
   }) async {
     // Verificar que el usuario es el autor
-    debugPrint('🔍 Verificando eliminación de comentario:');
     debugPrint('   CommentId: $commentId');
     debugPrint('   UserId actual: $userId');
 
@@ -172,7 +171,6 @@ class CommentsRepositoryImpl implements CommentsRepository {
       );
     }
 
-    debugPrint('✅ Autorización verificada, procediendo a eliminar');
     return _datasource.deleteComment(
       type: _typeToString(type),
       targetId: targetId,

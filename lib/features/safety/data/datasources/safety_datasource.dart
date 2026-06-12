@@ -53,7 +53,7 @@ class SafetyDatasource {
         'followers': followers,
         'followerS': followers.length,
       });
-    } catch (_) {}
+    } catch (e) {}
   }
 
   Future<void> unblockUser(String blockerId, String blockedId) async {

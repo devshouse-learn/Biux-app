@@ -129,7 +129,7 @@ class EmergencyProvider with ChangeNotifier {
             }
             notifyListeners();
           });
-    } on FirebaseException catch (_) {
+    } on FirebaseException catch (e) {
       _error = 'Error al enviar SOS: \$e';
       notifyListeners();
     }
@@ -155,7 +155,7 @@ class EmergencyProvider with ChangeNotifier {
     try {
       final data = await _datasource.getContacts(userId);
       _contacts = data.map((m) => EmergencyContactEntity.fromMap(m)).toList();
-    } on FirebaseException catch (_) {
+    } on FirebaseException catch (e) {
       _error = '\$e';
     }
     _isLoading = false;
@@ -180,7 +180,7 @@ class EmergencyProvider with ChangeNotifier {
         userId,
         _contacts.map((c) => c.toMap()).toList(),
       );
-    } on FirebaseException catch (_) {
+    } on FirebaseException catch (e) {
       _error = 'Error al guardar: \$e';
       notifyListeners();
     }

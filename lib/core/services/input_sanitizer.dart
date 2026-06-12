@@ -96,7 +96,7 @@ class InputSanitizer {
     try {
       final uri = Uri.parse(url);
       return uri.scheme == 'https' && uri.host.isNotEmpty;
-    } catch (_) {
+    } catch (e) {
       return false;
     }
   }

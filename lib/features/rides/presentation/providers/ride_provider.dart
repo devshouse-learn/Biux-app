@@ -347,8 +347,6 @@ class RideProvider extends ChangeNotifier {
       final userData = userDoc.data();
 
       // 🔗” DEBUG: Ver exactamente qué datos tenemos
-      debugPrint('🔗” DEBUG joinRide - userData completo: $userData');
-      debugPrint('🔗” DEBUG joinRide - currentUserId: $currentUserId');
       debugPrint(
         '🔗” DEBUG joinRide - Firebase Auth displayName: ${_auth.currentUser?.displayName}',
       );
@@ -402,8 +400,6 @@ class RideProvider extends ChangeNotifier {
             userData['avatar'] ??
             _auth.currentUser?.photoURL;
 
-        debugPrint('🔗” DEBUG joinRide - userName seleccionado: "$userName"');
-        debugPrint('🔗” DEBUG joinRide - photoUrl seleccionado: "$photoUrl"');
       } else {
         // CRÃTICO: Si no existe el documento en Firestore, crearlo con datos básicos
         debugPrint(
@@ -435,7 +431,6 @@ class RideProvider extends ChangeNotifier {
             SetOptions(merge: true),
           ); // merge: true para no sobrescribir si existe
 
-          debugPrint('✅ Documento de usuario creado/actualizado');
         } on FirebaseException catch (e) {
           debugPrint('aŒ Error creando documento de usuario: $e');
         }

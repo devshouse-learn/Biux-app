@@ -44,7 +44,7 @@ class _TwoFactorScreenState extends State<TwoFactorScreen> {
             : null,
       );
       setState(() => _codeSent = true);
-    } on Exception catch (_) {
+    } on Exception catch (e) {
       _showSnack('Error al enviar el código: \$e');
     } finally {
       setState(() => _loading = false);
@@ -66,7 +66,7 @@ class _TwoFactorScreenState extends State<TwoFactorScreen> {
       } else {
         _showSnack('Código incorrecto');
       }
-    } on Exception catch (_) {
+    } on Exception catch (e) {
       _showSnack('Error al verificar: \$e');
     } finally {
       setState(() => _loading = false);

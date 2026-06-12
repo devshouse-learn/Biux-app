@@ -125,7 +125,7 @@ class _ChatListScreenState extends State<ChatListScreen>
           _loadingFriends = false;
         });
       }
-    } catch (_) {
+    } catch (e) {
       if (mounted) setState(() => _loadingFriends = false);
     }
   }
@@ -140,7 +140,7 @@ class _ChatListScreenState extends State<ChatListScreen>
       final data = doc.data() ?? {};
       _userCache[uid] = data;
       return data;
-    } catch (_) {
+    } catch (e) {
       return {};
     }
   }
@@ -1030,7 +1030,7 @@ class _ChatListScreenState extends State<ChatListScreen>
           ),
         );
       }
-    } on FirebaseException catch (_) {
+    } on FirebaseException catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(

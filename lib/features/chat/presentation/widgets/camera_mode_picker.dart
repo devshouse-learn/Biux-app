@@ -87,7 +87,7 @@ class _CameraModePickerState extends State<CameraModePicker>
     try {
       await controller.initialize();
       await controller.setFlashMode(_flashMode);
-    } on Exception catch (_) {
+    } on Exception catch (e) {
       if (mounted) Navigator.pop(context);
       return;
     }
@@ -152,7 +152,7 @@ class _CameraModePickerState extends State<CameraModePicker>
     try {
       final xFile = await _controller!.takePicture();
       if (mounted) Navigator.pop(context, File(xFile.path));
-    } catch (_) {
+    } catch (e) {
       if (mounted) setState(() => _capturing = false);
     }
   }
@@ -166,7 +166,7 @@ class _CameraModePickerState extends State<CameraModePicker>
     try {
       await _controller!.startVideoRecording();
       setState(() => _isRecording = true);
-    } catch (_) {}
+    } catch (e) {}
   }
 
   Future<void> _stopVideoRecording() async {
@@ -175,7 +175,7 @@ class _CameraModePickerState extends State<CameraModePicker>
       final xFile = await _controller!.stopVideoRecording();
       setState(() => _isRecording = false);
       if (mounted) Navigator.pop(context, File(xFile.path));
-    } catch (_) {
+    } catch (e) {
       setState(() => _isRecording = false);
     }
   }

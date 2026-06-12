@@ -58,7 +58,7 @@ class _RideTrackerScreenState extends State<RideTrackerScreen>
     _pulseController.dispose();
     try {
       _mapController?.dispose();
-    } catch (_) {}
+    } catch (e) {}
     _mapController = null;
     super.dispose();
   }
@@ -90,7 +90,7 @@ class _RideTrackerScreenState extends State<RideTrackerScreen>
                     LatLng(p.points.last.lat, p.points.last.lng),
                   ),
                 );
-              } catch (_) {
+              } catch (e) {
                 _mapController = null;
               }
             } else if (p.livePosition != null && !p.isTracking) {
@@ -98,7 +98,7 @@ class _RideTrackerScreenState extends State<RideTrackerScreen>
                 _mapController!.animateCamera(
                   CameraUpdate.newLatLng(p.livePosition!),
                 );
-              } catch (_) {}
+              } catch (e) {}
             }
           }
 
@@ -357,7 +357,7 @@ class _RideTrackerScreenState extends State<RideTrackerScreen>
                           ),
                         ),
                       );
-                    } catch (_) {
+                    } catch (e) {
                       _mapController = null;
                     }
                   }
@@ -437,7 +437,7 @@ class _RideTrackerScreenState extends State<RideTrackerScreen>
               _mapController!.animateCamera(
                 CameraUpdate.newLatLngBounds(bounds, 80),
               );
-            } catch (_) {}
+            } catch (e) {}
           }
         },
       ),
@@ -2119,7 +2119,7 @@ class _RoutePlannerSheetState extends State<_RoutePlannerSheet> {
           setState(() => _suggestions = []);
         }
       }
-    } catch (_) {
+    } catch (e) {
       setState(() => _suggestions = []);
     } finally {
       setState(() => _loadingSuggestions = false);
@@ -2192,7 +2192,6 @@ class _RoutePlannerSheetState extends State<_RoutePlannerSheet> {
         '&alternatives=false'
         '&units=metric'
         '&key=$_apiKey';
-    debugPrint('🗺️ Directions [$mode]: $url');
     try {
       final res = await http
           .get(Uri.parse(url))
@@ -2218,7 +2217,6 @@ class _RoutePlannerSheetState extends State<_RoutePlannerSheet> {
         final encoded = step['polyline']['points'] as String;
         points.addAll(_decodePolyline(encoded));
       }
-      debugPrint('✅ Ruta con ${points.length} puntos (${steps.length} pasos)');
       return points;
     } catch (e) {
       debugPrint('_callDirections error: $e');

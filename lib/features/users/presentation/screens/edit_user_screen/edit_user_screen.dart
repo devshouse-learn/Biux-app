@@ -287,9 +287,7 @@ class _BotonSend extends StatelessWidget {
               if (form.currentState!.validate()) {
                 final messenger = ScaffoldMessenger.of(context);
                 try {
-                  debugPrint('🔗“ Iniciando actualización de perfil...');
                   await bloc.uploadUpdate(context);
-                  debugPrint('✅ Perfil actualizado, cerrando pantalla...');
 
                   if (context.mounted) {
                     messenger.showSnackBar(

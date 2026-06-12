@@ -502,7 +502,7 @@ class _PublicUserProfileScreenState extends State<PublicUserProfileScreen> {
         if (!url.startsWith('http://') && !url.startsWith('https://'))
           return false;
         return true;
-      } on FirebaseException catch (_) {
+      } on FirebaseException catch (e) {
         return false;
       }
     }).length;
@@ -519,7 +519,7 @@ class _PublicUserProfileScreenState extends State<PublicUserProfileScreen> {
         if (!url.startsWith('http://') && !url.startsWith('https://'))
           return false;
         return true;
-      } on FirebaseException catch (_) {
+      } on FirebaseException catch (e) {
         return false;
       }
     }).toList();
@@ -880,7 +880,7 @@ class _PublicUserProfileScreenState extends State<PublicUserProfileScreen> {
                   url.isNotEmpty;
             }
             return true;
-          } on FirebaseException catch (_) {
+          } on FirebaseException catch (e) {
             return false;
           }
         }).toList();

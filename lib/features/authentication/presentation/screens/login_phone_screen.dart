@@ -56,7 +56,6 @@ class _LoginPhonePageState extends State<LoginPhonePage> {
     final validationError = _validatePhoneNumber(phoneController.text);
 
     if (validationError != null) {
-      debugPrint('⚠️ [LoginPhone] Validación fallida: $validationError');
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(l.t(validationError)),
@@ -69,7 +68,6 @@ class _LoginPhonePageState extends State<LoginPhonePage> {
 
     // Agregar el prefijo +57 al número antes de enviar
     final fullPhone = '+57${phoneController.text}';
-    debugPrint('✅ [LoginPhone] Teléfono válido, enviando código a: $fullPhone');
     context.read<AuthProvider>().sendCode(fullPhone);
   }
 

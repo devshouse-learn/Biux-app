@@ -98,7 +98,6 @@ class _BiuxNotificationListenerState extends State<BiuxNotificationListener> {
     final targetId = data['targetId'] as String?;
     final targetType = data['targetType'] as String?;
 
-    debugPrint('🔗”” Navegando por notificación');
     debugPrint('   Type: $type');
     debugPrint('   TargetId: $targetId');
     debugPrint('   TargetType: $targetType');

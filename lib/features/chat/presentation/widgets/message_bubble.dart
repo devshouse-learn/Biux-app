@@ -864,7 +864,7 @@ class _VoiceMessageState extends State<_VoiceMessage> {
         await _player.setUrl(url);
       }
       await _player.play();
-    } on SocketException catch (_) {
+    } on SocketException catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(

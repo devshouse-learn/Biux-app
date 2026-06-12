@@ -23,13 +23,11 @@ class StolenBikeVerificationService {
     String? sellerName,
   }) async {
     try {
-      debugPrint('🔍 Verificando bicicleta con número de serie: $frameSerial');
 
       // Buscar bicicletas registradas con ese número de serie
       final bikes = await bikeRepository.searchBikes(frameSerial: frameSerial);
 
       if (bikes.isEmpty) {
-        debugPrint('✅ No se encontró la bicicleta registrada en el sistema');
         return VerificationResult(
           isStolen: false,
           isRegistered: false,
@@ -45,7 +43,6 @@ class StolenBikeVerificationService {
       for (final bike in bikes) {
         // Verificar si la bicicleta está actualmente reportada como robada
         if (bike.status.toString().contains('stolen')) {
-          debugPrint('⚠️ ¡ALERTA! Bicicleta reportada como robada');
 
           // Obtener detalles del reporte de robo
           final theftReports = await bikeRepository.getTheftReports(bike.id);
@@ -90,7 +87,6 @@ class StolenBikeVerificationService {
 
         // Verificar coincidencias adicionales para mayor seguridad
         if (_matchesBikeDescription(bike, brand, model, color)) {
-          debugPrint('✅ Bicicleta registrada y NO robada');
           return VerificationResult(
             isStolen: false,
             isRegistered: true,
@@ -102,7 +98,6 @@ class StolenBikeVerificationService {
       }
 
       // Si hay bikes pero no coinciden exactamente
-      debugPrint('⚠️ Se encontraron bicicletas con número de serie similar');
       return VerificationResult(
         isStolen: false,
         isRegistered: true,
@@ -112,7 +107,6 @@ class StolenBikeVerificationService {
             'Recomendamos verificación manual.',
       );
     } catch (e) {
-      debugPrint('❌ Error en verificación: $e');
       return VerificationResult(
         isStolen: false,
         isRegistered: false,
@@ -128,7 +122,6 @@ class StolenBikeVerificationService {
     try {
       return await bikeRepository.getStolenBikes(city);
     } catch (e) {
-      debugPrint('❌ Error obteniendo bicicletas robadas: $e');
       return [];
     }
   }
@@ -165,7 +158,6 @@ class StolenBikeVerificationService {
 
       return allStolenBikes;
     } catch (e) {
-      debugPrint('❌ Error obteniendo todas las bicicletas robadas: $e');
       return [];
     }
   }

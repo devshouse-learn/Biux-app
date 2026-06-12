@@ -26,7 +26,6 @@ class NotificationsProvider extends ChangeNotifier {
   bool get hasUnread => _unreadCount > 0;
 
   void _init() {
-    debugPrint('🔗”” NotificationsProvider._init() para userId: $userId');
 
     // Escuchar notificaciones
     _repository
@@ -70,7 +69,7 @@ class NotificationsProvider extends ChangeNotifier {
   Future<void> markAsRead(String notificationId) async {
     try {
       await _repository.markAsRead(userId, notificationId);
-    } on Exception catch (_) {
+    } on Exception catch (e) {
       _error = 'notif_mark_read_error';
       notifyListeners();
     }
@@ -86,7 +85,7 @@ class NotificationsProvider extends ChangeNotifier {
 
       _isLoading = false;
       notifyListeners();
-    } on Exception catch (_) {
+    } on Exception catch (e) {
       _error = 'notif_mark_all_read_error';
       _isLoading = false;
       notifyListeners();
@@ -97,7 +96,7 @@ class NotificationsProvider extends ChangeNotifier {
   Future<void> deleteNotification(String notificationId) async {
     try {
       await _repository.deleteNotification(userId, notificationId);
-    } on Exception catch (_) {
+    } on Exception catch (e) {
       _error = 'notif_delete_error';
       notifyListeners();
     }
@@ -113,7 +112,7 @@ class NotificationsProvider extends ChangeNotifier {
 
       _isLoading = false;
       notifyListeners();
-    } on Exception catch (_) {
+    } on Exception catch (e) {
       _error = 'notif_delete_all_error';
       _isLoading = false;
       notifyListeners();

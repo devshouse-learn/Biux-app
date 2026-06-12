@@ -16,7 +16,7 @@ class SafetyProvider with ChangeNotifier {
     notifyListeners();
     try {
       _blockedUsers = await _datasource.getBlockedUsers(userId);
-    } catch (_) {}
+    } catch (e) {}
     _isLoading = false;
     notifyListeners();
   }
@@ -28,7 +28,7 @@ class SafetyProvider with ChangeNotifier {
         _blockedUsers.add(blockedId);
         notifyListeners();
       }
-    } catch (_) {}
+    } catch (e) {}
   }
 
   Future<void> unblockUser(String blockerId, String blockedId) async {
@@ -36,14 +36,14 @@ class SafetyProvider with ChangeNotifier {
       await _datasource.unblockUser(blockerId, blockedId);
       _blockedUsers.remove(blockedId);
       notifyListeners();
-    } catch (_) {}
+    } catch (e) {}
   }
 
   /// Verifica si hay bloqueo en cualquier dirección (para impedir mensajes).
   Future<bool> isBlockedEitherWay(String userA, String userB) async {
     try {
       return await _datasource.isBlockedEitherWay(userA, userB);
-    } catch (_) {
+    } catch (e) {
       return false;
     }
   }
@@ -62,7 +62,7 @@ class SafetyProvider with ChangeNotifier {
         description: description,
       );
       return true;
-    } catch (_) {
+    } catch (e) {
       return false;
     }
   }

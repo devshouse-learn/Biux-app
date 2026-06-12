@@ -157,7 +157,7 @@ class ExperienceCreatorProvider extends ChangeNotifier {
         _mediaItems = [..._mediaItems, mediaItem];
         notifyListeners();
       }
-    } on Exception catch (_) {
+    } on Exception catch (e) {
       _error = 'exp_error_selecting_image';
       notifyListeners();
     }
@@ -201,7 +201,7 @@ class ExperienceCreatorProvider extends ChangeNotifier {
           notifyListeners();
         }
       }
-    } on Exception catch (_) {
+    } on Exception catch (e) {
       _error = 'exp_error_selecting_images';
       notifyListeners();
     }
@@ -241,7 +241,7 @@ class ExperienceCreatorProvider extends ChangeNotifier {
         _mediaItems = [..._mediaItems, mediaItem];
         notifyListeners();
       }
-    } on Exception catch (_) {
+    } on Exception catch (e) {
       _error = 'exp_error_taking_photo';
       notifyListeners();
     }
@@ -270,7 +270,7 @@ class ExperienceCreatorProvider extends ChangeNotifier {
       _mediaItems = [..._mediaItems, mediaItem];
       _error = null;
       notifyListeners();
-    } on Exception catch (_) {
+    } on Exception catch (e) {
       _error = 'exp_error_adding_cropped';
       notifyListeners();
     }
@@ -324,7 +324,7 @@ class ExperienceCreatorProvider extends ChangeNotifier {
         _mediaItems = [..._mediaItems, mediaItem];
         notifyListeners();
       }
-    } on Exception catch (_) {
+    } on Exception catch (e) {
       _error = 'exp_error_selecting_video';
       notifyListeners();
     }
@@ -377,7 +377,7 @@ class ExperienceCreatorProvider extends ChangeNotifier {
         _mediaItems = [..._mediaItems, mediaItem];
         notifyListeners();
       }
-    } on Exception catch (_) {
+    } on Exception catch (e) {
       _error = 'exp_error_recording_video';
       notifyListeners();
     }
@@ -478,7 +478,7 @@ class ExperienceCreatorProvider extends ChangeNotifier {
       reset();
 
       return true;
-    } on Exception catch (_) {
+    } on Exception catch (e) {
       _error = 'exp_error_creating';
       _isUploading = false;
       notifyListeners();

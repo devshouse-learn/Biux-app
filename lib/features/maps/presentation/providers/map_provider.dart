@@ -305,7 +305,6 @@ class MapProvider extends ChangeNotifier {
         }
       }
     } on Exception catch (e) {
-      debugPrint('🔗’¥ Error seleccionando ruta: $e');
       _state = _state.copyWith(isLoading: false);
     }
 

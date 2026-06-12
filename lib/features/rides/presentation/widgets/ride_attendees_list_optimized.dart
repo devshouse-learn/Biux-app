@@ -183,7 +183,6 @@ class _AttendeeCard extends StatelessWidget {
         backgroundImage: NetworkImage(metadata.photoUrl!),
         backgroundColor: ColorTokens.neutral20,
         onBackgroundImageError: (exception, stackTrace) {
-          debugPrint('❌ Error cargando imagen: $exception');
         },
       );
     }

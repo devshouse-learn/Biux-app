@@ -187,7 +187,7 @@ class GroupProvider extends ChangeNotifier {
 
       _setLoading(false);
       return groupId != null;
-    } on FirebaseException catch (_) {
+    } on FirebaseException catch (e) {
       _setError('group_error_create');
       _setLoading(false);
       return false;
@@ -225,7 +225,7 @@ class GroupProvider extends ChangeNotifier {
 
       _setLoading(false);
       return success;
-    } on FirebaseException catch (_) {
+    } on FirebaseException catch (e) {
       _setError('group_error_edit');
       _setLoading(false);
       return false;
@@ -242,7 +242,7 @@ class GroupProvider extends ChangeNotifier {
       if (_selectedGroup != null) {
         await _loadUsersForGroup(_selectedGroup!);
       }
-    } on FirebaseException catch (_) {
+    } on FirebaseException catch (e) {
       _setError('group_error_load');
     }
     _setLoading(false);
@@ -315,7 +315,7 @@ class GroupProvider extends ChangeNotifier {
       }
       _setLoading(false);
       return success;
-    } on FirebaseException catch (_) {
+    } on FirebaseException catch (e) {
       _setError('group_error_approve');
       _setLoading(false);
       return false;
@@ -339,7 +339,7 @@ class GroupProvider extends ChangeNotifier {
       }
       _setLoading(false);
       return success;
-    } on FirebaseException catch (_) {
+    } on FirebaseException catch (e) {
       _setError('group_error_reject');
       _setLoading(false);
       return false;
@@ -363,7 +363,7 @@ class GroupProvider extends ChangeNotifier {
       }
       _setLoading(false);
       return success;
-    } on FirebaseException catch (_) {
+    } on FirebaseException catch (e) {
       _setError('group_error_cancel_request');
       _setLoading(false);
       return false;
@@ -388,7 +388,7 @@ class GroupProvider extends ChangeNotifier {
       }
       _setLoading(false);
       return success;
-    } on FirebaseException catch (_) {
+    } on FirebaseException catch (e) {
       _setError('group_error_leave');
       _setLoading(false);
       return false;
@@ -412,7 +412,7 @@ class GroupProvider extends ChangeNotifier {
       }
       _setLoading(false);
       return success;
-    } on FirebaseException catch (_) {
+    } on FirebaseException catch (e) {
       _setError('group_error_delete');
       _setLoading(false);
       return false;

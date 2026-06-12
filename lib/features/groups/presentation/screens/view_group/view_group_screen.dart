@@ -562,7 +562,6 @@ class _ViewGroupScreenState extends State<ViewGroupScreen>
                           );
                           context.push('/user-profile/$userId');
                         } else {
-                          debugPrint('❌ Error: userId está vacío o es null');
                           if (context.mounted)
                             ScaffoldMessenger.of(context).showSnackBar(
                               SnackBar(

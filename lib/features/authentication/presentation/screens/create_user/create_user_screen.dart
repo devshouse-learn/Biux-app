@@ -734,7 +734,7 @@ class _CreateUserScreenState extends State<CreateUserScreen> {
             ),
           );
       }
-    } on FirebaseException catch (_) {
+    } on FirebaseException catch (e) {
       bloc.changeLoading(false);
     }
   }

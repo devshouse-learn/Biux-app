@@ -46,7 +46,6 @@ class BikeRepositoryImpl implements BikeRepository {
   @override
   Future<List<BikeEntity>> getUserBikes(String userId) async {
     try {
-      debugPrint('🔗“¦ Repository: Buscando bicicletas con ownerId: "$userId"');
 
       final querySnapshot = await _firestore
           .collection(_bikesCollection)
@@ -60,7 +59,6 @@ class BikeRepositoryImpl implements BikeRepository {
 
       if (querySnapshot.docs.isNotEmpty) {
         final firstDoc = querySnapshot.docs.first.data();
-        debugPrint('🔗“¦ Primer documento - ownerId: "${firstDoc['ownerId']}"');
       }
 
       // TEMPORAL: Verificar si hay bicis con ownerId "current-user-id"

@@ -263,7 +263,7 @@ class ChatProvider extends ChangeNotifier {
         replyPreview: replyPrev,
       );
       await _ds.sendMessage(chatId: chatId, message: message);
-    } on FirebaseException catch (_) {
+    } on FirebaseException catch (e) {
       _removeOptimistic(tempId);
       _error = 'No se pudo enviar la imagen';
       notifyListeners();
@@ -322,7 +322,7 @@ class ChatProvider extends ChangeNotifier {
         replyPreview: replyPrev,
       );
       await _ds.sendMessage(chatId: chatId, message: message);
-    } on FirebaseException catch (_) {
+    } on FirebaseException catch (e) {
       _removeOptimistic(tempId);
       _error = 'No se pudo enviar el video';
       notifyListeners();
@@ -426,7 +426,7 @@ class ChatProvider extends ChangeNotifier {
         replyPreview: replyPrev,
       );
       await _ds.sendMessage(chatId: chatId, message: message);
-    } on FirebaseException catch (_) {
+    } on FirebaseException catch (e) {
       _removeOptimistic(tempId);
       _error = 'No se pudo enviar el audio';
       notifyListeners();

@@ -62,7 +62,7 @@ class RideTrackerDatasource {
       for (final doc in pointsDocs.docs) {
         await doc.reference.delete();
       }
-    } catch (_) {}
+    } catch (e) {}
     await _fs.collection("ride_tracks").doc(trackId).delete();
   }
 
