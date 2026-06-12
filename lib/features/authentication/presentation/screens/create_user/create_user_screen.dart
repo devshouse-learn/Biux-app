@@ -220,11 +220,12 @@ class _CreateUserScreenState extends State<CreateUserScreen> {
                                       color: ColorTokens.neutral60,
                                     ),
                                     validator: (value) {
-                                      if (value!.isEmpty) {
-                                        return value;
+                                      if (value == null || value.isEmpty) {
+                                        return l.t('phone_required');
                                       }
-                                      if (value.length != 10) {
-                                        return '';
+                                      final phoneRegex = RegExp(r'^[0-9]{10}$');
+                                      if (!phoneRegex.hasMatch(value)) {
+                                        return l.t('phone_invalid_format');
                                       }
                                       return null;
                                     },
@@ -315,8 +316,20 @@ class _CreateUserScreenState extends State<CreateUserScreen> {
                                     ),
                                     obscureText: bloc.obscureText,
                                     validator: (value) {
-                                      if (value!.isEmpty) {
-                                        return value;
+                                      if (value == null || value.isEmpty) {
+                                        return l.t('password_required');
+                                      }
+                                      if (value.length < 8) {
+                                        return l.t('password_min_8_chars');
+                                      }
+                                      if (!RegExp(r'[A-Z]').hasMatch(value)) {
+                                        return l.t('password_need_uppercase');
+                                      }
+                                      if (!RegExp(r'[0-9]').hasMatch(value)) {
+                                        return l.t('password_need_number');
+                                      }
+                                      if (!RegExp(r'[!@#$%^&*(),.?":{}|<>]').hasMatch(value)) {
+                                        return l.t('password_need_special');
                                       }
                                       return null;
                                     },
