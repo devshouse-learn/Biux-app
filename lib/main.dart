@@ -147,6 +147,8 @@ Future<void> _initServicesAsync() async {
       if (status == ConnectivityStatus.online) {
         _syncOfflineRides();
       }
+    }, onError: (e) {
+      debugPrint('[Connectivity] Error en listener: $e');
     });
     RemoteConfigService().initialize();
     NotificationService().initialize();

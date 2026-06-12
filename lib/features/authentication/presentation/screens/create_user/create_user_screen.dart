@@ -44,6 +44,26 @@ class _CreateUserScreenState extends State<CreateUserScreen> {
   final _formKey = GlobalKey<FormState>();
   DateTime? _birthDate;
 
+  late FocusNode _nameFocus;
+  late FocusNode _surnameFocus;
+  late FocusNode _phoneFocus;
+  late FocusNode _emailFocus;
+  late FocusNode _usernameFocus;
+  late FocusNode _passwordFocus;
+  late FocusNode _confirmPasswordFocus;
+
+  @override
+  void initState() {
+    super.initState();
+    _nameFocus = FocusNode();
+    _surnameFocus = FocusNode();
+    _phoneFocus = FocusNode();
+    _emailFocus = FocusNode();
+    _usernameFocus = FocusNode();
+    _passwordFocus = FocusNode();
+    _confirmPasswordFocus = FocusNode();
+  }
+
   @override
   void dispose() {
     nameController.dispose();
@@ -53,6 +73,13 @@ class _CreateUserScreenState extends State<CreateUserScreen> {
     passwordController.dispose();
     confirmPasswordController.dispose();
     userNameController.dispose();
+    _nameFocus.dispose();
+    _surnameFocus.dispose();
+    _phoneFocus.dispose();
+    _emailFocus.dispose();
+    _usernameFocus.dispose();
+    _passwordFocus.dispose();
+    _confirmPasswordFocus.dispose();
     super.dispose();
   }
 
@@ -141,7 +168,7 @@ class _CreateUserScreenState extends State<CreateUserScreen> {
                                   SizedBox(height: 70),
                                   TexFieldWidget(
                                     obscureText: false,
-                                    focusNode: FocusNode(),
+                                    focusNode: _nameFocus,
                                     nameController: nameController,
                                     text: l.t('full_name'),
                                     icon: Icon(
