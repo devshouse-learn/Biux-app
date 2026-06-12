@@ -771,7 +771,7 @@ class RideProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  /// Rides filtrados segÃºn criterios activos
+  /// Rides filtrados segúnn criterios activos
   List<dynamic> get filteredRides {
     var list = rides.toList();
     if (_filterDifficulty != 'all') {

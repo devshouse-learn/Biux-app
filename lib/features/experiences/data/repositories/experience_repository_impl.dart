@@ -821,7 +821,7 @@ class ExperienceRepositoryImpl implements ExperienceRepository {
       int? targetWidth;
       int? targetHeight;
 
-      // Ajustar calidad segÃºn el tamaño del archivo
+      // Ajustar calidad segúnn el tamaño del archivo
       if (originalSize > 10 * 1024 * 1024) {
         // Archivos > 10MB: compresión moderada
         quality = 85;

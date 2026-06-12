@@ -459,7 +459,7 @@ class _NotificationItemState extends State<NotificationItem> {
         context.push('/rides/${widget.notification.targetId}');
         break;
 
-      // MENCIONES - Navegar segÃºn el contexto
+      // MENCIONES - Navegar segúnn el contexto
       case NotificationType.mention:
         if (widget.notification.targetType == NotificationTargetType.post) {
           final postOwnerId3 =

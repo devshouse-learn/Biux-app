@@ -10,7 +10,7 @@ class LikesRealtimeDatasource {
   LikesRealtimeDatasource({FirebaseDatabase? database})
     : _database = database ?? FirebaseDatabase.instance;
 
-  /// Obtiene la ruta base segÃºn el tipo
+  /// Obtiene la ruta base segúnn el tipo
   String _getBasePath(String type) {
     switch (type) {
       case 'post':

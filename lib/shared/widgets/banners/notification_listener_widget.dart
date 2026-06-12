@@ -4,7 +4,7 @@ import 'package:provider/provider.dart';
 import 'package:biux/core/design_system/locale_notifier.dart';
 import 'package:biux/core/services/notification_service.dart';
 
-/// Widget que escucha las notificaciones push y navega segÃºn el tipo
+/// Widget que escucha las notificaciones push y navega segúnn el tipo
 class BiuxNotificationListener extends StatefulWidget {
   final Widget child;
 

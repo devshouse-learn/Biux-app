@@ -16,7 +16,7 @@ class OptimizedImagePicker extends StatefulWidget {
   final String? currentImageUrl;
   final Function(String? imageUrl) onImageSelected;
   final String imageType; // 'avatar', 'cover', 'gallery', 'ride', 'story'
-  final String? entityId; // userId, groupId, rideId segÃºn el contexto
+  final String? entityId; // userId, groupId, rideId segúnn el contexto
   final double width;
   final double height;
   final bool showProgress;
@@ -432,7 +432,7 @@ class OptimizedNetworkImage extends StatelessWidget {
     this.imageType = 'default', // thumbnail, avatar, etc.
   });
 
-  /// Calcula la resolución óptima para caché segÃºn el tipo de imagen
+  /// Calcula la resolución óptima para caché segúnn el tipo de imagen
   int? _getOptimalCacheSize(double? displaySize, String imageType) {
     if (displaySize == null || !displaySize.isFinite) {
       return null;
@@ -510,7 +510,7 @@ class OptimizedNetworkImage extends StatelessWidget {
       'OptimizedNetworkImage: imageType: $imageType, width: $width, height: $height',
     );
 
-    // Seleccionar el cache manager apropiado segÃºn el tipo de imagen
+    // Seleccionar el cache manager apropiado segúnn el tipo de imagen
     final cacheManager = OptimizedCacheManager.getCacheManager(imageType);
     debugPrint(
       'OptimizedNetworkImage - Cache Manager para $imageType: ${cacheManager.runtimeType}',

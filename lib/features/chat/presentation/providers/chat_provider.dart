@@ -756,7 +756,7 @@ class ChatProvider extends ChangeNotifier {
     });
   }
 
-  /// Aplica isRead/isDelivered en memoria segÃºn los timestamps del chat doc.
+  /// Aplica isRead/isDelivered en memoria segúnn los timestamps del chat doc.
   /// No necesita escribir en Firestore a€” funciona en tiempo real.
   List<MessageEntity> _applyReadStatus(List<MessageEntity> messages) {
     if (_activeChat == null) return messages;
