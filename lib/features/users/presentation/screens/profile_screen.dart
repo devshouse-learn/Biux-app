@@ -10,6 +10,7 @@ import 'package:biux/core/config/router/app_routes.dart';
 
 import 'package:biux/core/design_system/color_tokens.dart';
 import 'package:biux/core/config/styles.dart';
+import 'package:biux/core/design_system/locale_notifier.dart';
 import 'package:biux/shared/widgets/images/optimized_image_picker.dart';
 import 'package:biux/core/services/optimized_cache_manager.dart';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -249,6 +250,7 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
       builder: (context) {
+        final l = Provider.of<LocaleNotifier>(context);
         if (followers.isEmpty) {
           return Padding(
             padding: const EdgeInsets.all(20),
@@ -263,7 +265,7 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
                     color: ColorTokens.neutral60,
                   ),
                   const SizedBox(height: 12),
-                  const Text('Sin seguidores aún'),
+                  Text(l.t('no_followers_yet')),
                 ],
               ),
             ),
@@ -364,6 +366,7 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
       builder: (context) {
+        final l = Provider.of<LocaleNotifier>(context);
         if (following.isEmpty) {
           return Padding(
             padding: const EdgeInsets.all(20),
@@ -378,7 +381,7 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
                     color: ColorTokens.neutral60,
                   ),
                   const SizedBox(height: 12),
-                  const Text('No sigue a nadie aún'),
+                  Text(l.t('no_followers_yet')),
                 ],
               ),
             ),

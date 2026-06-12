@@ -817,7 +817,7 @@ class _ExperienceCard extends StatelessWidget {
           ),
           ElevatedButton(
             onPressed: () => Navigator.pop(ctx, true),
-            child: const Text('Repostear'),
+            child: Text(l.t('repost')),
           ),
         ],
       ),

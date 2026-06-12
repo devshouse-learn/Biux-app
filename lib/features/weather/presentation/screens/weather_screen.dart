@@ -90,7 +90,7 @@ class _WeatherScreenState extends State<WeatherScreen> {
                           await Geolocator.openAppSettings();
                         },
                         icon: const Icon(Icons.settings),
-                        label: const Text('Abrir Configuración'),
+                        label: Text(l.t('open_settings')),
                         style: ElevatedButton.styleFrom(
                           backgroundColor: ColorTokens.primary30,
                           foregroundColor: Colors.white,

@@ -1358,7 +1358,7 @@ class _AchievementsScreenState extends State<AchievementsScreen>
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(dc),
-            child: const Text('Entendido'),
+            child: Text(l.t('understood')),
           ),
         ],
       ),

@@ -2312,7 +2312,7 @@ class _RoutePlannerSheetState extends State<_RoutePlannerSheet> {
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(),
-            child: const Text('Entendido'),
+            child: Text(l.t('understood')),
           ),
         ],
       ),

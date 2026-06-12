@@ -499,7 +499,7 @@ class _CreateUserScreenState extends State<CreateUserScreen> {
                                     actions: [
                                       TextButton(
                                         onPressed: () => Navigator.pop(context),
-                                        child: const Text('Entendido'),
+                                        child: Text(l.t('understood')),
                                       ),
                                     ],
                                   ),

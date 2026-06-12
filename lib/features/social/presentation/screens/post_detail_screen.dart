@@ -226,7 +226,7 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
                               ),
                               ElevatedButton(
                                 onPressed: () => Navigator.pop(dialogCtx, true),
-                                child: const Text('Repostear'),
+                                child: Text(l.t('repost')),
                               ),
                             ],
                           ),
