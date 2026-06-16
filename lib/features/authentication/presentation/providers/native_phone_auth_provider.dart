@@ -274,7 +274,7 @@ class NativePhoneAuthProvider extends ChangeNotifier {
       _verificationId = null;
       _phoneNumber = null;
       notifyListeners();
-    } on FirebaseException catch (_) {
+    } on FirebaseException catch (e) {
       _errorMessage = 'err_sign_out';
       notifyListeners();
     }

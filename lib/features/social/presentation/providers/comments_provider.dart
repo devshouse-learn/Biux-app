@@ -341,7 +341,7 @@ class CommentsProvider extends ChangeNotifier {
 
       _isEditing = false;
       notifyListeners();
-    } on FirebaseException catch (_) {
+    } on FirebaseException catch (e) {
       _error = 'comments_edit_error';
       _isEditing = false;
       notifyListeners();
@@ -361,7 +361,6 @@ class CommentsProvider extends ChangeNotifier {
       _error = null;
       notifyListeners();
 
-      debugPrint('🔗—‘ï¸ Intentando eliminar comentario:');
       debugPrint('   Tipo: $type');
       debugPrint('   TargetId: $targetId');
       debugPrint('   CommentId: $commentId');
@@ -374,7 +373,6 @@ class CommentsProvider extends ChangeNotifier {
         userId: userId,
       );
 
-      debugPrint('✅ Comentario eliminado correctamente');
       _isDeleting = false;
       notifyListeners();
     } catch (e, st) {

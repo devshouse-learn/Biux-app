@@ -24,7 +24,7 @@ class RoadsFirebaseRepository extends RoadsRepositoryAbstract {
           .delete();
 
       return true;
-    } on FirebaseException catch (_) {
+    } on FirebaseException catch (e) {
       return false;
     }
   }
@@ -34,7 +34,7 @@ class RoadsFirebaseRepository extends RoadsRepositoryAbstract {
     try {
       await firestore.collection(collection).doc(road.id).delete();
       return true;
-    } on FirebaseException catch (_) {
+    } on FirebaseException catch (e) {
       return false;
     }
   }
@@ -50,7 +50,7 @@ class RoadsFirebaseRepository extends RoadsRepositoryAbstract {
       return result.docs
           .map((e) => CompetitorRoad.fromJsonMap(json: e.data()))
           .toList();
-    } on FirebaseException catch (_) {
+    } on FirebaseException catch (e) {
       return List.empty();
     }
   }
@@ -68,7 +68,7 @@ class RoadsFirebaseRepository extends RoadsRepositoryAbstract {
           .where('userId', isEqualTo: userId)
           .get();
       return CompetitorRoad.fromJsonMap(json: response.docs.first.data());
-    } on FirebaseException catch (_) {
+    } on FirebaseException catch (e) {
       return CompetitorRoad();
     }
   }
@@ -87,7 +87,7 @@ class RoadsFirebaseRepository extends RoadsRepositoryAbstract {
       return result.docs
           .map((e) => Road.fromJson(json: e.data(), id: e.id))
           .toList();
-    } on FirebaseException catch (_) {
+    } on FirebaseException catch (e) {
       return List.empty();
     }
   }
@@ -106,7 +106,7 @@ class RoadsFirebaseRepository extends RoadsRepositoryAbstract {
       return result.docs
           .map((e) => Road.fromJson(json: e.data(), id: e.id))
           .toList();
-    } on FirebaseException catch (_) {
+    } on FirebaseException catch (e) {
       return List.empty();
     }
   }
@@ -124,7 +124,7 @@ class RoadsFirebaseRepository extends RoadsRepositoryAbstract {
           .doc(competitorRoad.userId)
           .set(competitorRoad.toJson());
       return true;
-    } on FirebaseException catch (_) {
+    } on FirebaseException catch (e) {
       return false;
     }
   }
@@ -134,7 +134,7 @@ class RoadsFirebaseRepository extends RoadsRepositoryAbstract {
     try {
       await firestore.collection(collection).doc(road.id).update(road.toJson());
       return true;
-    } on FirebaseException catch (_) {
+    } on FirebaseException catch (e) {
       return false;
     }
   }
@@ -167,7 +167,7 @@ class RoadsFirebaseRepository extends RoadsRepositoryAbstract {
       );
       await this.updateRoad(roadUpdate);
       return true;
-    } on FirebaseException catch (_) {
+    } on FirebaseException catch (e) {
       return false;
     }
   }
@@ -182,7 +182,7 @@ class RoadsFirebaseRepository extends RoadsRepositoryAbstract {
         json: response.docs.first.data(),
         id: response.docs.first.id,
       );
-    } on FirebaseException catch (_) {
+    } on FirebaseException catch (e) {
       return Road(id: '', group: Group());
     }
   }
@@ -192,7 +192,7 @@ class RoadsFirebaseRepository extends RoadsRepositoryAbstract {
     try {
       await firestore.collection(collection).add(road.toJson());
       return true;
-    } on FirebaseException catch (_) {
+    } on FirebaseException catch (e) {
       return false;
     }
   }
@@ -205,7 +205,7 @@ class RoadsFirebaseRepository extends RoadsRepositoryAbstract {
       return response.docs
           .map((e) => CompetitorRoad.fromJsonMap(json: e.data()))
           .toList();
-    } on FirebaseException catch (_) {
+    } on FirebaseException catch (e) {
       return List.empty();
     }
   }
@@ -214,7 +214,7 @@ class RoadsFirebaseRepository extends RoadsRepositoryAbstract {
     try {
       await firestore.collection(collection).doc(road.id).update(road.toJson());
       return true;
-    } on FirebaseException catch (_) {
+    } on FirebaseException catch (e) {
       return false;
     }
   }

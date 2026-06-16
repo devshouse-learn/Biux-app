@@ -45,7 +45,7 @@ class _ProfileHighlightsState extends State<ProfileHighlights> {
           _isLoading = false;
         });
       }
-    } on Exception catch (_) {
+    } on Exception catch (e) {
       if (mounted) setState(() => _isLoading = false);
     }
   }
@@ -443,13 +443,13 @@ class _ProfileHighlightsState extends State<ProfileHighlights> {
                   backgroundColor: ColorTokens.primary30,
                   foregroundColor: ColorTokens.neutral100,
                 ),
-                child: Text('Crear'),
+                child: Text(l.t('create')),
               ),
             ],
           ),
         ),
       );
-    } on Exception catch (_) {
+    } on Exception catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(

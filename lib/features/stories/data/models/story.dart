@@ -15,7 +15,7 @@ class Story {
   String get fileUrl1 {
     try {
       return files.first;
-    } on Exception catch (_) {
+    } on Exception catch (e) {
       return '';
     }
   }
@@ -23,7 +23,7 @@ class Story {
   String get fileUrl2 {
     try {
       return files[1];
-    } on Exception catch (_) {
+    } on Exception catch (e) {
       return '';
     }
   }
@@ -31,7 +31,7 @@ class Story {
   String get fileUrl3 {
     try {
       return files[2];
-    } on Exception catch (_) {
+    } on Exception catch (e) {
       return '';
     }
   }

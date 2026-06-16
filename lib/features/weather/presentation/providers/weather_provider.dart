@@ -280,7 +280,7 @@ class WeatherProvider extends ChangeNotifier {
                 geoData["address"]?["state"] ??
                 "";
           }
-        } catch (_) {}
+        } catch (e) {}
 
         _computeCyclistAlerts();
       } else {

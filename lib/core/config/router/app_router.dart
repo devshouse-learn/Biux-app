@@ -259,7 +259,7 @@ String? _guard(BuildContext context, GoRouterState state) {
     AppLogger.debug('🔗”— Deep link convertido: $location a†’ $effectiveLocation');
   }
 
-  // Si está en la ruta root '/', decidir dónde ir segÃºn autenticación
+  // Si está en la ruta root '/', decidir dónde ir segúnn autenticación
   if (effectiveLocation == '/') {
     if (isLoggedIn) {
       AppLogger.debug('🔗“ Usuario logueado en root, redirigiendo a inicio');

@@ -691,14 +691,14 @@ class _AppDrawerState extends State<AppDrawer> {
           children: [
             Icon(Icons.logout, color: ColorTokens.error50),
             const SizedBox(width: 8),
-            const Text('Cerrar Sesion'),
+            Text(l.t('logout')),
           ],
         ),
         content: const Text('Estas seguro que deseas cerrar sesion?'),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(dc).pop(),
-            child: const Text('Cancelar'),
+            child: Text(l.t('cancel')),
           ),
           ElevatedButton(
             onPressed: () async {
@@ -712,7 +712,7 @@ class _AppDrawerState extends State<AppDrawer> {
                 borderRadius: BorderRadius.circular(10),
               ),
             ),
-            child: const Text('Cerrar Sesion'),
+            child: Text(l.t('logout')),
           ),
         ],
       ),

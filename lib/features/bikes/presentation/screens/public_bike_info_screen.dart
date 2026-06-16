@@ -44,7 +44,7 @@ class _PublicBikeInfoScreenState extends State<PublicBikeInfoScreen> {
           _isLoading = false;
         });
       }
-    } on FirebaseException catch (_) {
+    } on FirebaseException catch (e) {
       if (mounted) {
         setState(() {
           _error = 'could_not_load_bike_info';

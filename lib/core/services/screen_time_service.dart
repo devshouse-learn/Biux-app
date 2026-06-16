@@ -48,7 +48,7 @@ class ScreenTimeService with WidgetsBindingObserver {
         final decoded = json.decode(raw) as Map<String, dynamic>;
         _dailyMinutes = decoded.map((k, v) => MapEntry(k, (v as num).toInt()));
       }
-    } catch (_) {}
+    } catch (e) {}
   }
 
   /// Guarda la sesión actual y resetea el contador.
@@ -64,7 +64,7 @@ class ScreenTimeService with WidgetsBindingObserver {
     try {
       final prefs = await SharedPreferences.getInstance();
       await prefs.setString(_storageKey, json.encode(_dailyMinutes));
-    } catch (_) {}
+    } catch (e) {}
   }
 
   /// Minutos del día actual incluyendo la sesión en curso.

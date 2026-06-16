@@ -1,4 +1,5 @@
-﻿import 'package:firebase_auth/firebase_auth.dart';
+﻿import 'dart:async';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:biux/core/services/app_logger.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
@@ -48,6 +49,9 @@ class GroupProvider extends ChangeNotifier {
 
   // a”€a”€a”€ Estado a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€
   List<GroupModel> _allGroups = [];
+
+  // Subscripciones para cleanup
+  final List<StreamSubscription> _subscriptions = [];
   List<GroupModel> _userGroups = [];
   List<GroupModel> _adminGroups = [];
   List<GroupModel> _searchResults = [];
@@ -108,7 +112,7 @@ class GroupProvider extends ChangeNotifier {
   // a”€a”€a”€ Cargar grupos (Use Case: GetGroupsUseCase) a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€
 
   void loadAllGroups() {
-    _getGroupsUseCase.call().listen(
+    final subscription = _getGroupsUseCase.call().listen(
       (groups) {
         groups.sort((a, b) => b.memberIds.length.compareTo(a.memberIds.length));
         _allGroups = groups;
@@ -116,11 +120,13 @@ class GroupProvider extends ChangeNotifier {
       },
       onError: (error) => AppLogger.error('Error loading all groups', error: error),
     );
+    _subscriptions.add(subscription);
   }
 
   void loadUserGroups() {
     if (currentUserId != null) {
-      _getGroupsUseCase.byUser(currentUserId!).listen(
+      final subscription = _getGroupsUseCase.byUser(currentUserId!)
+      .listen(
         (groups) {
           groups.sort((a, b) => b.memberIds.length.compareTo(a.memberIds.length));
           _userGroups = groups;
@@ -128,12 +134,13 @@ class GroupProvider extends ChangeNotifier {
         },
         onError: (error) => AppLogger.error('Error loading user groups', error: error),
       );
+      _subscriptions.add(subscription);
     }
   }
 
   void loadAdminGroups() {
     if (currentUserId != null) {
-      _getGroupsUseCase.adminGroups(currentUserId!).listen(
+      final subscription = _getGroupsUseCase.adminGroups(currentUserId!).listen(
         (groups) {
           groups.sort((a, b) => b.memberIds.length.compareTo(a.memberIds.length));
           _adminGroups = groups;
@@ -141,15 +148,17 @@ class GroupProvider extends ChangeNotifier {
         },
         onError: (error) => AppLogger.error('Error loading admin groups', error: error),
       );
+      _subscriptions.add(subscription);
     }
   }
 
   void loadGroupsByCity(String cityId) {
-    _getGroupsUseCase.byCity(cityId).listen((groups) {
+    final subscription = _getGroupsUseCase.byCity(cityId).listen((groups) {
       groups.sort((a, b) => b.memberIds.length.compareTo(a.memberIds.length));
       _allGroups = groups;
       notifyListeners();
     });
+    _subscriptions.add(subscription);
   }
 
   // a”€a”€a”€ Crear grupo (Use Case: CreateGroupUseCase) a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€
@@ -178,7 +187,7 @@ class GroupProvider extends ChangeNotifier {
 
       _setLoading(false);
       return groupId != null;
-    } on FirebaseException catch (_) {
+    } on FirebaseException catch (e) {
       _setError('group_error_create');
       _setLoading(false);
       return false;
@@ -216,7 +225,7 @@ class GroupProvider extends ChangeNotifier {
 
       _setLoading(false);
       return success;
-    } on FirebaseException catch (_) {
+    } on FirebaseException catch (e) {
       _setError('group_error_edit');
       _setLoading(false);
       return false;
@@ -233,7 +242,7 @@ class GroupProvider extends ChangeNotifier {
       if (_selectedGroup != null) {
         await _loadUsersForGroup(_selectedGroup!);
       }
-    } on FirebaseException catch (_) {
+    } on FirebaseException catch (e) {
       _setError('group_error_load');
     }
     _setLoading(false);
@@ -306,7 +315,7 @@ class GroupProvider extends ChangeNotifier {
       }
       _setLoading(false);
       return success;
-    } on FirebaseException catch (_) {
+    } on FirebaseException catch (e) {
       _setError('group_error_approve');
       _setLoading(false);
       return false;
@@ -330,7 +339,7 @@ class GroupProvider extends ChangeNotifier {
       }
       _setLoading(false);
       return success;
-    } on FirebaseException catch (_) {
+    } on FirebaseException catch (e) {
       _setError('group_error_reject');
       _setLoading(false);
       return false;
@@ -354,7 +363,7 @@ class GroupProvider extends ChangeNotifier {
       }
       _setLoading(false);
       return success;
-    } on FirebaseException catch (_) {
+    } on FirebaseException catch (e) {
       _setError('group_error_cancel_request');
       _setLoading(false);
       return false;
@@ -379,7 +388,7 @@ class GroupProvider extends ChangeNotifier {
       }
       _setLoading(false);
       return success;
-    } on FirebaseException catch (_) {
+    } on FirebaseException catch (e) {
       _setError('group_error_leave');
       _setLoading(false);
       return false;
@@ -403,7 +412,7 @@ class GroupProvider extends ChangeNotifier {
       }
       _setLoading(false);
       return success;
-    } on FirebaseException catch (_) {
+    } on FirebaseException catch (e) {
       _setError('group_error_delete');
       _setLoading(false);
       return false;
@@ -606,6 +615,15 @@ class GroupProvider extends ChangeNotifier {
     final g = selectedGroup;
     if (g == null) return 0;
     return g.memberIds.length + 1; // +1 admin
+  }
+
+  @override
+  void dispose() {
+    for (final sub in _subscriptions) {
+      sub.cancel();
+    }
+    _subscriptions.clear();
+    super.dispose();
   }
 }
 

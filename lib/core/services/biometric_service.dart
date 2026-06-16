@@ -10,7 +10,7 @@ class BiometricService {
       final canCheck = await _auth.canCheckBiometrics;
       final isSupported = await _auth.isDeviceSupported();
       return canCheck && isSupported;
-    } catch (_) {
+    } catch (e) {
       return false;
     }
   }
@@ -18,7 +18,7 @@ class BiometricService {
   static Future<List<BiometricType>> getAvailableBiometrics() async {
     try {
       return await _auth.getAvailableBiometrics();
-    } catch (_) {
+    } catch (e) {
       return [];
     }
   }
@@ -28,7 +28,7 @@ class BiometricService {
       return await _auth.authenticate(
         localizedReason: reason ?? 'Confirm your identity to enter Biux',
       );
-    } catch (_) {
+    } catch (e) {
       return false;
     }
   }

@@ -48,7 +48,7 @@ class ExperienceRepositoryImpl implements ExperienceRepository {
             firebaseUser.photoURL ??
             '',
       );
-    } on FirebaseException catch (_) {
+    } on FirebaseException catch (e) {
       // Si hay error obteniendo desde Firestore, usar datos básicos de Firebase Auth
       return UserModel(
         id: firebaseUser.uid,
@@ -115,7 +115,7 @@ class ExperienceRepositoryImpl implements ExperienceRepository {
         );
       }
       return results;
-    } on FirebaseException catch (_) {
+    } on FirebaseException catch (e) {
       return [];
     }
   }
@@ -372,7 +372,7 @@ class ExperienceRepositoryImpl implements ExperienceRepository {
           final url = mediaItem['url'] as String;
           final ref = FirebaseStorage.instance.refFromURL(url);
           return ref.delete().catchError((_) {});
-        } catch (_) {
+        } catch (e) {
           return Future.value();
         }
       });
@@ -640,7 +640,7 @@ class ExperienceRepositoryImpl implements ExperienceRepository {
                   return UserModel.fromJson(
                     v as Map<String, dynamic>,
                   ).toEntity();
-                } catch (_) {
+                } catch (e) {
                   return null;
                 }
               })
@@ -821,7 +821,7 @@ class ExperienceRepositoryImpl implements ExperienceRepository {
       int? targetWidth;
       int? targetHeight;
 
-      // Ajustar calidad segÃºn el tamaño del archivo
+      // Ajustar calidad segúnn el tamaño del archivo
       if (originalSize > 10 * 1024 * 1024) {
         // Archivos > 10MB: compresión moderada
         quality = 85;

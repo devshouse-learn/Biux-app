@@ -4,7 +4,7 @@ import 'package:provider/provider.dart';
 import 'package:biux/core/design_system/locale_notifier.dart';
 import 'package:biux/core/services/notification_service.dart';
 
-/// Widget que escucha las notificaciones push y navega segÃºn el tipo
+/// Widget que escucha las notificaciones push y navega segúnn el tipo
 class BiuxNotificationListener extends StatefulWidget {
   final Widget child;
 
@@ -98,7 +98,6 @@ class _BiuxNotificationListenerState extends State<BiuxNotificationListener> {
     final targetId = data['targetId'] as String?;
     final targetType = data['targetType'] as String?;
 
-    debugPrint('🔗”” Navegando por notificación');
     debugPrint('   Type: $type');
     debugPrint('   TargetId: $targetId');
     debugPrint('   TargetType: $targetType');

@@ -57,7 +57,6 @@ class DirectionsService {
         'mode=$travelMode&'
         'key=$_apiKey';
 
-    debugPrint('🔗š´a€a™‚ï¸ Requesting bicycling route from Google API...');
     debugPrint('URL: $url');
 
     try {
@@ -71,11 +70,9 @@ class DirectionsService {
             },
           );
 
-      debugPrint('🔗“¡ Response status: ${response.statusCode}');
 
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
-        debugPrint('🔗“Š API Response status: ${data['status']}');
 
         if (data['status'] == 'OK' && data['routes'].isNotEmpty) {
           final route = data['routes'][0];
@@ -90,7 +87,6 @@ class DirectionsService {
           );
 
           final List<LatLng> points = _decodePolyline(polylinePoints);
-          debugPrint('🔗—ºï¸ Decoded ${points.length} points for the route');
 
           return DirectionResult(
             points: points,
@@ -110,7 +106,6 @@ class DirectionsService {
         debugPrint('Response body: ${response.body}');
       }
     } on SocketException catch (e) {
-      debugPrint('🔗’¥ Exception in getDirectionsWithDetails: $e');
     }
 
     return null;

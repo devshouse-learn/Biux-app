@@ -163,7 +163,7 @@ class AchievementsProvider with ChangeNotifier {
   /// Callback para mostrar overlay cuando se desbloquea un logro
   Function(String achievementId)? onAchievementUnlocked;
 
-  /// Verificar y desbloquear logros segÃºn estadísticas
+  /// Verificar y desbloquear logros segúnn estadísticas
   Future<void> checkAndUnlock({
     required String userId,
     required Map<String, dynamic> stats,

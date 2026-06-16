@@ -10,6 +10,7 @@ import 'package:biux/core/config/router/app_routes.dart';
 
 import 'package:biux/core/design_system/color_tokens.dart';
 import 'package:biux/core/config/styles.dart';
+import 'package:biux/core/design_system/locale_notifier.dart';
 import 'package:biux/shared/widgets/images/optimized_image_picker.dart';
 import 'package:biux/core/services/optimized_cache_manager.dart';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -212,7 +213,6 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
       final currentUser = FirebaseAuth.instance.currentUser;
 
       if (currentUser != null) {
-        debugPrint('🔗”„ Cargando datos del usuario...');
         await widget.userProvider.loadUserData();
 
         if (widget.userProvider.user == null) {
@@ -227,7 +227,6 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
         }
 
         if (widget.userProvider.user != null && mounted) {
-          debugPrint('✅ Inicializando campos con datos del usuario:');
           debugPrint('   Nombre: "${widget.userProvider.user?.name ?? ''}"');
           debugPrint('   Email: "${widget.userProvider.user?.email ?? ''}"');
           setState(() {
@@ -251,6 +250,7 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
       builder: (context) {
+        final l = Provider.of<LocaleNotifier>(context);
         if (followers.isEmpty) {
           return Padding(
             padding: const EdgeInsets.all(20),
@@ -265,7 +265,7 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
                     color: ColorTokens.neutral60,
                   ),
                   const SizedBox(height: 12),
-                  const Text('Sin seguidores aún'),
+                  Text(l.t('no_followers_yet')),
                 ],
               ),
             ),
@@ -318,14 +318,12 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
                         ),
                         subtitle: Text('@${user.userName}'),
                         onTap: () {
-                          debugPrint('🔗” DEBUG: Intentando navegar a usuario');
                           debugPrint('  User ID: "${user.id}"');
                           debugPrint('  User ID isEmpty: ${user.id.isEmpty}');
                           debugPrint('  User ID length: ${user.id.length}');
 
                           if (user.id.isNotEmpty) {
                             final route = '/user-profile/${user.id.trim()}';
-                            debugPrint('🔗” DEBUG: Ruta a navegar: $route');
                             Navigator.of(context).pop();
                             WidgetsBinding.instance.addPostFrameCallback((_) {
                               if (context.mounted) {
@@ -368,6 +366,7 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
       builder: (context) {
+        final l = Provider.of<LocaleNotifier>(context);
         if (following.isEmpty) {
           return Padding(
             padding: const EdgeInsets.all(20),
@@ -382,7 +381,7 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
                     color: ColorTokens.neutral60,
                   ),
                   const SizedBox(height: 12),
-                  const Text('No sigue a nadie aún'),
+                  Text(l.t('no_followers_yet')),
                 ],
               ),
             ),
@@ -435,14 +434,12 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
                         ),
                         subtitle: Text('@${user.userName}'),
                         onTap: () {
-                          debugPrint('🔗” DEBUG: Intentando navegar a usuario');
                           debugPrint('  User ID: "${user.id}"');
                           debugPrint('  User ID isEmpty: ${user.id.isEmpty}');
                           debugPrint('  User ID length: ${user.id.length}');
 
                           if (user.id.isNotEmpty) {
                             final route = '/user-profile/${user.id.trim()}';
-                            debugPrint('🔗” DEBUG: Ruta a navegar: $route');
                             Navigator.of(context).pop();
                             WidgetsBinding.instance.addPostFrameCallback((_) {
                               if (context.mounted) {
@@ -486,7 +483,6 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
         final data = userDoc.data() as Map<String, dynamic>;
         // Asegurar que el ID está incluido en los datos
         data['id'] = userDoc.id;
-        debugPrint('✅ Usuario cargado con ID: ${userDoc.id}');
         return BiuxUser.fromJsonMap(data);
       } else {
         debugPrint('aŒ Usuario no encontrado: $userId');
@@ -1384,7 +1380,7 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
                                       url.isNotEmpty;
                                 }
                                 return true;
-                              } on FirebaseException catch (_) {
+                              } on FirebaseException catch (e) {
                                 return false;
                               }
                             }).toList();
@@ -1685,7 +1681,7 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
                                                       ),
                                                     );
                                                   }
-                                                } catch (_) {}
+                                                } catch (e) {}
                                               },
                                               child: Container(
                                                 padding: const EdgeInsets.all(

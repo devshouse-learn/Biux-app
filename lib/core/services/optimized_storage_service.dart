@@ -21,7 +21,7 @@ class OptimizedStorageService {
     VoidCallback? onProgress,
   }) async {
     try {
-      // Comprimir segÃºn el tipo de imagen
+      // Comprimir segúnn el tipo de imagen
       File? compressedFile;
       switch (imageType) {
         case 'avatar':
@@ -241,7 +241,7 @@ class OptimizedStorageService {
     VoidCallback? onProgress,
   }) async {
     try {
-      // Comprimir segÃºn el tipo de imagen
+      // Comprimir segúnn el tipo de imagen
       File? compressedFile;
       if (imageType == 'main') {
         // Foto principal: alta calidad

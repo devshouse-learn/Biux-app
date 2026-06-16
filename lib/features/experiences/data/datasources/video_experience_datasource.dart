@@ -55,7 +55,6 @@ class VideoExperienceService {
       );
 
       if (video != null) {
-        debugPrint('🔗Ž¥ Video grabado: ${video.path}');
       }
 
       return video;
@@ -73,7 +72,6 @@ class VideoExperienceService {
     Function(double)? onProgress,
   }) async {
     try {
-      debugPrint('🔗“¤ Iniciando subida de video...');
 
       final fileName =
           '${DateTime.now().millisecondsSinceEpoch}_${videoFile.name}';
@@ -97,7 +95,6 @@ class VideoExperienceService {
       final snapshot = await uploadTask;
       final downloadUrl = await snapshot.ref.getDownloadURL();
 
-      debugPrint('✅ Video subido exitosamente: $downloadUrl');
 
       return VideoUploadResult(
         videoUrl: downloadUrl,
@@ -120,7 +117,6 @@ class VideoExperienceService {
   }) async {
     VideoPlayerController? controller;
     try {
-      debugPrint('🔗–¼ï¸ Generando thumbnail para: $videoUrl');
 
       controller = VideoPlayerController.networkUrl(Uri.parse(videoUrl));
       await controller.initialize();
@@ -207,7 +203,6 @@ class VideoExperienceService {
         final file = File(path);
         if (await file.exists()) {
           await file.delete();
-          debugPrint('🔗§¹ Archivo temporal eliminado: $path');
         }
       } on FirebaseException catch (e) {
         debugPrint('aš ï¸ Error eliminando archivo temporal $path: $e');

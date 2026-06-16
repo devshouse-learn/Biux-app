@@ -104,7 +104,7 @@ class _ReportFlowScreenState extends State<ReportFlowScreen> {
         }
       }
       if (mounted) setState(() => _posts = posts);
-    } catch (_) {}
+    } catch (e) {}
     if (mounted) setState(() => _loadingPosts = false);
   }
 
@@ -128,7 +128,7 @@ class _ReportFlowScreenState extends State<ReportFlowScreen> {
           .collection('users')
           .doc(widget.reportedUserId)
           .update({'reportCount': FieldValue.increment(1)});
-    } catch (_) {}
+    } catch (e) {}
 
     if (mounted) {
       setState(() {

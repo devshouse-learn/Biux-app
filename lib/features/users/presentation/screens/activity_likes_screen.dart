@@ -95,7 +95,7 @@ class _ActivityLikesScreenState extends State<ActivityLikesScreen> {
                 authorId: user?['id']?.toString(),
               );
             }
-          } catch (_) {}
+          } catch (e) {}
           return null;
         });
         final batchResults = await Future.wait(futures);
@@ -139,7 +139,7 @@ class _ActivityLikesScreenState extends State<ActivityLikesScreen> {
                 authorId: user?['id']?.toString(),
               );
             }
-          } catch (_) {}
+          } catch (e) {}
           return null;
         });
         final batchResults = await Future.wait(futures);

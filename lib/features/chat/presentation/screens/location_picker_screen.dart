@@ -40,7 +40,7 @@ class _LocationPickerScreenState extends State<LocationPickerScreen> {
         _loading = false;
       });
       _mapController?.animateCamera(CameraUpdate.newLatLngZoom(latLng, 15));
-    } catch (_) {
+    } catch (e) {
       if (mounted) setState(() => _loading = false);
     }
   }

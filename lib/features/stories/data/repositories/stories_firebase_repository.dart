@@ -66,7 +66,7 @@ class StoriesFirebaseRepository extends StoriesRepositoryAbstract {
           .orderBy('creationDate', descending: true)
           .get();
       return result.docs.map((e) => Story.fromJson(e.data(), e.id)).toList();
-    } on FirebaseException catch (_) {
+    } on FirebaseException catch (e) {
       return [];
     }
   }
@@ -143,7 +143,7 @@ class StoriesFirebaseRepository extends StoriesRepositoryAbstract {
           .doc(id)
           .update(story.toJson());
       return true;
-    } on FirebaseException catch (_) {
+    } on FirebaseException catch (e) {
       return false;
     }
   }
@@ -155,7 +155,7 @@ class StoriesFirebaseRepository extends StoriesRepositoryAbstract {
           .where('user.id', isEqualTo: id)
           .get();
       return response.docs.map((e) => Story.fromJson(e.data(), e.id)).toList();
-    } on FirebaseException catch (_) {
+    } on FirebaseException catch (e) {
       return List.empty();
     }
   }

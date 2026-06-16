@@ -129,7 +129,7 @@ class UserProfileRepositoryImpl implements UserProfileRepository {
         return BiuxUser.fromJsonMap(userData);
       }
       return null;
-    } on FirebaseException catch (_) {
+    } on FirebaseException catch (e) {
       return null;
     }
   }
@@ -319,7 +319,6 @@ class UserProfileRepositoryImpl implements UserProfileRepository {
     try {
       if (_currentUserId == null || _currentUserId == userId) return false;
 
-      debugPrint('🔗“¨ sendFollowRequest: de $_currentUserId a $userId');
 
       final currentUser = await _firestore
           .collection('users')
@@ -348,7 +347,6 @@ class UserProfileRepositoryImpl implements UserProfileRepository {
             'createdAt': FieldValue.serverTimestamp(),
           });
 
-      debugPrint('✅ Follow request creado en Firestore');
 
       // Create notification in Realtime Database (where the app reads from)
       try {

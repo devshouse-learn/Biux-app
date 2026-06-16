@@ -59,7 +59,7 @@ class _CreateExperienceScreenState extends State<CreateExperienceScreen> {
   void initState() {
     super.initState();
 
-    // Establecer el tipo segÃºn el modo
+    // Establecer el tipo segúnn el modo
     if (widget.isStoryMode) {
       _contentType = 'story';
     } else if (widget.isPostMode) {
@@ -438,7 +438,7 @@ class _CreateExperienceScreenState extends State<CreateExperienceScreen> {
             ],
           ),
           const SizedBox(height: 8),
-          // Ayuda contextual segÃºn el tipo
+          // Ayuda contextual segúnn el tipo
           Container(
             padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
@@ -661,7 +661,7 @@ class _CreateExperienceScreenState extends State<CreateExperienceScreen> {
             ],
           ),
           SizedBox(height: 8),
-          // Información segÃºn el tipo de contenido
+          // Información segúnn el tipo de contenido
           if (widget.textOnly) ...[
             _buildInfoItem(
               '🔗“ Post de solo texto',
@@ -822,7 +822,7 @@ class _CreateExperienceScreenState extends State<CreateExperienceScreen> {
         Navigator.of(context).pop(true);
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content: Text('a¡Experiencia publicada exitosamente!'),
+            content: Text(l.t('experience_published')),
             backgroundColor: Colors.green,
           ),
         );

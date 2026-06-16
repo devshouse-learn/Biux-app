@@ -467,7 +467,7 @@ class _StolenBikesScreenState extends State<StolenBikesScreen>
     return Scaffold(
       backgroundColor: scaffoldBg,
       appBar: AppBar(
-        title: const Text('Bicicletas Robadas'),
+        title: Text(l.t('stolen_bikes')),
         backgroundColor: _vivantRed,
         foregroundColor: Colors.white,
         elevation: 0,
@@ -1070,7 +1070,7 @@ class _StolenBikesScreenState extends State<StolenBikesScreen>
               child: ElevatedButton.icon(
                 onPressed: _submitReport,
                 icon: const Icon(Icons.send),
-                label: const Text('Enviar Reporte'),
+                label: Text(l.t('send_report')),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: _vivantRed,
                   foregroundColor: Colors.white,
@@ -1121,7 +1121,7 @@ class _StolenBikesScreenState extends State<StolenBikesScreen>
       builder: (c) => AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
         icon: const Icon(Icons.check_circle, color: Colors.green, size: 48),
-        title: const Text('Reporte Enviado'),
+        title: Text(l.t('report_sent')),
         content: const Text(
           'Tu reporte ha sido registrado. La comunidad sera alertada.',
         ),

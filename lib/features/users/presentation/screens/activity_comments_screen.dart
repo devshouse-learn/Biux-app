@@ -113,7 +113,7 @@ class _ActivityCommentsScreenState extends State<ActivityCommentsScreen> {
                 );
               }
             }
-          } catch (_) {}
+          } catch (e) {}
           return docItems;
         });
         final batchResults = await Future.wait(futures);

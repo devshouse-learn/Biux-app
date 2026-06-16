@@ -64,7 +64,7 @@ class _ImageCropEditorScreenState extends State<ImageCropEditorScreen> {
           _isLoading = false;
         });
       }
-    } on Exception catch (_) {
+    } on Exception catch (e) {
       setState(() {
         _error = 'image_load_error';
         _isLoading = false;

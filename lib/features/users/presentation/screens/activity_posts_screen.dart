@@ -51,7 +51,7 @@ class _ActivityPostsScreenState extends State<ActivityPostsScreen> {
               final data = doc.data();
               data['id'] = doc.id;
               return ExperienceModel.fromJson(data);
-            } catch (_) {
+            } catch (e) {
               return null;
             }
           })
@@ -65,7 +65,7 @@ class _ActivityPostsScreenState extends State<ActivityPostsScreen> {
           _isLoading = false;
         });
       }
-    } on FirebaseException catch (_) {
+    } on FirebaseException catch (e) {
       if (mounted) setState(() => _isLoading = false);
     }
   }

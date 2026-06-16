@@ -10,7 +10,7 @@ class LikesRealtimeDatasource {
   LikesRealtimeDatasource({FirebaseDatabase? database})
     : _database = database ?? FirebaseDatabase.instance;
 
-  /// Obtiene la ruta base segÃºn el tipo
+  /// Obtiene la ruta base segúnn el tipo
   String _getBasePath(String type) {
     switch (type) {
       case 'post':
@@ -87,20 +87,14 @@ class LikesRealtimeDatasource {
     final path = '${_getBasePath(type)}/$targetId/${like.userId}';
     final jsonData = like.toJson();
 
-    debugPrint('🔗” DEBUG DATASOURCE - Path: $path');
-    debugPrint('🔗” DEBUG DATASOURCE - JSON: $jsonData');
 
     // Verificar auth
     final currentUser = FirebaseAuth.instance.currentUser;
-    debugPrint('🔗” DEBUG AUTH - currentUser.uid: ${currentUser?.uid}');
-    debugPrint('🔗” DEBUG AUTH - like.userId: ${like.userId}');
-    debugPrint('🔗” DEBUG AUTH - Match: ${currentUser?.uid == like.userId}');
 
     final ref = _database.ref(path);
 
     try {
       await ref.set(jsonData);
-      debugPrint('✅ LIKE GUARDADO EXITOSAMENTE');
     } on FirebaseException catch (e) {
       debugPrint('aŒ ERROR AL GUARDAR LIKE: $e');
       rethrow;

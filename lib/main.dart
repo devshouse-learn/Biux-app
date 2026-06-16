@@ -44,9 +44,8 @@ Future<void> _syncOfflineRides() async {
   try {
     final pending = await OfflineRideDatasource.getPending();
     if (pending.isNotEmpty) {
-      debugPrint('🔗“¡ \${pending.length} rodadas pendientes de sincronizar');
     }
-  } catch (_) {}
+  } catch (e) {}
 }
 
 void main() async {
@@ -147,6 +146,8 @@ Future<void> _initServicesAsync() async {
       if (status == ConnectivityStatus.online) {
         _syncOfflineRides();
       }
+    }, onError: (e) {
+      debugPrint('[Connectivity] Error en listener: $e');
     });
     RemoteConfigService().initialize();
     NotificationService().initialize();

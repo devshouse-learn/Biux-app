@@ -662,7 +662,7 @@ class _ExperienceCard extends StatelessWidget {
                             if (ctx.mounted) {
                               ScaffoldMessenger.of(ctx).showSnackBar(
                                 const SnackBar(
-                                  content: Text('Reposteo eliminado'),
+                                  content: Text(l.t('repost_deleted')),
                                   behavior: SnackBarBehavior.floating,
                                 ),
                               );
@@ -817,7 +817,7 @@ class _ExperienceCard extends StatelessWidget {
           ),
           ElevatedButton(
             onPressed: () => Navigator.pop(ctx, true),
-            child: const Text('Repostear'),
+            child: Text(l.t('repost')),
           ),
         ],
       ),

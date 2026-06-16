@@ -969,7 +969,7 @@ class _EmergencyScreenState extends State<EmergencyScreen> {
             children: [
               Icon(Icons.person_add, color: ColorTokens.primary30),
               SizedBox(width: 8),
-              Text('Agregar Contacto'),
+              Text(l.t('add_contact')),
             ],
           ),
           content: SingleChildScrollView(

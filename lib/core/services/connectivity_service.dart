@@ -62,11 +62,11 @@ class ConnectivityService {
       } else {
         _updateStatus(ConnectivityStatus.offline);
       }
-    } on SocketException catch (_) {
+    } on SocketException catch (e) {
       _updateStatus(ConnectivityStatus.offline);
-    } on TimeoutException catch (_) {
+    } on TimeoutException catch (e) {
       _updateStatus(ConnectivityStatus.offline);
-    } catch (_) {
+    } catch (e) {
       _updateStatus(ConnectivityStatus.offline);
     }
   }

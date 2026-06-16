@@ -292,7 +292,7 @@ class ExperienceProvider extends ChangeNotifier {
     try {
       await _repository.deleteExperience(experienceId);
       return true;
-    } on FirebaseException catch (_) {
+    } on FirebaseException catch (e) {
       return false;
     }
   }
@@ -330,7 +330,7 @@ class ExperienceProvider extends ChangeNotifier {
     try {
       await _repository.removeMediaFromExperience(experienceId, mediaIndex);
       return willDeleteEntire;
-    } on FirebaseException catch (_) {
+    } on FirebaseException catch (e) {
       return false;
     }
   }

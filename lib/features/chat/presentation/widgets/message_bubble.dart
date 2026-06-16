@@ -341,7 +341,7 @@ class MessageBubble extends StatelessWidget {
                           actions: [
                             TextButton(
                               onPressed: () => Navigator.pop(ctx),
-                              child: const Text('Cancelar'),
+                              child: Text(l.t('cancel')),
                             ),
                             ElevatedButton(
                               style: ElevatedButton.styleFrom(
@@ -359,7 +359,7 @@ class MessageBubble extends StatelessWidget {
                                   onEdit(message, newText);
                                 }
                               },
-                              child: const Text('Guardar'),
+                              child: Text(l.t('save')),
                             ),
                           ],
                         ),
@@ -864,7 +864,7 @@ class _VoiceMessageState extends State<_VoiceMessage> {
         await _player.setUrl(url);
       }
       await _player.play();
-    } on SocketException catch (_) {
+    } on SocketException catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(

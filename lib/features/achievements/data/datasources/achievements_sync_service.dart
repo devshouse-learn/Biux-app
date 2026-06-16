@@ -22,13 +22,12 @@ class AchievementsSyncService {
         );
         await fullSync(userId);
         await prefs.setInt(_lastSyncKey, now);
-        debugPrint('✅ Logros: Sincronizacion semanal completada');
       } else {
         debugPrint(
           'a­ï¸ Logros: No necesita sincronizar (faltan \${(_syncIntervalDays - daysSinceSync).toInt()} dias)',
         );
       }
-    } on FirebaseException catch (_) {
+    } on FirebaseException catch (e) {
       debugPrint('aŒ Error en sincronizacion semanal de logros: \$e');
     }
   }
@@ -66,7 +65,7 @@ class AchievementsSyncService {
           rideDates.add(DateTime.fromMillisecondsSinceEpoch(startMs));
         }
       }
-    } on FirebaseException catch (_) {
+    } on FirebaseException catch (e) {
       debugPrint('Error obteniendo historial de rodadas: \$e');
     }
 

@@ -30,7 +30,7 @@ class _DangerZonesScreenState extends State<DangerZonesScreen> {
     try {
       final pos = await Geolocator.getCurrentPosition();
       setState(() => _position = pos);
-    } catch (_) {}
+    } catch (e) {}
   }
 
   @override

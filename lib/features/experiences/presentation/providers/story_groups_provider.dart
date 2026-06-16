@@ -114,7 +114,7 @@ class StoryGroupsProvider with ChangeNotifier {
   UserStoryGroupEntity? getGroupByUserId(String userId) {
     try {
       return _storyGroups.firstWhere((group) => group.userId == userId);
-    } on Exception catch (_) {
+    } on Exception catch (e) {
       return null;
     }
   }

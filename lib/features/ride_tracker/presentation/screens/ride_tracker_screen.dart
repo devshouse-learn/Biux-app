@@ -7,6 +7,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:http/http.dart' as http;
 import 'package:biux/core/design_system/color_tokens.dart';
+import 'package:biux/core/design_system/locale_notifier.dart';
 import 'package:biux/features/ride_tracker/presentation/providers/ride_tracker_provider.dart';
 import 'package:biux/features/ride_tracker/domain/entities/ride_track_entity.dart';
 
@@ -58,7 +59,7 @@ class _RideTrackerScreenState extends State<RideTrackerScreen>
     _pulseController.dispose();
     try {
       _mapController?.dispose();
-    } catch (_) {}
+    } catch (e) {}
     _mapController = null;
     super.dispose();
   }
@@ -90,7 +91,7 @@ class _RideTrackerScreenState extends State<RideTrackerScreen>
                     LatLng(p.points.last.lat, p.points.last.lng),
                   ),
                 );
-              } catch (_) {
+              } catch (e) {
                 _mapController = null;
               }
             } else if (p.livePosition != null && !p.isTracking) {
@@ -98,7 +99,7 @@ class _RideTrackerScreenState extends State<RideTrackerScreen>
                 _mapController!.animateCamera(
                   CameraUpdate.newLatLng(p.livePosition!),
                 );
-              } catch (_) {}
+              } catch (e) {}
             }
           }
 
@@ -357,7 +358,7 @@ class _RideTrackerScreenState extends State<RideTrackerScreen>
                           ),
                         ),
                       );
-                    } catch (_) {
+                    } catch (e) {
                       _mapController = null;
                     }
                   }
@@ -437,7 +438,7 @@ class _RideTrackerScreenState extends State<RideTrackerScreen>
               _mapController!.animateCamera(
                 CameraUpdate.newLatLngBounds(bounds, 80),
               );
-            } catch (_) {}
+            } catch (e) {}
           }
         },
       ),
@@ -1057,6 +1058,7 @@ class _RideTrackerScreenState extends State<RideTrackerScreen>
   }
 
   Widget _buildHistoryCard(RideTrackEntity ride, RideTrackerProvider p) {
+    final l = Provider.of<LocaleNotifier>(context, listen: false);
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final date = ride.startTime;
     final months = [
@@ -1166,7 +1168,7 @@ class _RideTrackerScreenState extends State<RideTrackerScreen>
                                 size: 18,
                               ),
                               const SizedBox(width: 8),
-                              const Text('Editar nombre'),
+                              Text(l.t('edit_name')),
                             ],
                           ),
                         ),
@@ -1491,7 +1493,7 @@ class _RideTrackerScreenState extends State<RideTrackerScreen>
                               ),
                             ),
                             onPressed: () => Navigator.pop(ctx),
-                            child: const Text('Cancelar'),
+                            child: Text(l.t('cancel')),
                           )
                         : TextButton(
                             style: TextButton.styleFrom(
@@ -1501,7 +1503,7 @@ class _RideTrackerScreenState extends State<RideTrackerScreen>
                               ),
                             ),
                             onPressed: () => Navigator.pop(ctx),
-                            child: const Text('Cancelar'),
+                            child: Text(l.t('cancel')),
                           ),
                   ),
                   const SizedBox(width: 10),
@@ -1537,6 +1539,7 @@ class _RideTrackerScreenState extends State<RideTrackerScreen>
   }
 
   void _confirmDeleteRide(RideTrackEntity ride, RideTrackerProvider p) {
+    final l = Provider.of<LocaleNotifier>(context, listen: false);
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
@@ -1555,7 +1558,7 @@ class _RideTrackerScreenState extends State<RideTrackerScreen>
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx),
-            child: Text('Cancelar'),
+            child: Text(l.t('cancel')),
           ),
           ElevatedButton(
             style: ElevatedButton.styleFrom(
@@ -1571,7 +1574,7 @@ class _RideTrackerScreenState extends State<RideTrackerScreen>
               p.deleteRide(ride.id, uid);
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(
-                  content: const Text('Rodada eliminada'),
+                  content: Text(l.t('ride_deleted')),
                   backgroundColor: Colors.red,
                   behavior: SnackBarBehavior.floating,
                   shape: RoundedRectangleBorder(
@@ -1580,7 +1583,7 @@ class _RideTrackerScreenState extends State<RideTrackerScreen>
                 ),
               );
             },
-            child: const Text('Eliminar'),
+            child: Text(l.t('delete')),
           ),
         ],
       ),
@@ -1912,7 +1915,7 @@ class _RideTrackerScreenState extends State<RideTrackerScreen>
                               ),
                             ),
                             onPressed: () => Navigator.pop(ctx),
-                            child: const Text('Cancelar'),
+                            child: Text(l.t('cancel')),
                           )
                         : TextButton(
                             style: TextButton.styleFrom(
@@ -1922,7 +1925,7 @@ class _RideTrackerScreenState extends State<RideTrackerScreen>
                               ),
                             ),
                             onPressed: () => Navigator.pop(ctx),
-                            child: const Text('Cancelar'),
+                            child: Text(l.t('cancel')),
                           ),
                   ),
                   const SizedBox(width: 10),
@@ -2037,7 +2040,7 @@ class _RideTrackerScreenState extends State<RideTrackerScreen>
               Navigator.pop(ctx);
               _showNameDialog(p, exitAfter: true);
             },
-            child: const Text('Guardar y Salir'),
+            child: Text(l.t('save_and_exit')),
           ),
         ],
       ),
@@ -2119,7 +2122,7 @@ class _RoutePlannerSheetState extends State<_RoutePlannerSheet> {
           setState(() => _suggestions = []);
         }
       }
-    } catch (_) {
+    } catch (e) {
       setState(() => _suggestions = []);
     } finally {
       setState(() => _loadingSuggestions = false);
@@ -2192,7 +2195,6 @@ class _RoutePlannerSheetState extends State<_RoutePlannerSheet> {
         '&alternatives=false'
         '&units=metric'
         '&key=$_apiKey';
-    debugPrint('🗺️ Directions [$mode]: $url');
     try {
       final res = await http
           .get(Uri.parse(url))
@@ -2218,7 +2220,6 @@ class _RoutePlannerSheetState extends State<_RoutePlannerSheet> {
         final encoded = step['polyline']['points'] as String;
         points.addAll(_decodePolyline(encoded));
       }
-      debugPrint('✅ Ruta con ${points.length} puntos (${steps.length} pasos)');
       return points;
     } catch (e) {
       debugPrint('_callDirections error: $e');
@@ -2314,7 +2315,7 @@ class _RoutePlannerSheetState extends State<_RoutePlannerSheet> {
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(),
-            child: const Text('Entendido'),
+            child: Text(l.t('understood')),
           ),
         ],
       ),
@@ -2380,7 +2381,7 @@ class _RoutePlannerSheetState extends State<_RoutePlannerSheet> {
                           Navigator.of(context).pop();
                         },
                         icon: const Icon(Icons.close, size: 16),
-                        label: const Text('Limpiar'),
+                        label: Text(l.t('clear')),
                         style: TextButton.styleFrom(
                           foregroundColor: Colors.red,
                         ),

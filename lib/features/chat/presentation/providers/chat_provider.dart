@@ -263,7 +263,7 @@ class ChatProvider extends ChangeNotifier {
         replyPreview: replyPrev,
       );
       await _ds.sendMessage(chatId: chatId, message: message);
-    } on FirebaseException catch (_) {
+    } on FirebaseException catch (e) {
       _removeOptimistic(tempId);
       _error = 'No se pudo enviar la imagen';
       notifyListeners();
@@ -322,7 +322,7 @@ class ChatProvider extends ChangeNotifier {
         replyPreview: replyPrev,
       );
       await _ds.sendMessage(chatId: chatId, message: message);
-    } on FirebaseException catch (_) {
+    } on FirebaseException catch (e) {
       _removeOptimistic(tempId);
       _error = 'No se pudo enviar el video';
       notifyListeners();
@@ -426,7 +426,7 @@ class ChatProvider extends ChangeNotifier {
         replyPreview: replyPrev,
       );
       await _ds.sendMessage(chatId: chatId, message: message);
-    } on FirebaseException catch (_) {
+    } on FirebaseException catch (e) {
       _removeOptimistic(tempId);
       _error = 'No se pudo enviar el audio';
       notifyListeners();
@@ -756,7 +756,7 @@ class ChatProvider extends ChangeNotifier {
     });
   }
 
-  /// Aplica isRead/isDelivered en memoria segÃºn los timestamps del chat doc.
+  /// Aplica isRead/isDelivered en memoria segúnn los timestamps del chat doc.
   /// No necesita escribir en Firestore a€” funciona en tiempo real.
   List<MessageEntity> _applyReadStatus(List<MessageEntity> messages) {
     if (_activeChat == null) return messages;

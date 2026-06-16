@@ -119,7 +119,6 @@ class EditUserScreenBloc extends ChangeNotifier {
 
   Future<void> uploadUpdate(BuildContext context) async {
     try {
-      debugPrint('🔗“ Preparando actualización de perfil...');
 
       // Crear usuario con todos los datos (preservar los que no cambian)
       final uploadUser = BiuxUser(
@@ -146,36 +145,25 @@ class EditUserScreenBloc extends ChangeNotifier {
         situationAccident: user.situationAccident,
       );
 
-      debugPrint('🔗“¤ Enviando datos a Firebase...');
       await UserFirebaseRepository().updateUser(uploadUser);
 
-      debugPrint('🔗“· Verificando si hay foto nueva para subir...');
       if (imageNew != null) {
-        debugPrint('🔗“¤ Subiendo foto de perfil...');
         await UserFirebaseRepository().uploadPhoto(user.id, imageNew);
-        debugPrint('✅ Foto subida correctamente');
       } else {
-        debugPrint('a„¹ï¸ No hay foto nueva');
       }
 
       // Verificar si hay foto de portada nueva para subir
-      debugPrint('🔗–¼ï¸ Verificando si hay foto de portada nueva...');
       if (profileCoverNew != null) {
-        debugPrint('🔗“¤ Subiendo foto de portada...');
         await UserFirebaseRepository().uploadProfileCover(
           user.id,
           profileCoverNew,
         );
-        debugPrint('✅ Foto de portada subida correctamente');
       } else {
-        debugPrint('a„¹ï¸ No hay foto de portada nueva');
       }
 
       // Recargar datos del usuario para asegurar sincronización
-      debugPrint('🔗”„ Recargando datos del perfil...');
       await getUser();
 
-      debugPrint('✅ Perfil actualizado completamente');
       notifyListeners();
     } on FirebaseException catch (e) {
       debugPrint('aŒ Error al actualizar perfil: $e');

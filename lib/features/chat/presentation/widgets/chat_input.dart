@@ -597,7 +597,7 @@ class _ChatInputState extends State<ChatInput>
       '🔗“±',
       '🔗’»',
       '🔗–¥ï¸',
-      'aŒ¨ï¸',
+      'Ó¨ï¸',
       '🔗–±ï¸',
       '🔗’¾',
       '🔗’¿',
@@ -1564,7 +1564,7 @@ class _RecordingBarState extends State<_RecordingBar> {
         child: Row(
           children: [
             const SizedBox(width: 8),
-            // Papelera a€” siempre visible, animada segÃºn deslizamiento
+            // Papelera a€” siempre visible, animada segúnn deslizamiento
             GestureDetector(
               onTap: widget.onCancel,
               child: AnimatedContainer(
