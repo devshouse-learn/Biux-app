@@ -172,7 +172,9 @@ class _CreateExperienceScreenState extends State<CreateExperienceScreen> {
                         ? _publishExperience
                         : null,
                     child: Text(
-                      _isEditMode ? l.t('save_publish_changes') : l.t('publish'),
+                      _isEditMode
+                          ? l.t('save_publish_changes')
+                          : l.t('publish'),
                       style: TextStyle(
                         color: _canPublish(provider)
                             ? Colors.white
@@ -759,7 +761,6 @@ class _CreateExperienceScreenState extends State<CreateExperienceScreen> {
     if (!_formKey.currentState!.validate()) {
       return;
     }
-    final l = Provider.of<LocaleNotifier>(context, listen: false);
 
     if (_isEditMode) {
       // Modo edición: actualizar experiencia existente
@@ -799,7 +800,12 @@ class _CreateExperienceScreenState extends State<CreateExperienceScreen> {
         Navigator.of(context).pop(true);
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(l.t('post_updated_success')),
+            content: Text(
+              Provider.of<LocaleNotifier>(
+                context,
+                listen: false,
+              ).t('post_updated_success'),
+            ),
             backgroundColor: Colors.green,
           ),
         );
@@ -821,8 +827,13 @@ class _CreateExperienceScreenState extends State<CreateExperienceScreen> {
       if (success && mounted) {
         Navigator.of(context).pop(true);
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text(l.t('experience_published')),
+          SnackBar(
+            content: Text(
+              Provider.of<LocaleNotifier>(
+                context,
+                listen: false,
+              ).t('experience_published'),
+            ),
             backgroundColor: Colors.green,
           ),
         );
@@ -830,7 +841,12 @@ class _CreateExperienceScreenState extends State<CreateExperienceScreen> {
         if (provider.error != null && mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Text(l.t(provider.error!)),
+              content: Text(
+                Provider.of<LocaleNotifier>(
+                  context,
+                  listen: false,
+                ).t(provider.error!),
+              ),
               backgroundColor: Colors.red,
             ),
           );
@@ -855,7 +871,9 @@ class _CreateExperienceScreenState extends State<CreateExperienceScreen> {
         actions: [
           TextButton(
             onPressed: () => Navigator.of(dialogContext).pop(),
-            child: Text(l.t('cancel')),
+            child: Text(
+              Provider.of<LocaleNotifier>(context, listen: false).t('cancel'),
+            ),
           ),
           TextButton(
             onPressed: () {
@@ -865,7 +883,9 @@ class _CreateExperienceScreenState extends State<CreateExperienceScreen> {
               provider.reset();
               Navigator.of(context).pop(false);
             },
-            child: Text(l.t('discard')),
+            child: Text(
+              Provider.of<LocaleNotifier>(context, listen: false).t('discard'),
+            ),
           ),
         ],
       ),
@@ -1085,5 +1105,3 @@ class _CreateExperienceScreenState extends State<CreateExperienceScreen> {
     );
   }
 }
-
-

@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:provider/provider.dart';
 import 'package:biux/core/design_system/color_tokens.dart';
+import 'package:biux/core/design_system/locale_notifier.dart';
 import 'package:biux/features/settings/presentation/widgets/settings_shared_widgets.dart';
 
 class ActivityHubScreen extends StatelessWidget {
@@ -13,7 +15,12 @@ class ActivityHubScreen extends StatelessWidget {
     return Scaffold(
       backgroundColor: SettingsWidgets.scaffoldBackground(isDark),
       appBar: AppBar(
-        title: Text(l.t('your_activity')),
+        title: Text(
+          Provider.of<LocaleNotifier>(
+            context,
+            listen: false,
+          ).t('your_activity'),
+        ),
         backgroundColor: ColorTokens.primary30,
         foregroundColor: Colors.white,
       ),

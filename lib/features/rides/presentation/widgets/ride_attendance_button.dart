@@ -16,7 +16,6 @@ class RideAttendanceButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final l = Provider.of<LocaleNotifier>(context);
     final rideProvider = Provider.of<RideProvider>(context);
     final currentUserId = rideProvider.currentUserId;
 
@@ -328,9 +327,7 @@ class RideAttendanceButton extends StatelessWidget {
       context: context,
       builder: (context) => AlertDialog(
         title: Text(l.t('cancel_attendance')),
-        content: Text(
-          l.t('cancel_attendance_confirm'),
-        ),
+        content: Text(l.t('cancel_attendance_confirm')),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),

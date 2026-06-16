@@ -4,6 +4,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:biux/features/safety/presentation/providers/safety_provider.dart';
 import 'package:biux/core/design_system/color_tokens.dart';
+import 'package:biux/core/design_system/locale_notifier.dart';
 
 class BlockedUsersScreen extends StatefulWidget {
   const BlockedUsersScreen({super.key});
@@ -29,7 +30,12 @@ class _BlockedUsersScreenState extends State<BlockedUsersScreen> {
     return Scaffold(
       backgroundColor: isDark ? ColorTokens.primary10 : Colors.grey.shade50,
       appBar: AppBar(
-        title: Text(l.t('blocked_users')),
+        title: Text(
+          Provider.of<LocaleNotifier>(
+            context,
+            listen: false,
+          ).t('blocked_users'),
+        ),
         backgroundColor: ColorTokens.primary30,
         foregroundColor: Colors.white,
       ),
@@ -83,14 +89,18 @@ class _BlockedUsersScreenState extends State<BlockedUsersScreen> {
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: Text(l.t('unblock_user')),
+        title: Text(
+          Provider.of<LocaleNotifier>(context, listen: false).t('unblock_user'),
+        ),
         content: const Text(
           '¿Deseas desbloquear a este usuario? Podrá volver a enviarte mensajes.',
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(ctx).pop(),
-            child: Text(l.t('cancel')),
+            child: Text(
+              Provider.of<LocaleNotifier>(context, listen: false).t('cancel'),
+            ),
           ),
           TextButton(
             onPressed: () async {
@@ -98,7 +108,9 @@ class _BlockedUsersScreenState extends State<BlockedUsersScreen> {
               final uid = FirebaseAuth.instance.currentUser?.uid ?? '';
               await context.read<SafetyProvider>().unblockUser(uid, blockedId);
             },
-            child: Text(l.t('unblock')),
+            child: Text(
+              Provider.of<LocaleNotifier>(context, listen: false).t('unblock'),
+            ),
           ),
         ],
       ),
@@ -141,8 +153,7 @@ class _BlockedUserTile extends StatelessWidget {
           margin: const EdgeInsets.only(bottom: 8),
           child: ListTile(
             leading: CircleAvatar(
-              backgroundImage:
-                  photoUrl != null ? NetworkImage(photoUrl) : null,
+              backgroundImage: photoUrl != null ? NetworkImage(photoUrl) : null,
               child: photoUrl == null
                   ? const Icon(Icons.person, color: Colors.white)
                   : null,
@@ -168,4 +179,3 @@ class _BlockedUserTile extends StatelessWidget {
     );
   }
 }
-

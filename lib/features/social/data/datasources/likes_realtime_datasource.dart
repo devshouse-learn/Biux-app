@@ -87,9 +87,8 @@ class LikesRealtimeDatasource {
     final path = '${_getBasePath(type)}/$targetId/${like.userId}';
     final jsonData = like.toJson();
 
-
     // Verificar auth
-    final currentUser = FirebaseAuth.instance.currentUser;
+    // Usuario verificado en context superior
 
     final ref = _database.ref(path);
 
@@ -155,5 +154,3 @@ class LikesRealtimeDatasource {
     }
   }
 }
-
-

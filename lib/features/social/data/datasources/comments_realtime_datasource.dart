@@ -25,7 +25,11 @@ class CommentsRealtimeDatasource {
 
   /// RENDIMIENTO: Stream de comentarios sin límite → Carga todos sin filtro
   /// SOLUCIÓN: Agregar límite en cliente (Realtime DB no soporta limit como Firestore)
-  Stream<List<CommentModel>> watchComments(String type, String targetId, {int limit = 50}) {
+  Stream<List<CommentModel>> watchComments(
+    String type,
+    String targetId, {
+    int limit = 50,
+  }) {
     final ref = _database.ref('${_getBasePath(type)}/$targetId');
 
     return ref.orderByChild('createdAt').onValue.map((event) {
@@ -124,11 +128,10 @@ class CommentsRealtimeDatasource {
     // IMPORTANTE: Usar timestamp del servidor en lugar del cliente
     jsonData['createdAt'] = ServerValue.timestamp;
 
-
     // CRÃTICO: Verificar que el usuario esté autenticado
     final currentUser = FirebaseAuth.instance.currentUser;
     if (currentUser != null) {
-      final token = await currentUser.getIdToken();
+      // Usuario verificado
     }
 
     debugPrint('   Datos: $jsonData');
@@ -275,5 +278,3 @@ class CommentsRealtimeDatasource {
     }
   }
 }
-
-
