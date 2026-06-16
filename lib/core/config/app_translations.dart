@@ -4689,6 +4689,17 @@ class AppTranslations {
     'point_camera_at_qr': 'Apunta la cámara al código QR',
     'save_to_gallery': 'Guardar en galería',
     'saved_to_gallery': 'Guardado en galería',
+    // Nuevas claves de traducción
+    'update_alerts': 'Actualizar alertas',
+    'profile_updated_successfully': 'Perfil actualizado exitosamente',
+    'google_maps': 'Google Maps',
+    'no_stories_to_highlight': 'Sin historias para destacar',
+    'rename_highlight': 'Renombrar destacado',
+    'error_loading_stories': 'Error cargando historias',
+    'could_not_trace_route': 'No se pudo trazar la ruta',
+    'deny': 'Denegar',
+    'add_document_front': 'Agregar documento frontal',
+    'access_restricted': 'Acceso restringido',
   };
 
   // ─── ENGLISH ────────────────────────────────────────────────────
@@ -9101,6 +9112,17 @@ class AppTranslations {
     'point_camera_at_qr': 'Point the camera at the QR code',
     'save_to_gallery': 'Save to gallery',
     'saved_to_gallery': 'Saved to gallery',
+    // New translation keys
+    'update_alerts': 'Update alerts',
+    'profile_updated_successfully': 'Profile updated successfully',
+    'google_maps': 'Google Maps',
+    'no_stories_to_highlight': 'No stories to highlight',
+    'rename_highlight': 'Rename highlight',
+    'error_loading_stories': 'Error loading stories',
+    'could_not_trace_route': 'Could not trace route',
+    'deny': 'Deny',
+    'add_document_front': 'Add document front',
+    'access_restricted': 'Access restricted',
   };
 
   static const Map<String, String> _pt = {
@@ -13557,6 +13579,17 @@ class AppTranslations {
     'point_camera_at_qr': 'Aponte a camera para o código QR',
     'save_to_gallery': 'Salvar na galeria',
     'saved_to_gallery': 'Salvo na galeria',
+    // Novas chaves de tradução
+    'update_alerts': 'Atualizar alertas',
+    'profile_updated_successfully': 'Perfil atualizado com sucesso',
+    'google_maps': 'Google Maps',
+    'no_stories_to_highlight': 'Sem histórias para destacar',
+    'rename_highlight': 'Renomear destaque',
+    'error_loading_stories': 'Erro ao carregar histórias',
+    'could_not_trace_route': 'Não foi possível traçar a rota',
+    'deny': 'Negar',
+    'add_document_front': 'Adicionar documento frontal',
+    'access_restricted': 'Acesso restrito',
   };
 
   // ─── FRANÇAIS ───────────────────────────────────────────────────
@@ -18092,6 +18125,17 @@ class AppTranslations {
     'point_camera_at_qr': 'Pointez la caméra vers le code QR',
     'save_to_gallery': 'Enregistrer dans la galerie',
     'saved_to_gallery': 'Enregistré dans la galerie',
+    // Nouvelles clés de traduction
+    'update_alerts': 'Mettre à jour les alertes',
+    'profile_updated_successfully': 'Profil mis à jour avec succès',
+    'google_maps': 'Google Maps',
+    'no_stories_to_highlight': 'Aucune histoire à mettre en avant',
+    'rename_highlight': 'Renommer la mise en avant',
+    'error_loading_stories': 'Erreur lors du chargement des histoires',
+    'could_not_trace_route': 'Impossible de tracer l\'itinéraire',
+    'deny': 'Refuser',
+    'add_document_front': 'Ajouter document avant',
+    'access_restricted': 'Accès restreint',
   };
 
   // ─── ITALIANO ──────────────────────────────────────────────────
@@ -22033,6 +22077,17 @@ class AppTranslations {
     'point_camera_at_qr': 'Punta la fotocamera verso il codice QR',
     'save_to_gallery': 'Salva nella galleria',
     'saved_to_gallery': 'Salvato nella galleria',
+    // Nuove chiavi di traduzione
+    'update_alerts': 'Aggiorna avvisi',
+    'profile_updated_successfully': 'Profilo aggiornato con successo',
+    'google_maps': 'Google Maps',
+    'no_stories_to_highlight': 'Nessuna storia da evidenziare',
+    'rename_highlight': 'Rinomina evidenziazione',
+    'error_loading_stories': 'Errore nel caricamento delle storie',
+    'could_not_trace_route': 'Impossibile tracciare il percorso',
+    'deny': 'Nega',
+    'add_document_front': 'Aggiungi documento anteriore',
+    'access_restricted': 'Accesso limitato',
   };
 }
 

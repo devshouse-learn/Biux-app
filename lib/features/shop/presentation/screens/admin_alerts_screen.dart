@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:biux/core/design_system/color_tokens.dart';
+import 'package:biux/core/design_system/locale_notifier.dart';
 
 class AdminAlertsScreen extends StatelessWidget {
   const AdminAlertsScreen({Key? key}) : super(key: key);
@@ -7,6 +9,7 @@ class AdminAlertsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
+    final l = Provider.of<LocaleNotifier>(context, listen: false);
 
     return Scaffold(
       appBar: AppBar(
@@ -62,14 +65,14 @@ class AdminAlertsScreen extends StatelessWidget {
               ElevatedButton.icon(
                 onPressed: () {
                   ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Text('No hay alertas en este momento'),
-                      duration: Duration(seconds: 2),
+                    SnackBar(
+                      content: Text(l.t('no_alerts')),
+                      duration: const Duration(seconds: 2),
                     ),
                   );
                 },
                 icon: const Icon(Icons.refresh),
-                label: const Text('Actualizar alertas'),
+                label: Text(l.t('update_alerts')),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.orange[600],
                   foregroundColor: Colors.white,

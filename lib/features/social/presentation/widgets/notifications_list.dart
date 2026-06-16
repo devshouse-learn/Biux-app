@@ -1,4 +1,4 @@
-﻿import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import 'package:biux/core/design_system/color_tokens.dart';
 import 'package:provider/provider.dart';
 import 'package:biux/core/design_system/locale_notifier.dart';
@@ -193,9 +193,11 @@ class _NotificationItemState extends State<NotificationItem> {
                                   color: Colors.white,
                                 ),
                               )
-                            : const Text(
-                                'Permitir',
-                                style: TextStyle(fontSize: 13),
+                            : Consumer<LocaleNotifier>(
+                                builder: (context, l, _) => Text(
+                                  l.t('allow'),
+                                  style: TextStyle(fontSize: 13),
+                                ),
                               ),
                       ),
                     ),
@@ -214,9 +216,9 @@ class _NotificationItemState extends State<NotificationItem> {
                             borderRadius: BorderRadius.circular(8),
                           ),
                         ),
-                        child: Text(
-                          'Denegar',
-                          style: TextStyle(fontSize: 13),
+                        child: Consumer<LocaleNotifier>(
+                          builder: (context, l, _) =>
+                              Text(l.t('deny'), style: TextStyle(fontSize: 13)),
                         ),
                       ),
                     ),
@@ -298,9 +300,9 @@ class _NotificationItemState extends State<NotificationItem> {
     } on Exception catch (e) {
       if (mounted) {
         setState(() => _isProcessing = false);
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(l.t('error_accepting_request'))),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(l.t('error_accepting_request'))));
       }
     }
   }
@@ -326,17 +328,17 @@ class _NotificationItemState extends State<NotificationItem> {
             widget.notification.id,
           );
         } else {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(l.t('error_denying_request'))),
-          );
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(SnackBar(content: Text(l.t('error_denying_request'))));
         }
       }
     } on Exception catch (e) {
       if (mounted) {
         setState(() => _isProcessing = false);
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(l.t('error_denying_request'))),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(l.t('error_denying_request'))));
       }
     }
   }
@@ -491,7 +493,3 @@ class _NotificationItemState extends State<NotificationItem> {
     }
   }
 }
-
-
-
-

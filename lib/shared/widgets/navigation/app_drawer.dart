@@ -103,6 +103,8 @@ class _AppDrawerState extends State<AppDrawer> {
 
   @override
   Widget build(BuildContext context) {
+    final l = Provider.of<LocaleNotifier>(context, listen: false);
+
     return Drawer(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       child: Column(
@@ -407,11 +409,11 @@ class _AppDrawerState extends State<AppDrawer> {
               padding: const EdgeInsets.symmetric(vertical: 8),
               children: [
                 // ===== CICLISMO =====
-                _sec('CICLISMO'),
+                _sec(l.t('cycling_section')),
                 _item(
                   Icons.gps_fixed,
                   Colors.green,
-                  'Grabar Rodada',
+                  l.t('record_ride'),
                   'GPS tracking en tiempo real',
                   () {
                     Navigator.pop(context);
@@ -421,7 +423,7 @@ class _AppDrawerState extends State<AppDrawer> {
                 _item(
                   Icons.directions_bike_rounded,
                   Colors.green,
-                  'Mis Rodadas',
+                  l.t('my_rides'),
                   'Historial de tus rides grabados',
                   () {
                     Navigator.pop(context);
@@ -441,7 +443,7 @@ class _AppDrawerState extends State<AppDrawer> {
                 _item(
                   Icons.emoji_events,
                   Colors.amber,
-                  'Logros',
+                  l.t('achievements'),
                   'Medallas y desafios desbloqueados',
                   () {
                     Navigator.pop(context);
@@ -455,7 +457,7 @@ class _AppDrawerState extends State<AppDrawer> {
                 ),
 
                 // ===== COMUNIDAD =====
-                _sec('COMUNIDAD'),
+                _sec(l.t('community')),
                 _item(
                   Icons.storefront,
                   Colors.deepPurple,
@@ -473,11 +475,11 @@ class _AppDrawerState extends State<AppDrawer> {
                 ),
 
                 // ===== SEGURIDAD =====
-                _sec('SEGURIDAD'),
+                _sec(l.t('security')),
                 _item(
                   Icons.sos,
                   Colors.red,
-                  'Emergencia SOS',
+                  l.t('emergency'),
                   'Boton de panico y contactos',
                   () {
                     Navigator.pop(context);
@@ -487,7 +489,7 @@ class _AppDrawerState extends State<AppDrawer> {
                 _item(
                   Icons.report_problem_outlined,
                   Colors.orange,
-                  'Reportes Viales',
+                  l.t('road_reports'),
                   'Baches, obras y peligros en ruta',
                   () {
                     Navigator.pop(context);
@@ -507,7 +509,7 @@ class _AppDrawerState extends State<AppDrawer> {
                 _item(
                   Icons.warning_amber_rounded,
                   ColorTokens.error50,
-                  'Bicicletas Robadas',
+                  l.t('stolen_bikes'),
                   'Base de datos publica',
                   () {
                     Navigator.pop(context);
@@ -595,7 +597,7 @@ class _AppDrawerState extends State<AppDrawer> {
                     ),
                   ),
                   title: Text(
-                    'Cerrar Sesion',
+                    l.t('logout'),
                     style: TextStyle(
                       color: ColorTokens.error50,
                       fontWeight: FontWeight.w600,
@@ -694,7 +696,12 @@ class _AppDrawerState extends State<AppDrawer> {
             Text(Provider.of<LocaleNotifier>(context, listen: false).t('logout')),
           ],
         ),
-        content: const Text('Estas seguro que deseas cerrar sesion?'),
+        content: Text(
+          Provider.of<LocaleNotifier>(
+            context,
+            listen: false,
+          ).t('confirm_logout'),
+        ),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(dc).pop(),

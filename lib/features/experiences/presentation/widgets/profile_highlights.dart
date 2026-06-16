@@ -451,9 +451,10 @@ class _ProfileHighlightsState extends State<ProfileHighlights> {
       );
     } on Exception catch (e) {
       if (mounted) {
+        final l = Provider.of<LocaleNotifier>(context, listen: false);
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Error cargando historias'),
+            content: Text(l.t('error_loading_stories')),
             backgroundColor: ColorTokens.error50,
           ),
         );

@@ -95,12 +95,14 @@ class _CyclingStatsScreenState extends State<CyclingStatsScreen>
                 children: [
                   const CircularProgressIndicator(),
                   const SizedBox(height: 16),
-                  Text(
-                    'Cargando estadísticas...',
-                    style: TextStyle(
-                      color: Theme.of(context).brightness == Brightness.dark
-                          ? Colors.white70
-                          : Colors.grey,
+                  Consumer<LocaleNotifier>(
+                    builder: (context, l, _) => Text(
+                      l.t('loading'),
+                      style: TextStyle(
+                        color: Theme.of(context).brightness == Brightness.dark
+                            ? Colors.white70
+                            : Colors.grey,
+                      ),
                     ),
                   ),
                 ],

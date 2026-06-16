@@ -907,9 +907,9 @@ class _ChatScreenState extends State<ChatScreen> {
                 onChanged: (v) => setState(() => _searchQuery = v),
               )
             : _loadingProfile
-            ? const Row(
+            ? Row(
                 children: [
-                  SizedBox(
+                  const SizedBox(
                     width: 18,
                     height: 18,
                     child: CircularProgressIndicator(
@@ -917,8 +917,13 @@ class _ChatScreenState extends State<ChatScreen> {
                       color: Colors.white54,
                     ),
                   ),
-                  SizedBox(width: 10),
-                  Text('Cargando...', style: TextStyle(fontSize: 14)),
+                  const SizedBox(width: 10),
+                  Consumer<LocaleNotifier>(
+                    builder: (context, l, _) => Text(
+                      l.t('loading'),
+                      style: const TextStyle(fontSize: 14),
+                    ),
+                  ),
                 ],
               )
             : Row(

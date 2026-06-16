@@ -177,9 +177,13 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
                             final provider = context.read<ExperienceProvider>();
                             await provider.deleteExperience(experience.id);
                             if (context.mounted) {
+                              final l = Provider.of<LocaleNotifier>(
+                                context,
+                                listen: false,
+                              );
                               ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(
-                                  content: Text('Publicación eliminada'),
+                                SnackBar(
+                                  content: Text(l.t('post_deleted')),
                                   duration: Duration(seconds: 2),
                                 ),
                               );
@@ -294,7 +298,11 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
                     future: _getUserById(userId),
                     builder: (context, snapshot) {
                       if (snapshot.connectionState == ConnectionState.waiting) {
-                        return const ListTile(title: Text('Cargando...'));
+                        final l = Provider.of<LocaleNotifier>(
+                          context,
+                          listen: false,
+                        );
+                        return ListTile(title: Text(l.t('loading')));
                       }
 
                       if (!snapshot.hasData || snapshot.data == null) {
@@ -410,7 +418,11 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
                     future: _getUserById(userId),
                     builder: (context, snapshot) {
                       if (snapshot.connectionState == ConnectionState.waiting) {
-                        return const ListTile(title: Text('Cargando...'));
+                        final l = Provider.of<LocaleNotifier>(
+                          context,
+                          listen: false,
+                        );
+                        return ListTile(title: Text(l.t('loading')));
                       }
 
                       if (!snapshot.hasData || snapshot.data == null) {
@@ -795,11 +807,16 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
                 children: [
                   Icon(Icons.error, size: 64, color: ColorTokens.neutral60),
                   SizedBox(height: 16),
-                  Text('Error cargando datos del perfil'),
+                  Consumer<LocaleNotifier>(
+                    builder: (context, l, _) =>
+                        Text(l.t('error_loading_stories')),
+                  ),
                   SizedBox(height: 16),
-                  ElevatedButton(
-                    onPressed: () => widget.userProvider.loadUserData(),
-                    child: Text('Reintentar'),
+                  Consumer<LocaleNotifier>(
+                    builder: (context, l, _) => ElevatedButton(
+                      onPressed: () => widget.userProvider.loadUserData(),
+                      child: Text(l.t('retry')),
+                    ),
                   ),
                 ],
               ),
@@ -1299,12 +1316,14 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
                                       color: ColorTokens.error50,
                                     ),
                                     SizedBox(height: 12),
-                                    Text(
-                                      'Error cargando publicaciones',
-                                      style: TextStyle(
-                                        fontSize: 14,
-                                        color: ColorTokens.error50,
-                                        fontWeight: FontWeight.w500,
+                                    Consumer<LocaleNotifier>(
+                                      builder: (context, l, _) => Text(
+                                        l.t('error_loading_stories'),
+                                        style: TextStyle(
+                                          fontSize: 14,
+                                          color: ColorTokens.error50,
+                                          fontWeight: FontWeight.w500,
+                                        ),
                                       ),
                                     ),
                                   ],

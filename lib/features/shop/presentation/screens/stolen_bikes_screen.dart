@@ -615,9 +615,11 @@ class _StolenBikesScreenState extends State<StolenBikesScreen>
                     children: [
                       CircularProgressIndicator(color: _vivantRed),
                       const SizedBox(height: 12),
-                      Text(
-                        'Cargando...',
-                        style: TextStyle(color: _subtitleColor),
+                      Consumer<LocaleNotifier>(
+                        builder: (context, l, _) => Text(
+                          l.t('loading'),
+                          style: TextStyle(color: _subtitleColor),
+                        ),
                       ),
                     ],
                   ),
