@@ -14,40 +14,51 @@ class AttendeesRealtimeDatasource {
   /// Stream de asistentes a una rodada
   Stream<List<AttendeeModel>> watchAttendees(String rideId) {
     if (rideId.isEmpty) {
-      AppLogger.warning('Ride ID vacío en watchAttendees',
-          tag: 'AttendeesRealtimeDatasource');
+      AppLogger.warning(
+        'Ride ID vacío en watchAttendees',
+        tag: 'AttendeesRealtimeDatasource',
+      );
       return const Stream.empty();
     }
 
     final ref = _database.ref('rides/attendees/$rideId');
 
-    return ref.onValue.map((event) {
-      if (event.snapshot.value == null) {
-        AppLogger.debug('Sin asistentes para rodada: $rideId',
-            tag: 'AttendeesRealtimeDatasource');
-        return <AttendeeModel>[];
-      }
+    return ref.onValue
+        .map((event) {
+          if (event.snapshot.value == null) {
+            AppLogger.debug(
+              'Sin asistentes para rodada: $rideId',
+              tag: 'AttendeesRealtimeDatasource',
+            );
+            return <AttendeeModel>[];
+          }
 
-      final data = event.snapshot.value as Map<dynamic, dynamic>;
-      final attendees = <AttendeeModel>[];
+          final data = event.snapshot.value as Map<dynamic, dynamic>;
+          final attendees = <AttendeeModel>[];
 
-      data.forEach((key, value) {
-        if (value is Map) {
-          attendees.add(AttendeeModel.fromJson(key, value));
-        }
-      });
+          data.forEach((key, value) {
+            if (value is Map) {
+              attendees.add(AttendeeModel.fromJson(key, value));
+            }
+          });
 
-      // Ordenar por fecha de registro ascendente
-      attendees.sort((a, b) => a.joinedAt.compareTo(b.joinedAt));
+          // Ordenar por fecha de registro ascendente
+          attendees.sort((a, b) => a.joinedAt.compareTo(b.joinedAt));
 
-      AppLogger.debug('Asistentes cargados: ${attendees.length}',
-          tag: 'AttendeesRealtimeDatasource');
-      return attendees;
-    }).handleError((e) {
-      AppLogger.error('Error en watchAttendees: $e',
-          tag: 'AttendeesRealtimeDatasource', error: e);
-      return [];
-    });
+          AppLogger.debug(
+            'Asistentes cargados: ${attendees.length}',
+            tag: 'AttendeesRealtimeDatasource',
+          );
+          return attendees;
+        })
+        .handleError((e) {
+          AppLogger.error(
+            'Error en watchAttendees: $e',
+            tag: 'AttendeesRealtimeDatasource',
+            error: e,
+          );
+          return [];
+        });
   }
 
   /// Stream del conteo de asistentes confirmados
@@ -89,22 +100,31 @@ class AttendeesRealtimeDatasource {
   }) async {
     try {
       if (rideId.isEmpty || attendee.userId.isEmpty) {
-        throw ValidationException('ids',
-            'Ride ID y attendee User ID son requeridos');
+        throw ValidationException(
+          'ids',
+          'Ride ID y attendee User ID son requeridos',
+        );
       }
 
       final ref = _database.ref('rides/attendees/$rideId/${attendee.userId}');
       await ref.set(attendee.toJson());
 
-      AppLogger.info('Usuario se unió a rodada: $rideId',
-          tag: 'AttendeesRealtimeDatasource');
+      AppLogger.info(
+        'Usuario se unió a rodada: $rideId',
+        tag: 'AttendeesRealtimeDatasource',
+      );
     } on ValidationException catch (e) {
-      AppLogger.warning('Validación fallida: ${e.message}',
-          tag: 'AttendeesRealtimeDatasource');
+      AppLogger.warning(
+        'Validación fallida: ${e.message}',
+        tag: 'AttendeesRealtimeDatasource',
+      );
       rethrow;
     } catch (e) {
-      AppLogger.error('Error en joinRide: $e',
-          tag: 'AttendeesRealtimeDatasource', error: e);
+      AppLogger.error(
+        'Error en joinRide: $e',
+        tag: 'AttendeesRealtimeDatasource',
+        error: e,
+      );
       rethrow;
     }
   }
@@ -118,28 +138,39 @@ class AttendeesRealtimeDatasource {
   }) async {
     try {
       if (rideId.isEmpty || userId.isEmpty || status.isEmpty) {
-        throw ValidationException('ids',
-            'Ride ID, User ID y status son requeridos');
+        throw ValidationException(
+          'ids',
+          'Ride ID, User ID y status son requeridos',
+        );
       }
 
       const validStatuses = ['confirmed', 'maybe', 'cancelled'];
       if (!validStatuses.contains(status)) {
-        throw ValidationException('status',
-            'Status debe ser: confirmed, maybe o cancelled');
+        throw ValidationException(
+          'status',
+          'Status debe ser: confirmed, maybe o cancelled',
+        );
       }
 
       final ref = _database.ref('rides/attendees/$rideId/$userId/status');
       await ref.set(status);
 
-      AppLogger.info('Status actualizado: $status',
-          tag: 'AttendeesRealtimeDatasource');
+      AppLogger.info(
+        'Status actualizado: $status',
+        tag: 'AttendeesRealtimeDatasource',
+      );
     } on ValidationException catch (e) {
-      AppLogger.warning('Validación fallida: ${e.message}',
-          tag: 'AttendeesRealtimeDatasource');
+      AppLogger.warning(
+        'Validación fallida: ${e.message}',
+        tag: 'AttendeesRealtimeDatasource',
+      );
       rethrow;
     } catch (e) {
-      AppLogger.error('Error en updateAttendanceStatus: $e',
-          tag: 'AttendeesRealtimeDatasource', error: e);
+      AppLogger.error(
+        'Error en updateAttendanceStatus: $e',
+        tag: 'AttendeesRealtimeDatasource',
+        error: e,
+      );
       rethrow;
     }
   }
@@ -152,22 +183,28 @@ class AttendeesRealtimeDatasource {
   }) async {
     try {
       if (rideId.isEmpty || userId.isEmpty) {
-        throw ValidationException('ids',
-            'Ride ID y User ID son requeridos');
+        throw ValidationException('ids', 'Ride ID y User ID son requeridos');
       }
 
       final ref = _database.ref('rides/attendees/$rideId/$userId');
       await ref.remove();
 
-      AppLogger.info('Usuario salió de rodada: $rideId',
-          tag: 'AttendeesRealtimeDatasource');
+      AppLogger.info(
+        'Usuario salió de rodada: $rideId',
+        tag: 'AttendeesRealtimeDatasource',
+      );
     } on ValidationException catch (e) {
-      AppLogger.warning('Validación fallida: ${e.message}',
-          tag: 'AttendeesRealtimeDatasource');
+      AppLogger.warning(
+        'Validación fallida: ${e.message}',
+        tag: 'AttendeesRealtimeDatasource',
+      );
       rethrow;
     } catch (e) {
-      AppLogger.error('Error en leaveRide: $e',
-          tag: 'AttendeesRealtimeDatasource', error: e);
+      AppLogger.error(
+        'Error en leaveRide: $e',
+        tag: 'AttendeesRealtimeDatasource',
+        error: e,
+      );
       rethrow;
     }
   }
@@ -180,28 +217,34 @@ class AttendeesRealtimeDatasource {
   }) async {
     try {
       if (rideId.isEmpty || userId.isEmpty) {
-        throw ValidationException('ids',
-            'Ride ID y User ID son requeridos');
+        throw ValidationException('ids', 'Ride ID y User ID son requeridos');
       }
 
       final ref = _database.ref('rides/attendees/$rideId/$userId');
       final snapshot = await ref.get();
 
       if (snapshot.value == null) {
-        AppLogger.warning('Asistente no encontrado: $userId',
-            tag: 'AttendeesRealtimeDatasource');
+        AppLogger.warning(
+          'Asistente no encontrado: $userId',
+          tag: 'AttendeesRealtimeDatasource',
+        );
         return null;
       }
 
       final data = snapshot.value as Map<dynamic, dynamic>;
       return AttendeeModel.fromJson(userId, data);
     } on ValidationException catch (e) {
-      AppLogger.warning('Validación fallida: ${e.message}',
-          tag: 'AttendeesRealtimeDatasource');
+      AppLogger.warning(
+        'Validación fallida: ${e.message}',
+        tag: 'AttendeesRealtimeDatasource',
+      );
       return null;
     } catch (e) {
-      AppLogger.error('Error en getAttendee: $e',
-          tag: 'AttendeesRealtimeDatasource', error: e);
+      AppLogger.error(
+        'Error en getAttendee: $e',
+        tag: 'AttendeesRealtimeDatasource',
+        error: e,
+      );
       return null;
     }
   }
@@ -218,8 +261,10 @@ class AttendeesRealtimeDatasource {
       final snapshot = await ref.get();
 
       if (snapshot.value == null) {
-        AppLogger.debug('Sin asistentes para rodada: $rideId',
-            tag: 'AttendeesRealtimeDatasource');
+        AppLogger.debug(
+          'Sin asistentes para rodada: $rideId',
+          tag: 'AttendeesRealtimeDatasource',
+        );
         return [];
       }
 
@@ -234,16 +279,23 @@ class AttendeesRealtimeDatasource {
 
       attendees.sort((a, b) => a.joinedAt.compareTo(b.joinedAt));
 
-      AppLogger.debug('Asistentes obtenidos: ${attendees.length}',
-          tag: 'AttendeesRealtimeDatasource');
+      AppLogger.debug(
+        'Asistentes obtenidos: ${attendees.length}',
+        tag: 'AttendeesRealtimeDatasource',
+      );
       return attendees;
     } on ValidationException catch (e) {
-      AppLogger.warning('Validación fallida: ${e.message}',
-          tag: 'AttendeesRealtimeDatasource');
+      AppLogger.warning(
+        'Validación fallida: ${e.message}',
+        tag: 'AttendeesRealtimeDatasource',
+      );
       return [];
     } catch (e) {
-      AppLogger.error('Error en getAttendees: $e',
-          tag: 'AttendeesRealtimeDatasource', error: e);
+      AppLogger.error(
+        'Error en getAttendees: $e',
+        tag: 'AttendeesRealtimeDatasource',
+        error: e,
+      );
       return [];
     }
   }

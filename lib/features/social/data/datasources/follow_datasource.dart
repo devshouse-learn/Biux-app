@@ -16,20 +16,22 @@ class FollowDatasource {
       // Usar transacción para garantizar atomicidad
       await _fs.runTransaction<void>((transaction) async {
         // Verificar que el usuario target exista
-        final targetUserDoc = await transaction
-            .get(_fs.collection('users').doc(targetUid));
+        final targetUserDoc = await transaction.get(
+          _fs.collection('users').doc(targetUid),
+        );
 
         if (!targetUserDoc.exists) {
           throw ResourceNotFoundException('Usuario a seguir');
         }
 
         // Verificar que no ya esté siguiendo
-        final isAlreadyFollowing = await transaction
-            .get(_fs
-                .collection('users')
-                .doc(currentUid)
-                .collection('following')
-                .doc(targetUid));
+        final isAlreadyFollowing = await transaction.get(
+          _fs
+              .collection('users')
+              .doc(currentUid)
+              .collection('following')
+              .doc(targetUid),
+        );
 
         if (isAlreadyFollowing.exists) {
           throw InvalidOperationException('Ya estás siguiendo a este usuario');
@@ -66,19 +68,28 @@ class FollowDatasource {
         });
       });
 
-      AppLogger.info('Usuario $currentUid ahora sigue a $targetUid',
-          tag: 'FollowDatasource');
+      AppLogger.info(
+        'Usuario $currentUid ahora sigue a $targetUid',
+        tag: 'FollowDatasource',
+      );
     } on InvalidOperationException catch (e) {
-      AppLogger.warning('Operación no válida: ${e.message}',
-          tag: 'FollowDatasource');
+      AppLogger.warning(
+        'Operación no válida: ${e.message}',
+        tag: 'FollowDatasource',
+      );
       rethrow;
     } on ResourceNotFoundException catch (e) {
-      AppLogger.warning('Recurso no encontrado: ${e.message}',
-          tag: 'FollowDatasource');
+      AppLogger.warning(
+        'Recurso no encontrado: ${e.message}',
+        tag: 'FollowDatasource',
+      );
       rethrow;
     } catch (e) {
-      AppLogger.error('Error siguiendo usuario: $e',
-          tag: 'FollowDatasource', error: e);
+      AppLogger.error(
+        'Error siguiendo usuario: $e',
+        tag: 'FollowDatasource',
+        error: e,
+      );
       throw TransactionFailedException('No se pudo completar el seguimiento');
     }
   }
@@ -88,11 +99,13 @@ class FollowDatasource {
     try {
       await _fs.runTransaction<void>((transaction) async {
         // Verificar que sí está siguiendo
-        final isFollowingDoc = await transaction.get(_fs
-            .collection('users')
-            .doc(currentUid)
-            .collection('following')
-            .doc(targetUid));
+        final isFollowingDoc = await transaction.get(
+          _fs
+              .collection('users')
+              .doc(currentUid)
+              .collection('following')
+              .doc(targetUid),
+        );
 
         if (!isFollowingDoc.exists) {
           throw InvalidOperationException('No estás siguiendo a este usuario');
@@ -121,11 +134,16 @@ class FollowDatasource {
         });
       });
 
-      AppLogger.info('Usuario $currentUid dejó de seguir a $targetUid',
-          tag: 'FollowDatasource');
+      AppLogger.info(
+        'Usuario $currentUid dejó de seguir a $targetUid',
+        tag: 'FollowDatasource',
+      );
     } catch (e) {
-      AppLogger.error('Error dejando de seguir usuario: $e',
-          tag: 'FollowDatasource', error: e);
+      AppLogger.error(
+        'Error dejando de seguir usuario: $e',
+        tag: 'FollowDatasource',
+        error: e,
+      );
       rethrow;
     }
   }

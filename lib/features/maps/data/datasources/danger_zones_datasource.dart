@@ -113,7 +113,9 @@ class DangerZonesDatasource {
       // ALTO: Validar descripción
       if (description.isEmpty || description.length > 500) {
         throw ValidationException(
-            'description', 'Descripción debe tener entre 1 y 500 caracteres');
+          'description',
+          'Descripción debe tener entre 1 y 500 caracteres',
+        );
       }
 
       // ALTO: Validar coordenadas GPS
@@ -140,8 +142,10 @@ class DangerZonesDatasource {
         final dLng = ((data['lng'] as num).toDouble() - lng).abs();
         if (dLat < 0.0005 && dLng < 0.0005 && data['type'] == type.name) {
           await doc.reference.update({'reportCount': FieldValue.increment(1)});
-          AppLogger.info('Zona peligrosa confirmada: ${data['type']}',
-              tag: 'DangerZonesDatasource');
+          AppLogger.info(
+            'Zona peligrosa confirmada: ${data['type']}',
+            tag: 'DangerZonesDatasource',
+          );
           return;
         }
       }
@@ -158,19 +162,28 @@ class DangerZonesDatasource {
         'active': true,
       });
 
-      AppLogger.info('Nueva zona peligrosa reportada: ${type.name}',
-          tag: 'DangerZonesDatasource');
+      AppLogger.info(
+        'Nueva zona peligrosa reportada: ${type.name}',
+        tag: 'DangerZonesDatasource',
+      );
     } on ValidationException catch (e) {
-      AppLogger.warning('Validación fallida: ${e.message}',
-          tag: 'DangerZonesDatasource');
+      AppLogger.warning(
+        'Validación fallida: ${e.message}',
+        tag: 'DangerZonesDatasource',
+      );
       rethrow;
     } on NotAuthenticatedException catch (e) {
-      AppLogger.warning('Usuario no autenticado: ${e.message}',
-          tag: 'DangerZonesDatasource');
+      AppLogger.warning(
+        'Usuario no autenticado: ${e.message}',
+        tag: 'DangerZonesDatasource',
+      );
       rethrow;
     } on FirebaseException catch (e) {
-      AppLogger.error('Error reportando zona peligrosa: $e',
-          tag: 'DangerZonesDatasource', error: e);
+      AppLogger.error(
+        'Error reportando zona peligrosa: $e',
+        tag: 'DangerZonesDatasource',
+        error: e,
+      );
       rethrow;
     }
   }
@@ -186,15 +199,22 @@ class DangerZonesDatasource {
         'reportCount': FieldValue.increment(1),
       });
 
-      AppLogger.info('Zona peligrosa confirmada: $id',
-          tag: 'DangerZonesDatasource');
+      AppLogger.info(
+        'Zona peligrosa confirmada: $id',
+        tag: 'DangerZonesDatasource',
+      );
     } on ValidationException catch (e) {
-      AppLogger.warning('Validación fallida: ${e.message}',
-          tag: 'DangerZonesDatasource');
+      AppLogger.warning(
+        'Validación fallida: ${e.message}',
+        tag: 'DangerZonesDatasource',
+      );
       rethrow;
     } on FirebaseException catch (e) {
-      AppLogger.error('Error confirmando zona: $e',
-          tag: 'DangerZonesDatasource', error: e);
+      AppLogger.error(
+        'Error confirmando zona: $e',
+        tag: 'DangerZonesDatasource',
+        error: e,
+      );
       rethrow;
     }
   }
@@ -208,15 +228,22 @@ class DangerZonesDatasource {
 
       await _db.collection('danger_zones').doc(id).update({'active': false});
 
-      AppLogger.info('Zona peligrosa resuelta: $id',
-          tag: 'DangerZonesDatasource');
+      AppLogger.info(
+        'Zona peligrosa resuelta: $id',
+        tag: 'DangerZonesDatasource',
+      );
     } on ValidationException catch (e) {
-      AppLogger.warning('Validación fallida: ${e.message}',
-          tag: 'DangerZonesDatasource');
+      AppLogger.warning(
+        'Validación fallida: ${e.message}',
+        tag: 'DangerZonesDatasource',
+      );
       rethrow;
     } on FirebaseException catch (e) {
-      AppLogger.error('Error resolviendo zona: $e',
-          tag: 'DangerZonesDatasource', error: e);
+      AppLogger.error(
+        'Error resolviendo zona: $e',
+        tag: 'DangerZonesDatasource',
+        error: e,
+      );
       rethrow;
     }
   }

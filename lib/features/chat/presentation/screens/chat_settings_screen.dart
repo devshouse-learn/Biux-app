@@ -1,4 +1,4 @@
-﻿import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -148,7 +148,10 @@ class _ChatSettingsScreenState extends State<ChatSettingsScreen> {
                   onChanged: _saveFontSize,
                 ),
               ),
-              const Text('A', style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold)),
+              const Text(
+                'A',
+                style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+              ),
             ],
           ),
           Center(
@@ -172,4 +175,3 @@ class _ChatSettingsScreenState extends State<ChatSettingsScreen> {
     );
   }
 }
-

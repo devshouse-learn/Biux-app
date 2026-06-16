@@ -17,12 +17,17 @@ class BookmarksDatasource {
       final snap = await _db.child('bookmarks/$userId/$postId').get();
       return snap.exists;
     } on ValidationException catch (e) {
-      AppLogger.warning('Validación fallida: ${e.message}',
-          tag: 'BookmarksDatasource');
+      AppLogger.warning(
+        'Validación fallida: ${e.message}',
+        tag: 'BookmarksDatasource',
+      );
       return false;
     } catch (e) {
-      AppLogger.error('Error verificando bookmark: $e',
-          tag: 'BookmarksDatasource', error: e);
+      AppLogger.error(
+        'Error verificando bookmark: $e',
+        tag: 'BookmarksDatasource',
+        error: e,
+      );
       return false;
     }
   }
@@ -41,12 +46,17 @@ class BookmarksDatasource {
 
       AppLogger.info('Post guardado: $postId', tag: 'BookmarksDatasource');
     } on ValidationException catch (e) {
-      AppLogger.warning('Validación fallida: ${e.message}',
-          tag: 'BookmarksDatasource');
+      AppLogger.warning(
+        'Validación fallida: ${e.message}',
+        tag: 'BookmarksDatasource',
+      );
       rethrow;
     } catch (e) {
-      AppLogger.error('Error guardando bookmark: $e',
-          tag: 'BookmarksDatasource', error: e);
+      AppLogger.error(
+        'Error guardando bookmark: $e',
+        tag: 'BookmarksDatasource',
+        error: e,
+      );
       rethrow;
     }
   }
@@ -63,12 +73,17 @@ class BookmarksDatasource {
 
       AppLogger.info('Bookmark removido: $postId', tag: 'BookmarksDatasource');
     } on ValidationException catch (e) {
-      AppLogger.warning('Validación fallida: ${e.message}',
-          tag: 'BookmarksDatasource');
+      AppLogger.warning(
+        'Validación fallida: ${e.message}',
+        tag: 'BookmarksDatasource',
+      );
       rethrow;
     } catch (e) {
-      AppLogger.error('Error removiendo bookmark: $e',
-          tag: 'BookmarksDatasource', error: e);
+      AppLogger.error(
+        'Error removiendo bookmark: $e',
+        tag: 'BookmarksDatasource',
+        error: e,
+      );
       rethrow;
     }
   }
@@ -90,12 +105,17 @@ class BookmarksDatasource {
         return true;
       }
     } on ValidationException catch (e) {
-      AppLogger.warning('Validación fallida: ${e.message}',
-          tag: 'BookmarksDatasource');
+      AppLogger.warning(
+        'Validación fallida: ${e.message}',
+        tag: 'BookmarksDatasource',
+      );
       return false;
     } catch (e) {
-      AppLogger.error('Error toggling bookmark: $e',
-          tag: 'BookmarksDatasource', error: e);
+      AppLogger.error(
+        'Error toggling bookmark: $e',
+        tag: 'BookmarksDatasource',
+        error: e,
+      );
       return false;
     }
   }
@@ -110,26 +130,33 @@ class BookmarksDatasource {
 
       final snap = await _db.child('bookmarks/$userId').get();
       if (!snap.exists || snap.value == null) {
-        AppLogger.debug('Sin bookmarks para usuario: $userId',
-            tag: 'BookmarksDatasource');
+        AppLogger.debug(
+          'Sin bookmarks para usuario: $userId',
+          tag: 'BookmarksDatasource',
+        );
         return [];
       }
 
       final data = snap.value as Map<dynamic, dynamic>;
-      final postIds = data.keys
-          .cast<String>()
-          .toList();
+      final postIds = data.keys.cast<String>().toList();
 
-      AppLogger.debug('Bookmarks encontrados: ${postIds.length}',
-          tag: 'BookmarksDatasource');
+      AppLogger.debug(
+        'Bookmarks encontrados: ${postIds.length}',
+        tag: 'BookmarksDatasource',
+      );
       return postIds;
     } on ValidationException catch (e) {
-      AppLogger.warning('Validación fallida: ${e.message}',
-          tag: 'BookmarksDatasource');
+      AppLogger.warning(
+        'Validación fallida: ${e.message}',
+        tag: 'BookmarksDatasource',
+      );
       return [];
     } catch (e) {
-      AppLogger.error('Error obteniendo bookmarks: $e',
-          tag: 'BookmarksDatasource', error: e);
+      AppLogger.error(
+        'Error obteniendo bookmarks: $e',
+        tag: 'BookmarksDatasource',
+        error: e,
+      );
       return [];
     }
   }

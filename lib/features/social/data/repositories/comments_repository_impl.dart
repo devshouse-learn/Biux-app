@@ -103,15 +103,18 @@ class CommentsRepositoryImpl implements CommentsRepository {
       );
 
       if (comment == null) {
-        AppLogger.warning('Intento de actualizar comentario eliminado: $commentId',
-            tag: 'CommentsRepositoryImpl');
+        AppLogger.warning(
+          'Intento de actualizar comentario eliminado: $commentId',
+          tag: 'CommentsRepositoryImpl',
+        );
         throw ResourceNotFoundException('Comentario');
       }
 
       if (comment.userId != userId) {
         AppLogger.warning(
-            'Intento de actualizar comentario ajeno - Usuario: $userId, Propietario: ${comment.userId}',
-            tag: 'CommentsRepositoryImpl');
+          'Intento de actualizar comentario ajeno - Usuario: $userId, Propietario: ${comment.userId}',
+          tag: 'CommentsRepositoryImpl',
+        );
         throw UnauthorizedException('editar este comentario');
       }
 
@@ -123,18 +126,28 @@ class CommentsRepositoryImpl implements CommentsRepository {
         newText: newText,
       );
 
-      AppLogger.info('Comentario actualizado: $commentId', tag: 'CommentsRepositoryImpl');
+      AppLogger.info(
+        'Comentario actualizado: $commentId',
+        tag: 'CommentsRepositoryImpl',
+      );
     } on UnauthorizedException catch (e) {
-      AppLogger.warning('Operación no autorizada: ${e.message}',
-          tag: 'CommentsRepositoryImpl');
+      AppLogger.warning(
+        'Operación no autorizada: ${e.message}',
+        tag: 'CommentsRepositoryImpl',
+      );
       rethrow;
     } on ResourceNotFoundException catch (e) {
-      AppLogger.warning('Recurso no encontrado: ${e.message}',
-          tag: 'CommentsRepositoryImpl');
+      AppLogger.warning(
+        'Recurso no encontrado: ${e.message}',
+        tag: 'CommentsRepositoryImpl',
+      );
       rethrow;
     } catch (e) {
-      AppLogger.error('Error actualizando comentario: $e',
-          tag: 'CommentsRepositoryImpl', error: e);
+      AppLogger.error(
+        'Error actualizando comentario: $e',
+        tag: 'CommentsRepositoryImpl',
+        error: e,
+      );
       rethrow;
     }
   }

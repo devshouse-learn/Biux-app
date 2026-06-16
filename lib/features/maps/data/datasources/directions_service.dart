@@ -1,4 +1,4 @@
-﻿import 'dart:convert';
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -70,7 +70,6 @@ class DirectionsService {
             },
           );
 
-
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
 
@@ -105,8 +104,7 @@ class DirectionsService {
         debugPrint('aŒ HTTP Error: ${response.statusCode}');
         debugPrint('Response body: ${response.body}');
       }
-    } on SocketException catch (e) {
-    }
+    } on SocketException catch (e) {}
 
     return null;
   }
@@ -167,5 +165,3 @@ class DirectionResult {
     required this.durationValue,
   });
 }
-
-

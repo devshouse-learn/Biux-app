@@ -182,8 +182,7 @@ class _AttendeeCard extends StatelessWidget {
         radius: 20,
         backgroundImage: NetworkImage(metadata.photoUrl!),
         backgroundColor: ColorTokens.neutral20,
-        onBackgroundImageError: (exception, stackTrace) {
-        },
+        onBackgroundImageError: (exception, stackTrace) {},
       );
     }
 

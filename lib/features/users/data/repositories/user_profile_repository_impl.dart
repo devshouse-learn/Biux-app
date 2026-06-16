@@ -1,4 +1,4 @@
-﻿import 'package:biux/features/users/data/models/user.dart';
+import 'package:biux/features/users/data/models/user.dart';
 import 'package:biux/features/users/domain/repositories/user_profile_repository.dart';
 import 'package:biux/features/social/domain/entities/notification_entity.dart';
 import 'package:biux/features/social/data/repositories/notifications_repository_impl.dart';
@@ -319,7 +319,6 @@ class UserProfileRepositoryImpl implements UserProfileRepository {
     try {
       if (_currentUserId == null || _currentUserId == userId) return false;
 
-
       final currentUser = await _firestore
           .collection('users')
           .doc(_currentUserId)
@@ -346,7 +345,6 @@ class UserProfileRepositoryImpl implements UserProfileRepository {
             'status': 'pending',
             'createdAt': FieldValue.serverTimestamp(),
           });
-
 
       // Create notification in Realtime Database (where the app reads from)
       try {
@@ -571,5 +569,3 @@ class UserProfileRepositoryImpl implements UserProfileRepository {
     }
   }
 }
-
-

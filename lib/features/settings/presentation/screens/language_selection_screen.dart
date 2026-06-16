@@ -1,4 +1,4 @@
-﻿import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:biux/core/design_system/locale_notifier.dart';
 import 'package:biux/core/design_system/color_tokens.dart';
@@ -142,4 +142,3 @@ class _LanguageSheet extends StatelessWidget {
     );
   }
 }
-

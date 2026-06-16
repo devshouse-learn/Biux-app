@@ -1,4 +1,4 @@
-﻿import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:biux/core/design_system/color_tokens.dart';
@@ -237,11 +237,7 @@ class _PromoterRequestFormState extends State<_PromoterRequestForm> {
                                   color: Colors.white,
                                 ),
                               )
-                            : Icon(
-                                Icons.send,
-                                color: Colors.white,
-                                size: 18,
-                              ),
+                            : Icon(Icons.send, color: Colors.white, size: 18),
                         label: Text(
                           _isLoading
                               ? l.t('promotions_sending')
@@ -380,19 +376,12 @@ class _PromoterRequestFormState extends State<_PromoterRequestForm> {
                     ),
                     child: Row(
                       children: [
-                        Icon(
-                          Icons.info_outline,
-                          color: Colors.blue,
-                          size: 20,
-                        ),
+                        Icon(Icons.info_outline, color: Colors.blue, size: 20),
                         SizedBox(width: 8),
                         Expanded(
                           child: Text(
                             l.t('promotions_verification_info_text'),
-                            style: TextStyle(
-                              fontSize: 12,
-                              color: Colors.blue,
-                            ),
+                            style: TextStyle(fontSize: 12, color: Colors.blue),
                           ),
                         ),
                       ],
@@ -674,19 +663,12 @@ class _PromoterRequestFormState extends State<_PromoterRequestForm> {
                   color: Colors.green.withValues(alpha: 0.1),
                   shape: BoxShape.circle,
                 ),
-                child: Icon(
-                  Icons.check_circle,
-                  color: Colors.green,
-                  size: 56,
-                ),
+                child: Icon(Icons.check_circle, color: Colors.green, size: 56),
               ),
               SizedBox(height: 16),
               Text(
                 l.t('promotions_request_sent'),
-                style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                ),
+                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
               ),
               SizedBox(height: 8),
               Text(
@@ -829,10 +811,7 @@ class _BusinessFormState extends State<_BusinessForm> {
                     SizedBox(height: 4),
                     Text(
                       l.t('promotions_publish_for_community'),
-                      style: TextStyle(
-                        color: Colors.white70,
-                        fontSize: 13,
-                      ),
+                      style: TextStyle(color: Colors.white70, fontSize: 13),
                     ),
                   ],
                 ),
@@ -1087,10 +1066,7 @@ class _EventFormState extends State<_EventForm> {
                     SizedBox(height: 4),
                     Text(
                       l.t('promotions_create_event_subtitle'),
-                      style: TextStyle(
-                        color: Colors.white70,
-                        fontSize: 13,
-                      ),
+                      style: TextStyle(color: Colors.white70, fontSize: 13),
                     ),
                   ],
                 ),
@@ -2228,4 +2204,3 @@ class _AdminCard extends StatelessWidget {
     );
   }
 }
-

@@ -1,4 +1,4 @@
-﻿import 'dart:io';
+import 'dart:io';
 
 import 'package:biux/core/config/strings.dart';
 import 'package:biux/core/utils/bytes_utils.dart';
@@ -47,4 +47,3 @@ class FirebaseUtils {
     return image;
   }
 }
-

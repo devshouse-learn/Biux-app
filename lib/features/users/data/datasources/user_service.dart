@@ -1,4 +1,4 @@
-﻿import 'dart:io';
+import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -77,11 +77,12 @@ class UserService {
   }
 
   /// Obtener usuario con datos sanitizados según permisos
-  Future<UserModel?> getUserWithPermissions(String uid,
-      {String? requestingUserId}) async {
+  Future<UserModel?> getUserWithPermissions(
+    String uid, {
+    String? requestingUserId,
+  }) async {
     try {
-      final snapshot =
-          await _firestore.collection('users').doc(uid).get();
+      final snapshot = await _firestore.collection('users').doc(uid).get();
 
       if (snapshot.exists) {
         final data = snapshot.data() as Map<String, dynamic>;
@@ -478,5 +479,3 @@ class UserService {
     }
   }
 }
-
-

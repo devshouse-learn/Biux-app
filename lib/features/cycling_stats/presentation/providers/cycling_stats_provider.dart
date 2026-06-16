@@ -1,4 +1,4 @@
-﻿import 'package:flutter/foundation.dart';
+import 'package:flutter/foundation.dart';
 import 'package:biux/features/cycling_stats/domain/entities/cycling_stats_entity.dart';
 import 'package:biux/features/cycling_stats/data/datasources/cycling_stats_datasource.dart';
 
@@ -199,5 +199,3 @@ class CyclingStatsProvider with ChangeNotifier {
     }
   }
 }
-
-

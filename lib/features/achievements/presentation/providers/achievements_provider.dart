@@ -1,4 +1,4 @@
-﻿import 'package:flutter/foundation.dart';
+import 'package:flutter/foundation.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:biux/features/achievements/domain/entities/achievement_entity.dart';
 import 'package:biux/features/achievements/data/datasources/achievements_datasource.dart';
@@ -180,5 +180,3 @@ class AchievementsProvider with ChangeNotifier {
     }
   }
 }
-
-

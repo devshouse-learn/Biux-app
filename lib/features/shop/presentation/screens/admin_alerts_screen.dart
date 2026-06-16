@@ -12,10 +12,7 @@ class AdminAlertsScreen extends StatelessWidget {
       appBar: AppBar(
         title: const Text(
           'Intentos venta bicis robadas',
-          style: TextStyle(
-            color: Colors.white,
-            fontWeight: FontWeight.bold,
-          ),
+          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
         ),
         backgroundColor: ColorTokens.primary30,
         iconTheme: const IconThemeData(color: Colors.white),

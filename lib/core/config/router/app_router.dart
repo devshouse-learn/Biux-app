@@ -1,4 +1,4 @@
-﻿import 'package:biux/core/services/app_logger.dart';
+import 'package:biux/core/services/app_logger.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
@@ -256,7 +256,9 @@ String? _guard(BuildContext context, GoRouterState state) {
   final convertedRoute = _convertDeepLinkToRoute(location);
   if (convertedRoute != null) {
     effectiveLocation = convertedRoute;
-    AppLogger.debug('🔗”— Deep link convertido: $location a†’ $effectiveLocation');
+    AppLogger.debug(
+      '🔗”— Deep link convertido: $location a†’ $effectiveLocation',
+    );
   }
 
   // Si está en la ruta root '/', decidir dónde ir segúnn autenticación
@@ -265,7 +267,9 @@ String? _guard(BuildContext context, GoRouterState state) {
       AppLogger.debug('🔗“ Usuario logueado en root, redirigiendo a inicio');
       return '/stories';
     } else {
-      AppLogger.debug('🔗“ Usuario no logueado en root, redirigiendo al login');
+      AppLogger.debug(
+        '🔗“ Usuario no logueado en root, redirigiendo al login',
+      );
       return AppRoutes.login;
     }
   }
@@ -947,7 +951,6 @@ final GoRouter _router = GoRouter(
       name: AppRoutes.adminAlertsName,
       builder: (context, state) => const AdminAlertsScreen(),
     ),
-
   ],
   errorBuilder: (context, state) => Scaffold(
     body: Center(
@@ -1039,5 +1042,3 @@ extension AppRouterExtension on BuildContext {
   void goToRideAttendees(String rideId, String ownerId) =>
       go('/rides/$rideId/attendees?ownerId=$ownerId');
 }
-
-

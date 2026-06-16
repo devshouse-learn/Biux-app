@@ -1,4 +1,4 @@
-﻿// ignore_for_file: must_be_immutable
+// ignore_for_file: must_be_immutable
 import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -222,7 +222,9 @@ class _CreateUserScreenState extends State<CreateUserScreen> {
                                       if (value == null || value.isEmpty) {
                                         return l.t('email_required');
                                       }
-                                      final emailRegex = RegExp(r'^[^\s@]+@[^\s@]+\.[^\s@]+$');
+                                      final emailRegex = RegExp(
+                                        r'^[^\s@]+@[^\s@]+\.[^\s@]+$',
+                                      );
                                       if (!emailRegex.hasMatch(value)) {
                                         return l.t('email_invalid_format');
                                       }
@@ -348,7 +350,9 @@ class _CreateUserScreenState extends State<CreateUserScreen> {
                                       if (!RegExp(r'[0-9]').hasMatch(value)) {
                                         return l.t('password_need_number');
                                       }
-                                      if (!RegExp(r'[!@#$%^&*(),.?":{}|<>]').hasMatch(value)) {
+                                      if (!RegExp(
+                                        r'[!@#$%^&*(),.?":{}|<>]',
+                                      ).hasMatch(value)) {
                                         return l.t('password_need_special');
                                       }
                                       return null;
@@ -739,5 +743,3 @@ class _CreateUserScreenState extends State<CreateUserScreen> {
     }
   }
 }
-
-

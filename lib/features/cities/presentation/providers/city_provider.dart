@@ -1,4 +1,4 @@
-﻿import 'dart:convert';
+import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -197,7 +197,6 @@ class CityProvider extends ChangeNotifier {
 
       await prefs.setString(_cacheKey, json.encode(jsonList));
       await prefs.setInt(_cacheTimeKey, DateTime.now().millisecondsSinceEpoch);
-
     } on Exception catch (e) {
       debugPrint('aŒ Error guardando caché de ciudades: $e');
     }
@@ -236,5 +235,3 @@ class CityProvider extends ChangeNotifier {
     notifyListeners();
   }
 }
-
-

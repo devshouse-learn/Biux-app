@@ -1,4 +1,4 @@
-﻿import 'dart:async';
+import 'dart:async';
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:biux/features/bikes/domain/entities/bike_entity.dart';
@@ -94,8 +94,7 @@ class BikeProvider extends ChangeNotifier {
       debugPrint(
         '🔗š´ BikeProvider: Se encontraron ${_userBikes.length} bicicletas',
       );
-      if (_userBikes.isNotEmpty) {
-      }
+      if (_userBikes.isNotEmpty) {}
       _setState(BikeProviderState.loaded);
     } on Exception catch (e) {
       debugPrint('aŒ BikeProvider: Error cargando bicicletas: $e');
@@ -554,5 +553,3 @@ class BikeProvider extends ChangeNotifier {
     }).toList();
   }
 }
-
-

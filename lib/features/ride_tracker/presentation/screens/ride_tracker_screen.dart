@@ -1167,7 +1167,12 @@ class _RideTrackerScreenState extends State<RideTrackerScreen>
                                 size: 18,
                               ),
                               const SizedBox(width: 8),
-                              Text(Provider.of<LocaleNotifier>(context, listen: false).t('edit_name')),
+                              Text(
+                                Provider.of<LocaleNotifier>(
+                                  context,
+                                  listen: false,
+                                ).t('edit_name'),
+                              ),
                             ],
                           ),
                         ),
@@ -1492,7 +1497,12 @@ class _RideTrackerScreenState extends State<RideTrackerScreen>
                               ),
                             ),
                             onPressed: () => Navigator.pop(ctx),
-                            child: Text(Provider.of<LocaleNotifier>(context, listen: false).t('cancel')),
+                            child: Text(
+                              Provider.of<LocaleNotifier>(
+                                context,
+                                listen: false,
+                              ).t('cancel'),
+                            ),
                           )
                         : TextButton(
                             style: TextButton.styleFrom(
@@ -1502,7 +1512,12 @@ class _RideTrackerScreenState extends State<RideTrackerScreen>
                               ),
                             ),
                             onPressed: () => Navigator.pop(ctx),
-                            child: Text(Provider.of<LocaleNotifier>(context, listen: false).t('cancel')),
+                            child: Text(
+                              Provider.of<LocaleNotifier>(
+                                context,
+                                listen: false,
+                              ).t('cancel'),
+                            ),
                           ),
                   ),
                   const SizedBox(width: 10),
@@ -1556,7 +1571,9 @@ class _RideTrackerScreenState extends State<RideTrackerScreen>
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx),
-            child: Text(Provider.of<LocaleNotifier>(context, listen: false).t('cancel')),
+            child: Text(
+              Provider.of<LocaleNotifier>(context, listen: false).t('cancel'),
+            ),
           ),
           ElevatedButton(
             style: ElevatedButton.styleFrom(
@@ -1572,7 +1589,12 @@ class _RideTrackerScreenState extends State<RideTrackerScreen>
               p.deleteRide(ride.id, uid);
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(
-                  content: Text(Provider.of<LocaleNotifier>(context, listen: false).t('ride_deleted')),
+                  content: Text(
+                    Provider.of<LocaleNotifier>(
+                      context,
+                      listen: false,
+                    ).t('ride_deleted'),
+                  ),
                   backgroundColor: Colors.red,
                   behavior: SnackBarBehavior.floating,
                   shape: RoundedRectangleBorder(
@@ -1581,7 +1603,9 @@ class _RideTrackerScreenState extends State<RideTrackerScreen>
                 ),
               );
             },
-            child: Text(Provider.of<LocaleNotifier>(context, listen: false).t('delete')),
+            child: Text(
+              Provider.of<LocaleNotifier>(context, listen: false).t('delete'),
+            ),
           ),
         ],
       ),
@@ -1913,7 +1937,12 @@ class _RideTrackerScreenState extends State<RideTrackerScreen>
                               ),
                             ),
                             onPressed: () => Navigator.pop(ctx),
-                            child: Text(Provider.of<LocaleNotifier>(context, listen: false).t('cancel')),
+                            child: Text(
+                              Provider.of<LocaleNotifier>(
+                                context,
+                                listen: false,
+                              ).t('cancel'),
+                            ),
                           )
                         : TextButton(
                             style: TextButton.styleFrom(
@@ -1923,7 +1952,12 @@ class _RideTrackerScreenState extends State<RideTrackerScreen>
                               ),
                             ),
                             onPressed: () => Navigator.pop(ctx),
-                            child: Text(Provider.of<LocaleNotifier>(context, listen: false).t('cancel')),
+                            child: Text(
+                              Provider.of<LocaleNotifier>(
+                                context,
+                                listen: false,
+                              ).t('cancel'),
+                            ),
                           ),
                   ),
                   const SizedBox(width: 10),
@@ -2038,7 +2072,12 @@ class _RideTrackerScreenState extends State<RideTrackerScreen>
               Navigator.pop(ctx);
               _showNameDialog(p, exitAfter: true);
             },
-            child: Text(Provider.of<LocaleNotifier>(context, listen: false).t('save_and_exit')),
+            child: Text(
+              Provider.of<LocaleNotifier>(
+                context,
+                listen: false,
+              ).t('save_and_exit'),
+            ),
           ),
         ],
       ),
@@ -2313,7 +2352,12 @@ class _RoutePlannerSheetState extends State<_RoutePlannerSheet> {
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(),
-            child: Text(Provider.of<LocaleNotifier>(context, listen: false).t('understood')),
+            child: Text(
+              Provider.of<LocaleNotifier>(
+                context,
+                listen: false,
+              ).t('understood'),
+            ),
           ),
         ],
       ),
@@ -2379,7 +2423,12 @@ class _RoutePlannerSheetState extends State<_RoutePlannerSheet> {
                           Navigator.of(context).pop();
                         },
                         icon: const Icon(Icons.close, size: 16),
-                        label: Text(Provider.of<LocaleNotifier>(context, listen: false).t('clear')),
+                        label: Text(
+                          Provider.of<LocaleNotifier>(
+                            context,
+                            listen: false,
+                          ).t('clear'),
+                        ),
                         style: TextButton.styleFrom(
                           foregroundColor: Colors.red,
                         ),

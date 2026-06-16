@@ -1,4 +1,4 @@
-﻿import 'dart:convert';
+import 'dart:convert';
 import 'dart:io';
 import 'package:biux/features/advertisements/data/models/advertising.dart';
 import 'package:biux/core/config/api_config.dart';
@@ -13,18 +13,25 @@ class AdvertisingRepository {
     try {
       final response = await http
           .get(Uri.parse(url))
-          .timeout(const Duration(seconds: 10), onTimeout: () {
-        AppLogger.warning('Timeout obteniendo publicidad aleatoria',
-            tag: 'AdvertisingRepo');
-        throw Exception('Request timeout');
-      });
+          .timeout(
+            const Duration(seconds: 10),
+            onTimeout: () {
+              AppLogger.warning(
+                'Timeout obteniendo publicidad aleatoria',
+                tag: 'AdvertisingRepo',
+              );
+              throw Exception('Request timeout');
+            },
+          );
 
       if (response.statusCode == 200) {
         final responseData = json.decode(response.body);
         final List dataList = responseData['data'] ?? [];
         if (dataList.isEmpty) {
-          AppLogger.warning('No hay publicidades disponibles',
-              tag: 'AdvertisingRepo');
+          AppLogger.warning(
+            'No hay publicidades disponibles',
+            tag: 'AdvertisingRepo',
+          );
           throw Exception('No advertisements available');
         }
         final adJson = dataList.first;
@@ -32,8 +39,9 @@ class AdvertisingRepository {
         return Advertising.fromJsonMap(docId: docId, json: adJson);
       } else {
         AppLogger.warning(
-            'Error obteniendo publicidad: código ${response.statusCode}',
-            tag: 'AdvertisingRepo');
+          'Error obteniendo publicidad: código ${response.statusCode}',
+          tag: 'AdvertisingRepo',
+        );
         throw Exception('Failed to fetch advertisement');
       }
     } on SocketException catch (e) {
@@ -76,10 +84,16 @@ class AdvertisingRepository {
 
       final response = await http
           .get(Uri.parse(url))
-          .timeout(const Duration(seconds: 10), onTimeout: () {
-        AppLogger.warning('Timeout obteniendo publicidades', tag: 'AdvertisingRepo');
-        throw Exception('Request timeout');
-      });
+          .timeout(
+            const Duration(seconds: 10),
+            onTimeout: () {
+              AppLogger.warning(
+                'Timeout obteniendo publicidades',
+                tag: 'AdvertisingRepo',
+              );
+              throw Exception('Request timeout');
+            },
+          );
 
       if (response.statusCode == 200) {
         final responseData = json.decode(response.body);
@@ -96,7 +110,10 @@ class AdvertisingRepository {
         return [];
       }
     } on ValidationException catch (e) {
-      AppLogger.warning('Validación fallida: ${e.message}', tag: 'AdvertisingRepo');
+      AppLogger.warning(
+        'Validación fallida: ${e.message}',
+        tag: 'AdvertisingRepo',
+      );
       return [];
     } on SocketException catch (e) {
       AppLogger.error(
@@ -139,10 +156,16 @@ class AdvertisingRepository {
 
       final response = await http
           .patch(Uri.parse(url), headers: headers, body: body)
-          .timeout(const Duration(seconds: 10), onTimeout: () {
-        AppLogger.warning('Timeout actualizando publicidad', tag: 'AdvertisingRepo');
-        throw Exception('Request timeout');
-      });
+          .timeout(
+            const Duration(seconds: 10),
+            onTimeout: () {
+              AppLogger.warning(
+                'Timeout actualizando publicidad',
+                tag: 'AdvertisingRepo',
+              );
+              throw Exception('Request timeout');
+            },
+          );
 
       if (response.statusCode == 200) {
         final responseData = json.decode(response.body);
@@ -153,12 +176,16 @@ class AdvertisingRepository {
         );
       } else {
         AppLogger.warning(
-            'Error actualizando publicidad: código ${response.statusCode}',
-            tag: 'AdvertisingRepo');
+          'Error actualizando publicidad: código ${response.statusCode}',
+          tag: 'AdvertisingRepo',
+        );
         throw Exception('Failed to update advertisement');
       }
     } on ValidationException catch (e) {
-      AppLogger.warning('Validación fallida: ${e.message}', tag: 'AdvertisingRepo');
+      AppLogger.warning(
+        'Validación fallida: ${e.message}',
+        tag: 'AdvertisingRepo',
+      );
       rethrow;
     } on SocketException catch (e) {
       AppLogger.error(
@@ -177,4 +204,3 @@ class AdvertisingRepository {
     }
   }
 }
-

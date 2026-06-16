@@ -1,4 +1,4 @@
-﻿import 'dart:io';
+import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
@@ -168,8 +168,10 @@ class ExperienceRepositoryImpl implements ExperienceRepository {
   @override
   Future<List<ExperienceEntity>> getFollowingExperiences(String userId) async {
     try {
-      AppLogger.info('Obteniendo experiencias de usuarios seguidos',
-          tag: 'ExperienceRepository');
+      AppLogger.info(
+        'Obteniendo experiencias de usuarios seguidos',
+        tag: 'ExperienceRepository',
+      );
 
       final followingSnapshot = await _firestore
           .collection('users')
@@ -181,8 +183,10 @@ class ExperienceRepositoryImpl implements ExperienceRepository {
           .map((doc) => doc.id)
           .toList();
 
-      AppLogger.debug('Usuarios seguidos encontrados: ${followingIds.length}',
-          tag: 'ExperienceRepository');
+      AppLogger.debug(
+        'Usuarios seguidos encontrados: ${followingIds.length}',
+        tag: 'ExperienceRepository',
+      );
 
       if (followingIds.isEmpty) {
         return [];
@@ -219,13 +223,18 @@ class ExperienceRepositoryImpl implements ExperienceRepository {
       // Ordenar por fecha descendente (más recientes primero)
       allExperiences.sort((a, b) => b.createdAt.compareTo(a.createdAt));
 
-      AppLogger.info('Experiencias encontradas: ${allExperiences.length}',
-          tag: 'ExperienceRepository');
+      AppLogger.info(
+        'Experiencias encontradas: ${allExperiences.length}',
+        tag: 'ExperienceRepository',
+      );
 
       return allExperiences;
     } on FirebaseException catch (e) {
-      AppLogger.error('Error obteniendo experiencias de seguidos: $e',
-          tag: 'ExperienceRepository', error: e);
+      AppLogger.error(
+        'Error obteniendo experiencias de seguidos: $e',
+        tag: 'ExperienceRepository',
+        error: e,
+      );
       return [];
     }
   }
@@ -874,6 +883,3 @@ class ExperienceRepositoryImpl implements ExperienceRepository {
     }
   }
 }
-
-
-

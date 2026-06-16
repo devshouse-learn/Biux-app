@@ -1,4 +1,4 @@
-﻿import 'package:flutter/foundation.dart';
+import 'package:flutter/foundation.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:biux/features/social/domain/entities/comment_entity.dart';
@@ -456,5 +456,3 @@ class CommentsProvider extends ChangeNotifier {
     notifyListeners();
   }
 }
-
-

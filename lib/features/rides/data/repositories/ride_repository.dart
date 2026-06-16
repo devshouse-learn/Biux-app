@@ -1,4 +1,4 @@
-﻿import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 import 'package:biux/features/rides/data/models/ride_model.dart';
@@ -41,24 +41,24 @@ class RideRepository {
   /// SOLUCIÓN: Agregar paginación y límite
   Stream<List<RideModel>> getAllRides({int limit = 50}) {
     AppLogger.info(
-        'Obtener todas las rodadas (limit: $limit)',
-        tag: 'RideRepository');
+      'Obtener todas las rodadas (limit: $limit)',
+      tag: 'RideRepository',
+    );
 
     return _firestore
         .collection('rides')
         .orderBy('dateTime', descending: false)
-        .limit(limit)  // IMPORTANTE: Agregar límite
+        .limit(limit) // IMPORTANTE: Agregar límite
         .snapshots()
-        .map(
-          (snapshot) {
-            AppLogger.debug(
-                'Se obtuvieron ${snapshot.docs.length} rodadas',
-                tag: 'RideRepository');
-            return snapshot.docs
-                .map((doc) => RideModel.fromFirestore(doc.data(), doc.id))
-                .toList();
-          },
-        );
+        .map((snapshot) {
+          AppLogger.debug(
+            'Se obtuvieron ${snapshot.docs.length} rodadas',
+            tag: 'RideRepository',
+          );
+          return snapshot.docs
+              .map((doc) => RideModel.fromFirestore(doc.data(), doc.id))
+              .toList();
+        });
   }
 
   /// Obtener próximas rodadas con paginación
@@ -83,8 +83,11 @@ class RideRepository {
           .map((doc) => RideModel.fromFirestore(doc.data(), doc.id))
           .toList();
     } on FirebaseException catch (e) {
-      AppLogger.error('Error obteniendo rodadas paginadas: $e',
-          tag: 'RideRepository', error: e);
+      AppLogger.error(
+        'Error obteniendo rodadas paginadas: $e',
+        tag: 'RideRepository',
+        error: e,
+      );
       return [];
     }
   }
@@ -114,16 +117,23 @@ class RideRepository {
         'participants': FieldValue.arrayUnion([userId]),
         'maybeParticipants': FieldValue.arrayRemove([userId]),
       });
-      AppLogger.info('Usuario se unió a rodada: $rideId',
-          tag: 'RideRepository');
+      AppLogger.info(
+        'Usuario se unió a rodada: $rideId',
+        tag: 'RideRepository',
+      );
       return true;
     } on ValidationException catch (e) {
-      AppLogger.warning('Validación fallida: ${e.message}',
-          tag: 'RideRepository');
+      AppLogger.warning(
+        'Validación fallida: ${e.message}',
+        tag: 'RideRepository',
+      );
       return false;
     } on FirebaseException catch (e) {
-      AppLogger.error('Error uniéndose a rodada: $e',
-          tag: 'RideRepository', error: e);
+      AppLogger.error(
+        'Error uniéndose a rodada: $e',
+        tag: 'RideRepository',
+        error: e,
+      );
       return false;
     }
   }
@@ -139,16 +149,23 @@ class RideRepository {
         'maybeParticipants': FieldValue.arrayUnion([userId]),
         'participants': FieldValue.arrayRemove([userId]),
       });
-      AppLogger.info('Usuario marcado como "tal vez" en rodada: $rideId',
-          tag: 'RideRepository');
+      AppLogger.info(
+        'Usuario marcado como "tal vez" en rodada: $rideId',
+        tag: 'RideRepository',
+      );
       return true;
     } on ValidationException catch (e) {
-      AppLogger.warning('Validación fallida: ${e.message}',
-          tag: 'RideRepository');
+      AppLogger.warning(
+        'Validación fallida: ${e.message}',
+        tag: 'RideRepository',
+      );
       return false;
     } on FirebaseException catch (e) {
-      AppLogger.error('Error marcando "tal vez": $e',
-          tag: 'RideRepository', error: e);
+      AppLogger.error(
+        'Error marcando "tal vez": $e',
+        tag: 'RideRepository',
+        error: e,
+      );
       return false;
     }
   }
@@ -164,16 +181,20 @@ class RideRepository {
         'participants': FieldValue.arrayRemove([userId]),
         'maybeParticipants': FieldValue.arrayRemove([userId]),
       });
-      AppLogger.info('Usuario salió de rodada: $rideId',
-          tag: 'RideRepository');
+      AppLogger.info('Usuario salió de rodada: $rideId', tag: 'RideRepository');
       return true;
     } on ValidationException catch (e) {
-      AppLogger.warning('Validación fallida: ${e.message}',
-          tag: 'RideRepository');
+      AppLogger.warning(
+        'Validación fallida: ${e.message}',
+        tag: 'RideRepository',
+      );
       return false;
     } on FirebaseException catch (e) {
-      AppLogger.error('Error saliendo de rodada: $e',
-          tag: 'RideRepository', error: e);
+      AppLogger.error(
+        'Error saliendo de rodada: $e',
+        tag: 'RideRepository',
+        error: e,
+      );
       return false;
     }
   }
@@ -182,20 +203,27 @@ class RideRepository {
   Future<bool> updateRide(String rideId, Map<String, dynamic> updates) async {
     try {
       if (rideId.isEmpty || updates.isEmpty) {
-        throw ValidationException('input',
-            'Ride ID y updates no pueden estar vacíos');
+        throw ValidationException(
+          'input',
+          'Ride ID y updates no pueden estar vacíos',
+        );
       }
 
       await _firestore.collection('rides').doc(rideId).update(updates);
       AppLogger.info('Rodada actualizada: $rideId', tag: 'RideRepository');
       return true;
     } on ValidationException catch (e) {
-      AppLogger.warning('Validación fallida: ${e.message}',
-          tag: 'RideRepository');
+      AppLogger.warning(
+        'Validación fallida: ${e.message}',
+        tag: 'RideRepository',
+      );
       return false;
     } on FirebaseException catch (e) {
-      AppLogger.error('Error actualizando rodada: $e',
-          tag: 'RideRepository', error: e);
+      AppLogger.error(
+        'Error actualizando rodada: $e',
+        tag: 'RideRepository',
+        error: e,
+      );
       return false;
     }
   }
@@ -213,12 +241,17 @@ class RideRepository {
       AppLogger.info('Rodada cancelada: $rideId', tag: 'RideRepository');
       return true;
     } on ValidationException catch (e) {
-      AppLogger.warning('Validación fallida: ${e.message}',
-          tag: 'RideRepository');
+      AppLogger.warning(
+        'Validación fallida: ${e.message}',
+        tag: 'RideRepository',
+      );
       return false;
     } on FirebaseException catch (e) {
-      AppLogger.error('Error cancelando rodada: $e',
-          tag: 'RideRepository', error: e);
+      AppLogger.error(
+        'Error cancelando rodada: $e',
+        tag: 'RideRepository',
+        error: e,
+      );
       return false;
     }
   }
@@ -230,8 +263,7 @@ class RideRepository {
       final currentUserId = authService.getCurrentUserId();
 
       // CRÍTICO #2: Verificar que el usuario sea el creador de la rodada
-      final rideDoc =
-          await _firestore.collection('rides').doc(rideId).get();
+      final rideDoc = await _firestore.collection('rides').doc(rideId).get();
 
       if (!rideDoc.exists) {
         throw ResourceNotFoundException('Rodada');
@@ -242,7 +274,8 @@ class RideRepository {
 
       if (rideCreatorId != currentUserId) {
         AppLogger.warning(
-            'Intento de eliminar rodada ajena - Usuario: $currentUserId, Propietario: $rideCreatorId');
+          'Intento de eliminar rodada ajena - Usuario: $currentUserId, Propietario: $rideCreatorId',
+        );
         throw UnauthorizedException('eliminar esta rodada');
       }
 
@@ -295,5 +328,3 @@ class RideRepository {
         );
   }
 }
-
-

@@ -1,4 +1,4 @@
-﻿import 'package:biux/features/bikes/data/models/trademark_bike.dart';
+import 'package:biux/features/bikes/data/models/trademark_bike.dart';
 import 'package:biux/features/bikes/domain/repositories/trademark_bike_repository_abstract.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:biux/core/services/app_logger.dart';
@@ -7,19 +7,25 @@ import 'package:biux/core/exceptions/authorization_exceptions.dart';
 class TrademarkBikeFirebaseRepository extends TrademarkBikeRepositoryAbstract {
   static final collection = 'trademarksBikes';
   final FirebaseFirestore firestore = FirebaseFirestore.instance;
+
   /// ALTO: Agregar logging de errores
   @override
   Future<List<TrademarkBike>> getListTrademarks() async {
     try {
       final result = await firestore.collection(collection).get();
-      AppLogger.debug('Marcas encontradas: ${result.docs.length}',
-          tag: 'TrademarkBikeRepository');
+      AppLogger.debug(
+        'Marcas encontradas: ${result.docs.length}',
+        tag: 'TrademarkBikeRepository',
+      );
       return result.docs
           .map((e) => TrademarkBike.fromJsonMap(e.data()))
           .toList();
     } on FirebaseException catch (e) {
-      AppLogger.error('Error obteniendo marcas: $e',
-          tag: 'TrademarkBikeRepository', error: e);
+      AppLogger.error(
+        'Error obteniendo marcas: $e',
+        tag: 'TrademarkBikeRepository',
+        error: e,
+      );
       return List.empty();
     }
   }
@@ -37,19 +43,26 @@ class TrademarkBikeFirebaseRepository extends TrademarkBikeRepositoryAbstract {
           .where('trademark', isEqualTo: trademark)
           .get();
 
-      AppLogger.debug('Bicicletas de marca encontradas: ${result.docs.length}',
-          tag: 'TrademarkBikeRepository');
+      AppLogger.debug(
+        'Bicicletas de marca encontradas: ${result.docs.length}',
+        tag: 'TrademarkBikeRepository',
+      );
 
       return result.docs
           .map((e) => TrademarkBike.fromJsonMap(e.data()))
           .toList();
     } on ValidationException catch (e) {
-      AppLogger.warning('Validación fallida: ${e.message}',
-          tag: 'TrademarkBikeRepository');
+      AppLogger.warning(
+        'Validación fallida: ${e.message}',
+        tag: 'TrademarkBikeRepository',
+      );
       return List.empty();
     } on FirebaseException catch (e) {
-      AppLogger.error('Error obteniendo bicicletas por marca: $e',
-          tag: 'TrademarkBikeRepository', error: e);
+      AppLogger.error(
+        'Error obteniendo bicicletas por marca: $e',
+        tag: 'TrademarkBikeRepository',
+        error: e,
+      );
       return List.empty();
     }
   }
@@ -67,17 +80,23 @@ class TrademarkBikeFirebaseRepository extends TrademarkBikeRepositoryAbstract {
           .doc(trademarkBike.id.toString())
           .set(trademarkBike.toJson());
 
-      AppLogger.info('Marca de bicicleta creada: ${trademarkBike.id}',
-          tag: 'TrademarkBikeRepository');
+      AppLogger.info(
+        'Marca de bicicleta creada: ${trademarkBike.id}',
+        tag: 'TrademarkBikeRepository',
+      );
     } on ValidationException catch (e) {
-      AppLogger.warning('Validación fallida: ${e.message}',
-          tag: 'TrademarkBikeRepository');
+      AppLogger.warning(
+        'Validación fallida: ${e.message}',
+        tag: 'TrademarkBikeRepository',
+      );
       rethrow;
     } on FirebaseException catch (e) {
-      AppLogger.error('Error creando marca de bicicleta: $e',
-          tag: 'TrademarkBikeRepository', error: e);
+      AppLogger.error(
+        'Error creando marca de bicicleta: $e',
+        tag: 'TrademarkBikeRepository',
+        error: e,
+      );
       rethrow;
     }
   }
 }
-

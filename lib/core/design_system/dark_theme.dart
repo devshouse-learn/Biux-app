@@ -1,4 +1,4 @@
-﻿import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import 'color_tokens.dart';
 
 class DarkTheme {
@@ -55,4 +55,3 @@ class DarkTheme {
     ),
   );
 }
-

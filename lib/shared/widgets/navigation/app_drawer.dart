@@ -1,4 +1,4 @@
-﻿import 'dart:async';
+import 'dart:async';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -691,14 +691,18 @@ class _AppDrawerState extends State<AppDrawer> {
           children: [
             Icon(Icons.logout, color: ColorTokens.error50),
             const SizedBox(width: 8),
-            Text(Provider.of<LocaleNotifier>(context, listen: false).t('logout')),
+            Text(
+              Provider.of<LocaleNotifier>(context, listen: false).t('logout'),
+            ),
           ],
         ),
         content: const Text('Estas seguro que deseas cerrar sesion?'),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(dc).pop(),
-            child: Text(Provider.of<LocaleNotifier>(context, listen: false).t('cancel')),
+            child: Text(
+              Provider.of<LocaleNotifier>(context, listen: false).t('cancel'),
+            ),
           ),
           ElevatedButton(
             onPressed: () async {
@@ -712,7 +716,9 @@ class _AppDrawerState extends State<AppDrawer> {
                 borderRadius: BorderRadius.circular(10),
               ),
             ),
-            child: Text(Provider.of<LocaleNotifier>(context, listen: false).t('logout')),
+            child: Text(
+              Provider.of<LocaleNotifier>(context, listen: false).t('logout'),
+            ),
           ),
         ],
       ),
@@ -737,7 +743,12 @@ class _AppDrawerState extends State<AppDrawer> {
                   ),
                 ),
                 const SizedBox(width: 16),
-                Text(Provider.of<LocaleNotifier>(context, listen: false).t('closing_session')),
+                Text(
+                  Provider.of<LocaleNotifier>(
+                    context,
+                    listen: false,
+                  ).t('closing_session'),
+                ),
               ],
             ),
           ),
@@ -762,6 +773,3 @@ class _AppDrawerState extends State<AppDrawer> {
     }
   }
 }
-
-
-

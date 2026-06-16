@@ -69,11 +69,21 @@ class _MainShellState extends State<MainShell> {
 
         // Colores dinámicos según el tema actual
         final isDark = Theme.of(context).brightness == Brightness.dark;
-        final appBarColor = Theme.of(context).appBarTheme.backgroundColor ?? ColorTokens.primary30;
-        final textColor = Theme.of(context).appBarTheme.foregroundColor ?? ColorTokens.neutral100;
-        final navBarColor = isDark ? ColorTokens.primary20 : ColorTokens.neutral100;
-        final selectedColor = isDark ? ColorTokens.primary60 : ColorTokens.primary30;
-        final unselectedColor = isDark ? ColorTokens.neutral70 : ColorTokens.neutral70;
+        final appBarColor =
+            Theme.of(context).appBarTheme.backgroundColor ??
+            ColorTokens.primary30;
+        final textColor =
+            Theme.of(context).appBarTheme.foregroundColor ??
+            ColorTokens.neutral100;
+        final navBarColor = isDark
+            ? ColorTokens.primary20
+            : ColorTokens.neutral100;
+        final selectedColor = isDark
+            ? ColorTokens.primary60
+            : ColorTokens.primary30;
+        final unselectedColor = isDark
+            ? ColorTokens.neutral70
+            : ColorTokens.neutral70;
 
         // Key por idioma fuerza reconstrucción completa del Scaffold
         return Scaffold(

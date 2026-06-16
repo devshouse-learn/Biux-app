@@ -1,4 +1,4 @@
-﻿import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -30,7 +30,12 @@ class _BlockedUsersScreenState extends State<BlockedUsersScreen> {
     return Scaffold(
       backgroundColor: isDark ? ColorTokens.primary10 : Colors.grey.shade50,
       appBar: AppBar(
-        title: Text(Provider.of<LocaleNotifier>(context, listen: false).t('blocked_users')),
+        title: Text(
+          Provider.of<LocaleNotifier>(
+            context,
+            listen: false,
+          ).t('blocked_users'),
+        ),
         backgroundColor: ColorTokens.primary30,
         foregroundColor: Colors.white,
       ),
@@ -84,14 +89,18 @@ class _BlockedUsersScreenState extends State<BlockedUsersScreen> {
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: Text(Provider.of<LocaleNotifier>(context, listen: false).t('unblock_user')),
+        title: Text(
+          Provider.of<LocaleNotifier>(context, listen: false).t('unblock_user'),
+        ),
         content: const Text(
           '¿Deseas desbloquear a este usuario? Podrá volver a enviarte mensajes.',
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(ctx).pop(),
-            child: Text(Provider.of<LocaleNotifier>(context, listen: false).t('cancel')),
+            child: Text(
+              Provider.of<LocaleNotifier>(context, listen: false).t('cancel'),
+            ),
           ),
           TextButton(
             onPressed: () async {
@@ -99,7 +108,9 @@ class _BlockedUsersScreenState extends State<BlockedUsersScreen> {
               final uid = FirebaseAuth.instance.currentUser?.uid ?? '';
               await context.read<SafetyProvider>().unblockUser(uid, blockedId);
             },
-            child: Text(Provider.of<LocaleNotifier>(context, listen: false).t('unblock')),
+            child: Text(
+              Provider.of<LocaleNotifier>(context, listen: false).t('unblock'),
+            ),
           ),
         ],
       ),

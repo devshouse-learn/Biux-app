@@ -1,4 +1,4 @@
-﻿import 'package:biux/features/users/presentation/providers/user_provider.dart';
+import 'package:biux/features/users/presentation/providers/user_provider.dart';
 import 'package:biux/features/users/data/models/user.dart';
 import 'package:biux/features/experiences/presentation/providers/experience_classic_provider.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -946,7 +946,9 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
                                           size: 20,
                                         ),
                                         onPressed: () {
-                                          context.push(AppRoutes.notificationSettings);
+                                          context.push(
+                                            AppRoutes.notificationSettings,
+                                          );
                                         },
                                         constraints: BoxConstraints(
                                           minWidth: 32,
@@ -1806,5 +1808,3 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
     super.dispose();
   }
 }
-
-

@@ -1,4 +1,4 @@
-﻿import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 import 'package:biux/features/users/data/models/user_model.dart';
 import "package:flutter/foundation.dart";
@@ -83,5 +83,3 @@ class UserRepository {
     }
   }
 }
-
-

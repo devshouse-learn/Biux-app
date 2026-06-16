@@ -1,4 +1,4 @@
-﻿import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import 'package:biux/features/settings/domain/entities/notification_settings_entity.dart';
 import 'package:biux/features/settings/domain/repositories/notification_settings_repository.dart';
 
@@ -164,5 +164,3 @@ class NotificationSettingsProvider extends ChangeNotifier {
     return _settings?.isNotificationTypeEnabled(type) ?? false;
   }
 }
-
-

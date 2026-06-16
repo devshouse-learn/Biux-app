@@ -58,9 +58,10 @@ class _WeatherScreenState extends State<WeatherScreen> {
             );
           }
           if (wp.error != null) {
-            final isPermissionError = wp.error!.contains('permiso') ||
-                                      wp.error!.contains('permission') ||
-                                      wp.error!.contains('ubicación');
+            final isPermissionError =
+                wp.error!.contains('permiso') ||
+                wp.error!.contains('permission') ||
+                wp.error!.contains('ubicación');
             return Center(
               child: Padding(
                 padding: const EdgeInsets.all(32),

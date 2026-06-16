@@ -479,7 +479,9 @@ class _StolenBikesScreenState extends State<StolenBikesScreen>
     return Scaffold(
       backgroundColor: scaffoldBg,
       appBar: AppBar(
-        title: Text(Provider.of<LocaleNotifier>(context, listen: false).t('stolen_bikes')),
+        title: Text(
+          Provider.of<LocaleNotifier>(context, listen: false).t('stolen_bikes'),
+        ),
         backgroundColor: _vivantRed,
         foregroundColor: Colors.white,
         elevation: 0,
@@ -1084,7 +1086,12 @@ class _StolenBikesScreenState extends State<StolenBikesScreen>
               child: ElevatedButton.icon(
                 onPressed: _submitReport,
                 icon: const Icon(Icons.send),
-                label: Text(Provider.of<LocaleNotifier>(context, listen: false).t('send_report')),
+                label: Text(
+                  Provider.of<LocaleNotifier>(
+                    context,
+                    listen: false,
+                  ).t('send_report'),
+                ),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: _vivantRed,
                   foregroundColor: Colors.white,
@@ -1135,7 +1142,9 @@ class _StolenBikesScreenState extends State<StolenBikesScreen>
       builder: (c) => AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
         icon: const Icon(Icons.check_circle, color: Colors.green, size: 48),
-        title: Text(Provider.of<LocaleNotifier>(context, listen: false).t('report_sent')),
+        title: Text(
+          Provider.of<LocaleNotifier>(context, listen: false).t('report_sent'),
+        ),
         content: const Text(
           'Tu reporte ha sido registrado. La comunidad sera alertada.',
         ),

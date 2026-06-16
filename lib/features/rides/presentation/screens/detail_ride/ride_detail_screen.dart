@@ -1,4 +1,4 @@
-﻿import 'package:biux/features/maps/data/models/meeting_point.dart';
+import 'package:biux/features/maps/data/models/meeting_point.dart';
 import 'package:biux/features/maps/presentation/providers/meeting_point_provider.dart';
 import 'package:biux/features/rides/data/models/ride_model.dart';
 import 'package:biux/features/rides/presentation/providers/ride_provider.dart';
@@ -1156,5 +1156,3 @@ class InfoRowWidget extends StatelessWidget {
     );
   }
 }
-
-

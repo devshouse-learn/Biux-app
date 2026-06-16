@@ -1,4 +1,4 @@
-﻿// ignore_for_file: deprecated_member_use
+// ignore_for_file: deprecated_member_use
 import 'dart:async';
 import 'dart:io';
 import 'package:flutter/material.dart';
@@ -887,9 +887,7 @@ class _ChatScreenState extends State<ChatScreen> {
       backgroundColor: isDark ? ColorTokens.primary10 : Colors.grey.shade100,
       appBar: AppBar(
         automaticallyImplyLeading: !widget.embedded,
-        backgroundColor: isDark
-            ? ColorTokens.primary10
-            : ColorTokens.primary30,
+        backgroundColor: isDark ? ColorTokens.primary10 : ColorTokens.primary30,
         foregroundColor: Colors.white,
         title: _searching
             ? TextField(
@@ -1577,6 +1575,3 @@ class _StarToastState extends State<_StarToast>
     );
   }
 }
-
-
-

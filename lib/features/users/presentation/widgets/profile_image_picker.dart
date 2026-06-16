@@ -1,4 +1,4 @@
-﻿import 'dart:io';
+import 'dart:io';
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
@@ -194,10 +194,7 @@ class _ProfileImagePickerState extends State<ProfileImagePicker> {
                       color: ColorTokens.primary50.withValues(alpha: 0.1),
                       shape: BoxShape.circle,
                     ),
-                    child: Icon(
-                      Icons.camera_alt,
-                      color: ColorTokens.primary50,
-                    ),
+                    child: Icon(Icons.camera_alt, color: ColorTokens.primary50),
                   ),
                   title: Text(l.t('take_photo')),
                   subtitle: Text(l.t('use_camera')),
@@ -237,10 +234,7 @@ class _ProfileImagePickerState extends State<ProfileImagePicker> {
                         color: ColorTokens.error50.withValues(alpha: 0.1),
                         shape: BoxShape.circle,
                       ),
-                      child: Icon(
-                        Icons.delete,
-                        color: ColorTokens.error50,
-                      ),
+                      child: Icon(Icons.delete, color: ColorTokens.error50),
                     ),
                     title: Text(l.t('delete_photo')),
                     subtitle: Text(l.t('use_default_avatar')),
@@ -363,5 +357,3 @@ class _ProfileImagePickerState extends State<ProfileImagePicker> {
     // Aquí podrías llamar un callback para eliminar la imagen del servidor
   }
 }
-
-

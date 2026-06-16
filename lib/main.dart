@@ -1,4 +1,4 @@
-﻿import 'package:biux/core/design_system/locale_notifier.dart';
+import 'package:biux/core/design_system/locale_notifier.dart';
 import 'dart:core';
 import 'package:flutter/foundation.dart' show kIsWeb;
 
@@ -43,8 +43,7 @@ import 'package:biux/features/ride_tracker/data/datasources/offline_ride_datasou
 Future<void> _syncOfflineRides() async {
   try {
     final pending = await OfflineRideDatasource.getPending();
-    if (pending.isNotEmpty) {
-    }
+    if (pending.isNotEmpty) {}
   } catch (e) {}
 }
 
@@ -142,13 +141,16 @@ Future<void> _initServicesAsync() async {
     ConnectivityService().initialize();
 
     // Auto-sync rodadas offline cuando se restaure la conexión
-    ConnectivityService().statusStream.listen((status) {
-      if (status == ConnectivityStatus.online) {
-        _syncOfflineRides();
-      }
-    }, onError: (e) {
-      debugPrint('[Connectivity] Error en listener: $e');
-    });
+    ConnectivityService().statusStream.listen(
+      (status) {
+        if (status == ConnectivityStatus.online) {
+          _syncOfflineRides();
+        }
+      },
+      onError: (e) {
+        debugPrint('[Connectivity] Error en listener: $e');
+      },
+    );
     RemoteConfigService().initialize();
     NotificationService().initialize();
     // Inicializar Push Notifications
@@ -204,7 +206,3 @@ class MyApp extends StatelessWidget {
 }
 
 // Test miércoles, 26 de noviembre de 2025, 18:59:20 -05
-
-
-
-

@@ -1,4 +1,4 @@
-﻿import 'dart:io';
+import 'dart:io';
 
 import 'package:biux/core/config/strings.dart';
 import 'package:biux/features/stories/data/models/story.dart';
@@ -160,5 +160,3 @@ class StoriesFirebaseRepository extends StoriesRepositoryAbstract {
     }
   }
 }
-
-

@@ -1,4 +1,4 @@
-﻿import 'package:biux/core/design_system/color_tokens.dart';
+import 'package:biux/core/design_system/color_tokens.dart';
 import 'package:biux/core/design_system/locale_notifier.dart';
 import 'package:biux/features/users/data/models/user.dart';
 import 'package:biux/features/users/presentation/providers/user_profile_provider.dart';
@@ -1139,5 +1139,3 @@ class _UserListItem extends StatelessWidget {
     );
   }
 }
-
-

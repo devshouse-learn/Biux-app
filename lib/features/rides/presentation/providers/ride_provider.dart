@@ -1,4 +1,4 @@
-﻿import 'package:biux/features/rides/data/models/ride_model.dart';
+import 'package:biux/features/rides/data/models/ride_model.dart';
 import 'package:biux/core/services/optimized_storage_service.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -399,7 +399,6 @@ class RideProvider extends ChangeNotifier {
             userData['profilePicture'] ??
             userData['avatar'] ??
             _auth.currentUser?.photoURL;
-
       } else {
         // CRÃTICO: Si no existe el documento en Firestore, crearlo con datos básicos
         debugPrint(
@@ -430,7 +429,6 @@ class RideProvider extends ChangeNotifier {
             },
             SetOptions(merge: true),
           ); // merge: true para no sobrescribir si existe
-
         } on FirebaseException catch (e) {
           debugPrint('aŒ Error creando documento de usuario: $e');
         }
@@ -801,5 +799,3 @@ class RideProvider extends ChangeNotifier {
     _hasMoreRides = true;
   }
 }
-
-

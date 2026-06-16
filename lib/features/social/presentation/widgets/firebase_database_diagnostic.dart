@@ -1,4 +1,4 @@
-﻿import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
@@ -62,7 +62,9 @@ class _FirebaseDatabaseDiagnosticState
               '✅ COMPLETO: Firebase DB funciona! Usuario: ${user.uid}',
         );
       } else {
-        setState(() => _status = 'aš ï¸ DB funciona pero NO estás autenticado');
+        setState(
+          () => _status = 'aš ï¸ DB funciona pero NO estás autenticado',
+        );
       }
     } on FirebaseException catch (e) {
       setState(() => _status = 'aŒ ERROR: $e');
@@ -184,5 +186,3 @@ Soluciones:
     );
   }
 }
-
-

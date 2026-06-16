@@ -1,4 +1,4 @@
-﻿import 'package:shared_preferences/shared_preferences.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:biux/features/users/data/models/user_model.dart';
 import 'package:biux/core/services/app_logger.dart';
 import 'package:biux/features/users/data/datasources/user_service.dart';
@@ -46,7 +46,9 @@ class UserProvider extends ChangeNotifier {
 
   // 🔗”´ Crear usuario admin de prueba SOLO para Chrome web
   Future<void> _createWebTestUser() async {
-    AppLogger.debug('🔗Ÿ¦ Creando usuario admin para CHROME web (desarrollo)...');
+    AppLogger.debug(
+      '🔗Ÿ¦ Creando usuario admin para CHROME web (desarrollo)...',
+    );
     _setLoading(true);
 
     try {
@@ -466,7 +468,9 @@ class UserProvider extends ChangeNotifier {
             fromUserName: _user?.name ?? _user?.username ?? 'Usuario',
             fromUserPhoto: _user?.photoUrl,
           );
-          AppLogger.info('🔗”” Notificación de follow enviada a $userIdToFollow');
+          AppLogger.info(
+            '🔗”” Notificación de follow enviada a $userIdToFollow',
+          );
         } on FirebaseException catch (e) {
           // No bloquear el follow si falla la notificación
           AppLogger.warning(
@@ -612,5 +616,3 @@ class UserProvider extends ChangeNotifier {
     } catch (e) {}
   }
 }
-
-

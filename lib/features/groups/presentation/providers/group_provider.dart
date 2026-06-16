@@ -1,4 +1,4 @@
-﻿import 'dart:async';
+import 'dart:async';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:biux/core/services/app_logger.dart';
 import 'package:flutter/material.dart';
@@ -118,21 +118,24 @@ class GroupProvider extends ChangeNotifier {
         _allGroups = groups;
         notifyListeners();
       },
-      onError: (error) => AppLogger.error('Error loading all groups', error: error),
+      onError: (error) =>
+          AppLogger.error('Error loading all groups', error: error),
     );
     _subscriptions.add(subscription);
   }
 
   void loadUserGroups() {
     if (currentUserId != null) {
-      final subscription = _getGroupsUseCase.byUser(currentUserId!)
-      .listen(
+      final subscription = _getGroupsUseCase.byUser(currentUserId!).listen(
         (groups) {
-          groups.sort((a, b) => b.memberIds.length.compareTo(a.memberIds.length));
+          groups.sort(
+            (a, b) => b.memberIds.length.compareTo(a.memberIds.length),
+          );
           _userGroups = groups;
           notifyListeners();
         },
-        onError: (error) => AppLogger.error('Error loading user groups', error: error),
+        onError: (error) =>
+            AppLogger.error('Error loading user groups', error: error),
       );
       _subscriptions.add(subscription);
     }
@@ -142,11 +145,14 @@ class GroupProvider extends ChangeNotifier {
     if (currentUserId != null) {
       final subscription = _getGroupsUseCase.adminGroups(currentUserId!).listen(
         (groups) {
-          groups.sort((a, b) => b.memberIds.length.compareTo(a.memberIds.length));
+          groups.sort(
+            (a, b) => b.memberIds.length.compareTo(a.memberIds.length),
+          );
           _adminGroups = groups;
           notifyListeners();
         },
-        onError: (error) => AppLogger.error('Error loading admin groups', error: error),
+        onError: (error) =>
+            AppLogger.error('Error loading admin groups', error: error),
       );
       _subscriptions.add(subscription);
     }
@@ -626,5 +632,3 @@ class GroupProvider extends ChangeNotifier {
     super.dispose();
   }
 }
-
-

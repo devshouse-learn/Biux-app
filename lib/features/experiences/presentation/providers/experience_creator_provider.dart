@@ -1,4 +1,4 @@
-﻿import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:video_player/video_player.dart';
 import 'package:biux/features/experiences/domain/entities/experience_entity.dart';
@@ -436,5 +436,3 @@ class ExperienceCreatorNotifier extends StateNotifier<ExperienceCreatorState> {
     super.dispose();
   }
 }
-
-

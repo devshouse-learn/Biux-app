@@ -1,4 +1,4 @@
-﻿import 'package:biux/features/sites/data/models/sites.dart';
+import 'package:biux/features/sites/data/models/sites.dart';
 import 'package:biux/features/sites/domain/repositories/sites_repository_abstract.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
@@ -37,4 +37,3 @@ class SitesFirebaseRepository extends SitesRepositoryAbstract {
     }
   }
 }
-

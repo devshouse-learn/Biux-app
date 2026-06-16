@@ -51,10 +51,7 @@ class _PaperPlanePainter extends CustomPainter {
   final Color color;
   final double rotation;
 
-  _PaperPlanePainter({
-    required this.color,
-    this.rotation = 0,
-  });
+  _PaperPlanePainter({required this.color, this.rotation = 0});
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -149,11 +146,7 @@ class _PaperPlanePainter extends CustomPainter {
       ..color = Colors.white.withOpacity(0.5)
       ..style = PaintingStyle.fill;
 
-    canvas.drawCircle(
-      Offset(w * 0.5, h * 0.18),
-      w * 0.04,
-      highlightPaint,
-    );
+    canvas.drawCircle(Offset(w * 0.5, h * 0.18), w * 0.04, highlightPaint);
 
     // Pequeño triángulo de profundidad en la punta
     final tipDepth = Path();

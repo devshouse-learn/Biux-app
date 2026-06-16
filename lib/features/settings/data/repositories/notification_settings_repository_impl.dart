@@ -1,4 +1,4 @@
-﻿import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:biux/features/settings/domain/entities/notification_settings_entity.dart';
 import 'package:biux/features/settings/domain/repositories/notification_settings_repository.dart';
@@ -119,5 +119,3 @@ class NotificationSettingsRepositoryImpl
     await updateSettings(NotificationSettingsEntity.defaults());
   }
 }
-
-

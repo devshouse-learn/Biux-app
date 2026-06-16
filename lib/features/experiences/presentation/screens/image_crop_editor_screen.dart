@@ -1,4 +1,4 @@
-﻿import 'dart:io';
+import 'dart:io';
 import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:image/image.dart' as img;
@@ -504,5 +504,3 @@ class _ImageCropEditorScreenState extends State<ImageCropEditorScreen> {
     );
   }
 }
-
-

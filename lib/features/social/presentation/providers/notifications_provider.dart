@@ -1,4 +1,4 @@
-﻿import 'package:flutter/foundation.dart';
+import 'package:flutter/foundation.dart';
 import 'package:biux/features/social/domain/entities/notification_entity.dart';
 import 'package:biux/features/social/domain/repositories/notifications_repository.dart';
 
@@ -26,7 +26,6 @@ class NotificationsProvider extends ChangeNotifier {
   bool get hasUnread => _unreadCount > 0;
 
   void _init() {
-
     // Escuchar notificaciones
     _repository
         .watchUserNotifications(userId)
@@ -125,5 +124,3 @@ class NotificationsProvider extends ChangeNotifier {
     notifyListeners();
   }
 }
-
-

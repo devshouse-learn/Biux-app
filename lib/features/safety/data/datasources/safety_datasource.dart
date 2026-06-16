@@ -25,7 +25,10 @@ class SafetyDatasource {
   }
 
   /// Remueve la relación de follow entre dos usuarios si existe.
-  Future<void> _removeFollowRelation(String followerId, String followedId) async {
+  Future<void> _removeFollowRelation(
+    String followerId,
+    String followedId,
+  ) async {
     try {
       final followerRef = _firestore.collection('users').doc(followerId);
       final followedRef = _firestore.collection('users').doc(followedId);
@@ -37,10 +40,16 @@ class SafetyDatasource {
       final followerData = followerDoc.data() ?? {};
       final followedData = followedDoc.data() ?? {};
 
-      final following = Map<String, dynamic>.from(followerData['following'] ?? {});
-      final followers = Map<String, dynamic>.from(followedData['followers'] ?? {});
+      final following = Map<String, dynamic>.from(
+        followerData['following'] ?? {},
+      );
+      final followers = Map<String, dynamic>.from(
+        followedData['followers'] ?? {},
+      );
 
-      if (!following.containsKey(followedId) && !followers.containsKey(followerId)) return;
+      if (!following.containsKey(followedId) &&
+          !followers.containsKey(followerId))
+        return;
 
       following.remove(followedId);
       followers.remove(followerId);

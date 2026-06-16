@@ -1,4 +1,4 @@
-﻿/// Sistema de traducciones para la app Biux.
+/// Sistema de traducciones para la app Biux.
 /// Contiene las cadenas traducidas para cada idioma soportado.
 class AppTranslations {
   AppTranslations._();
@@ -309,9 +309,11 @@ class AppTranslations {
     'phone_invalid_format': 'El teléfono debe tener 10 dígitos',
     'password_required': 'La contraseña es requerida',
     'password_min_8_chars': 'La contraseña debe tener al menos 8 caracteres',
-    'password_need_uppercase': 'La contraseña debe contener al menos una letra mayúscula',
+    'password_need_uppercase':
+        'La contraseña debe contener al menos una letra mayúscula',
     'password_need_number': 'La contraseña debe contener al menos un número',
-    'password_need_special': 'La contraseña debe contener al menos un carácter especial',
+    'password_need_special':
+        'La contraseña debe contener al menos un carácter especial',
     'email_required': 'El email es requerido',
     'email_invalid_format': 'El email no tiene un formato válido',
     'password_confirm_required': 'La confirmación de contraseña es requerida',
@@ -4978,9 +4980,11 @@ class AppTranslations {
     'phone_invalid_format': 'Phone must have 10 digits',
     'password_required': 'Password is required',
     'password_min_8_chars': 'Password must be at least 8 characters long',
-    'password_need_uppercase': 'Password must contain at least one uppercase letter',
+    'password_need_uppercase':
+        'Password must contain at least one uppercase letter',
     'password_need_number': 'Password must contain at least one number',
-    'password_need_special': 'Password must contain at least one special character',
+    'password_need_special':
+        'Password must contain at least one special character',
     'email_required': 'Email is required',
     'email_invalid_format': 'Email format is invalid',
     'password_confirm_required': 'Password confirmation is required',
@@ -9391,9 +9395,11 @@ class AppTranslations {
     'phone_invalid_format': 'O telefone deve ter 10 dígitos',
     'password_required': 'Senha é obrigatória',
     'password_min_8_chars': 'A senha deve ter pelo menos 8 caracteres',
-    'password_need_uppercase': 'A senha deve conter pelo menos uma letra maiúscula',
+    'password_need_uppercase':
+        'A senha deve conter pelo menos uma letra maiúscula',
     'password_need_number': 'A senha deve conter pelo menos um número',
-    'password_need_special': 'A senha deve conter pelo menos um caractere especial',
+    'password_need_special':
+        'A senha deve conter pelo menos um caractere especial',
     'email_required': 'O email é obrigatório',
     'email_invalid_format': 'O formato do email é inválido',
     'password_confirm_required': 'A confirmação de senha é obrigatória',
@@ -13853,13 +13859,17 @@ class AppTranslations {
     'phone_required': 'Le téléphone est obligatoire',
     'phone_invalid_format': 'Le téléphone doit avoir 10 chiffres',
     'password_required': 'Le mot de passe est obligatoire',
-    'password_min_8_chars': 'Le mot de passe doit contenir au moins 8 caractères',
-    'password_need_uppercase': 'Le mot de passe doit contenir au moins une lettre majuscule',
+    'password_min_8_chars':
+        'Le mot de passe doit contenir au moins 8 caractères',
+    'password_need_uppercase':
+        'Le mot de passe doit contenir au moins une lettre majuscule',
     'password_need_number': 'Le mot de passe doit contenir au moins un chiffre',
-    'password_need_special': 'Le mot de passe doit contenir au moins un caractère spécial',
+    'password_need_special':
+        'Le mot de passe doit contenir au moins un caractère spécial',
     'email_required': 'L\'email est obligatoire',
     'email_invalid_format': 'Le format de l\'email est invalide',
-    'password_confirm_required': 'La confirmation du mot de passe est obligatoire',
+    'password_confirm_required':
+        'La confirmation du mot de passe est obligatoire',
     'password_not_match': 'Les mots de passe ne correspondent pas',
     'nobody_rides_alone': 'Personne ne roule seul ici',
     'join_dont_miss': 'Rejoignez et ne manquez aucune sortie',
@@ -18376,9 +18386,11 @@ class AppTranslations {
     'phone_invalid_format': 'Il telefono deve avere 10 cifre',
     'password_required': 'La password è obbligatoria',
     'password_min_8_chars': 'La password deve contenere almeno 8 caratteri',
-    'password_need_uppercase': 'La password deve contenere almeno una lettera maiuscola',
+    'password_need_uppercase':
+        'La password deve contenere almeno una lettera maiuscola',
     'password_need_number': 'La password deve contenere almeno un numero',
-    'password_need_special': 'La password deve contenere almeno un carattere speciale',
+    'password_need_special':
+        'La password deve contenere almeno un carattere speciale',
     'email_required': 'L\'email è obbligatorio',
     'email_invalid_format': 'Il formato dell\'email è invalido',
     'password_confirm_required': 'La conferma della password è obbligatoria',
@@ -22035,5 +22047,3 @@ class AppTranslations {
     'saved_to_gallery': 'Salvato nella galleria',
   };
 }
-
-

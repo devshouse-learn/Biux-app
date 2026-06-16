@@ -15,7 +15,12 @@ class ActivityHubScreen extends StatelessWidget {
     return Scaffold(
       backgroundColor: SettingsWidgets.scaffoldBackground(isDark),
       appBar: AppBar(
-        title: Text(Provider.of<LocaleNotifier>(context, listen: false).t('your_activity')),
+        title: Text(
+          Provider.of<LocaleNotifier>(
+            context,
+            listen: false,
+          ).t('your_activity'),
+        ),
         backgroundColor: ColorTokens.primary30,
         foregroundColor: Colors.white,
       ),

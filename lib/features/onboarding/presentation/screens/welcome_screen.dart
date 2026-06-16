@@ -38,10 +38,7 @@ class WelcomeScreen extends StatelessWidget {
                 style: TextStyle(color: Colors.white70, fontSize: 16),
               ),
               SizedBox(height: 48),
-              _FeatureRow(
-                icon: Icons.group,
-                text: l.t('join_cycling_groups'),
-              ),
+              _FeatureRow(icon: Icons.group, text: l.t('join_cycling_groups')),
               SizedBox(height: 16),
               _FeatureRow(
                 icon: Icons.directions_bike,

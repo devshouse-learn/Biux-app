@@ -1,4 +1,4 @@
-﻿// ignore_for_file: deprecated_member_use
+// ignore_for_file: deprecated_member_use
 import 'dart:async';
 import 'dart:io';
 import 'package:flutter/material.dart';
@@ -1263,9 +1263,7 @@ class _ChatInputState extends State<ChatInput>
               : CrossFadeState.showSecond,
           firstChild: Container(
             height: 280,
-            color: widget.isDark
-                ? ColorTokens.primary10
-                : Colors.grey.shade50,
+            color: widget.isDark ? ColorTokens.primary10 : Colors.grey.shade50,
             child: Column(
               children: [
                 TabBar(
@@ -1632,6 +1630,3 @@ class _RecordingBarState extends State<_RecordingBar> {
     );
   }
 }
-
-
-

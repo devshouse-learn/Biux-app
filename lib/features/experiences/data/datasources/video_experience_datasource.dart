@@ -1,4 +1,4 @@
-﻿import 'dart:io';
+import 'dart:io';
 import 'package:image_picker/image_picker.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:video_player/video_player.dart';
@@ -54,8 +54,7 @@ class VideoExperienceService {
         maxDuration: const Duration(seconds: maxVideoDurationSeconds),
       );
 
-      if (video != null) {
-      }
+      if (video != null) {}
 
       return video;
     } on FirebaseException catch (e) {
@@ -72,7 +71,6 @@ class VideoExperienceService {
     Function(double)? onProgress,
   }) async {
     try {
-
       final fileName =
           '${DateTime.now().millisecondsSinceEpoch}_${videoFile.name}';
       final videosRef = _storage.ref().child(
@@ -95,7 +93,6 @@ class VideoExperienceService {
       final snapshot = await uploadTask;
       final downloadUrl = await snapshot.ref.getDownloadURL();
 
-
       return VideoUploadResult(
         videoUrl: downloadUrl,
         fileName: fileName,
@@ -117,7 +114,6 @@ class VideoExperienceService {
   }) async {
     VideoPlayerController? controller;
     try {
-
       controller = VideoPlayerController.networkUrl(Uri.parse(videoUrl));
       await controller.initialize();
 
@@ -271,5 +267,3 @@ class VideoTooLongException implements Exception {
   @override
   String toString() => message;
 }
-
-

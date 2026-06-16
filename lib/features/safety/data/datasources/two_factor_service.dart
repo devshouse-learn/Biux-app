@@ -32,7 +32,10 @@ class TwoFactorService {
 
     try {
       // Verificar si el usuario está bloqueado por muchos intentos fallidos
-      final existingDoc = await _db.collection('two_factor_codes').doc(uid).get();
+      final existingDoc = await _db
+          .collection('two_factor_codes')
+          .doc(uid)
+          .get();
 
       if (existingDoc.exists) {
         final data = existingDoc.data();
@@ -66,7 +69,7 @@ class TwoFactorService {
         'contact': contact,
         'createdAt': FieldValue.serverTimestamp(),
         'expiresAt': Timestamp.fromDate(
-          DateTime.now().add(Duration(minutes: CODE_EXPIRATION_MINUTES))
+          DateTime.now().add(Duration(minutes: CODE_EXPIRATION_MINUTES)),
         ),
         'verified': false,
         'failedAttempts': 0,
@@ -104,8 +107,7 @@ class TwoFactorService {
       final failedAttempts = (data?['failedAttempts'] ?? 0) as int;
 
       // Verificar si el código ha expirado
-      if (expiresAt != null &&
-          DateTime.now().isAfter(expiresAt.toDate())) {
+      if (expiresAt != null && DateTime.now().isAfter(expiresAt.toDate())) {
         AppLogger.warning(
           'Código OTP expirado para usuario $uid',
           tag: 'TwoFactorService',
@@ -120,10 +122,9 @@ class TwoFactorService {
           'verifiedAt': FieldValue.serverTimestamp(),
           'failedAttempts': 0,
         });
-        await _db
-            .collection('users')
-            .doc(uid)
-            .update({'twoFactorEnabled': true});
+        await _db.collection('users').doc(uid).update({
+          'twoFactorEnabled': true,
+        });
 
         AppLogger.info(
           'Código OTP verificado exitosamente',

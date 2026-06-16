@@ -1,4 +1,4 @@
-﻿import 'dart:ui' as ui;
+import 'dart:ui' as ui;
 
 import 'package:biux/core/config/images.dart';
 import 'package:biux/features/maps/data/models/meeting_point.dart';
@@ -441,5 +441,3 @@ class MapProvider extends ChangeNotifier {
     super.dispose();
   }
 }
-
-

@@ -1,4 +1,4 @@
-﻿import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import 'package:biux/core/design_system/color_tokens.dart';
 
 /// Ítem del menú de adjuntos
@@ -218,4 +218,3 @@ class _AttachMenuButton extends StatelessWidget {
     );
   }
 }
-

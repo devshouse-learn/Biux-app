@@ -4,7 +4,8 @@ import 'package:biux/core/exceptions/authorization_exceptions.dart';
 
 /// Servicio centralizado de autorización y permisos
 class AuthorizationService {
-  static final AuthorizationService _instance = AuthorizationService._internal();
+  static final AuthorizationService _instance =
+      AuthorizationService._internal();
 
   factory AuthorizationService() {
     return _instance;
@@ -92,7 +93,10 @@ class AuthorizationService {
     if (uid == targetUserId) return true;
 
     try {
-      final targetUserDoc = await _firestore.collection('users').doc(targetUserId).get();
+      final targetUserDoc = await _firestore
+          .collection('users')
+          .doc(targetUserId)
+          .get();
       final isPrivate = targetUserDoc.get('profileVisibility') == 'private';
 
       if (!isPrivate) return true;

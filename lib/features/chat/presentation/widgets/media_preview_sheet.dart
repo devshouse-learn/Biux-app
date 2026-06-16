@@ -1,4 +1,4 @@
-﻿import 'dart:io';
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:mime/mime.dart';
 import 'package:biux/core/design_system/color_tokens.dart';
@@ -298,5 +298,3 @@ class _VideoPreviewItem extends StatelessWidget {
     );
   }
 }
-
-

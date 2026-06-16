@@ -1,4 +1,4 @@
-﻿import 'package:flutter/foundation.dart';
+import 'package:flutter/foundation.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:biux/features/social/domain/entities/attendee_entity.dart';
@@ -87,7 +87,9 @@ class AttendeesProvider extends ChangeNotifier {
 
       _userDataLoaded = true;
     } on FirebaseException catch (e) {
-      debugPrint('aš ï¸ Error cargando datos de usuario en AttendeesProvider: $e');
+      debugPrint(
+        'aš ï¸ Error cargando datos de usuario en AttendeesProvider: $e',
+      );
       _cachedUserName = 'Usuario';
       _cachedUserPhoto = null;
       _userDataLoaded = true;
@@ -274,5 +276,3 @@ class AttendeesProvider extends ChangeNotifier {
     notifyListeners();
   }
 }
-
-

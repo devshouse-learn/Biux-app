@@ -1,4 +1,4 @@
-﻿import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:biux/core/services/remote_config_service.dart';
 import 'package:biux/core/services/app_logger.dart';
@@ -189,5 +189,3 @@ class AppUpdateService {
     }
   }
 }
-
-

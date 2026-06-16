@@ -1,4 +1,4 @@
-﻿// ignore_for_file: deprecated_member_use
+// ignore_for_file: deprecated_member_use
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -341,7 +341,12 @@ class MessageBubble extends StatelessWidget {
                           actions: [
                             TextButton(
                               onPressed: () => Navigator.pop(ctx),
-                              child: Text(Provider.of<LocaleNotifier>(context, listen: false).t('cancel')),
+                              child: Text(
+                                Provider.of<LocaleNotifier>(
+                                  context,
+                                  listen: false,
+                                ).t('cancel'),
+                              ),
                             ),
                             ElevatedButton(
                               style: ElevatedButton.styleFrom(

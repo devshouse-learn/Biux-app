@@ -220,10 +220,7 @@ class AccidentDetailScreen extends StatelessWidget {
                         children: [
                           Text(
                             l.t('reported_by'),
-                            style: TextStyle(
-                              color: Colors.grey,
-                              fontSize: 11,
-                            ),
+                            style: TextStyle(color: Colors.grey, fontSize: 11),
                           ),
                           Text(
                             accident.userName.isNotEmpty
