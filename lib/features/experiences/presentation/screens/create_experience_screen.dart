@@ -172,7 +172,9 @@ class _CreateExperienceScreenState extends State<CreateExperienceScreen> {
                         ? _publishExperience
                         : null,
                     child: Text(
-                      _isEditMode ? l.t('save_publish_changes') : l.t('publish'),
+                      _isEditMode
+                          ? l.t('save_publish_changes')
+                          : l.t('publish'),
                       style: TextStyle(
                         color: _canPublish(provider)
                             ? Colors.white
@@ -759,7 +761,6 @@ class _CreateExperienceScreenState extends State<CreateExperienceScreen> {
     if (!_formKey.currentState!.validate()) {
       return;
     }
-    final l = Provider.of<LocaleNotifier>(context, listen: false);
 
     if (_isEditMode) {
       // Modo edición: actualizar experiencia existente
@@ -821,8 +822,13 @@ class _CreateExperienceScreenState extends State<CreateExperienceScreen> {
       if (success && mounted) {
         Navigator.of(context).pop(true);
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text(l.t('experience_published')),
+          SnackBar(
+            content: Text(
+              Provider.of<LocaleNotifier>(
+                context,
+                listen: false,
+              ).t('experience_published'),
+            ),
             backgroundColor: Colors.green,
           ),
         );
@@ -1085,5 +1091,3 @@ class _CreateExperienceScreenState extends State<CreateExperienceScreen> {
     );
   }
 }
-
-

@@ -341,7 +341,7 @@ class MessageBubble extends StatelessWidget {
                           actions: [
                             TextButton(
                               onPressed: () => Navigator.pop(ctx),
-                              child: Text(l.t('cancel')),
+                              child: Text(Provider.of<LocaleNotifier>(context, listen: false).t('cancel')),
                             ),
                             ElevatedButton(
                               style: ElevatedButton.styleFrom(
@@ -359,7 +359,12 @@ class MessageBubble extends StatelessWidget {
                                   onEdit(message, newText);
                                 }
                               },
-                              child: Text(l.t('save')),
+                              child: Text(
+                                Provider.of<LocaleNotifier>(
+                                  ctx,
+                                  listen: false,
+                                ).t('save'),
+                              ),
                             ),
                           ],
                         ),
@@ -583,7 +588,16 @@ class MessageBubble extends StatelessWidget {
   }
 
   void _showEmojiPicker(BuildContext context) {
-    const emojis = ['🔗‘', 'a¤ï¸', '🔗˜‚', '🔗˜®', '🔗˜¢', '🔗”¥', '🔗’ª', '🔗š´'];
+    const emojis = [
+      '🔗‘',
+      'a¤ï¸',
+      '🔗˜‚',
+      '🔗˜®',
+      '🔗˜¢',
+      '🔗”¥',
+      '🔗’ª',
+      '🔗š´',
+    ];
     final renderBox = context.findRenderObject() as RenderBox?;
     if (renderBox == null) return;
     final offset = renderBox.localToGlobal(Offset.zero);
@@ -1733,7 +1747,3 @@ class _DeletedBubble extends StatelessWidget {
     );
   }
 }
-
-
-
-

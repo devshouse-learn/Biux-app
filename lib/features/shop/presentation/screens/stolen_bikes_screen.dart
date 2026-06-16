@@ -240,7 +240,11 @@ class _StolenBikesScreenState extends State<StolenBikesScreen>
           return Container(
             height: MediaQuery.of(context).size.height * 0.7,
             decoration: BoxDecoration(
-              color: isDarkSheet ? _isDark ? ColorTokens.primary20 : Colors.white : Colors.white,
+              color: isDarkSheet
+                  ? _isDark
+                        ? ColorTokens.primary20
+                        : Colors.white
+                  : Colors.white,
               borderRadius: const BorderRadius.vertical(
                 top: Radius.circular(20),
               ),
@@ -300,8 +304,12 @@ class _StolenBikesScreenState extends State<StolenBikesScreen>
                       ),
                       filled: true,
                       fillColor: isDarkSheet
-                          ? _isDark ? ColorTokens.primary20 : Colors.white
-                          : _isDark ? ColorTokens.primary20 : const Color(0xFFF8F9FA),
+                          ? _isDark
+                                ? ColorTokens.primary20
+                                : Colors.white
+                          : _isDark
+                          ? ColorTokens.primary20
+                          : const Color(0xFFF8F9FA),
                       contentPadding: const EdgeInsets.symmetric(
                         horizontal: 14,
                         vertical: 10,
@@ -422,7 +430,9 @@ class _StolenBikesScreenState extends State<StolenBikesScreen>
           padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
           decoration: BoxDecoration(
             color: isAll
-                ? _isDark ? ColorTokens.primary20 : const Color(0xFFF8F9FA)
+                ? _isDark
+                      ? ColorTokens.primary20
+                      : const Color(0xFFF8F9FA)
                 : ColorTokens.primary50.withValues(alpha: 0.08),
             borderRadius: BorderRadius.circular(10),
             border: Border.all(
@@ -462,12 +472,14 @@ class _StolenBikesScreenState extends State<StolenBikesScreen>
   Widget build(BuildContext context) {
     _isDark = Theme.of(context).brightness == Brightness.dark;
     _vivantRed = const Color(0xFFFF3D3D);
-    final scaffoldBg = _isDark ? ColorTokens.primary20 : const Color(0xFFF5F6FA);
+    final scaffoldBg = _isDark
+        ? ColorTokens.primary20
+        : const Color(0xFFF5F6FA);
 
     return Scaffold(
       backgroundColor: scaffoldBg,
       appBar: AppBar(
-        title: Text(l.t('stolen_bikes')),
+        title: Text(Provider.of<LocaleNotifier>(context, listen: false).t('stolen_bikes')),
         backgroundColor: _vivantRed,
         foregroundColor: Colors.white,
         elevation: 0,
@@ -522,7 +534,9 @@ class _StolenBikesScreenState extends State<StolenBikesScreen>
         Container(
           padding: const EdgeInsets.all(12),
           color: Theme.of(context).brightness == Brightness.dark
-              ? _isDark ? ColorTokens.primary20 : Colors.white
+              ? _isDark
+                    ? ColorTokens.primary20
+                    : Colors.white
               : Colors.white,
           child: Column(
             children: [
@@ -547,8 +561,12 @@ class _StolenBikesScreenState extends State<StolenBikesScreen>
                   ),
                   filled: true,
                   fillColor: Theme.of(context).brightness == Brightness.dark
-                      ? _isDark ? ColorTokens.primary20 : Colors.white
-                      : _isDark ? ColorTokens.primary20 : const Color(0xFFF8F9FA),
+                      ? _isDark
+                            ? ColorTokens.primary20
+                            : Colors.white
+                      : _isDark
+                      ? ColorTokens.primary20
+                      : const Color(0xFFF8F9FA),
                   contentPadding: const EdgeInsets.symmetric(
                     horizontal: 16,
                     vertical: 12,
@@ -712,7 +730,9 @@ class _StolenBikesScreenState extends State<StolenBikesScreen>
               ),
               filled: true,
               fillColor: Theme.of(context).brightness == Brightness.dark
-                  ? _isDark ? ColorTokens.primary20 : Colors.white
+                  ? _isDark
+                        ? ColorTokens.primary20
+                        : Colors.white
                   : Colors.white,
             ),
           ),
@@ -846,7 +866,9 @@ class _StolenBikesScreenState extends State<StolenBikesScreen>
               padding: const EdgeInsets.all(10),
               decoration: BoxDecoration(
                 color: Theme.of(context).brightness == Brightness.dark
-                    ? _isDark ? ColorTokens.primary20 : Colors.white
+                    ? _isDark
+                          ? ColorTokens.primary20
+                          : Colors.white
                     : Colors.white,
                 borderRadius: BorderRadius.circular(8),
               ),
@@ -885,17 +907,11 @@ class _StolenBikesScreenState extends State<StolenBikesScreen>
               decoration: BoxDecoration(
                 color: _vivantRed.withValues(alpha: 0.08),
                 borderRadius: BorderRadius.circular(12),
-                border: Border.all(
-                  color: _vivantRed.withValues(alpha: 0.2),
-                ),
+                border: Border.all(color: _vivantRed.withValues(alpha: 0.2)),
               ),
               child: Row(
                 children: [
-                  Icon(
-                    Icons.info_outline,
-                    color: _vivantRed,
-                    size: 22,
-                  ),
+                  Icon(Icons.info_outline, color: _vivantRed, size: 22),
                   const SizedBox(width: 10),
                   const Expanded(
                     child: Text(
@@ -1006,18 +1022,16 @@ class _StolenBikesScreenState extends State<StolenBikesScreen>
                 ),
                 decoration: BoxDecoration(
                   color: Theme.of(context).brightness == Brightness.dark
-                      ? _isDark ? ColorTokens.primary20 : Colors.white
+                      ? _isDark
+                            ? ColorTokens.primary20
+                            : Colors.white
                       : Colors.white,
                   borderRadius: BorderRadius.circular(12),
                   border: Border.all(color: Colors.grey.shade300),
                 ),
                 child: Row(
                   children: [
-                    Icon(
-                      Icons.calendar_today,
-                      size: 20,
-                      color: _subtitleColor,
-                    ),
+                    Icon(Icons.calendar_today, size: 20, color: _subtitleColor),
                     const SizedBox(width: 10),
                     Text(
                       _theftDate != null
@@ -1070,7 +1084,7 @@ class _StolenBikesScreenState extends State<StolenBikesScreen>
               child: ElevatedButton.icon(
                 onPressed: _submitReport,
                 icon: const Icon(Icons.send),
-                label: Text(l.t('send_report')),
+                label: Text(Provider.of<LocaleNotifier>(context, listen: false).t('send_report')),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: _vivantRed,
                   foregroundColor: Colors.white,
@@ -1121,7 +1135,7 @@ class _StolenBikesScreenState extends State<StolenBikesScreen>
       builder: (c) => AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
         icon: const Icon(Icons.check_circle, color: Colors.green, size: 48),
-        title: Text(l.t('report_sent')),
+        title: Text(Provider.of<LocaleNotifier>(context, listen: false).t('report_sent')),
         content: const Text(
           'Tu reporte ha sido registrado. La comunidad sera alertada.',
         ),
@@ -1201,8 +1215,12 @@ class _StolenBikesScreenState extends State<StolenBikesScreen>
         padding: const EdgeInsets.symmetric(horizontal: 10),
         decoration: BoxDecoration(
           color: Theme.of(context).brightness == Brightness.dark
-              ? _isDark ? ColorTokens.primary20 : Colors.white
-              : _isDark ? ColorTokens.primary20 : const Color(0xFFF8F9FA),
+              ? _isDark
+                    ? ColorTokens.primary20
+                    : Colors.white
+              : _isDark
+              ? ColorTokens.primary20
+              : const Color(0xFFF8F9FA),
           borderRadius: BorderRadius.circular(10),
           border: Border.all(color: Colors.grey.shade300),
         ),
@@ -1260,7 +1278,9 @@ class _StolenBikesScreenState extends State<StolenBikesScreen>
         ),
         filled: true,
         fillColor: Theme.of(context).brightness == Brightness.dark
-            ? _isDark ? ColorTokens.primary20 : Colors.white
+            ? _isDark
+                  ? ColorTokens.primary20
+                  : Colors.white
             : Colors.white,
         contentPadding: const EdgeInsets.symmetric(
           horizontal: 14,
@@ -1284,7 +1304,9 @@ class _StolenBikesScreenState extends State<StolenBikesScreen>
         padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
         decoration: BoxDecoration(
           color: Theme.of(context).brightness == Brightness.dark
-              ? _isDark ? ColorTokens.primary20 : Colors.white
+              ? _isDark
+                    ? ColorTokens.primary20
+                    : Colors.white
               : Colors.white,
           borderRadius: BorderRadius.circular(12),
           border: Border.all(color: Colors.grey.shade300),
@@ -1574,7 +1596,6 @@ class _StolenBikesScreenState extends State<StolenBikesScreen>
         .length;
   }
 
-  Color get _textColor => _isDark ? Colors.white : Colors.black87;
-  Color get _subtitleColor => _isDark ? Colors.white70 : _subtitleColor!;
-  Color get _hintColor => _isDark ? Colors.white54 : _hintColor!;
+  Color get _subtitleColor => _isDark ? Colors.white70 : Colors.grey[600]!;
+  Color get _hintColor => _isDark ? Colors.white54 : Colors.grey[400]!;
 }

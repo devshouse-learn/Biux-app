@@ -33,12 +33,17 @@ class BikeRepositoryImpl implements BikeRepository {
       final bikeWithId = bikeModel.copyWith(id: docRef.id);
       await docRef.set(bikeWithId.toJson());
 
-      AppLogger.info('Bicicleta registrada: ${bikeWithId.id}',
-          tag: 'BikeRepository');
+      AppLogger.info(
+        'Bicicleta registrada: ${bikeWithId.id}',
+        tag: 'BikeRepository',
+      );
       return bikeWithId.toEntity();
     } on FirebaseException catch (e) {
-      AppLogger.error('Error registrando bicicleta: $e',
-          tag: 'BikeRepository', error: e);
+      AppLogger.error(
+        'Error registrando bicicleta: $e',
+        tag: 'BikeRepository',
+        error: e,
+      );
       throw Exception('Failed to register bike');
     }
   }
@@ -46,7 +51,6 @@ class BikeRepositoryImpl implements BikeRepository {
   @override
   Future<List<BikeEntity>> getUserBikes(String userId) async {
     try {
-
       final querySnapshot = await _firestore
           .collection(_bikesCollection)
           .where('ownerId', isEqualTo: userId)
@@ -56,10 +60,6 @@ class BikeRepositoryImpl implements BikeRepository {
       debugPrint(
         '🔗“¦ Repository: Query devolvió ${querySnapshot.docs.length} documentos',
       );
-
-      if (querySnapshot.docs.isNotEmpty) {
-        final firstDoc = querySnapshot.docs.first.data();
-      }
 
       // TEMPORAL: Verificar si hay bicis con ownerId "current-user-id"
       final allBikesSnapshot = await _firestore
@@ -613,5 +613,3 @@ class BikeRepositoryImpl implements BikeRepository {
     }
   }
 }
-
-

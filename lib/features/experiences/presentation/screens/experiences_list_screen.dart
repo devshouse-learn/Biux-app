@@ -231,7 +231,7 @@ class _ExperiencesListScreenState extends State<ExperiencesListScreen>
                 provider.loadPersonalizedFeed(userId);
               }
             },
-            child: Text(l.t('retry')),
+            child: Text(Provider.of<LocaleNotifier>(context, listen: false).t('retry')),
           ),
         ],
       ),
@@ -659,10 +659,15 @@ class _ExperienceCard extends StatelessWidget {
                             } else {
                               await provider.removeRepost(experience.id);
                             }
-                            if (ctx.mounted) {
-                              ScaffoldMessenger.of(ctx).showSnackBar(
-                                const SnackBar(
-                                  content: Text(l.t('repost_deleted')),
+                            if (context.mounted) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: Text(
+                                    Provider.of<LocaleNotifier>(
+                                      context,
+                                      listen: false,
+                                    ).t('repost_deleted'),
+                                  ),
                                   behavior: SnackBarBehavior.floating,
                                 ),
                               );
@@ -780,7 +785,7 @@ class _ExperienceCard extends StatelessWidget {
       context: context,
       builder: (ctx) => AlertDialog(
         backgroundColor: theme.dialogTheme.backgroundColor ?? theme.cardColor,
-        title: Text(l.t('repost_publication')),
+        title: Text(Provider.of<LocaleNotifier>(context, listen: false).t('repost_publication')),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -813,11 +818,11 @@ class _ExperienceCard extends StatelessWidget {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx, false),
-            child: Text(l.t('cancel')),
+            child: Text(Provider.of<LocaleNotifier>(context, listen: false).t('cancel')),
           ),
           ElevatedButton(
             onPressed: () => Navigator.pop(ctx, true),
-            child: Text(l.t('repost')),
+            child: Text(Provider.of<LocaleNotifier>(context, listen: false).t('repost')),
           ),
         ],
       ),
@@ -838,7 +843,7 @@ class _ExperienceCard extends StatelessWidget {
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(l.t('post_reposted')),
+            content: Text(Provider.of<LocaleNotifier>(context, listen: false).t('post_reposted')),
             behavior: SnackBarBehavior.floating,
           ),
         );
@@ -874,14 +879,14 @@ class _ExperienceCard extends StatelessWidget {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: Text(l.t('cancel')),
+            child: Text(Provider.of<LocaleNotifier>(context, listen: false).t('cancel')),
           ),
           TextButton(
             onPressed: () {
               Navigator.pop(context);
               _deletePost(context);
             },
-            child: Text(l.t('delete')),
+            child: Text(Provider.of<LocaleNotifier>(context, listen: false).t('delete')),
           ),
         ],
       ),
@@ -897,7 +902,7 @@ class _ExperienceCard extends StatelessWidget {
       if (context.mounted) {
         ScaffoldMessenger.of(
           context,
-        ).showSnackBar(SnackBar(content: Text(l.t('post_deleted_success'))));
+        ).showSnackBar(SnackBar(content: Text(Provider.of<LocaleNotifier>(context, listen: false).t('post_deleted_success'))));
       }
     } on FirebaseException catch (e) {
       if (context.mounted) {
@@ -921,7 +926,7 @@ class _ExperienceCard extends StatelessWidget {
         if (context.mounted) {
           ScaffoldMessenger.of(
             context,
-          ).showSnackBar(SnackBar(content: Text(l.t('error_generic'))));
+          ).showSnackBar(SnackBar(content: Text(Provider.of<LocaleNotifier>(context, listen: false).t('error_generic'))));
         }
         return false;
       });
@@ -1443,7 +1448,6 @@ class _AdvertisementCard extends StatelessWidget {
 
   /// Maneja la acción del botón CTA del anuncio
   void _handleAdvertisementAction(BuildContext context) async {
-    final l = Provider.of<LocaleNotifier>(context, listen: false);
     try {
       if (advertisement.callToActionUrl != null &&
           advertisement.callToActionUrl!.isNotEmpty) {
@@ -1454,14 +1458,14 @@ class _AdvertisementCard extends StatelessWidget {
           if (context.mounted) {
             ScaffoldMessenger.of(
               context,
-            ).showSnackBar(SnackBar(content: Text(l.t('error_generic'))));
+            ).showSnackBar(SnackBar(content: Text(Provider.of<LocaleNotifier>(context, listen: false).t('error_generic'))));
           }
         }
       } else {
         if (context.mounted) {
           ScaffoldMessenger.of(
             context,
-          ).showSnackBar(SnackBar(content: Text(l.t('error_generic'))));
+          ).showSnackBar(SnackBar(content: Text(Provider.of<LocaleNotifier>(context, listen: false).t('error_generic'))));
         }
       }
     } on FirebaseException catch (e) {
@@ -1474,5 +1478,3 @@ class _AdvertisementCard extends StatelessWidget {
     }
   }
 }
-
-
