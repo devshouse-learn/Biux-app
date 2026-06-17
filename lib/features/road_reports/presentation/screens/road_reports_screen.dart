@@ -171,7 +171,7 @@ class _RoadReportsScreenState extends State<RoadReportsScreen> {
             Text(l.t('delete_report')),
           ],
         ),
-        content: Text('a¿Estás seguro de que quieres eliminar este reporte?'),
+        content: Text('¿Estás seguro de que quieres eliminar este reporte?'),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(dc).pop(),
@@ -214,9 +214,17 @@ class _RoadReportsScreenState extends State<RoadReportsScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(l.t('road_reports_title')),
         backgroundColor: ColorTokens.primary30,
         foregroundColor: Colors.white,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          color: Colors.white,
+          onPressed: () => Navigator.pop(context),
+        ),
+        title: Text(
+          l.t('road_reports_title'),
+          style: const TextStyle(color: Colors.white),
+        ),
       ),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () => _showCreate(context),

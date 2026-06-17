@@ -78,7 +78,7 @@ class ReportContentDialog {
               ),
               SizedBox(height: 8),
               Text(
-                'a¿Por qué deseas reportar este contenido?',
+                '¿Por qué deseas reportar este contenido?',
                 style: TextStyle(fontSize: 14, color: Colors.grey.shade600),
               ),
               SizedBox(height: 16),

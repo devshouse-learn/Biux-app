@@ -220,13 +220,19 @@ class _MyBikesScreenState extends State<MyBikesScreen> {
   }
 
   Widget _buildBikesList(List<BikeEntity> bikes) {
-    return ListView.builder(
-      padding: const EdgeInsets.symmetric(horizontal: 16),
-      itemCount: bikes.length,
-      itemBuilder: (context, index) {
-        final bike = bikes[index];
-        return _buildBikeCard(bike);
+    return RefreshIndicator(
+      onRefresh: () async {
+        _loadUserBikes();
+        await Future.delayed(const Duration(milliseconds: 500));
       },
+      child: ListView.builder(
+        padding: const EdgeInsets.symmetric(horizontal: 16),
+        itemCount: bikes.length,
+        itemBuilder: (context, index) {
+          final bike = bikes[index];
+          return _buildBikeCard(bike);
+        },
+      ),
     );
   }
 

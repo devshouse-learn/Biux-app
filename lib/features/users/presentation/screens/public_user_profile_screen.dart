@@ -1347,7 +1347,7 @@ class _PublicUserProfileScreenState extends State<PublicUserProfileScreen> {
       builder: (ctx) => AlertDialog(
         title: Text(l.t('block_user')),
         content: Text(
-          'a¿Deseas bloquear a ${user.fullName.isNotEmpty ? user.fullName : user.userName}? '
+          '¿Deseas bloquear a ${user.fullName.isNotEmpty ? user.fullName : user.userName}? '
           '${l.t('also_removed_followers')}',
         ),
         actions: [

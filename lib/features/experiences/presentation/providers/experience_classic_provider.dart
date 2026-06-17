@@ -50,6 +50,18 @@ class ExperienceProvider extends ChangeNotifier {
   bool get hasMorePosts => _hasMorePosts;
   String? get error => _error;
 
+  /// Limpia la caché de experiencias para forzar recarga
+  Future<void> clearCache() async {
+    _experiences.clear();
+    _allExperiences.clear();
+    _userExperiences.clear();
+    _rideExperiences.clear();
+    _myReposts.clear();
+    _hasMorePosts = true;
+    _error = null;
+    notifyListeners();
+  }
+
   /// Carga experiencias de un usuario específico
   Future<void> loadUserExperiences(String userId) async {
     try {

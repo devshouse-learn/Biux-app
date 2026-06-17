@@ -479,14 +479,16 @@ class _StolenBikesScreenState extends State<StolenBikesScreen>
     return Scaffold(
       backgroundColor: scaffoldBg,
       appBar: AppBar(
-        title: Text(
-          Provider.of<LocaleNotifier>(context, listen: false).t('stolen_bikes'),
-        ),
         backgroundColor: _vivantRed,
         foregroundColor: Colors.white,
+        title: Text(
+          Provider.of<LocaleNotifier>(context, listen: false).t('stolen_bikes'),
+          style: const TextStyle(color: Colors.white),
+        ),
         elevation: 0,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
+          color: Colors.white,
           onPressed: () => Navigator.of(context).pop(),
         ),
         bottom: TabBar(

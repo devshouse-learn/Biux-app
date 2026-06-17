@@ -132,7 +132,15 @@ class _AchievementsScreenState extends State<AchievementsScreen>
                 pinned: true,
                 backgroundColor: Colors.amber[800],
                 foregroundColor: Colors.white,
-                title: Text(l.t('my_achievements')),
+                leading: IconButton(
+                  icon: const Icon(Icons.arrow_back),
+                  color: Colors.white,
+                  onPressed: () => Navigator.pop(context),
+                ),
+                title: Text(
+                  l.t('my_achievements'),
+                  style: const TextStyle(color: Colors.white),
+                ),
                 actions: [
                   IconButton(
                     icon: provider.isSyncing

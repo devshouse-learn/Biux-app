@@ -336,7 +336,15 @@ class _AccidentReportScreenState extends State<AccidentReportScreen>
       appBar: AppBar(
         backgroundColor: Colors.red[700],
         foregroundColor: Colors.white,
-        title: Text(l.t('accidents_title')),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          color: Colors.white,
+          onPressed: () => Navigator.pop(context),
+        ),
+        title: Text(
+          l.t('accidents_title'),
+          style: const TextStyle(color: Colors.white),
+        ),
         bottom: TabBar(
           controller: _tabController,
           indicatorColor: Colors.white,

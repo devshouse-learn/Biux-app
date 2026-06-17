@@ -20,13 +20,11 @@ class InformationDetailsScreen extends StatelessWidget {
         children: [
           SettingsWidgets.buildSectionTitle(l.t('about_app'), isDark),
           SizedBox(height: 12),
-          SettingsWidgets.buildOptionCard(
-            context: context,
+          _buildVersionCard(
             icon: Icons.info_outline,
             title: l.t('app_version'),
             subtitle: 'v1.0.0',
             isDark: isDark,
-            onTap: () {},
           ),
           SizedBox(height: 24),
           SettingsWidgets.buildSectionTitle(l.t('legal_policies'), isDark),
@@ -51,6 +49,71 @@ class InformationDetailsScreen extends StatelessWidget {
             onTap: () => _showSupportDialog(context, isDark, l),
           ),
           const SizedBox(height: 32),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildVersionCard({
+    required IconData icon,
+    required String title,
+    required String subtitle,
+    required bool isDark,
+  }) {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: isDark ? ColorTokens.primary20 : Colors.white,
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(color: isDark ? Colors.white10 : Colors.black12),
+        boxShadow: [
+          BoxShadow(
+            color: isDark
+                ? Colors.black.withValues(alpha: 0.15)
+                : Colors.grey.withValues(alpha: 0.08),
+            blurRadius: 8,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: Row(
+        children: [
+          Container(
+            padding: const EdgeInsets.all(12),
+            decoration: BoxDecoration(
+              color: isDark ? Colors.grey.shade700 : Colors.grey.shade200,
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: Icon(
+              icon,
+              color: isDark ? Colors.white : Colors.black87,
+              size: 26,
+            ),
+          ),
+          const SizedBox(width: 16),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  title,
+                  style: TextStyle(
+                    color: isDark ? Colors.white : Colors.black87,
+                    fontSize: 15,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  subtitle,
+                  style: TextStyle(
+                    color: isDark ? Colors.white60 : Colors.black54,
+                    fontSize: 13,
+                  ),
+                ),
+              ],
+            ),
+          ),
         ],
       ),
     );

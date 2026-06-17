@@ -8,6 +8,7 @@ import 'package:biux/features/groups/presentation/providers/group_provider.dart'
 import 'package:biux/shared/widgets/images/optimized_image_picker.dart';
 import 'package:biux/core/services/optimized_cache_manager.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:biux/shared/widgets/custom_icons/groups_icon.dart';
 
 class MyGroupsScreen extends StatefulWidget {
   @override
@@ -88,6 +89,8 @@ class _MyGroupsScreenState extends State<MyGroupsScreen>
       onRefresh: () async {
         provider.loadUserGroups();
         provider.loadAllGroups();
+        // Wait a bit for the streams to update
+        await Future.delayed(const Duration(milliseconds: 500));
       },
       child: ListView.builder(
         padding: EdgeInsets.all(16),
@@ -119,6 +122,8 @@ class _MyGroupsScreenState extends State<MyGroupsScreen>
     return RefreshIndicator(
       onRefresh: () async {
         provider.loadAdminGroups();
+        // Wait a bit for the stream to update
+        await Future.delayed(const Duration(milliseconds: 500));
       },
       child: ListView.builder(
         padding: EdgeInsets.all(16),
@@ -228,7 +233,7 @@ class _MyGroupsScreenState extends State<MyGroupsScreen>
             : const CircleAvatar(
                 radius: 24,
                 backgroundColor: ColorTokens.primary30,
-                child: Icon(Icons.groups, color: ColorTokens.neutral100),
+                child: GroupsIcon(color: ColorTokens.neutral100),
               ),
         title: Text(
           group.name,

@@ -7,7 +7,6 @@ import 'package:biux/features/authentication/data/repositories/authentication_re
 import 'package:biux/features/cities/data/repositories/cities_firebase_repository.dart';
 import 'package:biux/features/users/data/repositories/user_firebase_repository.dart';
 import 'package:flutter/material.dart';
-//import 'package:flutter_native_image/flutter_native_image.dart';
 import 'package:image_picker/image_picker.dart';
 
 class EditUserScreenBloc extends ChangeNotifier {

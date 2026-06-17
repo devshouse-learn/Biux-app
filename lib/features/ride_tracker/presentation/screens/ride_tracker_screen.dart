@@ -283,6 +283,7 @@ class _RideTrackerScreenState extends State<RideTrackerScreen>
           children: [
             _buildCircleButton(
               icon: Icons.arrow_back_rounded,
+              iconColor: Colors.black,
               onTap: () {
                 if (p.isTracking) {
                   _showExitConfirmation(p);
@@ -367,6 +368,7 @@ class _RideTrackerScreenState extends State<RideTrackerScreen>
             else if (!p.isTracking)
               _buildCircleButton(
                 icon: Icons.history_rounded,
+                iconColor: Colors.black,
                 onTap: () => setState(() => _showHistory = true),
               )
             else
@@ -380,6 +382,7 @@ class _RideTrackerScreenState extends State<RideTrackerScreen>
   Widget _buildCircleButton({
     required IconData icon,
     required VoidCallback onTap,
+    Color? iconColor,
   }) {
     return GestureDetector(
       onTap: onTap,
@@ -398,7 +401,7 @@ class _RideTrackerScreenState extends State<RideTrackerScreen>
             ),
           ],
         ),
-        child: Icon(icon, size: 22, color: Colors.white),
+        child: Icon(icon, size: 22, color: iconColor ?? Colors.white),
       ),
     );
   }
@@ -897,10 +900,11 @@ class _RideTrackerScreenState extends State<RideTrackerScreen>
         foregroundColor: Colors.white,
         title: const Text(
           'Mis Rodadas',
-          style: TextStyle(fontWeight: FontWeight.bold),
+          style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
         ),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_rounded),
+          color: Colors.white,
           onPressed: () {
             if (widget.showHistory) {
               Navigator.of(context).pop();

@@ -851,8 +851,8 @@ class _CreateExperienceScreenState extends State<CreateExperienceScreen> {
         ? 'Descartar Publicación'
         : 'Descartar Historia';
     final content = widget.isPostMode
-        ? 'a¿Estás seguro de que deseas descartar esta publicación? Se perderán todos los cambios.'
-        : 'a¿Estás seguro de que deseas descartar esta historia? Se perderán todos los cambios.';
+        ? '¿Estás seguro de que deseas descartar esta publicación? Se perderán todos los cambios.'
+        : '¿Estás seguro de que deseas descartar esta historia? Se perderán todos los cambios?';
     showDialog(
       context: context,
       builder: (dialogContext) => AlertDialog(
@@ -979,7 +979,7 @@ class _CreateExperienceScreenState extends State<CreateExperienceScreen> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'a¿Qué quieres crear?',
+            '¿Qué quieres crear?',
             style: TextStyle(
               fontSize: 16,
               fontWeight: FontWeight.w600,

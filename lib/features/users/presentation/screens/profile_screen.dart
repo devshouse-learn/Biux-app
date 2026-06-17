@@ -308,7 +308,7 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
                               ? NetworkImage(user.photo)
                               : null,
                           child: user.photo.isEmpty
-                              ? const Icon(Icons.person)
+                              ? const Icon(Icons.person, color: Colors.white)
                               : null,
                         ),
                         title: Text(
@@ -424,7 +424,7 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
                               ? NetworkImage(user.photo)
                               : null,
                           child: user.photo.isEmpty
-                              ? const Icon(Icons.person)
+                              ? const Icon(Icons.person, color: Colors.white)
                               : null,
                         ),
                         title: Text(
@@ -1003,7 +1003,7 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
                                         ? Icon(
                                             Icons.person,
                                             size: 40,
-                                            color: ColorTokens.neutral60,
+                                            color: ColorTokens.primary30,
                                           )
                                         : null,
                                   ),
@@ -1318,31 +1318,33 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
                             if (!snapshot.hasData ||
                                 snapshot.data == null ||
                                 (snapshot.data as dynamic).isEmpty) {
-                              return Container(
-                                width: double.infinity,
+                              final isDark =
+                                  Theme.of(context).brightness ==
+                                  Brightness.dark;
+                              return Padding(
                                 padding: EdgeInsets.symmetric(vertical: 40),
-                                decoration: BoxDecoration(
-                                  color: ColorTokens.neutral10,
-                                  borderRadius: BorderRadius.circular(8),
-                                  border: Border.all(
-                                    color: ColorTokens.neutral30,
-                                    width: 1,
-                                  ),
-                                ),
                                 child: Column(
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
                                     Icon(
                                       Icons.image_not_supported,
                                       size: 48,
-                                      color: ColorTokens.neutral60,
+                                      color: isDark
+                                          ? ColorTokens.neutral60
+                                          : ColorTokens.neutral0.withValues(
+                                              alpha: 0.5,
+                                            ),
                                     ),
                                     SizedBox(height: 12),
                                     Text(
                                       'Sin publicaciones aún',
                                       style: TextStyle(
                                         fontSize: 14,
-                                        color: ColorTokens.neutral70,
+                                        color: isDark
+                                            ? ColorTokens.neutral70
+                                            : ColorTokens.neutral0.withValues(
+                                                alpha: 0.7,
+                                              ),
                                         fontWeight: FontWeight.w500,
                                       ),
                                     ),
@@ -1351,7 +1353,11 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
                                       'Comienza a compartir',
                                       style: TextStyle(
                                         fontSize: 12,
-                                        color: ColorTokens.neutral60,
+                                        color: isDark
+                                            ? ColorTokens.neutral60
+                                            : ColorTokens.neutral0.withValues(
+                                                alpha: 0.5,
+                                              ),
                                       ),
                                     ),
                                   ],

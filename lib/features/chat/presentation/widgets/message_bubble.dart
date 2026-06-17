@@ -488,7 +488,7 @@ class MessageBubble extends StatelessWidget {
                     _confirmDelete(
                       context,
                       title: 'Eliminar para mí',
-                      message: 'a¿Eliminar este mensaje solo para ti?',
+                      message: '¿Eliminar este mensaje solo para ti?',
                       onConfirm: () => onDeleteForMe(message),
                     );
                   },
@@ -528,7 +528,7 @@ class MessageBubble extends StatelessWidget {
                         context,
                         title: 'Eliminar para todos',
                         message:
-                            'a¿Eliminar este mensaje para todos los participantes?',
+                            '¿Eliminar este mensaje para todos los participantes?',
                         onConfirm: () => onDeleteForAll(message),
                       );
                     },

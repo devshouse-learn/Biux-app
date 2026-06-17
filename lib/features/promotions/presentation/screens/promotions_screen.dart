@@ -46,12 +46,9 @@ class _PromotionsScreenState extends State<PromotionsScreen>
           ),
         ),
         backgroundColor: ColorTokens.primary30,
+        foregroundColor: Colors.white,
         elevation: 0,
         iconTheme: const IconThemeData(color: Colors.white),
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
-          onPressed: () => Navigator.of(context).pop(),
-        ),
         bottom: TabBar(
           controller: _tabController,
           indicatorColor: Colors.white,

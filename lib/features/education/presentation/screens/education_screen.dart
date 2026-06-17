@@ -33,7 +33,15 @@ class _EducationScreenState extends State<EducationScreen>
       appBar: AppBar(
         backgroundColor: ColorTokens.primary30,
         foregroundColor: Colors.white,
-        title: Text(l.t('road_education')),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          color: Colors.white,
+          onPressed: () => Navigator.pop(context),
+        ),
+        title: Text(
+          l.t('road_education'),
+          style: const TextStyle(color: Colors.white),
+        ),
         bottom: TabBar(
           controller: _tabCtrl,
           isScrollable: true,

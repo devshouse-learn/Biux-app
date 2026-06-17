@@ -597,7 +597,7 @@ class _ChatScreenState extends State<ChatScreen> {
       builder: (ctx) => AlertDialog(
         title: Text(l.t('block_user')),
         content: Text(
-          'a¿Deseas bloquear a ${_otherName.isNotEmpty ? _otherName : 'este usuario'}? '
+          '¿Deseas bloquear a ${_otherName.isNotEmpty ? _otherName : 'este usuario'}? '
           'No podrá enviarte mensajes, ver tu foto de perfil '
           'ni tu información. También será removido de tus seguidores.',
         ),
@@ -640,7 +640,7 @@ class _ChatScreenState extends State<ChatScreen> {
       builder: (ctx) => AlertDialog(
         title: Text(l.t('unblock_user')),
         content: Text(
-          'a¿Deseas desbloquear a ${_otherName.isNotEmpty ? _otherName : 'este usuario'}? '
+          '¿Deseas desbloquear a ${_otherName.isNotEmpty ? _otherName : 'este usuario'}? '
           'Podrá enviarte mensajes y ver tu perfil nuevamente.',
         ),
         actions: [
