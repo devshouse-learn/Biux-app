@@ -1,4 +1,4 @@
-﻿import 'package:biux/features/groups/data/models/group.dart';
+import 'package:biux/features/groups/data/models/group.dart';
 import 'package:biux/features/roads/data/models/road.dart';
 import 'package:biux/features/roads/data/models/competitor_road.dart';
 import 'dart:io';
@@ -219,4 +219,3 @@ class RoadsFirebaseRepository extends RoadsRepositoryAbstract {
     }
   }
 }
-

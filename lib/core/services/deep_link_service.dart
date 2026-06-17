@@ -1,4 +1,4 @@
-﻿import 'package:go_router/go_router.dart';
+import 'package:go_router/go_router.dart';
 import 'package:biux/core/services/app_logger.dart';
 
 /// Servicio para manejar deep links y app links
@@ -227,5 +227,3 @@ class DeepLinkService {
         '$link';
   }
 }
-
-

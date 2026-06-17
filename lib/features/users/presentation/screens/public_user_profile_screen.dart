@@ -1,4 +1,4 @@
-﻿import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -1347,7 +1347,7 @@ class _PublicUserProfileScreenState extends State<PublicUserProfileScreen> {
       builder: (ctx) => AlertDialog(
         title: Text(l.t('block_user')),
         content: Text(
-          'a¿Deseas bloquear a ${user.fullName.isNotEmpty ? user.fullName : user.userName}? '
+          '¿Deseas bloquear a ${user.fullName.isNotEmpty ? user.fullName : user.userName}? '
           '${l.t('also_removed_followers')}',
         ),
         actions: [
@@ -1441,5 +1441,3 @@ class _PublicUserProfileScreenState extends State<PublicUserProfileScreen> {
     );
   }
 }
-
-

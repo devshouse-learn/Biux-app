@@ -1,4 +1,4 @@
-﻿import 'dart:async';
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:go_router/go_router.dart';
@@ -103,10 +103,24 @@ class _ExperiencesListScreenState extends State<ExperiencesListScreen>
     final userId = _currentUserId;
     if (userId != null) {
       final provider = context.read<ExperienceProvider>();
-      await provider.loadPersonalizedFeed(userId);
-      provider.loadMyReposts(userId);
-      // Cargar grupos que sigue el usuario
-      context.read<GroupProvider>().loadUserGroups();
+      final groupProvider = context.read<GroupProvider>();
+
+      try {
+        // Forzar recarga limpia desde cero
+        await provider.clearCache();
+        await provider.loadPersonalizedFeed(userId);
+
+        // Cargar grupos (no espera, usa streams)
+        groupProvider.loadUserGroups();
+
+        // Cargar reposts sin esperar
+        provider.loadMyReposts(userId);
+
+        // Esperar un poco para que los streams se actualicen
+        await Future.delayed(const Duration(milliseconds: 300));
+      } catch (e) {
+        debugPrint('Error al cargar feed: $e');
+      }
     }
   }
 

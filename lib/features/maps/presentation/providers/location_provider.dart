@@ -1,4 +1,4 @@
-﻿import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 
 class LocationProvider extends ChangeNotifier {
@@ -122,5 +122,3 @@ class LocationProvider extends ChangeNotifier {
     notifyListeners();
   }
 }
-
-

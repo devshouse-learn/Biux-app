@@ -1,4 +1,4 @@
-﻿// ignore_for_file: deprecated_member_use
+// ignore_for_file: deprecated_member_use
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:biux/core/design_system/theme_notifier.dart';
@@ -41,15 +41,6 @@ class AppearanceDetailsScreen extends StatelessWidget {
                 subtitle: l.t('dark_mode_subtitle'),
                 selected: theme.mode == ThemeMode.dark,
                 onTap: () => theme.setMode(ThemeMode.dark),
-                isDark: isDark,
-              ),
-              SizedBox(height: 8),
-              _ThemeOptionTile(
-                icon: Icons.phone_android_rounded,
-                title: l.t('follow_system'),
-                subtitle: l.t('device_preference_subtitle'),
-                selected: theme.mode == ThemeMode.system,
-                onTap: () => theme.setMode(ThemeMode.system),
                 isDark: isDark,
               ),
               const SizedBox(height: 24),
@@ -198,7 +189,8 @@ class _QuickToggleCard extends StatelessWidget {
           ),
           Switch(
             value: isDark,
-            activeColor: ColorTokens.primary30,
+            activeColor: Colors.white,
+            activeTrackColor: ColorTokens.success40,
             onChanged: (_) => theme.toggle(),
           ),
         ],
@@ -206,4 +198,3 @@ class _QuickToggleCard extends StatelessWidget {
     );
   }
 }
-

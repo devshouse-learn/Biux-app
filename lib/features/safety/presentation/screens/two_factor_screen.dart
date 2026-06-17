@@ -1,4 +1,4 @@
-﻿// ignore_for_file: deprecated_member_use
+// ignore_for_file: deprecated_member_use
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:biux/features/safety/data/datasources/two_factor_service.dart';
@@ -347,6 +347,3 @@ class _MethodTile extends StatelessWidget {
     );
   }
 }
-
-
-

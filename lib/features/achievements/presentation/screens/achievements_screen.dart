@@ -75,11 +75,18 @@ class _AchievementsScreenState extends State<AchievementsScreen>
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Icon(Icons.error_outline, size: 64, color: ColorTokens.error50),
+                    Icon(
+                      Icons.error_outline,
+                      size: 64,
+                      color: ColorTokens.error50,
+                    ),
                     const SizedBox(height: 16),
                     Text(
                       'Error al cargar logros',
-                      style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                      style: const TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                     const SizedBox(height: 8),
                     Text(
@@ -92,7 +99,9 @@ class _AchievementsScreenState extends State<AchievementsScreen>
                       onPressed: () {
                         final uid = FirebaseAuth.instance.currentUser?.uid;
                         if (uid != null) {
-                          context.read<AchievementsProvider>().loadAchievements(uid);
+                          context.read<AchievementsProvider>().loadAchievements(
+                            uid,
+                          );
                         }
                       },
                       child: Text(l.t('retry')),
@@ -123,7 +132,15 @@ class _AchievementsScreenState extends State<AchievementsScreen>
                 pinned: true,
                 backgroundColor: Colors.amber[800],
                 foregroundColor: Colors.white,
-                title: Text(l.t('my_achievements')),
+                leading: IconButton(
+                  icon: const Icon(Icons.arrow_back),
+                  color: Colors.white,
+                  onPressed: () => Navigator.pop(context),
+                ),
+                title: Text(
+                  l.t('my_achievements'),
+                  style: const TextStyle(color: Colors.white),
+                ),
                 actions: [
                   IconButton(
                     icon: provider.isSyncing
@@ -1656,5 +1673,3 @@ class _AchievementsShareInAppSheetState
     );
   }
 }
-
-

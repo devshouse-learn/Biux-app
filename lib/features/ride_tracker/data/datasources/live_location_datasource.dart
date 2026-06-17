@@ -22,7 +22,9 @@ class LiveLocationDatasource {
       await authService.requireGroupMembership(groupId);
 
       // CRÍTICO #13: Agregar TTL automático (expiración)
-      final expiresAt = DateTime.now().add(Duration(minutes: LOCATION_TTL_MINUTES));
+      final expiresAt = DateTime.now().add(
+        Duration(minutes: LOCATION_TTL_MINUTES),
+      );
 
       await _db.collection('live_locations').doc('${groupId}_$uid').set({
         'uid': uid,
@@ -30,20 +32,27 @@ class LiveLocationDatasource {
         'active': true,
         'startedAt': FieldValue.serverTimestamp(),
         'updatedAt': FieldValue.serverTimestamp(),
-        'expiresAt': Timestamp.fromDate(expiresAt),  // TTL automático
+        'expiresAt': Timestamp.fromDate(expiresAt), // TTL automático
         'lat': 0.0,
         'lng': 0.0,
       });
 
-      AppLogger.info('Compartir ubicación iniciado para grupo $groupId',
-          tag: 'LiveLocationDatasource');
+      AppLogger.info(
+        'Compartir ubicación iniciado para grupo $groupId',
+        tag: 'LiveLocationDatasource',
+      );
     } on UnauthorizedException catch (e) {
-      AppLogger.warning('Usuario no autorizado para compartir ubicación: ${e.message}',
-          tag: 'LiveLocationDatasource');
+      AppLogger.warning(
+        'Usuario no autorizado para compartir ubicación: ${e.message}',
+        tag: 'LiveLocationDatasource',
+      );
       rethrow;
     } catch (e) {
-      AppLogger.error('Error iniciando compartición de ubicación: $e',
-          tag: 'LiveLocationDatasource', error: e);
+      AppLogger.error(
+        'Error iniciando compartición de ubicación: $e',
+        tag: 'LiveLocationDatasource',
+        error: e,
+      );
       rethrow;
     }
   }
@@ -64,12 +73,16 @@ class LiveLocationDatasource {
 
       // Validar que las coordenadas sean válidas
       if (lat < -90 || lat > 90 || lng < -180 || lng > 180) {
-        throw ValidationException('coordinates',
-            'Coordenadas fuera de rango válido (lat: ±90, lng: ±180)');
+        throw ValidationException(
+          'coordinates',
+          'Coordenadas fuera de rango válido (lat: ±90, lng: ±180)',
+        );
       }
 
       // Actualizar TTL en cada actualización
-      final expiresAt = DateTime.now().add(Duration(minutes: LOCATION_TTL_MINUTES));
+      final expiresAt = DateTime.now().add(
+        Duration(minutes: LOCATION_TTL_MINUTES),
+      );
 
       await _db.collection('live_locations').doc('${groupId}_$uid').update({
         'lat': lat,
@@ -77,15 +90,20 @@ class LiveLocationDatasource {
         'speed': speed ?? 0.0,
         'heading': heading ?? 0.0,
         'updatedAt': FieldValue.serverTimestamp(),
-        'expiresAt': Timestamp.fromDate(expiresAt),  // Renovar TTL
+        'expiresAt': Timestamp.fromDate(expiresAt), // Renovar TTL
       });
     } on ValidationException catch (e) {
-      AppLogger.warning('Validación fallida: ${e.message}',
-          tag: 'LiveLocationDatasource');
+      AppLogger.warning(
+        'Validación fallida: ${e.message}',
+        tag: 'LiveLocationDatasource',
+      );
       rethrow;
     } catch (e) {
-      AppLogger.error('Error actualizando ubicación: $e',
-          tag: 'LiveLocationDatasource', error: e);
+      AppLogger.error(
+        'Error actualizando ubicación: $e',
+        tag: 'LiveLocationDatasource',
+        error: e,
+      );
       rethrow;
     }
   }
@@ -114,15 +132,12 @@ class LiveLocationDatasource {
         .snapshots()
         .map((snap) {
           final now = DateTime.now();
-          return snap.docs
-              .map((d) => d.data())
-              .where((data) {
-                // CRÍTICO #13: Filtrar ubicaciones expiradas en cliente
-                final expiresAt = data['expiresAt'] as Timestamp?;
-                if (expiresAt == null) return true;
-                return now.isBefore(expiresAt.toDate());
-              })
-              .toList();
+          return snap.docs.map((d) => d.data()).where((data) {
+            // CRÍTICO #13: Filtrar ubicaciones expiradas en cliente
+            final expiresAt = data['expiresAt'] as Timestamp?;
+            if (expiresAt == null) return true;
+            return now.isBefore(expiresAt.toDate());
+          }).toList();
         });
   }
 

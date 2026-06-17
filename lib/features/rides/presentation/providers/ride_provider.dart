@@ -1,4 +1,4 @@
-﻿import 'package:biux/features/rides/data/models/ride_model.dart';
+import 'package:biux/features/rides/data/models/ride_model.dart';
 import 'package:biux/core/services/optimized_storage_service.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -801,5 +801,3 @@ class RideProvider extends ChangeNotifier {
     _hasMoreRides = true;
   }
 }
-
-

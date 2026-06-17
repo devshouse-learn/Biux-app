@@ -1,4 +1,4 @@
-﻿import 'dart:io';
+import 'dart:io';
 import 'package:image_picker/image_picker.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:video_player/video_player.dart';
@@ -271,5 +271,3 @@ class VideoTooLongException implements Exception {
   @override
   String toString() => message;
 }
-
-

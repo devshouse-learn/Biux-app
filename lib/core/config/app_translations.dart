@@ -1,4 +1,4 @@
-﻿/// Sistema de traducciones para la app Biux.
+/// Sistema de traducciones para la app Biux.
 /// Contiene las cadenas traducidas para cada idioma soportado.
 class AppTranslations {
   AppTranslations._();
@@ -22090,5 +22090,3 @@ class AppTranslations {
     'access_restricted': 'Accesso limitato',
   };
 }
-
-

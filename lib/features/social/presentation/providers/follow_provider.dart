@@ -1,4 +1,4 @@
-﻿import 'package:flutter/foundation.dart';
+import 'package:flutter/foundation.dart';
 import 'package:biux/features/social/data/datasources/follow_datasource.dart';
 
 class FollowProvider extends ChangeNotifier {
@@ -81,4 +81,3 @@ class FollowProvider extends ChangeNotifier {
     notifyListeners();
   }
 }
-

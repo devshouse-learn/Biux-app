@@ -57,6 +57,8 @@ class _GroupListScreenState extends State<GroupListScreen> {
                 return RefreshIndicator(
                   onRefresh: () async {
                     provider.loadAllGroups();
+                    // Wait a bit for the stream to update
+                    await Future.delayed(const Duration(milliseconds: 500));
                   },
                   child: ListView.builder(
                     padding: const EdgeInsets.all(16),

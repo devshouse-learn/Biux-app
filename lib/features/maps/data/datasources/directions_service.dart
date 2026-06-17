@@ -1,4 +1,4 @@
-﻿import 'dart:convert';
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -167,5 +167,3 @@ class DirectionResult {
     required this.durationValue,
   });
 }
-
-

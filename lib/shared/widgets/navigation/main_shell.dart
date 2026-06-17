@@ -11,6 +11,7 @@ import 'package:flutter/material.dart';
 import 'package:biux/core/design_system/color_tokens.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
+import 'package:biux/shared/widgets/custom_icons/groups_icon.dart';
 
 class MainShell extends StatefulWidget {
   final Widget child;
@@ -24,6 +25,7 @@ class MainShell extends StatefulWidget {
 class _MainShellState extends State<MainShell> {
   int _selectedIndex = 0; // Por defecto en Inicio (índice 0)
   bool _isFullScreenRoute = false; // Rutas que ocultan AppBar y BottomNav
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
   /// Rutas que tienen su propio AppBar y no necesitan el shell
   static const List<String> _fullScreenRoutes = [
@@ -38,13 +40,13 @@ class _MainShellState extends State<MainShell> {
   String _titleForIndex(int index, LocaleNotifier l, BuildContext context) {
     switch (index) {
       case 0:
-        return 'BIUX';
+        return 'BiuX';
       case 1:
-        return 'BIUX';
+        return 'BiuX';
       case 2:
-        return 'BIUX';
+        return 'BiuX';
       case 3:
-        return 'BIUX';
+        return 'BiuX';
       case 4:
         final userProvider = Provider.of<UserProvider>(context, listen: false);
         final username = userProvider.user?.username;
@@ -69,25 +71,50 @@ class _MainShellState extends State<MainShell> {
 
         // Colores dinámicos según el tema actual
         final isDark = Theme.of(context).brightness == Brightness.dark;
-        final appBarColor = Theme.of(context).appBarTheme.backgroundColor ?? ColorTokens.primary30;
-        final textColor = Theme.of(context).appBarTheme.foregroundColor ?? ColorTokens.neutral100;
-        final navBarColor = isDark ? ColorTokens.primary20 : ColorTokens.neutral100;
-        final selectedColor = isDark ? ColorTokens.primary60 : ColorTokens.primary30;
-        final unselectedColor = isDark ? ColorTokens.neutral70 : ColorTokens.neutral70;
+        final appBarColor = isDark
+            ? ColorTokens
+                  .neutral95 // Fondo claro en dark mode para que se vea el logo oscuro
+            : ColorTokens.primary30;
+        final textColor = isDark
+            ? ColorTokens
+                  .primary30 // Texto oscuro en dark mode
+            : ColorTokens.neutral100;
+        final navBarColor = isDark
+            ? ColorTokens.primary20
+            : ColorTokens.neutral100;
 
         // Key por idioma fuerza reconstrucción completa del Scaffold
         return Scaffold(
-          key: ValueKey('shell_${l.langCode}'),
+          key: _scaffoldKey,
           appBar: AppBar(
             backgroundColor: appBarColor,
-            foregroundColor: textColor,
+            foregroundColor: isDark
+                ? ColorTokens.primary30
+                : ColorTokens.neutral100,
+            leading: GestureDetector(
+              onTap: () => _scaffoldKey.currentState?.openDrawer(),
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Icon(
+                  Icons.menu,
+                  size: 28,
+                  color: isDark
+                      ? ColorTokens.primary30
+                      : ColorTokens.neutral100,
+                ),
+              ),
+            ),
             title: _selectedIndex == 4
                 ? Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Text(
                         _titleForIndex(_selectedIndex, l, context),
-                        style: Styles.mainMenuTextBiux,
+                        style: Styles.mainMenuTextBiux.copyWith(
+                          color: isDark
+                              ? ColorTokens.neutral100
+                              : ColorTokens.primary30,
+                        ),
                       ),
                       const SizedBox(width: 8),
                       Icon(
@@ -95,7 +122,7 @@ class _MainShellState extends State<MainShell> {
                             ? Icons.lock_rounded
                             : Icons.lock_open_rounded,
                         size: 20,
-                        color: textColor,
+                        color: isDark ? textColor : ColorTokens.primary30,
                       ),
                     ],
                   )
@@ -133,38 +160,36 @@ class _MainShellState extends State<MainShell> {
             ],
           ),
           drawer: AppDrawer(),
-          bottomNavigationBar: BottomNavigationBar(
-            key: ValueKey('nav_${l.langCode}'),
-            currentIndex: _selectedIndex,
-            onTap: _onTabTapped,
-            type: BottomNavigationBarType.fixed,
-            backgroundColor: navBarColor,
-            selectedItemColor: selectedColor,
-            unselectedItemColor: unselectedColor,
-            showSelectedLabels: false,
-            showUnselectedLabels: false,
-            items: [
-              BottomNavigationBarItem(
-                icon: Icon(Icons.home, size: 28),
-                label: '',
+          bottomNavigationBar: Container(
+            decoration: BoxDecoration(
+              color: navBarColor,
+              border: Border(
+                top: BorderSide(color: Colors.grey.shade300, width: 0.5),
               ),
-              BottomNavigationBarItem(
-                icon: Icon(Icons.directions_bike, size: 28),
-                label: '',
-              ),
-              BottomNavigationBarItem(
-                icon: Icon(Icons.message, size: 28),
-                label: '',
-              ),
-              BottomNavigationBarItem(
-                icon: Icon(Icons.pedal_bike, size: 28),
-                label: '',
-              ),
-              BottomNavigationBarItem(
-                icon: Icon(Icons.person, size: 28),
-                label: '',
-              ),
-            ],
+            ),
+            child: BottomNavigationBar(
+              key: ValueKey('nav_${l.langCode}'),
+              currentIndex: _selectedIndex,
+              onTap: _onTabTapped,
+              type: BottomNavigationBarType.fixed,
+              backgroundColor: navBarColor,
+              selectedItemColor: isDark
+                  ? ColorTokens.primary60
+                  : ColorTokens.neutral0,
+              unselectedItemColor: isDark
+                  ? ColorTokens.neutral70
+                  : ColorTokens.neutral60,
+              showSelectedLabels: false,
+              showUnselectedLabels: false,
+              elevation: 0,
+              items: [
+                _buildNavItem(Icons.home, 0),
+                _buildGroupsNavItem(1),
+                _buildNavItem(Icons.message, 2),
+                _buildNavItem(Icons.pedal_bike, 3),
+                _buildNavItem(Icons.person, 4),
+              ],
+            ),
           ),
           body: ResponsiveHelper.wrapForWeb(
             Container(height: double.infinity, child: widget.child),
@@ -172,6 +197,63 @@ class _MainShellState extends State<MainShell> {
           ),
         );
       },
+    );
+  }
+
+  BottomNavigationBarItem _buildNavItem(IconData icon, int index) {
+    final isSelected = _selectedIndex == index;
+    return BottomNavigationBarItem(
+      icon: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(icon, size: 28),
+          const SizedBox(height: 4),
+          AnimatedContainer(
+            duration: const Duration(milliseconds: 200),
+            height: 2,
+            width: isSelected ? 24 : 0,
+            decoration: BoxDecoration(
+              color: isSelected
+                  ? (Theme.of(context).brightness == Brightness.dark
+                        ? ColorTokens.primary60
+                        : ColorTokens.neutral0)
+                  : Colors.transparent,
+              borderRadius: BorderRadius.circular(1),
+            ),
+          ),
+        ],
+      ),
+      label: '',
+    );
+  }
+
+  BottomNavigationBarItem _buildGroupsNavItem(int index) {
+    final isSelected = _selectedIndex == index;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final iconColor = isSelected
+        ? (isDark ? ColorTokens.primary60 : ColorTokens.neutral0)
+        : (isDark ? ColorTokens.neutral70 : ColorTokens.neutral60);
+
+    return BottomNavigationBarItem(
+      icon: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          GroupsIcon(size: 28, color: iconColor),
+          const SizedBox(height: 4),
+          AnimatedContainer(
+            duration: const Duration(milliseconds: 200),
+            height: 2,
+            width: isSelected ? 24 : 0,
+            decoration: BoxDecoration(
+              color: isSelected
+                  ? (isDark ? ColorTokens.primary60 : ColorTokens.neutral0)
+                  : Colors.transparent,
+              borderRadius: BorderRadius.circular(1),
+            ),
+          ),
+        ],
+      ),
+      label: '',
     );
   }
 
@@ -186,8 +268,8 @@ class _MainShellState extends State<MainShell> {
         context.go('/stories');
         break;
       case 1:
-        // Rutas
-        context.go('/rides');
+        // Mis Grupos
+        context.go(AppRoutes.myGroups);
         break;
       case 2:
         // Mensajes
@@ -227,7 +309,8 @@ class _MainShellState extends State<MainShell> {
       setState(() {
         _selectedIndex = 0;
       });
-    } else if (location.startsWith(AppRoutes.roadsList)) {
+    } else if (location.startsWith('/my-groups') ||
+        location.startsWith(AppRoutes.groupList)) {
       setState(() {
         _selectedIndex = 1;
       });

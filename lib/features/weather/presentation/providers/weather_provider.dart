@@ -1,4 +1,4 @@
-﻿import 'dart:convert';
+import 'dart:convert';
 import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:geolocator/geolocator.dart';
@@ -212,11 +212,12 @@ class WeatherProvider extends ChangeNotifier {
             {
               "main": weatherInfo["main"],
               "description": weatherInfo["description"],
-            }
+            },
           ],
           "visibility": 10000,
           "is_day": (current["is_day"] ?? 1) == 1,
-          "uv_index": (daily["uv_index_max"] != null &&
+          "uv_index":
+              (daily["uv_index_max"] != null &&
                   (daily["uv_index_max"] as List).isNotEmpty)
               ? daily["uv_index_max"][0]
               : 0,
@@ -248,7 +249,8 @@ class WeatherProvider extends ChangeNotifier {
           final code = i < codes.length ? (codes[i] as num).toInt() : 0;
           _hourlyForecast.add({
             "hour": hour,
-            "temp": "${(temps.length > i ? (temps[i] as num).round() : 0)}\u00b0C",
+            "temp":
+                "${(temps.length > i ? (temps[i] as num).round() : 0)}\u00b0C",
             "emoji": _weatherCodeToInfo(code)["emoji"] ?? "\u{1f321}\ufe0f",
             "precProb": precProbs.length > i ? precProbs[i] : 0,
             "gusts": gusts.length > i ? gusts[i] : 0,
@@ -258,7 +260,11 @@ class WeatherProvider extends ChangeNotifier {
         // Probabilidad de precipitacion maxima proximas horas
         if (precProbs.isNotEmpty) {
           int maxProb = 0;
-          for (int i = startIdx; i < precProbs.length && i < startIdx + 6; i++) {
+          for (
+            int i = startIdx;
+            i < precProbs.length && i < startIdx + 6;
+            i++
+          ) {
             final p = (precProbs[i] as num).toInt();
             if (p > maxProb) maxProb = p;
           }
@@ -275,7 +281,8 @@ class WeatherProvider extends ChangeNotifier {
           );
           if (geoRes.statusCode == 200) {
             final geoData = jsonDecode(geoRes.body);
-            _cityName = geoData["address"]?["city"] ??
+            _cityName =
+                geoData["address"]?["city"] ??
                 geoData["address"]?["town"] ??
                 geoData["address"]?["state"] ??
                 "";
@@ -350,39 +357,82 @@ class WeatherProvider extends ChangeNotifier {
 
   Map<String, String> _weatherCodeToInfo(int code) {
     if (code == 0) {
-      return {"main": "Clear", "description": "Despejado", "emoji": "\u2600\ufe0f"};
+      return {
+        "main": "Clear",
+        "description": "Despejado",
+        "emoji": "\u2600\ufe0f",
+      };
     }
     if (code <= 3) {
-      return {"main": "Clouds", "description": "Parcialmente nublado", "emoji": "\u26c5"};
+      return {
+        "main": "Clouds",
+        "description": "Parcialmente nublado",
+        "emoji": "\u26c5",
+      };
     }
     if (code <= 49) {
-      return {"main": "Fog", "description": "Niebla", "emoji": "\u{1f32b}\ufe0f"};
+      return {
+        "main": "Fog",
+        "description": "Niebla",
+        "emoji": "\u{1f32b}\ufe0f",
+      };
     }
     if (code <= 59) {
-      return {"main": "Drizzle", "description": "Llovizna", "emoji": "\u{1f326}\ufe0f"};
+      return {
+        "main": "Drizzle",
+        "description": "Llovizna",
+        "emoji": "\u{1f326}\ufe0f",
+      };
     }
     if (code <= 69) {
-      return {"main": "Rain", "description": "Lluvia", "emoji": "\u{1f327}\ufe0f"};
+      return {
+        "main": "Rain",
+        "description": "Lluvia",
+        "emoji": "\u{1f327}\ufe0f",
+      };
     }
     if (code <= 79) {
       return {"main": "Snow", "description": "Nieve", "emoji": "\u2744\ufe0f"};
     }
     if (code <= 84) {
-      return {"main": "Rain", "description": "Lluvia fuerte", "emoji": "\u{1f327}\ufe0f"};
+      return {
+        "main": "Rain",
+        "description": "Lluvia fuerte",
+        "emoji": "\u{1f327}\ufe0f",
+      };
     }
     if (code <= 86) {
-      return {"main": "Snow", "description": "Nevada fuerte", "emoji": "\u2744\ufe0f"};
+      return {
+        "main": "Snow",
+        "description": "Nevada fuerte",
+        "emoji": "\u2744\ufe0f",
+      };
     }
     if (code <= 90) {
-      return {"main": "Rain", "description": "Aguacero", "emoji": "\u{1f327}\ufe0f"};
+      return {
+        "main": "Rain",
+        "description": "Aguacero",
+        "emoji": "\u{1f327}\ufe0f",
+      };
     }
     if (code <= 95) {
-      return {"main": "Thunderstorm", "description": "Tormenta el\u00e9ctrica", "emoji": "\u26c8\ufe0f"};
+      return {
+        "main": "Thunderstorm",
+        "description": "Tormenta el\u00e9ctrica",
+        "emoji": "\u26c8\ufe0f",
+      };
     }
     if (code <= 99) {
-      return {"main": "Thunderstorm", "description": "Tormenta con granizo", "emoji": "\u26c8\ufe0f"};
+      return {
+        "main": "Thunderstorm",
+        "description": "Tormenta con granizo",
+        "emoji": "\u26c8\ufe0f",
+      };
     }
-    return {"main": "Clear", "description": "Despejado", "emoji": "\u{1f321}\ufe0f"};
+    return {
+      "main": "Clear",
+      "description": "Despejado",
+      "emoji": "\u{1f321}\ufe0f",
+    };
   }
 }
-

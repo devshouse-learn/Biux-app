@@ -1,4 +1,4 @@
-﻿import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:biux/core/design_system/locale_notifier.dart';
@@ -220,5 +220,3 @@ class _BiuxNotificationListenerState extends State<BiuxNotificationListener> {
     return widget.child;
   }
 }
-
-

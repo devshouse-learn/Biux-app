@@ -1,4 +1,4 @@
-﻿import 'dart:convert';
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -171,9 +171,7 @@ class _RoadReportsScreenState extends State<RoadReportsScreen> {
             Text(l.t('delete_report')),
           ],
         ),
-        content: Text(
-          'a¿Estás seguro de que quieres eliminar este reporte?',
-        ),
+        content: Text('¿Estás seguro de que quieres eliminar este reporte?'),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(dc).pop(),
@@ -216,15 +214,26 @@ class _RoadReportsScreenState extends State<RoadReportsScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(l.t('road_reports_title')),
         backgroundColor: ColorTokens.primary30,
         foregroundColor: Colors.white,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          color: Colors.white,
+          onPressed: () => Navigator.pop(context),
+        ),
+        title: Text(
+          l.t('road_reports_title'),
+          style: const TextStyle(color: Colors.white),
+        ),
       ),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () => _showCreate(context),
         backgroundColor: ColorTokens.primary30,
         icon: Icon(Icons.add_location_alt, color: Colors.white),
-        label: Text(l.t('report_action'), style: TextStyle(color: Colors.white)),
+        label: Text(
+          l.t('report_action'),
+          style: TextStyle(color: Colors.white),
+        ),
       ),
       body: Consumer<RoadReportsProvider>(
         builder: (ctx, provider, _) {
@@ -620,7 +629,9 @@ class _RoadReportsScreenState extends State<RoadReportsScreen> {
                           ),
                         )
                       : Icon(Icons.send),
-                  label: Text(isSending ? 'Enviando...' : l.t('send_report_label')),
+                  label: Text(
+                    isSending ? 'Enviando...' : l.t('send_report_label'),
+                  ),
                   onPressed: isSending
                       ? null
                       : () async {
@@ -704,5 +715,3 @@ class _RoadReportsScreenState extends State<RoadReportsScreen> {
     );
   }
 }
-
-

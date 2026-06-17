@@ -1,4 +1,4 @@
-﻿import 'package:biux/features/users/data/models/user.dart';
+import 'package:biux/features/users/data/models/user.dart';
 import 'package:biux/features/users/domain/repositories/user_profile_repository.dart';
 import 'package:biux/features/social/domain/entities/notification_entity.dart';
 import 'package:biux/features/social/data/repositories/notifications_repository_impl.dart';
@@ -571,5 +571,3 @@ class UserProfileRepositoryImpl implements UserProfileRepository {
     }
   }
 }
-
-

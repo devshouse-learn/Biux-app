@@ -1,4 +1,4 @@
-﻿import 'dart:async';
+import 'dart:async';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:biux/features/advertisements/data/models/advertising.dart';
 import 'package:biux/features/advertisements/data/repositories/advertising_repository.dart';
@@ -97,5 +97,3 @@ class AdvertisingRepositoryImpl {
     }
   }
 }
-
-

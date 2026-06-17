@@ -1,4 +1,4 @@
-﻿import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
@@ -290,10 +290,7 @@ class _GlobalSearchScreenState extends State<GlobalSearchScreen>
                   ? const Icon(Icons.group, color: Colors.blue)
                   : null,
             ),
-            title: Text(
-              name,
-              style: TextStyle(fontWeight: FontWeight.w600),
-            ),
+            title: Text(name, style: TextStyle(fontWeight: FontWeight.w600)),
             subtitle: Text(
               '${city.isNotEmpty ? "$city a€¢ " : ""}$memberCount ${l.t('members')}',
               style: TextStyle(color: Colors.grey[500], fontSize: 13),
@@ -364,5 +361,3 @@ class _GlobalSearchScreenState extends State<GlobalSearchScreen>
     );
   }
 }
-
-

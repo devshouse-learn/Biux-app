@@ -1,4 +1,4 @@
-﻿import 'package:biux/features/stories/data/models/reaction_story.dart';
+import 'package:biux/features/stories/data/models/reaction_story.dart';
 import 'package:biux/features/stories/data/models/comment_story.dart';
 import 'package:biux/features/users/data/models/user.dart';
 
@@ -81,4 +81,3 @@ class Story {
     'isAdvertisement': isAdvertisement,
   };
 }
-

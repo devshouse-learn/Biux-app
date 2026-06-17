@@ -1,4 +1,4 @@
-﻿// ignore_for_file: deprecated_member_use
+// ignore_for_file: deprecated_member_use
 import 'dart:async';
 import 'dart:io';
 import 'package:flutter/material.dart';
@@ -597,7 +597,7 @@ class _ChatScreenState extends State<ChatScreen> {
       builder: (ctx) => AlertDialog(
         title: Text(l.t('block_user')),
         content: Text(
-          'a¿Deseas bloquear a ${_otherName.isNotEmpty ? _otherName : 'este usuario'}? '
+          '¿Deseas bloquear a ${_otherName.isNotEmpty ? _otherName : 'este usuario'}? '
           'No podrá enviarte mensajes, ver tu foto de perfil '
           'ni tu información. También será removido de tus seguidores.',
         ),
@@ -640,7 +640,7 @@ class _ChatScreenState extends State<ChatScreen> {
       builder: (ctx) => AlertDialog(
         title: Text(l.t('unblock_user')),
         content: Text(
-          'a¿Deseas desbloquear a ${_otherName.isNotEmpty ? _otherName : 'este usuario'}? '
+          '¿Deseas desbloquear a ${_otherName.isNotEmpty ? _otherName : 'este usuario'}? '
           'Podrá enviarte mensajes y ver tu perfil nuevamente.',
         ),
         actions: [
@@ -887,9 +887,7 @@ class _ChatScreenState extends State<ChatScreen> {
       backgroundColor: isDark ? ColorTokens.primary10 : Colors.grey.shade100,
       appBar: AppBar(
         automaticallyImplyLeading: !widget.embedded,
-        backgroundColor: isDark
-            ? ColorTokens.primary10
-            : ColorTokens.primary30,
+        backgroundColor: isDark ? ColorTokens.primary10 : ColorTokens.primary30,
         foregroundColor: Colors.white,
         title: _searching
             ? TextField(
@@ -1582,6 +1580,3 @@ class _StarToastState extends State<_StarToast>
     );
   }
 }
-
-
-

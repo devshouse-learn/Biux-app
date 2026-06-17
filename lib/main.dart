@@ -1,4 +1,4 @@
-﻿import 'package:biux/core/design_system/locale_notifier.dart';
+import 'package:biux/core/design_system/locale_notifier.dart';
 import 'dart:core';
 import 'package:flutter/foundation.dart' show kIsWeb;
 
@@ -204,7 +204,3 @@ class MyApp extends StatelessWidget {
 }
 
 // Test miércoles, 26 de noviembre de 2025, 18:59:20 -05
-
-
-
-

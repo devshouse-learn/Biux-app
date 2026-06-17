@@ -53,8 +53,6 @@ class AchievementsDatasource {
         .doc(userId)
         .collection('achievements')
         .doc(achievementId)
-        .set({
-          'currentValue': value,
-        }, SetOptions(merge: true));
+        .set({'currentValue': value}, SetOptions(merge: true));
   }
 }

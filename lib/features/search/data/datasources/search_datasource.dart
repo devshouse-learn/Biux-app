@@ -39,8 +39,11 @@ class SearchDatasource {
     // Sanitizar: remover caracteres especiales y espacios extras
     final sanitized = query
         .trim()
-        .replaceAll(RegExp(r'\s+'), ' ')  // Múltiples espacios a uno
-        .replaceAll(RegExp(r'[^\w\s-áéíóúàèìòùäëïöüñ]'), '');  // Solo alphanumerics
+        .replaceAll(RegExp(r'\s+'), ' ') // Múltiples espacios a uno
+        .replaceAll(
+          RegExp(r'[^\w\s-áéíóúàèìòùäëïöüñ]'),
+          '',
+        ); // Solo alphanumerics
 
     if (sanitized.isEmpty) {
       throw ValidationException(
@@ -66,8 +69,10 @@ class SearchDatasource {
       final sanitizedQuery = _validateAndSanitizeQuery(query);
       final validLimit = _validateLimit(limit);
 
-      AppLogger.info('B\u00fasqueda de usuarios: "$sanitizedQuery" (limit: $validLimit)',
-          tag: 'SearchDatasource');
+      AppLogger.info(
+        'B\u00fasqueda de usuarios: "$sanitizedQuery" (limit: $validLimit)',
+        tag: 'SearchDatasource',
+      );
 
       final snap = await _firestore
           .collection('users')
@@ -76,8 +81,10 @@ class SearchDatasource {
           .limit(validLimit)
           .get();
 
-      AppLogger.debug('Se encontraron ${snap.docs.length} usuarios',
-          tag: 'SearchDatasource');
+      AppLogger.debug(
+        'Se encontraron ${snap.docs.length} usuarios',
+        tag: 'SearchDatasource',
+      );
 
       return snap.docs.map((doc) {
         final data = doc.data();
@@ -90,12 +97,17 @@ class SearchDatasource {
         );
       }).toList();
     } on ValidationException catch (e) {
-      AppLogger.warning('Validaci\u00f3n fallida en b\u00fasqueda: ${e.message}',
-          tag: 'SearchDatasource');
+      AppLogger.warning(
+        'Validaci\u00f3n fallida en b\u00fasqueda: ${e.message}',
+        tag: 'SearchDatasource',
+      );
       return [];
     } catch (e) {
-      AppLogger.error('Error buscando usuarios: $e',
-          tag: 'SearchDatasource', error: e);
+      AppLogger.error(
+        'Error buscando usuarios: $e',
+        tag: 'SearchDatasource',
+        error: e,
+      );
       return [];
     }
   }
@@ -108,8 +120,10 @@ class SearchDatasource {
       final sanitizedQuery = _validateAndSanitizeQuery(query);
       final validLimit = _validateLimit(limit);
 
-      AppLogger.info('B\u00fasqueda de grupos: "$sanitizedQuery" (limit: $validLimit)',
-          tag: 'SearchDatasource');
+      AppLogger.info(
+        'B\u00fasqueda de grupos: "$sanitizedQuery" (limit: $validLimit)',
+        tag: 'SearchDatasource',
+      );
 
       final snap = await _firestore
           .collection('groups')
@@ -118,8 +132,10 @@ class SearchDatasource {
           .limit(validLimit)
           .get();
 
-      AppLogger.debug('Se encontraron ${snap.docs.length} grupos',
-          tag: 'SearchDatasource');
+      AppLogger.debug(
+        'Se encontraron ${snap.docs.length} grupos',
+        tag: 'SearchDatasource',
+      );
 
       return snap.docs.map((doc) {
         final data = doc.data();
@@ -132,12 +148,17 @@ class SearchDatasource {
         );
       }).toList();
     } on ValidationException catch (e) {
-      AppLogger.warning('Validaci\u00f3n fallida en b\u00fasqueda: ${e.message}',
-          tag: 'SearchDatasource');
+      AppLogger.warning(
+        'Validaci\u00f3n fallida en b\u00fasqueda: ${e.message}',
+        tag: 'SearchDatasource',
+      );
       return [];
     } catch (e) {
-      AppLogger.error('Error buscando grupos: $e',
-          tag: 'SearchDatasource', error: e);
+      AppLogger.error(
+        'Error buscando grupos: $e',
+        tag: 'SearchDatasource',
+        error: e,
+      );
       return [];
     }
   }
@@ -147,8 +168,10 @@ class SearchDatasource {
       final sanitizedQuery = _validateAndSanitizeQuery(query);
       final validLimit = _validateLimit(limit);
 
-      AppLogger.info('B\u00fasqueda de rodadas: "$sanitizedQuery" (limit: $validLimit)',
-          tag: 'SearchDatasource');
+      AppLogger.info(
+        'B\u00fasqueda de rodadas: "$sanitizedQuery" (limit: $validLimit)',
+        tag: 'SearchDatasource',
+      );
 
       final snap = await _firestore
           .collection('rides')
@@ -157,8 +180,10 @@ class SearchDatasource {
           .limit(validLimit)
           .get();
 
-      AppLogger.debug('Se encontraron ${snap.docs.length} rodadas',
-          tag: 'SearchDatasource');
+      AppLogger.debug(
+        'Se encontraron ${snap.docs.length} rodadas',
+        tag: 'SearchDatasource',
+      );
 
       return snap.docs.map((doc) {
         final data = doc.data();
@@ -171,12 +196,17 @@ class SearchDatasource {
         );
       }).toList();
     } on ValidationException catch (e) {
-      AppLogger.warning('Validaci\u00f3n fallida en b\u00fasqueda: ${e.message}',
-          tag: 'SearchDatasource');
+      AppLogger.warning(
+        'Validaci\u00f3n fallida en b\u00fasqueda: ${e.message}',
+        tag: 'SearchDatasource',
+      );
       return [];
     } catch (e) {
-      AppLogger.error('Error buscando rodadas: $e',
-          tag: 'SearchDatasource', error: e);
+      AppLogger.error(
+        'Error buscando rodadas: $e',
+        tag: 'SearchDatasource',
+        error: e,
+      );
       return [];
     }
   }

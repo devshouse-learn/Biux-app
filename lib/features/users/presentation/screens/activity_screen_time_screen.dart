@@ -42,13 +42,27 @@ class _ActivityScreenTimeScreenState extends State<ActivityScreenTimeScreen> {
       (max, d) => d.minutes > max ? d.minutes : max,
     );
 
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final bodyBg = isDark ? ColorTokens.primary30 : Colors.grey[50]!;
+    final cardBg = isDark ? ColorTokens.primary40 : Colors.white;
+    final textPrimary = isDark ? ColorTokens.neutral100 : ColorTokens.neutral0;
+    final textSecondary = isDark
+        ? ColorTokens.neutral80
+        : ColorTokens.neutral60;
+    final barActiveColor = isDark
+        ? ColorTokens.secondary50
+        : ColorTokens.primary30;
+    final barInactiveColor = isDark
+        ? ColorTokens.secondary50.withValues(alpha: 0.4)
+        : ColorTokens.primary30.withValues(alpha: 0.3);
+
     return Scaffold(
-      backgroundColor: ColorTokens.primary30,
+      backgroundColor: bodyBg,
       appBar: AppBar(
         backgroundColor: ColorTokens.primary30,
         foregroundColor: ColorTokens.neutral100,
         title: Text(
-          'Tiempo en la App',
+          l.t('time_management'),
           style: TextStyle(
             color: ColorTokens.neutral100,
             fontSize: 20,
@@ -71,10 +85,12 @@ class _ActivityScreenTimeScreenState extends State<ActivityScreenTimeScreen> {
               width: double.infinity,
               padding: EdgeInsets.all(24),
               decoration: BoxDecoration(
-                color: ColorTokens.primary40,
+                color: cardBg,
                 borderRadius: BorderRadius.circular(16),
                 border: Border.all(
-                  color: ColorTokens.secondary50.withValues(alpha: 0.3),
+                  color: isDark
+                      ? ColorTokens.secondary50.withValues(alpha: 0.3)
+                      : Colors.grey.shade300,
                   width: 1,
                 ),
               ),
@@ -82,16 +98,13 @@ class _ActivityScreenTimeScreenState extends State<ActivityScreenTimeScreen> {
                 children: [
                   Text(
                     'Promedio Diario',
-                    style: TextStyle(
-                      color: ColorTokens.neutral80,
-                      fontSize: 14,
-                    ),
+                    style: TextStyle(color: textSecondary, fontSize: 14),
                   ),
                   SizedBox(height: 8),
                   Text(
                     _formatMinutesDouble(avg7),
                     style: TextStyle(
-                      color: ColorTokens.neutral100,
+                      color: textPrimary,
                       fontSize: 42,
                       fontWeight: FontWeight.bold,
                     ),
@@ -99,10 +112,7 @@ class _ActivityScreenTimeScreenState extends State<ActivityScreenTimeScreen> {
                   SizedBox(height: 4),
                   Text(
                     'Últimos 7 días',
-                    style: TextStyle(
-                      color: ColorTokens.secondary50,
-                      fontSize: 13,
-                    ),
+                    style: TextStyle(color: barActiveColor, fontSize: 13),
                   ),
                 ],
               ),
@@ -113,7 +123,7 @@ class _ActivityScreenTimeScreenState extends State<ActivityScreenTimeScreen> {
             Text(
               'Últimos 7 días',
               style: TextStyle(
-                color: ColorTokens.neutral100,
+                color: textPrimary,
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
               ),
@@ -123,7 +133,7 @@ class _ActivityScreenTimeScreenState extends State<ActivityScreenTimeScreen> {
             Container(
               padding: EdgeInsets.all(16),
               decoration: BoxDecoration(
-                color: ColorTokens.primary40,
+                color: cardBg,
                 borderRadius: BorderRadius.circular(12),
               ),
               child: Column(
@@ -150,7 +160,7 @@ class _ActivityScreenTimeScreenState extends State<ActivityScreenTimeScreen> {
                                       ? _formatMinutes(day.minutes)
                                       : '-',
                                   style: TextStyle(
-                                    color: ColorTokens.neutral80,
+                                    color: textSecondary,
                                     fontSize: 10,
                                   ),
                                 ),
@@ -159,10 +169,8 @@ class _ActivityScreenTimeScreenState extends State<ActivityScreenTimeScreen> {
                                   height: (130 * ratio).clamp(4.0, 130.0),
                                   decoration: BoxDecoration(
                                     color: isToday
-                                        ? ColorTokens.secondary50
-                                        : ColorTokens.secondary50.withValues(
-                                            alpha: 0.4,
-                                          ),
+                                        ? barActiveColor
+                                        : barInactiveColor,
                                     borderRadius: BorderRadius.circular(4),
                                   ),
                                 ),
@@ -181,10 +189,7 @@ class _ActivityScreenTimeScreenState extends State<ActivityScreenTimeScreen> {
                         child: Text(
                           dayNames[day.date.weekday - 1],
                           textAlign: TextAlign.center,
-                          style: TextStyle(
-                            color: ColorTokens.neutral60,
-                            fontSize: 12,
-                          ),
+                          style: TextStyle(color: textSecondary, fontSize: 12),
                         ),
                       );
                     }).toList(),
@@ -198,7 +203,7 @@ class _ActivityScreenTimeScreenState extends State<ActivityScreenTimeScreen> {
             Text(
               l.t('statistics'),
               style: TextStyle(
-                color: ColorTokens.neutral100,
+                color: textPrimary,
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
               ),
@@ -258,33 +263,42 @@ class _ActivityScreenTimeScreenState extends State<ActivityScreenTimeScreen> {
     required String label,
     required String value,
   }) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final cardBg = isDark ? ColorTokens.primary40 : Colors.white;
+    final textPrimary = isDark ? ColorTokens.neutral100 : ColorTokens.neutral0;
+    final textSecondary = isDark
+        ? ColorTokens.neutral80
+        : ColorTokens.neutral60;
+    final accentColor = isDark
+        ? ColorTokens.secondary50
+        : ColorTokens.primary30;
+
     return Container(
       padding: EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: ColorTokens.primary40,
+        color: cardBg,
         borderRadius: BorderRadius.circular(12),
         border: Border.all(
-          color: ColorTokens.neutral60.withValues(alpha: 0.2),
+          color: isDark
+              ? ColorTokens.neutral60.withValues(alpha: 0.2)
+              : Colors.grey.shade300,
           width: 1,
         ),
       ),
       child: Column(
         children: [
-          Icon(icon, color: ColorTokens.secondary50, size: 28),
+          Icon(icon, color: accentColor, size: 28),
           SizedBox(height: 8),
           Text(
             value,
             style: TextStyle(
-              color: ColorTokens.neutral100,
+              color: textPrimary,
               fontSize: 22,
               fontWeight: FontWeight.bold,
             ),
           ),
           SizedBox(height: 4),
-          Text(
-            label,
-            style: TextStyle(color: ColorTokens.neutral80, fontSize: 12),
-          ),
+          Text(label, style: TextStyle(color: textSecondary, fontSize: 12)),
         ],
       ),
     );

@@ -1,4 +1,4 @@
-﻿import 'dart:async';
+import 'dart:async';
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:biux/features/bikes/domain/entities/bike_entity.dart';
@@ -554,5 +554,3 @@ class BikeProvider extends ChangeNotifier {
     }).toList();
   }
 }
-
-

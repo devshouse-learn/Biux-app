@@ -1,4 +1,4 @@
-﻿import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:geolocator/geolocator.dart';
@@ -37,16 +37,24 @@ class _EmergencyScreenState extends State<EmergencyScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(l.t('emergency_sos')),
         backgroundColor: Colors.red[700],
         foregroundColor: Colors.white,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          color: Colors.white,
+          onPressed: () => Navigator.pop(context),
+        ),
+        title: Text(
+          l.t('emergency_sos'),
+          style: const TextStyle(color: Colors.white),
+        ),
       ),
       body: Consumer<EmergencyProvider>(
         builder: (context, p, _) {
           return RefreshIndicator(
             onRefresh: () async {
               final uid = FirebaseAuth.instance.currentUser?.uid;
-              if (uid != null) p.loadContacts(uid);
+              if (uid != null) await p.loadContacts(uid);
               setState(() {});
             },
             child: SingleChildScrollView(
@@ -1116,6 +1124,3 @@ class _EmergencyScreenState extends State<EmergencyScreen> {
     );
   }
 }
-
-
-

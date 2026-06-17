@@ -55,8 +55,10 @@ class OfflineRideDatasource {
       final prefs = await SharedPreferences.getInstance();
       final raw = prefs.getString(_key);
       if (raw == null) {
-        AppLogger.debug('No hay rodadas offline guardadas',
-            tag: 'OfflineRideDatasource');
+        AppLogger.debug(
+          'No hay rodadas offline guardadas',
+          tag: 'OfflineRideDatasource',
+        );
         return [];
       }
 
@@ -65,12 +67,17 @@ class OfflineRideDatasource {
           .map((e) => OfflineRideEntity.fromJson(e as Map<String, dynamic>))
           .toList();
 
-      AppLogger.debug('Rodadas offline cargadas: ${rides.length}',
-          tag: 'OfflineRideDatasource');
+      AppLogger.debug(
+        'Rodadas offline cargadas: ${rides.length}',
+        tag: 'OfflineRideDatasource',
+      );
       return rides;
     } catch (e) {
-      AppLogger.error('Error cargando rodadas offline: $e',
-          tag: 'OfflineRideDatasource', error: e);
+      AppLogger.error(
+        'Error cargando rodadas offline: $e',
+        tag: 'OfflineRideDatasource',
+        error: e,
+      );
       return [];
     }
   }
@@ -79,8 +86,10 @@ class OfflineRideDatasource {
   static Future<void> save(OfflineRideEntity ride) async {
     try {
       if (ride.id.isEmpty || ride.name.isEmpty) {
-        throw ValidationException('ride',
-            'ID y nombre de rodada son requeridos');
+        throw ValidationException(
+          'ride',
+          'ID y nombre de rodada son requeridos',
+        );
       }
 
       final prefs = await SharedPreferences.getInstance();
@@ -89,12 +98,16 @@ class OfflineRideDatasource {
 
       if (idx >= 0) {
         list[idx] = ride;
-        AppLogger.debug('Rodada offline actualizada: ${ride.id}',
-            tag: 'OfflineRideDatasource');
+        AppLogger.debug(
+          'Rodada offline actualizada: ${ride.id}',
+          tag: 'OfflineRideDatasource',
+        );
       } else {
         list.add(ride);
-        AppLogger.info('Rodada offline guardada: ${ride.id}',
-            tag: 'OfflineRideDatasource');
+        AppLogger.info(
+          'Rodada offline guardada: ${ride.id}',
+          tag: 'OfflineRideDatasource',
+        );
       }
 
       await prefs.setString(
@@ -102,12 +115,17 @@ class OfflineRideDatasource {
         jsonEncode(list.map((r) => r.toJson()).toList()),
       );
     } on ValidationException catch (e) {
-      AppLogger.warning('Validación fallida: ${e.message}',
-          tag: 'OfflineRideDatasource');
+      AppLogger.warning(
+        'Validación fallida: ${e.message}',
+        tag: 'OfflineRideDatasource',
+      );
       rethrow;
     } catch (e) {
-      AppLogger.error('Error guardando rodada offline: $e',
-          tag: 'OfflineRideDatasource', error: e);
+      AppLogger.error(
+        'Error guardando rodada offline: $e',
+        tag: 'OfflineRideDatasource',
+        error: e,
+      );
       rethrow;
     }
   }
@@ -123,8 +141,10 @@ class OfflineRideDatasource {
       final idx = list.indexWhere((r) => r.id == id);
 
       if (idx < 0) {
-        AppLogger.warning('Rodada offline no encontrada: $id',
-            tag: 'OfflineRideDatasource');
+        AppLogger.warning(
+          'Rodada offline no encontrada: $id',
+          tag: 'OfflineRideDatasource',
+        );
         return;
       }
 
@@ -145,15 +165,22 @@ class OfflineRideDatasource {
         jsonEncode(list.map((r) => r.toJson()).toList()),
       );
 
-      AppLogger.info('Rodada marcada como sincronizada: $id',
-          tag: 'OfflineRideDatasource');
+      AppLogger.info(
+        'Rodada marcada como sincronizada: $id',
+        tag: 'OfflineRideDatasource',
+      );
     } on ValidationException catch (e) {
-      AppLogger.warning('Validación fallida: ${e.message}',
-          tag: 'OfflineRideDatasource');
+      AppLogger.warning(
+        'Validación fallida: ${e.message}',
+        tag: 'OfflineRideDatasource',
+      );
       rethrow;
     } catch (e) {
-      AppLogger.error('Error marcando rodada como sincronizada: $e',
-          tag: 'OfflineRideDatasource', error: e);
+      AppLogger.error(
+        'Error marcando rodada como sincronizada: $e',
+        tag: 'OfflineRideDatasource',
+        error: e,
+      );
       rethrow;
     }
   }
@@ -164,13 +191,18 @@ class OfflineRideDatasource {
       final all = await getAll();
       final pending = all.where((r) => !r.synced).toList();
 
-      AppLogger.debug('Rodadas pendientes: ${pending.length}',
-          tag: 'OfflineRideDatasource');
+      AppLogger.debug(
+        'Rodadas pendientes: ${pending.length}',
+        tag: 'OfflineRideDatasource',
+      );
 
       return pending;
     } catch (e) {
-      AppLogger.error('Error obteniendo rodadas pendientes: $e',
-          tag: 'OfflineRideDatasource', error: e);
+      AppLogger.error(
+        'Error obteniendo rodadas pendientes: $e',
+        tag: 'OfflineRideDatasource',
+        error: e,
+      );
       return [];
     }
   }
@@ -187,8 +219,10 @@ class OfflineRideDatasource {
       list.removeWhere((r) => r.id == id);
 
       if (list.length == initialLength) {
-        AppLogger.warning('Rodada offline no encontrada para eliminar: $id',
-            tag: 'OfflineRideDatasource');
+        AppLogger.warning(
+          'Rodada offline no encontrada para eliminar: $id',
+          tag: 'OfflineRideDatasource',
+        );
         return;
       }
 
@@ -198,15 +232,22 @@ class OfflineRideDatasource {
         jsonEncode(list.map((r) => r.toJson()).toList()),
       );
 
-      AppLogger.info('Rodada offline eliminada: $id',
-          tag: 'OfflineRideDatasource');
+      AppLogger.info(
+        'Rodada offline eliminada: $id',
+        tag: 'OfflineRideDatasource',
+      );
     } on ValidationException catch (e) {
-      AppLogger.warning('Validación fallida: ${e.message}',
-          tag: 'OfflineRideDatasource');
+      AppLogger.warning(
+        'Validación fallida: ${e.message}',
+        tag: 'OfflineRideDatasource',
+      );
       rethrow;
     } catch (e) {
-      AppLogger.error('Error eliminando rodada offline: $e',
-          tag: 'OfflineRideDatasource', error: e);
+      AppLogger.error(
+        'Error eliminando rodada offline: $e',
+        tag: 'OfflineRideDatasource',
+        error: e,
+      );
       rethrow;
     }
   }

@@ -1,4 +1,4 @@
-﻿import 'package:biux/features/members/data/models/member.dart';
+import 'package:biux/features/members/data/models/member.dart';
 import 'package:biux/features/members/domain/repositories/members_repository_abstract.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
@@ -38,12 +38,17 @@ class MembersFirebaseRepository extends MembersRepositoryAbstract {
       AppLogger.info('Miembro eliminado: $memberId', tag: 'MembersRepository');
       return Member.fromJson(response.docs.first.data());
     } on ValidationException catch (e) {
-      AppLogger.warning('Validación fallida: ${e.message}',
-          tag: 'MembersRepository');
+      AppLogger.warning(
+        'Validación fallida: ${e.message}',
+        tag: 'MembersRepository',
+      );
       return Member();
     } on FirebaseException catch (e) {
-      AppLogger.error('Error eliminando miembro: $e',
-          tag: 'MembersRepository', error: e);
+      AppLogger.error(
+        'Error eliminando miembro: $e',
+        tag: 'MembersRepository',
+        error: e,
+      );
       return Member();
     }
   }
@@ -69,12 +74,17 @@ class MembersFirebaseRepository extends MembersRepositoryAbstract {
 
       return Member.fromJson(response.docs.first.data());
     } on ValidationException catch (e) {
-      AppLogger.warning('Validación fallida: ${e.message}',
-          tag: 'MembersRepository');
+      AppLogger.warning(
+        'Validación fallida: ${e.message}',
+        tag: 'MembersRepository',
+      );
       return Member();
     } on FirebaseException catch (e) {
-      AppLogger.error('Error obteniendo miembro aprobado: $e',
-          tag: 'MembersRepository', error: e);
+      AppLogger.error(
+        'Error obteniendo miembro aprobado: $e',
+        tag: 'MembersRepository',
+        error: e,
+      );
       return Member();
     }
   }
@@ -84,12 +94,17 @@ class MembersFirebaseRepository extends MembersRepositoryAbstract {
   Future<List<Member>> getMembers() async {
     try {
       final result = await firestore.collectionGroup(subcollection).get();
-      AppLogger.debug('Miembros encontrados: ${result.docs.length}',
-          tag: 'MembersRepository');
+      AppLogger.debug(
+        'Miembros encontrados: ${result.docs.length}',
+        tag: 'MembersRepository',
+      );
       return result.docs.map((e) => Member.fromJson(e.data())).toList();
     } on FirebaseException catch (e) {
-      AppLogger.error('Error obteniendo miembros: $e',
-          tag: 'MembersRepository', error: e);
+      AppLogger.error(
+        'Error obteniendo miembros: $e',
+        tag: 'MembersRepository',
+        error: e,
+      );
       return List.empty();
     }
   }
@@ -107,17 +122,24 @@ class MembersFirebaseRepository extends MembersRepositoryAbstract {
           .collection(subcollection)
           .get();
 
-      AppLogger.debug('Miembros del grupo: ${result.docs.length}',
-          tag: 'MembersRepository');
+      AppLogger.debug(
+        'Miembros del grupo: ${result.docs.length}',
+        tag: 'MembersRepository',
+      );
 
       return result.docs.map((e) => Member.fromJson(e.data())).toList();
     } on ValidationException catch (e) {
-      AppLogger.warning('Validación fallida: ${e.message}',
-          tag: 'MembersRepository');
+      AppLogger.warning(
+        'Validación fallida: ${e.message}',
+        tag: 'MembersRepository',
+      );
       return List.empty();
     } on FirebaseException catch (e) {
-      AppLogger.error('Error obteniendo miembros del grupo: $e',
-          tag: 'MembersRepository', error: e);
+      AppLogger.error(
+        'Error obteniendo miembros del grupo: $e',
+        tag: 'MembersRepository',
+        error: e,
+      );
       return List.empty();
     }
   }
@@ -135,17 +157,24 @@ class MembersFirebaseRepository extends MembersRepositoryAbstract {
           .where('id', isEqualTo: groupId)
           .get();
 
-      AppLogger.debug('Grupos encontrados: ${result.docs.length}',
-          tag: 'MembersRepository');
+      AppLogger.debug(
+        'Grupos encontrados: ${result.docs.length}',
+        tag: 'MembersRepository',
+      );
 
       return result.docs.map((e) => Member.fromJson(e.data())).toList();
     } on ValidationException catch (e) {
-      AppLogger.warning('Validación fallida: ${e.message}',
-          tag: 'MembersRepository');
+      AppLogger.warning(
+        'Validación fallida: ${e.message}',
+        tag: 'MembersRepository',
+      );
       return List.empty();
     } on FirebaseException catch (e) {
-      AppLogger.error('Error obteniendo mis grupos: $e',
-          tag: 'MembersRepository', error: e);
+      AppLogger.error(
+        'Error obteniendo mis grupos: $e',
+        tag: 'MembersRepository',
+        error: e,
+      );
       return List.empty();
     }
   }
@@ -198,4 +227,3 @@ class MembersFirebaseRepository extends MembersRepositoryAbstract {
     }
   }
 }
-

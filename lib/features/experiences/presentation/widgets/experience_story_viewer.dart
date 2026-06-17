@@ -1,4 +1,4 @@
-﻿import 'dart:async';
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -584,7 +584,7 @@ class _ExperienceStoryViewerState extends State<ExperienceStoryViewer>
       builder: (dialogContext) => AlertDialog(
         backgroundColor: theme.dialogTheme.backgroundColor,
         title: Text(
-          'a¿Estás seguro/a que quieres eliminar esta historia?',
+          '¿Estás seguro/a que quieres eliminar esta historia?',
           style: TextStyle(color: theme.textTheme.titleLarge?.color),
         ),
         content: Text(
@@ -1083,58 +1083,53 @@ class _ExperienceStoryViewerState extends State<ExperienceStoryViewer>
         maxChildSize: hasViewers ? 0.85 : 0.4,
         expand: false,
         builder: (sheetContext, scrollController) => SafeArea(
-          child: Padding(
-            padding: const EdgeInsets.all(20),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                // Barra de arrastre
-                Center(
-                  child: Container(
-                    width: 40,
-                    height: 4,
-                    decoration: BoxDecoration(
-                      color: Colors.grey[400],
-                      borderRadius: BorderRadius.circular(2),
+          child: SingleChildScrollView(
+            controller: scrollController,
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  // Barra de arrastre
+                  Center(
+                    child: Container(
+                      width: 40,
+                      height: 4,
+                      decoration: BoxDecoration(
+                        color: Colors.grey[400],
+                        borderRadius: BorderRadius.circular(2),
+                      ),
                     ),
                   ),
-                ),
-                SizedBox(height: 16),
-
-                // Encabezado
-                Row(
-                  children: [
-                    Icon(
-                      Icons.visibility,
-                      color: ColorTokens.primary50,
-                      size: 28,
-                    ),
-                    SizedBox(width: 12),
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          l.t('who_saw_story'),
-                          style: theme.textTheme.titleLarge?.copyWith(
-                            fontWeight: FontWeight.bold,
+                  SizedBox(height: 12),
+                  Row(
+                    children: [
+                      SizedBox(width: 12),
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            l.t('who_saw_story'),
+                            style: theme.textTheme.titleLarge?.copyWith(
+                              fontWeight: FontWeight.bold,
+                            ),
                           ),
-                        ),
-                        SizedBox(height: 4),
-                        Text(
-                          '$viewsCount ${viewsCount == 1 ? l.t('views_count_singular') : l.t('views_count_plural')}',
-                          style: theme.textTheme.bodyMedium?.copyWith(
-                            color: Colors.grey[600],
+                          SizedBox(height: 4),
+                          Text(
+                            '$viewsCount ${viewsCount == 1 ? l.t('views_count_singular') : l.t('views_count_plural')}',
+                            style: theme.textTheme.bodyMedium?.copyWith(
+                              color: Colors.grey[600],
+                            ),
                           ),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 20),
+                        ],
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 12),
 
-                if (hasViewers)
-                  Expanded(
-                    child: StreamBuilder<List<LikeEntity>>(
+                  if (hasViewers)
+                    StreamBuilder<List<LikeEntity>>(
                       stream: likesProvider.watchLikes(
                         LikeableType.story,
                         widget.experience.id,
@@ -1150,7 +1145,8 @@ class _ExperienceStoryViewerState extends State<ExperienceStoryViewer>
                         }
 
                         return ListView.separated(
-                          controller: scrollController,
+                          physics: const NeverScrollableScrollPhysics(),
+                          shrinkWrap: true,
                           itemCount: viewers.length,
                           separatorBuilder: (_, __) =>
                               const SizedBox(height: 8),
@@ -1256,47 +1252,41 @@ class _ExperienceStoryViewerState extends State<ExperienceStoryViewer>
                           },
                         );
                       },
-                    ),
-                  )
-                else
-                  // Mensaje cuando no hay visualizaciones
-                  Container(
-                    padding: const EdgeInsets.all(24),
-                    decoration: BoxDecoration(
-                      color: ColorTokens.primary50.withValues(alpha: 0.1),
-                      borderRadius: BorderRadius.circular(12),
-                      border: Border.all(
-                        color: ColorTokens.primary50.withValues(alpha: 0.2),
+                    )
+                  else
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 12,
+                        vertical: 8,
+                      ),
+                      decoration: BoxDecoration(
+                        color: ColorTokens.primary50.withValues(alpha: 0.1),
+                        borderRadius: BorderRadius.circular(12),
+                        border: Border.all(
+                          color: ColorTokens.primary50.withValues(alpha: 0.2),
+                        ),
+                      ),
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(
+                            Icons.visibility_off,
+                            color: Colors.grey[600],
+                            size: 32,
+                          ),
+                          const SizedBox(height: 6),
+                          Text(
+                            'Nadie ha visto tu historia',
+                            textAlign: TextAlign.center,
+                            style: theme.textTheme.bodyMedium?.copyWith(
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ],
                       ),
                     ),
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Icon(
-                          Icons.visibility_off,
-                          color: Colors.grey[600],
-                          size: 48,
-                        ),
-                        const SizedBox(height: 12),
-                        Text(
-                          'Nadie ha visto tu historia aÃºn',
-                          textAlign: TextAlign.center,
-                          style: theme.textTheme.titleMedium?.copyWith(
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                        const SizedBox(height: 8),
-                        Text(
-                          'Comparte tu historia con más amigos para que la vean',
-                          textAlign: TextAlign.center,
-                          style: theme.textTheme.bodySmall?.copyWith(
-                            color: Colors.grey[600],
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-              ],
+                ],
+              ),
             ),
           ),
         ),
@@ -1375,5 +1365,3 @@ class _ExperienceStoryViewerState extends State<ExperienceStoryViewer>
     super.dispose();
   }
 }
-
-

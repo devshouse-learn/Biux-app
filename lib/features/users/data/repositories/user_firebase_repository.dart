@@ -1,4 +1,4 @@
-﻿import 'dart:async';
+import 'dart:async';
 import 'package:biux/core/config/strings.dart';
 import 'package:biux/core/models/common/response.dart';
 import 'package:biux/features/members/data/models/user_membership.dart';
@@ -133,10 +133,13 @@ class UserFirebaseRepository extends UserRepositoryAbstract {
       final paginatedDocs = result.docs.skip(offset).take(limit).toList();
 
       AppLogger.info(
-          'Se obtuvieron ${paginatedDocs.length} usuarios (limit: $limit, offset: $offset)');
+        'Se obtuvieron ${paginatedDocs.length} usuarios (limit: $limit, offset: $offset)',
+      );
       return paginatedDocs.map((e) => BiuxUser.fromJsonMap(e.data())).toList();
     } on UnauthorizedException catch (e) {
-      AppLogger.warning('Intento de acceso no autorizado a getUsers: ${e.message}');
+      AppLogger.warning(
+        'Intento de acceso no autorizado a getUsers: ${e.message}',
+      );
       rethrow;
     } on NotAuthenticatedException catch (e) {
       AppLogger.warning('Usuario no autenticado en getUsers: ${e.message}');
@@ -313,5 +316,3 @@ class UserFirebaseRepository extends UserRepositoryAbstract {
     }
   }
 }
-
-

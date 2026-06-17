@@ -37,8 +37,14 @@ class HelpScreen extends StatelessWidget {
           _buildFAQItem(l.t('faq_create_group_q'), l.t('faq_create_group_a')),
           _buildFAQItem(l.t('faq_media_space_q'), l.t('faq_media_space_a')),
           _buildFAQItem(l.t('faq_text_posts_q'), l.t('faq_text_posts_a')),
-          _buildFAQItem(l.t('faq_private_account_q'), l.t('faq_private_account_a')),
-          _buildFAQItem(l.t('faq_follow_request_q'), l.t('faq_follow_request_a')),
+          _buildFAQItem(
+            l.t('faq_private_account_q'),
+            l.t('faq_private_account_a'),
+          ),
+          _buildFAQItem(
+            l.t('faq_follow_request_q'),
+            l.t('faq_follow_request_a'),
+          ),
 
           SizedBox(height: 24),
 

@@ -98,9 +98,8 @@ class AppProviders {
 
   static List<SingleChildWidget> get _authProviders => [
     ChangeNotifierProvider(
-      create: (_) => app_auth.AuthProvider(
-        authRepository: AuthenticationRepository(),
-      ),
+      create: (_) =>
+          app_auth.AuthProvider(authRepository: AuthenticationRepository()),
     ),
     ChangeNotifierProxyProvider<app_auth.AuthProvider, NotificationsProvider?>(
       create: (_) => null,

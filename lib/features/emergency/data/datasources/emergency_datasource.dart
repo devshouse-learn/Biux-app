@@ -23,12 +23,17 @@ class EmergencyDatasource {
       final data = doc.data()!;
       return List<Map<String, dynamic>>.from(data['contacts'] ?? []);
     } on ValidationException catch (e) {
-      AppLogger.warning('Validación fallida: ${e.message}',
-          tag: 'EmergencyDatasource');
+      AppLogger.warning(
+        'Validación fallida: ${e.message}',
+        tag: 'EmergencyDatasource',
+      );
       rethrow;
     } catch (e) {
-      AppLogger.error('Error obteniendo contactos de emergencia: $e',
-          tag: 'EmergencyDatasource', error: e);
+      AppLogger.error(
+        'Error obteniendo contactos de emergencia: $e',
+        tag: 'EmergencyDatasource',
+        error: e,
+      );
       return [];
     }
   }
@@ -45,8 +50,10 @@ class EmergencyDatasource {
 
       // Validar cantidad de contactos (máximo 5)
       if (contacts.length > 5) {
-        throw ValidationException('contacts',
-            'Se permiten máximo 5 contactos de emergencia');
+        throw ValidationException(
+          'contacts',
+          'Se permiten máximo 5 contactos de emergencia',
+        );
       }
 
       await _firestore.collection('emergency_contacts').doc(userId).set({
@@ -55,15 +62,22 @@ class EmergencyDatasource {
         'updatedAt': FieldValue.serverTimestamp(),
       });
 
-      AppLogger.info('Contactos de emergencia guardados: ${contacts.length}',
-          tag: 'EmergencyDatasource');
+      AppLogger.info(
+        'Contactos de emergencia guardados: ${contacts.length}',
+        tag: 'EmergencyDatasource',
+      );
     } on ValidationException catch (e) {
-      AppLogger.warning('Validación fallida: ${e.message}',
-          tag: 'EmergencyDatasource');
+      AppLogger.warning(
+        'Validación fallida: ${e.message}',
+        tag: 'EmergencyDatasource',
+      );
       rethrow;
     } catch (e) {
-      AppLogger.error('Error guardando contactos: $e',
-          tag: 'EmergencyDatasource', error: e);
+      AppLogger.error(
+        'Error guardando contactos: $e',
+        tag: 'EmergencyDatasource',
+        error: e,
+      );
       rethrow;
     }
   }
@@ -78,18 +92,24 @@ class EmergencyDatasource {
   }) async {
     try {
       if (userId.isEmpty || userName.isEmpty) {
-        throw ValidationException('input',
-            'Usuario ID y nombre no pueden estar vacíos');
+        throw ValidationException(
+          'input',
+          'Usuario ID y nombre no pueden estar vacíos',
+        );
       }
 
       // Validar coordenadas GPS (lat ±90, lng ±180)
       if (latitude < -90 || latitude > 90) {
-        throw ValidationException('latitude',
-            'Latitud debe estar entre -90 y 90');
+        throw ValidationException(
+          'latitude',
+          'Latitud debe estar entre -90 y 90',
+        );
       }
       if (longitude < -180 || longitude > 180) {
-        throw ValidationException('longitude',
-            'Longitud debe estar entre -180 y 180');
+        throw ValidationException(
+          'longitude',
+          'Longitud debe estar entre -180 y 180',
+        );
       }
 
       await _firestore.collection('sos_alerts').add({
@@ -102,15 +122,22 @@ class EmergencyDatasource {
         'createdAt': FieldValue.serverTimestamp(),
       });
 
-      AppLogger.warning('Alerta SOS enviada para usuario: $userId',
-          tag: 'EmergencyDatasource');
+      AppLogger.warning(
+        'Alerta SOS enviada para usuario: $userId',
+        tag: 'EmergencyDatasource',
+      );
     } on ValidationException catch (e) {
-      AppLogger.warning('Validación fallida en SOS: ${e.message}',
-          tag: 'EmergencyDatasource');
+      AppLogger.warning(
+        'Validación fallida en SOS: ${e.message}',
+        tag: 'EmergencyDatasource',
+      );
       rethrow;
     } catch (e) {
-      AppLogger.error('Error enviando SOS: $e',
-          tag: 'EmergencyDatasource', error: e);
+      AppLogger.error(
+        'Error enviando SOS: $e',
+        tag: 'EmergencyDatasource',
+        error: e,
+      );
       rethrow;
     }
   }
@@ -119,8 +146,10 @@ class EmergencyDatasource {
   Future<void> cancelSOS(String alertId, String userId) async {
     try {
       if (alertId.isEmpty || userId.isEmpty) {
-        throw ValidationException('input',
-            'Alert ID y Usuario ID no pueden estar vacíos');
+        throw ValidationException(
+          'input',
+          'Alert ID y Usuario ID no pueden estar vacíos',
+        );
       }
 
       // Verificar que la alerta existe y pertenece al usuario
@@ -136,8 +165,9 @@ class EmergencyDatasource {
       final alertData = alertDoc.data()!;
       if (alertData['userId'] != userId) {
         AppLogger.warning(
-            'Intento no autorizado de cancelar SOS - Usuario: $userId, Propietario: ${alertData['userId']}',
-            tag: 'EmergencyDatasource');
+          'Intento no autorizado de cancelar SOS - Usuario: $userId, Propietario: ${alertData['userId']}',
+          tag: 'EmergencyDatasource',
+        );
         throw UnauthorizedException('cancelar esta alerta SOS');
       }
 
@@ -146,19 +176,28 @@ class EmergencyDatasource {
         'cancelledAt': FieldValue.serverTimestamp(),
       });
 
-      AppLogger.info('Alerta SOS cancelada: $alertId',
-          tag: 'EmergencyDatasource');
+      AppLogger.info(
+        'Alerta SOS cancelada: $alertId',
+        tag: 'EmergencyDatasource',
+      );
     } on ValidationException catch (e) {
-      AppLogger.warning('Validación fallida: ${e.message}',
-          tag: 'EmergencyDatasource');
+      AppLogger.warning(
+        'Validación fallida: ${e.message}',
+        tag: 'EmergencyDatasource',
+      );
       rethrow;
     } on UnauthorizedException catch (e) {
-      AppLogger.warning('No autorizado: ${e.message}',
-          tag: 'EmergencyDatasource');
+      AppLogger.warning(
+        'No autorizado: ${e.message}',
+        tag: 'EmergencyDatasource',
+      );
       rethrow;
     } catch (e) {
-      AppLogger.error('Error cancelando SOS: $e',
-          tag: 'EmergencyDatasource', error: e);
+      AppLogger.error(
+        'Error cancelando SOS: $e',
+        tag: 'EmergencyDatasource',
+        error: e,
+      );
       rethrow;
     }
   }

@@ -1,4 +1,4 @@
-﻿import 'dart:async';
+import 'dart:async';
 
 import 'package:biux/features/authentication/domain/repositories/auth_repository_interface.dart';
 import 'package:biux/core/services/app_logger.dart';
@@ -67,7 +67,9 @@ class AuthProvider extends ChangeNotifier {
       return;
     }
     try {
-      AppLogger.debug('🔗“² [AuthProvider] Iniciando proceso de envío de código');
+      AppLogger.debug(
+        '🔗“² [AuthProvider] Iniciando proceso de envío de código',
+      );
       AppLogger.debug('   Teléfono: $phoneNumber');
       AppLogger.debug('   Intento: ${_sendAttempts + 1}/$_maxSendAttempts');
 
@@ -113,7 +115,9 @@ class AuthProvider extends ChangeNotifier {
 
   Future<void> validateCode(String code) async {
     if (_phoneNumber == null) {
-      AppLogger.error('aŒ [AuthProvider] No hay nÃºmero de teléfono registrado');
+      AppLogger.error(
+        'aŒ [AuthProvider] No hay nÃºmero de teléfono registrado',
+      );
       _state = AuthState.error;
       _errorMessage = 'err_no_phone_found';
       notifyListeners();
@@ -165,7 +169,9 @@ class AuthProvider extends ChangeNotifier {
 
       // Obtener token ID para base de datos
       final idToken = await user?.getIdToken();
-      AppLogger.debug('🔗Ž« Token ID obtenido: ${idToken?.substring(0, 50)}...');
+      AppLogger.debug(
+        '🔗Ž« Token ID obtenido: ${idToken?.substring(0, 50)}...',
+      );
 
       // Reinicializar servicio de notificaciones con el usuario autenticado
       AppLogger.debug('🔗“¢ Reinicializando servicio de notificaciones...');
@@ -298,7 +304,9 @@ class AuthProvider extends ChangeNotifier {
       );
       final user = userCredential.user;
 
-      AppLogger.info('✅ [AuthProvider] Usuario autenticado con email: ${user?.uid}');
+      AppLogger.info(
+        '✅ [AuthProvider] Usuario autenticado con email: ${user?.uid}',
+      );
 
       // Reinicializar servicio de notificaciones
       await NotificationService().reinitializeAfterLogin();
@@ -309,7 +317,9 @@ class AuthProvider extends ChangeNotifier {
       }
 
       _state = AuthState.authenticated;
-      AppLogger.info('✅ [AuthProvider] ¡Autenticación con email completada exitosamente!');
+      AppLogger.info(
+        '✅ [AuthProvider] ¡Autenticación con email completada exitosamente!',
+      );
     } on FirebaseAuthException catch (e) {
       _state = AuthState.error;
       _errorMessage = _mapAuthError(e.code);
@@ -336,7 +346,9 @@ class AuthProvider extends ChangeNotifier {
       );
       final user = userCredential.user;
 
-      AppLogger.info('✅ [AuthProvider] Usuario registrado con email: ${user?.uid}');
+      AppLogger.info(
+        '✅ [AuthProvider] Usuario registrado con email: ${user?.uid}',
+      );
 
       // Reinicializar servicio de notificaciones
       await NotificationService().reinitializeAfterLogin();
@@ -347,11 +359,15 @@ class AuthProvider extends ChangeNotifier {
       }
 
       _state = AuthState.authenticated;
-      AppLogger.info('✅ [AuthProvider] ¡Registro con email completado exitosamente!');
+      AppLogger.info(
+        '✅ [AuthProvider] ¡Registro con email completado exitosamente!',
+      );
     } on FirebaseAuthException catch (e) {
       _state = AuthState.error;
       _errorMessage = _mapAuthError(e.code);
-      AppLogger.error('❌ [AuthProvider] Error en registro con email: ${e.code}');
+      AppLogger.error(
+        '❌ [AuthProvider] Error en registro con email: ${e.code}',
+      );
       AppLogger.debug('   Mensaje: ${e.message}');
     } on FirebaseException catch (e) {
       _state = AuthState.error;
@@ -390,5 +406,3 @@ class AuthProvider extends ChangeNotifier {
     super.dispose();
   }
 }
-
-

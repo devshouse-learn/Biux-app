@@ -1,4 +1,4 @@
-﻿import 'package:shared_preferences/shared_preferences.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
 import "package:flutter/foundation.dart";
 
@@ -173,5 +173,3 @@ class StoryViewsLocalService {
     await prefs.setString(_lastCleanupKey, DateTime.now().toIso8601String());
   }
 }
-
-

@@ -82,8 +82,7 @@ class ChatDatasource {
   /// ALTO: Validar entrada y agregar límite
   Stream<List<MessageEntity>> getMessages(String chatId) {
     if (chatId.isEmpty) {
-      AppLogger.warning('Chat ID vacío en getMessages',
-          tag: 'ChatDatasource');
+      AppLogger.warning('Chat ID vacío en getMessages', tag: 'ChatDatasource');
       return const Stream.empty();
     }
 
@@ -92,7 +91,7 @@ class ChatDatasource {
         .doc(chatId)
         .collection('messages')
         .orderBy('sentAt', descending: false)
-        .limit(500)  // ALTO: Evitar cargar infinitos mensajes
+        .limit(500) // ALTO: Evitar cargar infinitos mensajes
         .snapshots()
         .map(
           (snap) => snap.docs
@@ -100,8 +99,11 @@ class ChatDatasource {
               .toList(),
         )
         .handleError((e) {
-          AppLogger.error('Error en getMessages: $e',
-              tag: 'ChatDatasource', error: e);
+          AppLogger.error(
+            'Error en getMessages: $e',
+            tag: 'ChatDatasource',
+            error: e,
+          );
           return [];
         });
   }
@@ -118,13 +120,17 @@ class ChatDatasource {
   }) async {
     try {
       if (participantIds.isEmpty || name.isEmpty) {
-        throw ValidationException('input',
-            'Participantes y nombre son requeridos');
+        throw ValidationException(
+          'input',
+          'Participantes y nombre son requeridos',
+        );
       }
 
       if (participantIds.any((id) => id.isEmpty)) {
-        throw ValidationException('participantIds',
-            'Ningún ID de participante puede estar vacío');
+        throw ValidationException(
+          'participantIds',
+          'Ningún ID de participante puede estar vacío',
+        );
       }
 
       final ref = _db.collection('chats').doc();
@@ -139,16 +145,20 @@ class ChatDatasource {
         if (rideId != null) 'rideId': rideId,
       });
 
-      AppLogger.info('Chat creado: ${ref.id}',
-          tag: 'ChatDatasource');
+      AppLogger.info('Chat creado: ${ref.id}', tag: 'ChatDatasource');
       return ref.id;
     } on ValidationException catch (e) {
-      AppLogger.warning('Validación fallida: ${e.message}',
-          tag: 'ChatDatasource');
+      AppLogger.warning(
+        'Validación fallida: ${e.message}',
+        tag: 'ChatDatasource',
+      );
       rethrow;
     } on FirebaseException catch (e) {
-      AppLogger.error('Error creando chat: $e',
-          tag: 'ChatDatasource', error: e);
+      AppLogger.error(
+        'Error creando chat: $e',
+        tag: 'ChatDatasource',
+        error: e,
+      );
       rethrow;
     }
   }
@@ -160,13 +170,14 @@ class ChatDatasource {
   }) async {
     try {
       if (chatId.isEmpty || message.senderId.isEmpty) {
-        throw ValidationException('input',
-            'Chat ID y sender ID son requeridos');
+        throw ValidationException(
+          'input',
+          'Chat ID y sender ID son requeridos',
+        );
       }
 
       if (message.content.isEmpty) {
-        throw ValidationException('content',
-            'El mensaje no puede estar vacío');
+        throw ValidationException('content', 'El mensaje no puede estar vacío');
       }
 
       final ref = _db
@@ -191,7 +202,10 @@ class ChatDatasource {
       }
 
       // Preview de última mensaje para la lista de chats
-      final previewContent = _previewForType(message.type.name, message.content);
+      final previewContent = _previewForType(
+        message.type.name,
+        message.content,
+      );
 
       await _db.collection('chats').doc(chatId).update({
         'lastMessage': {
@@ -207,15 +221,19 @@ class ChatDatasource {
         ...unreadUpdate,
       });
 
-      AppLogger.debug('Mensaje enviado a chat: $chatId',
-          tag: 'ChatDatasource');
+      AppLogger.debug('Mensaje enviado a chat: $chatId', tag: 'ChatDatasource');
     } on ValidationException catch (e) {
-      AppLogger.warning('Validación fallida: ${e.message}',
-          tag: 'ChatDatasource');
+      AppLogger.warning(
+        'Validación fallida: ${e.message}',
+        tag: 'ChatDatasource',
+      );
       rethrow;
     } on FirebaseException catch (e) {
-      AppLogger.error('Error enviando mensaje: $e',
-          tag: 'ChatDatasource', error: e);
+      AppLogger.error(
+        'Error enviando mensaje: $e',
+        tag: 'ChatDatasource',
+        error: e,
+      );
       rethrow;
     }
   }
@@ -353,11 +371,14 @@ class ChatDatasource {
         if (keepStarred) {
           final data = doc.data();
           final rawStarred = data['starredBy'];
-          if (rawStarred is List && rawStarred.any((e) => e.toString() == uid)) {
+          if (rawStarred is List &&
+              rawStarred.any((e) => e.toString() == uid)) {
             continue;
           }
         }
-        final existingDeletedFor = List<String>.from(doc.data()['deletedFor'] ?? []);
+        final existingDeletedFor = List<String>.from(
+          doc.data()['deletedFor'] ?? [],
+        );
         if (existingDeletedFor.contains(uid)) continue; // ya eliminado
         batch.update(doc.reference, {
           'deletedFor': FieldValue.arrayUnion([uid]),
@@ -436,8 +457,10 @@ class ChatDatasource {
   }) async {
     try {
       if (chatId.isEmpty || messageId.isEmpty || newContent.isEmpty) {
-        throw ValidationException('input',
-            'Chat ID, message ID y contenido son requeridos');
+        throw ValidationException(
+          'input',
+          'Chat ID, message ID y contenido son requeridos',
+        );
       }
 
       await _db
@@ -447,15 +470,19 @@ class ChatDatasource {
           .doc(messageId)
           .update({'content': newContent, 'isEdited': true});
 
-      AppLogger.debug('Mensaje editado: $messageId',
-          tag: 'ChatDatasource');
+      AppLogger.debug('Mensaje editado: $messageId', tag: 'ChatDatasource');
     } on ValidationException catch (e) {
-      AppLogger.warning('Validación fallida: ${e.message}',
-          tag: 'ChatDatasource');
+      AppLogger.warning(
+        'Validación fallida: ${e.message}',
+        tag: 'ChatDatasource',
+      );
       rethrow;
     } catch (e) {
-      AppLogger.error('Error editando mensaje: $e',
-          tag: 'ChatDatasource', error: e);
+      AppLogger.error(
+        'Error editando mensaje: $e',
+        tag: 'ChatDatasource',
+        error: e,
+      );
       rethrow;
     }
   }
@@ -592,17 +619,22 @@ class ChatDatasource {
         'typing.\$uid': isTyping,
       });
 
-      AppLogger.debug('Typing actualizado: $chatId',
-          tag: 'ChatDatasource');
+      AppLogger.debug('Typing actualizado: $chatId', tag: 'ChatDatasource');
     } on ValidationException catch (e) {
-      AppLogger.warning('Validación fallida: ${e.message}',
-          tag: 'ChatDatasource');
+      AppLogger.warning(
+        'Validación fallida: ${e.message}',
+        tag: 'ChatDatasource',
+      );
     } on NotAuthenticatedException {
-      AppLogger.warning('Usuario no autenticado para setTyping',
-          tag: 'ChatDatasource');
+      AppLogger.warning(
+        'Usuario no autenticado para setTyping',
+        tag: 'ChatDatasource',
+      );
     } catch (e) {
-      AppLogger.debug('Error no crítico en setTyping: $e',
-          tag: 'ChatDatasource');
+      AppLogger.debug(
+        'Error no crítico en setTyping: $e',
+        tag: 'ChatDatasource',
+      );
     }
   }
 

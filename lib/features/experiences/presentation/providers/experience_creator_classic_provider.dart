@@ -1,4 +1,4 @@
-﻿import 'package:flutter/foundation.dart';
+import 'package:flutter/foundation.dart';
 import 'dart:io';
 import 'package:image_picker/image_picker.dart';
 import 'package:video_player/video_player.dart';
@@ -551,5 +551,3 @@ class ExperienceCreatorProvider extends ChangeNotifier {
     super.dispose();
   }
 }
-
-

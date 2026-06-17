@@ -80,9 +80,9 @@ class _SendRecommendationSheetState extends State<SendRecommendationSheet> {
       return;
     }
     if (_nameCtrl.text.trim().isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(l.t('add_route_name'))),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(l.t('add_route_name'))));
       return;
     }
     setState(() => _sending = true);

@@ -20,10 +20,10 @@ class AppTheme {
     ),
     appBarTheme: const AppBarTheme(
       backgroundColor: ColorTokens.neutral100,
-      foregroundColor: ColorTokens.neutral10,
+      foregroundColor: ColorTokens.primary30,
       elevation: 0,
       centerTitle: true,
-      iconTheme: IconThemeData(color: ColorTokens.neutral10),
+      iconTheme: IconThemeData(color: ColorTokens.primary30),
     ),
     cardTheme: const CardThemeData(
       elevation: 2,
@@ -37,58 +37,58 @@ class AppTheme {
       headlineLarge: TextStyle(
         fontSize: 24,
         fontWeight: FontWeight.bold,
-        color: ColorTokens.neutral10,
+        color: ColorTokens.primary30,
       ),
       headlineMedium: TextStyle(
         fontSize: 20,
         fontWeight: FontWeight.bold,
-        color: ColorTokens.neutral10,
+        color: ColorTokens.primary30,
       ),
       titleLarge: TextStyle(
         fontSize: 18,
         fontWeight: FontWeight.bold,
-        color: ColorTokens.neutral10,
+        color: ColorTokens.primary30,
       ),
       titleMedium: TextStyle(
         fontSize: 16,
         fontWeight: FontWeight.w600,
-        color: ColorTokens.neutral10,
+        color: ColorTokens.primary30,
       ),
       titleSmall: TextStyle(
         fontSize: 14,
         fontWeight: FontWeight.w600,
-        color: ColorTokens.neutral10,
+        color: ColorTokens.primary30,
       ),
       // Texto del cuerpo
-      bodyLarge: TextStyle(fontSize: 16, color: ColorTokens.neutral20),
-      bodyMedium: TextStyle(fontSize: 14, color: ColorTokens.neutral30),
-      bodySmall: TextStyle(fontSize: 12, color: ColorTokens.neutral40),
+      bodyLarge: TextStyle(fontSize: 16, color: ColorTokens.primary30),
+      bodyMedium: TextStyle(fontSize: 14, color: ColorTokens.primary30),
+      bodySmall: TextStyle(fontSize: 12, color: ColorTokens.primary30),
       // Labels y texto secundario
       labelLarge: TextStyle(
         fontSize: 14,
         fontWeight: FontWeight.w500,
-        color: ColorTokens.neutral20,
+        color: ColorTokens.primary30,
       ),
-      labelMedium: TextStyle(fontSize: 12, color: ColorTokens.neutral50),
-      labelSmall: TextStyle(fontSize: 10, color: ColorTokens.neutral60),
+      labelMedium: TextStyle(fontSize: 12, color: ColorTokens.primary30),
+      labelSmall: TextStyle(fontSize: 10, color: ColorTokens.primary30),
     ),
-    iconTheme: const IconThemeData(color: ColorTokens.neutral20, size: 24),
+    iconTheme: const IconThemeData(color: ColorTokens.primary30, size: 24),
     drawerTheme: const DrawerThemeData(
       backgroundColor: ColorTokens.neutral100,
       elevation: 4,
     ),
     listTileTheme: const ListTileThemeData(
-      iconColor: ColorTokens.neutral30,
-      textColor: ColorTokens.neutral10,
+      iconColor: ColorTokens.primary30,
+      textColor: ColorTokens.primary30,
     ),
     chipTheme: ChipThemeData(
       backgroundColor: Colors.grey[100],
       selectedColor: ColorTokens.secondary50,
-      labelStyle: const TextStyle(color: ColorTokens.neutral20),
-      secondaryLabelStyle: const TextStyle(color: ColorTokens.neutral10),
+      labelStyle: const TextStyle(color: ColorTokens.primary30),
+      secondaryLabelStyle: const TextStyle(color: ColorTokens.primary30),
       brightness: Brightness.light,
       side: BorderSide(color: Colors.grey.shade300),
-      checkmarkColor: ColorTokens.neutral10,
+      checkmarkColor: ColorTokens.primary30,
     ),
     badgeTheme: const BadgeThemeData(
       backgroundColor: ColorTokens.error50,
@@ -100,19 +100,19 @@ class AppTheme {
       unselectedItemColor: ColorTokens.neutral70,
     ),
     textButtonTheme: TextButtonThemeData(
-      style: TextButton.styleFrom(foregroundColor: ColorTokens.neutral10),
+      style: TextButton.styleFrom(foregroundColor: ColorTokens.primary30),
     ),
     outlinedButtonTheme: OutlinedButtonThemeData(
-      style: OutlinedButton.styleFrom(foregroundColor: ColorTokens.neutral10),
+      style: OutlinedButton.styleFrom(foregroundColor: ColorTokens.primary30),
     ),
     dialogTheme: const DialogThemeData(
       backgroundColor: ColorTokens.neutral100,
       titleTextStyle: TextStyle(
-        color: ColorTokens.neutral10,
+        color: ColorTokens.primary30,
         fontSize: 20,
         fontWeight: FontWeight.bold,
       ),
-      contentTextStyle: TextStyle(color: ColorTokens.neutral20, fontSize: 14),
+      contentTextStyle: TextStyle(color: ColorTokens.primary30, fontSize: 14),
     ),
   );
 

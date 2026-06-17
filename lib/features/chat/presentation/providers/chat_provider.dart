@@ -1,4 +1,4 @@
-﻿import 'dart:async';
+import 'dart:async';
 import 'dart:io';
 import 'dart:typed_data';
 import 'package:firebase_storage/firebase_storage.dart';
@@ -66,26 +66,27 @@ class ChatProvider extends ChangeNotifier {
             for (final tempId in _pendingOptimisticIds) {
               final opt = _messages.where((m) => m.id == tempId).firstOrNull;
               if (opt == null) continue;
-              final hasMatch = list.any((s) =>
-                  s.senderId == opt.senderId &&
-                  s.type == opt.type &&
-                  (s.sentAt.difference(opt.sentAt).inSeconds).abs() < 30 &&
-                  _contentMatch(s, opt));
+              final hasMatch = list.any(
+                (s) =>
+                    s.senderId == opt.senderId &&
+                    s.type == opt.type &&
+                    (s.sentAt.difference(opt.sentAt).inSeconds).abs() < 30 &&
+                    _contentMatch(s, opt),
+              );
               if (hasMatch) confirmedTempIds.add(tempId);
             }
             _pendingOptimisticIds.removeAll(confirmedTempIds);
 
             final stillPending = _messages
-                .where(
-                  (m) =>
-                      _pendingOptimisticIds.contains(m.id),
-                )
+                .where((m) => _pendingOptimisticIds.contains(m.id))
                 .toList();
             _messages = _applyReadStatus([...list, ...stillPending]);
             notifyListeners();
           },
           onError: (error) {
-            debugPrint('aŒ Error al escuchar mensajes del chat $chatId: $error');
+            debugPrint(
+              'aŒ Error al escuchar mensajes del chat $chatId: $error',
+            );
             _error =
                 'No se pudieron cargar los mensajes. Verifica tu conexión.';
             notifyListeners();
@@ -458,14 +459,15 @@ class ChatProvider extends ChangeNotifier {
     _replyingTo = null;
     _optimisticInsert(message);
     // Fire-and-forget
-    _ds.sendMessage(chatId: chatId, message: message.copyWith()).then((_) {
-      _removeOptimistic(tempId);
-    }).catchError((
-      _,
-    ) {
-      _removeOptimistic(tempId);
-      notifyListeners();
-    });
+    _ds
+        .sendMessage(chatId: chatId, message: message.copyWith())
+        .then((_) {
+          _removeOptimistic(tempId);
+        })
+        .catchError((_) {
+          _removeOptimistic(tempId);
+          notifyListeners();
+        });
   }
 
   void setReplyingTo(MessageEntity? message) {
@@ -496,14 +498,15 @@ class ChatProvider extends ChangeNotifier {
     _replyingTo = null;
     _optimisticInsert(message);
     // Fire-and-forget
-    _ds.sendMessage(chatId: chatId, message: message.copyWith()).then((_) {
-      _removeOptimistic(tempId);
-    }).catchError((
-      _,
-    ) {
-      _removeOptimistic(tempId);
-      notifyListeners();
-    });
+    _ds
+        .sendMessage(chatId: chatId, message: message.copyWith())
+        .then((_) {
+          _removeOptimistic(tempId);
+        })
+        .catchError((_) {
+          _removeOptimistic(tempId);
+          notifyListeners();
+        });
   }
 
   Future<void> sendVoiceMessage({
@@ -527,14 +530,15 @@ class ChatProvider extends ChangeNotifier {
       audioDurationSeconds: durationSeconds,
     );
     _optimisticInsert(message);
-    _ds.sendMessage(chatId: chatId, message: message.copyWith()).then((_) {
-      _removeOptimistic(tempId);
-    }).catchError((
-      _,
-    ) {
-      _removeOptimistic(tempId);
-      notifyListeners();
-    });
+    _ds
+        .sendMessage(chatId: chatId, message: message.copyWith())
+        .then((_) {
+          _removeOptimistic(tempId);
+        })
+        .catchError((_) {
+          _removeOptimistic(tempId);
+          notifyListeners();
+        });
   }
 
   Future<void> editMessage({
@@ -685,14 +689,15 @@ class ChatProvider extends ChangeNotifier {
     );
     _replyingTo = null;
     _optimisticInsert(message);
-    _ds.sendMessage(chatId: chatId, message: message.copyWith()).then((_) {
-      _removeOptimistic(tempId);
-    }).catchError((
-      _,
-    ) {
-      _removeOptimistic(tempId);
-      notifyListeners();
-    });
+    _ds
+        .sendMessage(chatId: chatId, message: message.copyWith())
+        .then((_) {
+          _removeOptimistic(tempId);
+        })
+        .catchError((_) {
+          _removeOptimistic(tempId);
+          notifyListeners();
+        });
   }
 
   Future<void> votePoll({
@@ -791,5 +796,3 @@ class ChatProvider extends ChangeNotifier {
     super.dispose();
   }
 }
-
-

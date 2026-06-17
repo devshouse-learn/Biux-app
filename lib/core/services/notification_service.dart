@@ -1,4 +1,4 @@
-﻿import 'dart:async';
+import 'dart:async';
 import 'dart:convert';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
@@ -109,10 +109,13 @@ class NotificationService {
   /// Configura los manejadores de FCM
   void _configureFCMHandlers() {
     // Mensaje recibido cuando la app está en foreground
-    _onMessageSubscription = FirebaseMessaging.onMessage.listen(_handleForegroundMessage);
+    _onMessageSubscription = FirebaseMessaging.onMessage.listen(
+      _handleForegroundMessage,
+    );
 
     // Mensaje tocado cuando la app está en background/terminated
-    _onMessageOpenedAppSubscription = FirebaseMessaging.onMessageOpenedApp.listen(_handleMessageOpenedApp);
+    _onMessageOpenedAppSubscription = FirebaseMessaging.onMessageOpenedApp
+        .listen(_handleMessageOpenedApp);
 
     // Verificar si la app se abrió desde una notificación
     _checkInitialMessage();
@@ -595,5 +598,3 @@ class NotificationService {
 Future<void> firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   // Background handler - no se puede usar AppLogger aquí (isolate separado)
 }
-
-

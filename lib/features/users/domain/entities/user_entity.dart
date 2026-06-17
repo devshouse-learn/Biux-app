@@ -27,7 +27,8 @@ class UserEntity {
   final bool autorizadoPorAdmin; // Si fue autorizado por un administrador
   final bool isAdmin; // Campo legacy - para compatibilidad
   final bool canSellProducts; // Campo legacy - para compatibilidad
-  final String profileVisibility; // 'public' o 'private' - determina quién puede seguir
+  final String
+  profileVisibility; // 'public' o 'private' - determina quién puede seguir
 
   const UserEntity({
     required this.id,

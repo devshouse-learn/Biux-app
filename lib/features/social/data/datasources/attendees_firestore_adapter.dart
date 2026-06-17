@@ -1,4 +1,4 @@
-﻿import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:biux/features/social/data/models/attendee_model.dart';
 import "package:flutter/foundation.dart";
@@ -172,5 +172,3 @@ class AttendeesFirestoreAdapter {
     );
   }
 }
-
-

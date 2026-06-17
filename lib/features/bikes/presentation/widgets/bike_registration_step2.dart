@@ -438,10 +438,7 @@ class _BikeRegistrationStep2State extends State<BikeRegistrationStep2> {
             mainAxisSize: MainAxisSize.min,
             children: [
               ListTile(
-                leading: Icon(
-                  Icons.photo_camera,
-                  color: ColorTokens.primary30,
-                ),
+                leading: Icon(Icons.photo_camera, color: ColorTokens.primary30),
                 title: Text(l.t('take_photo')),
                 onTap: () {
                   Navigator.pop(context, ImageSource.camera);

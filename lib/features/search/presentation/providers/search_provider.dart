@@ -1,4 +1,4 @@
-﻿import 'package:flutter/foundation.dart';
+import 'package:flutter/foundation.dart';
 import 'package:biux/features/search/data/repositories/search_repository_impl.dart';
 import 'package:biux/features/search/domain/entities/search_result_entity.dart';
 import 'package:biux/features/search/domain/repositories/search_repository.dart';
@@ -63,4 +63,3 @@ class SearchProvider extends ChangeNotifier {
     notifyListeners();
   }
 }
-

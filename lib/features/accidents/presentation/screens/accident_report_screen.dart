@@ -1,4 +1,4 @@
-﻿import 'dart:io';
+import 'dart:io';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -336,17 +336,22 @@ class _AccidentReportScreenState extends State<AccidentReportScreen>
       appBar: AppBar(
         backgroundColor: Colors.red[700],
         foregroundColor: Colors.white,
-        title: Text(l.t('accidents_title')),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          color: Colors.white,
+          onPressed: () => Navigator.pop(context),
+        ),
+        title: Text(
+          l.t('accidents_title'),
+          style: const TextStyle(color: Colors.white),
+        ),
         bottom: TabBar(
           controller: _tabController,
           indicatorColor: Colors.white,
           labelColor: Colors.white,
           unselectedLabelColor: Colors.white70,
           tabs: [
-            Tab(
-              icon: Icon(Icons.list_alt, size: 20),
-              text: l.t('reports_tab'),
-            ),
+            Tab(icon: Icon(Icons.list_alt, size: 20), text: l.t('reports_tab')),
             Tab(icon: Icon(Icons.map, size: 20), text: l.t('map_tab')),
             Tab(
               icon: Icon(Icons.add_circle_outline, size: 20),
@@ -1117,9 +1122,7 @@ class _AccidentReportScreenState extends State<AccidentReportScreen>
                     width: 100,
                     height: 100,
                     decoration: BoxDecoration(
-                      color: isDark
-                          ? ColorTokens.primary20
-                          : Colors.grey[100],
+                      color: isDark ? ColorTokens.primary20 : Colors.grey[100],
                       borderRadius: BorderRadius.circular(12),
                       border: Border.all(
                         color: isDark ? Colors.white24 : Colors.grey[300]!,
@@ -1294,6 +1297,3 @@ class _AccidentReportScreenState extends State<AccidentReportScreen>
     );
   }
 }
-
-
-

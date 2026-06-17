@@ -1,4 +1,4 @@
-﻿import 'package:flutter/foundation.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:biux/core/services/app_logger.dart';
 
@@ -66,5 +66,3 @@ class ScreenshotPreventionService {
     }
   }
 }
-
-

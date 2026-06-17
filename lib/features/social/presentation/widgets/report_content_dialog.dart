@@ -1,4 +1,4 @@
-﻿import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:biux/core/design_system/color_tokens.dart';
 import 'package:biux/features/social/data/datasources/report_datasource.dart';
@@ -78,7 +78,7 @@ class ReportContentDialog {
               ),
               SizedBox(height: 8),
               Text(
-                'a¿Por qué deseas reportar este contenido?',
+                '¿Por qué deseas reportar este contenido?',
                 style: TextStyle(fontSize: 14, color: Colors.grey.shade600),
               ),
               SizedBox(height: 16),
@@ -179,5 +179,3 @@ class ReportContentDialog {
     );
   }
 }
-
-

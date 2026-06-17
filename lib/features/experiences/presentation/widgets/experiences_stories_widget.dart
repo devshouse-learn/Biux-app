@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:provider/provider.dart';
 import 'package:biux/core/design_system/color_tokens.dart';
 import 'package:biux/core/design_system/locale_notifier.dart';
@@ -43,8 +44,11 @@ class _ExperiencesStoriesWidgetState extends State<ExperiencesStoriesWidget> {
 
   void _onExperiencesChanged() {
     if (!mounted) return;
-    // Re-agrupar stories cuando el feed cambie
-    _loadAndGroupStories();
+    // Programar la actualización después del frame actual para evitar errores de setState
+    SchedulerBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      _loadAndGroupStories();
+    });
   }
 
   Future<void> _loadAndGroupStories() async {
