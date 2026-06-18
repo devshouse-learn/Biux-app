@@ -105,6 +105,10 @@ class _NotificationItemState extends State<NotificationItem> {
     final isFollowRequest =
         widget.notification.type == NotificationType.followRequest;
 
+    debugPrint(
+      '🔍 NotificationItem: id=${widget.notification.id}, type=${widget.notification.type.value}, isFollowRequest=$isFollowRequest, metadata=${widget.notification.metadata}',
+    );
+
     return Dismissible(
       key: Key(widget.notification.id),
       direction: DismissDirection.endToStart,
@@ -122,13 +126,20 @@ class _NotificationItemState extends State<NotificationItem> {
       },
       child: ListTile(
         leading: CircleAvatar(
-          backgroundImage: widget.notification.fromUserPhoto != null
+          backgroundImage:
+              widget.notification.fromUserPhoto != null &&
+                  widget.notification.fromUserPhoto!.isNotEmpty
               ? NetworkImage(widget.notification.fromUserPhoto!)
-              : null,
+              : (widget.notification.fromUserId == 'BIUX_SYSTEM'
+                    ? const AssetImage('img/biux_logo_background_blue.png')
+                    : null),
           backgroundColor: widget.notification.isRead
               ? Colors.grey[300]
               : Theme.of(context).primaryColor,
-          child: widget.notification.fromUserPhoto == null
+          child:
+              (widget.notification.fromUserPhoto == null ||
+                      widget.notification.fromUserPhoto!.isEmpty) &&
+                  widget.notification.fromUserId != 'BIUX_SYSTEM'
               ? Icon(
                   _getIcon(),
                   color: widget.notification.isRead

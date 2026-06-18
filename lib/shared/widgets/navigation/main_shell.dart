@@ -111,9 +111,7 @@ class _MainShellState extends State<MainShell> {
                       Text(
                         _titleForIndex(_selectedIndex, l, context),
                         style: Styles.mainMenuTextBiux.copyWith(
-                          color: isDark
-                              ? ColorTokens.neutral100
-                              : ColorTokens.primary30,
+                          color: ColorTokens.neutral100,
                         ),
                       ),
                       const SizedBox(width: 8),
@@ -122,7 +120,7 @@ class _MainShellState extends State<MainShell> {
                             ? Icons.lock_rounded
                             : Icons.lock_open_rounded,
                         size: 20,
-                        color: isDark ? textColor : ColorTokens.primary30,
+                        color: ColorTokens.neutral100,
                       ),
                     ],
                   )
@@ -138,25 +136,6 @@ class _MainShellState extends State<MainShell> {
                   icon: Icon(Icons.search, color: textColor),
                   onPressed: () => context.push('/users/search'),
                 ),
-              // Notificaciones con badge
-              Consumer<NotificationsProvider?>(
-                builder: (context, provider, child) {
-                  final unreadCount = provider?.unreadCount ?? 0;
-                  final hasUnread = provider?.hasUnread ?? false;
-
-                  return IconButton(
-                    icon: Badge(
-                      label: Text('$unreadCount'),
-                      isLabelVisible: hasUnread,
-                      backgroundColor: ColorTokens.error50,
-                      child: Icon(Icons.notifications, color: textColor),
-                    ),
-                    onPressed: () {
-                      context.push('/notifications');
-                    },
-                  );
-                },
-              ),
             ],
           ),
           drawer: AppDrawer(),
@@ -185,7 +164,7 @@ class _MainShellState extends State<MainShell> {
               items: [
                 _buildNavItem(Icons.home, 0),
                 _buildGroupsNavItem(1),
-                _buildNavItem(Icons.message, 2),
+                _buildNotificationsNavItem(2),
                 _buildNavItem(Icons.pedal_bike, 3),
                 _buildNavItem(Icons.person, 4),
               ],
@@ -257,6 +236,48 @@ class _MainShellState extends State<MainShell> {
     );
   }
 
+  BottomNavigationBarItem _buildNotificationsNavItem(int index) {
+    final isSelected = _selectedIndex == index;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final iconColor = isSelected
+        ? (isDark ? ColorTokens.primary60 : ColorTokens.neutral0)
+        : (isDark ? ColorTokens.neutral70 : ColorTokens.neutral60);
+
+    return BottomNavigationBarItem(
+      icon: Consumer<NotificationsProvider?>(
+        builder: (context, provider, _) {
+          final unreadCount = provider?.unreadCount ?? 0;
+          final hasUnread = provider?.hasUnread ?? false;
+
+          return Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Badge(
+                label: hasUnread ? Text('$unreadCount') : null,
+                backgroundColor: ColorTokens.error50,
+                isLabelVisible: hasUnread,
+                child: Icon(Icons.notifications, size: 28, color: iconColor),
+              ),
+              const SizedBox(height: 4),
+              AnimatedContainer(
+                duration: const Duration(milliseconds: 200),
+                height: 2,
+                width: isSelected ? 24 : 0,
+                decoration: BoxDecoration(
+                  color: isSelected
+                      ? (isDark ? ColorTokens.primary60 : ColorTokens.neutral0)
+                      : Colors.transparent,
+                  borderRadius: BorderRadius.circular(1),
+                ),
+              ),
+            ],
+          );
+        },
+      ),
+      label: '',
+    );
+  }
+
   void _onTabTapped(int index) {
     setState(() {
       _selectedIndex = index;
@@ -272,8 +293,8 @@ class _MainShellState extends State<MainShell> {
         context.go(AppRoutes.myGroups);
         break;
       case 2:
-        // Mensajes
-        context.go(AppRoutes.chatList);
+        // Notificaciones
+        context.go('/notifications');
         break;
       case 3:
         // Mis Bicis
@@ -314,7 +335,7 @@ class _MainShellState extends State<MainShell> {
       setState(() {
         _selectedIndex = 1;
       });
-    } else if (location.startsWith(AppRoutes.chatList)) {
+    } else if (location.startsWith('/notifications')) {
       setState(() {
         _selectedIndex = 2;
       });

@@ -103,8 +103,7 @@ class _AppDrawerState extends State<AppDrawer> {
 
   @override
   Widget build(BuildContext context) {
-    final l = Provider.of<LocaleNotifier>(context, listen: false);
-
+    final l = context.watch<LocaleNotifier>();
     return Drawer(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       child: Column(
@@ -433,7 +432,7 @@ class _AppDrawerState extends State<AppDrawer> {
                 _item(
                   Icons.bar_chart_rounded,
                   Colors.blue,
-                  'Mis Estadisticas',
+                  l.t('my_stats'),
                   'Km, velocidad, nivel y ranking',
                   () {
                     Navigator.pop(context);
@@ -461,7 +460,7 @@ class _AppDrawerState extends State<AppDrawer> {
                 _item(
                   Icons.storefront,
                   Colors.deepPurple,
-                  'Negocios y Eventos',
+                  l.t('business_events'),
                   'Publicidad y eventos con registro',
                   () {
                     Navigator.pop(context);
@@ -499,8 +498,8 @@ class _AppDrawerState extends State<AppDrawer> {
                 _item(
                   Icons.car_crash,
                   Colors.deepOrange,
-                  'Reportar Accidente',
-                  'Reporta un incidente vial',
+                  l.t('report_accident'),
+                  'Reportar un incidente vial',
                   () {
                     Navigator.pop(context);
                     context.push('/accidents/report');

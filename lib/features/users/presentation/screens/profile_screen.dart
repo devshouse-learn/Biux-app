@@ -1061,15 +1061,23 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
                                               .isNotEmpty)
                                         Row(
                                           children: [
-                                            Text(
-                                              '@${widget.userProvider.user!.username}',
-                                              style: TextStyle(
-                                                fontSize: 13,
-                                                color: ColorTokens.neutral100
-                                                    .withValues(alpha: 0.7),
+                                            Icon(
+                                              Icons.lock_outline,
+                                              size: 14,
+                                              color: ColorTokens.neutral100,
+                                            ),
+                                            SizedBox(width: 6),
+                                            Expanded(
+                                              child: Text(
+                                                '@${widget.userProvider.user!.username}',
+                                                style: TextStyle(
+                                                  fontSize: 13,
+                                                  color: ColorTokens.neutral100,
+                                                  fontWeight: FontWeight.w500,
+                                                ),
+                                                maxLines: 1,
+                                                overflow: TextOverflow.ellipsis,
                                               ),
-                                              maxLines: 1,
-                                              overflow: TextOverflow.ellipsis,
                                             ),
                                           ],
                                         ),

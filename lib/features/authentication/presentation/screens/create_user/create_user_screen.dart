@@ -681,6 +681,10 @@ class _CreateUserScreenState extends State<CreateUserScreen> {
             String id = response.message;
             await FirebaseAnalytics.instance.logSignUp(signUpMethod: 'email');
             await bloc.uploadPhoto(id);
+
+            // Nota: La notificación de bienvenida se enviará automáticamente
+            // desde auth_provider.dart cuando el usuario se loguee en Firebase
+
             Future.delayed(Duration(seconds: 3), () async {
               if (context.mounted) {
                 if (ageInfo.ageGroup == AgeGroup.minor) {
