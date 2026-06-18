@@ -3,8 +3,10 @@ import 'dart:async';
 import 'package:biux/features/authentication/domain/repositories/auth_repository_interface.dart';
 import 'package:biux/core/services/app_logger.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:biux/core/services/notification_service.dart';
+import 'package:biux/core/services/welcome_notification_service.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 enum AuthState { initial, loading, codeSent, authenticated, error }
@@ -172,6 +174,11 @@ class AuthProvider extends ChangeNotifier {
       AppLogger.debug(
         '🔗Ž« Token ID obtenido: ${idToken?.substring(0, 50)}...',
       );
+
+      // Enviar notificación de bienvenida si es la primera vez que se loguea
+      if (user != null) {
+        await _sendWelcomeNotificationIfNew(user);
+      }
 
       // Reinicializar servicio de notificaciones con el usuario autenticado
       AppLogger.debug('🔗“¢ Reinicializando servicio de notificaciones...');
@@ -397,6 +404,65 @@ class AuthProvider extends ChangeNotifier {
         return 'err_weak_password';
       default:
         return 'err_auth_failed';
+    }
+  }
+
+  /// Envía notificación de bienvenida si es la primera autenticación del usuario
+  Future<void> _sendWelcomeNotificationIfNew(User user) async {
+    try {
+      AppLogger.debug(
+        'Verificando si enviar notificación de bienvenida para: ${user.uid}',
+        tag: 'AuthProvider',
+      );
+
+      final database = FirebaseDatabase.instance;
+      final notificationsRef = database.ref('notifications/${user.uid}');
+      final snapshot = await notificationsRef.get();
+
+      // Si no tiene notificaciones aún, enviar bienvenida
+      if (!snapshot.exists) {
+        AppLogger.info(
+          'Primera autenticación detectada. Enviando notificación de bienvenida.',
+          tag: 'AuthProvider',
+        );
+
+        final displayName = user.displayName ?? 'Ciclista';
+        final timestamp = DateTime.now().millisecondsSinceEpoch;
+        final notificationId =
+            database.ref().push().key ?? DateTime.now().toString();
+
+        await database.ref('notifications/${user.uid}/$notificationId').set({
+          'id': notificationId,
+          'type': 'welcome',
+          'fromUserId': 'BIUX_SYSTEM',
+          'fromUserName': 'BIUX',
+          'fromUserPhoto': '',
+          'message': '¡Bienvenido a BIUX!',
+          'title': '¡Hola $displayName! 🚴‍♂️',
+          'body':
+              '¡Hola $displayName! 👋\n\nTe damos la bienvenida a BIUX, la comunidad de ciclistas más activa.\n\n🎯 Próximos pasos:\n\n1️⃣ **Completa tu perfil** - Agrega una foto y describe quién eres\n2️⃣ **Únete a un grupo** - Conecta con ciclistas de tu ciudad\n3️⃣ **Crea tu primera rodada** - Organiza una salida\n4️⃣ **Comparte tu experiencia** - Dile a otros sobre tus rodadas',
+          'isRead': false,
+          'createdAt': timestamp,
+          'timestamp': timestamp,
+          'metadata': {'actionUrl': '/home', 'priority': 'high'},
+        });
+
+        AppLogger.info(
+          'Notificación de bienvenida enviada exitosamente',
+          tag: 'AuthProvider',
+        );
+      } else {
+        AppLogger.debug(
+          'Usuario ya tiene notificaciones. No se envía bienvenida nuevamente.',
+          tag: 'AuthProvider',
+        );
+      }
+    } catch (e) {
+      AppLogger.warning(
+        'Error al enviar notificación de bienvenida: $e',
+        tag: 'AuthProvider',
+      );
+      // No fallar el login por error en notificación
     }
   }
 

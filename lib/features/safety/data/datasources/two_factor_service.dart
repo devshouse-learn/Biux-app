@@ -80,9 +80,6 @@ class TwoFactorService {
         'Código OTP generado para $method',
         tag: 'TwoFactorService',
       );
-
-      // TODO: En producción, enviar código via SMS/Email usando Twilio, SendGrid, etc.
-      // Por ahora solo se almacena en Firestore
     } catch (e) {
       AppLogger.error(
         'Error generando código OTP: $e',

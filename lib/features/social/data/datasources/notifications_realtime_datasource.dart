@@ -12,21 +12,39 @@ class NotificationsRealtimeDatasource {
   /// Stream de notificaciones del usuario
   Stream<List<NotificationModel>> watchUserNotifications(String userId) {
     final ref = _database.ref('notifications/$userId');
+    debugPrint('📡 DATASOURCE: Escuchando notificaciones para userId=$userId');
 
     return ref.orderByChild('timestamp').limitToLast(100).onValue.map((event) {
-      if (event.snapshot.value == null) return <NotificationModel>[];
+      debugPrint('📡 DATASOURCE: onValue EVENT RECIBIDO');
+
+      if (event.snapshot.value == null) {
+        debugPrint(
+          '📡 DATASOURCE: snapshot.value es NULL - retornando lista vacia',
+        );
+        return <NotificationModel>[];
+      }
 
       final data = event.snapshot.value as Map<dynamic, dynamic>;
+      debugPrint('📡 DATASOURCE: Firebase devuelve ${data.length} items');
+
       final notifications = <NotificationModel>[];
 
       data.forEach((key, value) {
         if (value is Map) {
+          debugPrint('📡 DATASOURCE: Parseando item key=$key');
           notifications.add(NotificationModel.fromJson(key, value));
         }
       });
 
       // Ordenar por timestamp descendente (más recientes primero)
       notifications.sort((a, b) => b.timestamp.compareTo(a.timestamp));
+
+      debugPrint(
+        '📡 DATASOURCE: Retornando ${notifications.length} notificaciones parseadas',
+      );
+      for (final n in notifications) {
+        debugPrint('📡 DATASOURCE:   - ${n.id} (${n.type})');
+      }
 
       return notifications;
     });

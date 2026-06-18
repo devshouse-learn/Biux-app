@@ -119,6 +119,8 @@ class AppTranslations {
 
     // Navigation & Shell
     'nav_home': 'Inicio',
+    'nav_groups': 'Grupos',
+    'nav_messages': 'Mensajes',
     'nav_routes': 'Rutas',
     'nav_my_bikes': 'Mis Bicis',
     'nav_store': 'Tienda',

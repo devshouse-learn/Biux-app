@@ -39,6 +39,7 @@ import 'dart:ui' show PlatformDispatcher;
 
 import 'package:biux/core/config/firebase_options.dart';
 import 'package:biux/features/ride_tracker/data/datasources/offline_ride_datasource.dart';
+import 'package:biux/core/services/welcome_notification_service.dart';
 
 Future<void> _syncOfflineRides() async {
   try {

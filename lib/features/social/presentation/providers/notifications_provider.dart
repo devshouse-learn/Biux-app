@@ -26,30 +26,45 @@ class NotificationsProvider extends ChangeNotifier {
   bool get hasUnread => _unreadCount > 0;
 
   void _init() {
+    debugPrint('=== NotificationsProvider INICIADO con userId: $userId ===');
     // Escuchar notificaciones
     _repository
         .watchUserNotifications(userId)
         .listen(
           (notifications) {
             debugPrint(
-              '🔗”” Notificaciones recibidas: ${notifications.length} para userId: $userId',
+              '═══════════════════════════════════════════════════════════',
             );
-            for (final n in notifications) {
+            debugPrint(
+              '🔗 EVENTO DEL STREAM: ${notifications.length} notificaciones recibidas',
+            );
+
+            if (notifications.isEmpty) {
+              debugPrint('⚠️  ADVERTENCIA: STREAM VACIO (0 notificaciones)');
+            }
+
+            for (int i = 0; i < notifications.length; i++) {
+              final n = notifications[i];
               debugPrint(
-                '   a†’ tipo=${n.type.value}, de=${n.fromUserName}, msg=${n.message}',
+                '[$i] ID="${n.id}" | tipo=${n.type.value} | de=${n.fromUserName} | msg="${n.message}"',
               );
             }
+
+            debugPrint(
+              '═══════════════════════════════════════════════════════════',
+            );
+
             _notifications = notifications;
             notifyListeners();
           },
           onError: (e) {
-            debugPrint('aŒ Error en stream de notificaciones: $e');
+            debugPrint('ERROR EN STREAM: $e');
             _error = e.toString();
             notifyListeners();
           },
         );
 
-    // Escuchar contador de no leídas
+    // Escuchar contador de no leidas
     _repository
         .watchUnreadCount(userId)
         .listen(
@@ -64,7 +79,7 @@ class NotificationsProvider extends ChangeNotifier {
         );
   }
 
-  /// Marca una notificación como leída
+  /// Marca una notificacion como leida
   Future<void> markAsRead(String notificationId) async {
     try {
       await _repository.markAsRead(userId, notificationId);
@@ -74,7 +89,7 @@ class NotificationsProvider extends ChangeNotifier {
     }
   }
 
-  /// Marca todas las notificaciones como leídas
+  /// Marca todas las notificaciones como leidas
   Future<void> markAllAsRead() async {
     try {
       _isLoading = true;
@@ -91,7 +106,7 @@ class NotificationsProvider extends ChangeNotifier {
     }
   }
 
-  /// Elimina una notificación
+  /// Elimina una notificacion
   Future<void> deleteNotification(String notificationId) async {
     try {
       await _repository.deleteNotification(userId, notificationId);
@@ -122,5 +137,31 @@ class NotificationsProvider extends ChangeNotifier {
   void clearError() {
     _error = null;
     notifyListeners();
+  }
+
+  /// Elimina notificaciones antiguas de prueba con formato incorrecto
+  Future<void> cleanOldTestNotifications() async {
+    try {
+      final toDelete = _notifications
+          .where(
+            (n) =>
+                n.message.contains('(cuenta privada)') ||
+                n.message.contains('(cuenta pública)') ||
+                (n.fromUserPhoto != null &&
+                    n.fromUserPhoto!.isNotEmpty &&
+                    n.fromUserPhoto!.contains('test')),
+          )
+          .toList();
+
+      for (final notif in toDelete) {
+        await deleteNotification(notif.id);
+      }
+
+      if (toDelete.isNotEmpty) {
+        debugPrint('🧹 Limpiadas ${toDelete.length} notificaciones antiguas');
+      }
+    } catch (e) {
+      debugPrint('Error limpiando notificaciones: $e');
+    }
   }
 }
