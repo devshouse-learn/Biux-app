@@ -257,6 +257,9 @@ class AuthProvider extends ChangeNotifier {
       AppLogger.info('✅ Sesión cerrada completamente');
       _state = AuthState.initial;
       _sendAttempts = 0;
+      _needsProfileSetup = false;
+      _resendTimer?.cancel();
+      _resendTimer = null;
       notifyListeners();
     } on FirebaseException catch (e) {
       AppLogger.error('aŒ Error al cerrar sesión: $e');

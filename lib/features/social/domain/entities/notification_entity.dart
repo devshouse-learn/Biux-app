@@ -106,9 +106,13 @@ class NotificationEntity {
   bool operator ==(Object other) {
     if (identical(this, other)) return true;
 
-    return other is NotificationEntity && other.id == id;
+    return other is NotificationEntity &&
+        other.id == id &&
+        other.type == type &&
+        other.message == message &&
+        other.isRead == isRead;
   }
 
   @override
-  int get hashCode => id.hashCode;
+  int get hashCode => Object.hash(id, type, message, isRead);
 }

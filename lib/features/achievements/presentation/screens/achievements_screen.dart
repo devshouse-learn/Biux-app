@@ -1362,9 +1362,9 @@ class _AchievementsScreenState extends State<AchievementsScreen>
               style: TextStyle(fontSize: 13),
             ),
             SizedBox(height: 4),
-            Text('👥 Social - Únete a grupos', style: TextStyle(fontSize: 13)),
+            Text('👥 ${Provider.of<LocaleNotifier>(context, listen: false).t('social_join_groups')}', style: const TextStyle(fontSize: 13)),
             SizedBox(height: 4),
-            Text('⭐ Especiales - Retos únicos', style: TextStyle(fontSize: 13)),
+            Text('⭐ ${Provider.of<LocaleNotifier>(context, listen: false).t('special_unique_challenges')}', style: const TextStyle(fontSize: 13)),
             SizedBox(height: 12),
             Text(
               'Los logros se sincronizan automáticamente cada semana.\nTambién puedes sincronizar manualmente con el botón 🔄',

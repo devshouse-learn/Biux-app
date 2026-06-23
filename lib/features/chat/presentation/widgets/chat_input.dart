@@ -931,7 +931,7 @@ class _ChatInputState extends State<ChatInput>
       if (mounted) {
         ScaffoldMessenger.of(
           context,
-        ).showSnackBar(SnackBar(content: Text('Error al enviar audio: $e')));
+        ).showSnackBar(SnackBar(content: Text('${Provider.of<LocaleNotifier>(context, listen: false).t('error_sending_audio')}: $e')));
       }
     } finally {
       if (mounted) setState(() => _isUploadingAudio = false);

@@ -249,7 +249,7 @@ class _ProfileHighlightsState extends State<ProfileHighlights> {
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: Text('Renombrar destacado'),
+        title: Text(Provider.of<LocaleNotifier>(context, listen: false).t('rename_highlight')),
         content: TextField(
           controller: controller,
           decoration: InputDecoration(
@@ -298,7 +298,7 @@ class _ProfileHighlightsState extends State<ProfileHighlights> {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Text('No tienes historias para destacar'),
+              content: Text(Provider.of<LocaleNotifier>(context, listen: false).t('no_stories_to_highlight')),
               backgroundColor: ColorTokens.warning50,
             ),
           );
@@ -453,7 +453,7 @@ class _ProfileHighlightsState extends State<ProfileHighlights> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Error cargando historias'),
+            content: Text(Provider.of<LocaleNotifier>(context, listen: false).t('error_loading_stories')),
             backgroundColor: ColorTokens.error50,
           ),
         );

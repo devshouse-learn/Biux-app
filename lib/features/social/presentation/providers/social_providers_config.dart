@@ -75,7 +75,7 @@ class SocialProvidersConfig {
           final currentUser = FirebaseAuth.instance.currentUser;
           if (currentUser == null) return null;
 
-          if (previous != null) {
+          if (previous != null && previous.userId == currentUser.uid) {
             return previous;
           }
 

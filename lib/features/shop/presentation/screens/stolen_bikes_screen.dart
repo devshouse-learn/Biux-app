@@ -1123,8 +1123,8 @@ class _StolenBikesScreenState extends State<StolenBikesScreen>
   void _submitReport() {
     if (!_formKey.currentState!.validate() || _formCity.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Completa todos los campos obligatorios'),
+        SnackBar(
+          content: Text(Provider.of<LocaleNotifier>(context, listen: false).t('fill_required_fields')),
           behavior: SnackBarBehavior.floating,
         ),
       );
@@ -1132,8 +1132,8 @@ class _StolenBikesScreenState extends State<StolenBikesScreen>
     }
     if (_theftDate == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Selecciona la fecha del robo'),
+        SnackBar(
+          content: Text(Provider.of<LocaleNotifier>(context, listen: false).t('select_theft_date')),
           behavior: SnackBarBehavior.floating,
         ),
       );
@@ -1157,7 +1157,9 @@ class _StolenBikesScreenState extends State<StolenBikesScreen>
               _clearForm();
               _tabController.animateTo(0);
             },
-            child: const Text('Aceptar'),
+            child: Text(
+              Provider.of<LocaleNotifier>(context, listen: false).t('accept'),
+            ),
           ),
         ],
       ),

@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:biux/core/config/env_config.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:http/http.dart' as http;
 import "package:flutter/foundation.dart";
@@ -8,7 +9,7 @@ import "package:flutter/foundation.dart";
 class DirectionsService {
   static const String _baseUrl =
       'https://maps.googleapis.com/maps/api/directions/json';
-  static const String _apiKey = 'AIzaSyDiMK4kwhaIkuMxAcioRonPzaozDRJtO20';
+  static const String _apiKey = EnvConfig.mapsApiKey;
 
   static Future<List<LatLng>?> getDirections({
     required LatLng origin,

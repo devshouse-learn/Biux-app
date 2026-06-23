@@ -65,8 +65,8 @@ class _BiometricSettingsScreenState extends State<BiometricSettingsScreen> {
   String get _biometricLabel {
     if (_biometrics.contains(BiometricType.face)) return 'Face ID';
     if (_biometrics.contains(BiometricType.fingerprint))
-      return 'Huella digital';
-    return 'Biometria';
+      return l.t('fingerprint_label');
+    return l.t('biometrics_label');
   }
 
   IconData get _biometricIcon {
@@ -163,9 +163,9 @@ class _BiometricSettingsScreenState extends State<BiometricSettingsScreen> {
                       child: SwitchListTile(
                         value: _isEnabled,
                         onChanged: _toggle,
-                        title: Text('Activar \$_biometricLabel'),
-                        subtitle: const Text(
-                          'Solicitar autenticacion al abrir Biux',
+                        title: Text('${l.t('activate_biometric')} $_biometricLabel'),
+                        subtitle: Text(
+                          l.t('request_auth_open_app'),
                         ),
                         secondary: Icon(
                           _biometricIcon,

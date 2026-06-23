@@ -643,7 +643,7 @@ final GoRouter _router = GoRouter(
           name: 'rideComments',
           builder: (context, state) {
             final rideId = state.pathParameters['rideId']!;
-            final ownerId = state.uri.queryParameters['ownerId']!;
+            final ownerId = state.uri.queryParameters['ownerId'] ?? '';
 
             return RideCommentsScreen(rideId: rideId, rideOwnerId: ownerId);
           },
@@ -655,7 +655,7 @@ final GoRouter _router = GoRouter(
           name: 'rideAttendees',
           builder: (context, state) {
             final rideId = state.pathParameters['rideId']!;
-            final ownerId = state.uri.queryParameters['ownerId']!;
+            final ownerId = state.uri.queryParameters['ownerId'] ?? '';
 
             return RideAttendeesScreen(rideId: rideId, rideOwnerId: ownerId);
           },

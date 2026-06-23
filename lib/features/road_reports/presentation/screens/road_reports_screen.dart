@@ -123,7 +123,7 @@ class _RoadReportsScreenState extends State<RoadReportsScreen> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Error ubicación: $e'),
+            content: Text('${Provider.of<LocaleNotifier>(context, listen: false).t('error_location')}: $e'),
             backgroundColor: Colors.red,
           ),
         );
@@ -171,7 +171,7 @@ class _RoadReportsScreenState extends State<RoadReportsScreen> {
             Text(l.t('delete_report')),
           ],
         ),
-        content: Text('¿Estás seguro de que quieres eliminar este reporte?'),
+        content: Text(l.t('confirm_delete_report')),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(dc).pop(),

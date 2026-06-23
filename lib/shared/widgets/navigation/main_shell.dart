@@ -136,6 +136,25 @@ class _MainShellState extends State<MainShell> {
                   icon: Icon(Icons.search, color: textColor),
                   onPressed: () => context.push('/users/search'),
                 ),
+              // Campana de notificaciones
+              Consumer<NotificationsProvider?>(
+                builder: (context, provider, _) {
+                  final unreadCount = provider?.unreadCount ?? 0;
+                  final hasUnread = provider?.hasUnread ?? false;
+                  return IconButton(
+                    icon: Badge(
+                      label: hasUnread ? Text('$unreadCount') : null,
+                      backgroundColor: ColorTokens.error50,
+                      isLabelVisible: hasUnread,
+                      child: Icon(
+                        Icons.notifications_outlined,
+                        color: textColor,
+                      ),
+                    ),
+                    onPressed: () => context.push('/notifications'),
+                  );
+                },
+              ),
             ],
           ),
           drawer: AppDrawer(),
@@ -164,7 +183,7 @@ class _MainShellState extends State<MainShell> {
               items: [
                 _buildNavItem(Icons.home, 0),
                 _buildGroupsNavItem(1),
-                _buildNotificationsNavItem(2),
+                _buildNavItem(Icons.chat_bubble_outline, 2),
                 _buildNavItem(Icons.pedal_bike, 3),
                 _buildNavItem(Icons.person, 4),
               ],
@@ -236,48 +255,6 @@ class _MainShellState extends State<MainShell> {
     );
   }
 
-  BottomNavigationBarItem _buildNotificationsNavItem(int index) {
-    final isSelected = _selectedIndex == index;
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    final iconColor = isSelected
-        ? (isDark ? ColorTokens.primary60 : ColorTokens.neutral0)
-        : (isDark ? ColorTokens.neutral70 : ColorTokens.neutral60);
-
-    return BottomNavigationBarItem(
-      icon: Consumer<NotificationsProvider?>(
-        builder: (context, provider, _) {
-          final unreadCount = provider?.unreadCount ?? 0;
-          final hasUnread = provider?.hasUnread ?? false;
-
-          return Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Badge(
-                label: hasUnread ? Text('$unreadCount') : null,
-                backgroundColor: ColorTokens.error50,
-                isLabelVisible: hasUnread,
-                child: Icon(Icons.notifications, size: 28, color: iconColor),
-              ),
-              const SizedBox(height: 4),
-              AnimatedContainer(
-                duration: const Duration(milliseconds: 200),
-                height: 2,
-                width: isSelected ? 24 : 0,
-                decoration: BoxDecoration(
-                  color: isSelected
-                      ? (isDark ? ColorTokens.primary60 : ColorTokens.neutral0)
-                      : Colors.transparent,
-                  borderRadius: BorderRadius.circular(1),
-                ),
-              ),
-            ],
-          );
-        },
-      ),
-      label: '',
-    );
-  }
-
   void _onTabTapped(int index) {
     setState(() {
       _selectedIndex = index;
@@ -293,8 +270,8 @@ class _MainShellState extends State<MainShell> {
         context.go(AppRoutes.myGroups);
         break;
       case 2:
-        // Notificaciones
-        context.go('/notifications');
+        // Mensajes / Chats
+        context.go(AppRoutes.chatList);
         break;
       case 3:
         // Mis Bicis
@@ -320,32 +297,26 @@ class _MainShellState extends State<MainShell> {
     final isFullScreen = _fullScreenRoutes.any(
       (route) => location.startsWith(route),
     );
-    if (isFullScreen != _isFullScreenRoute) {
-      setState(() {
-        _isFullScreenRoute = isFullScreen;
-      });
-    }
 
+    int newIndex = _selectedIndex;
     if (location.startsWith('/stories')) {
-      setState(() {
-        _selectedIndex = 0;
-      });
+      newIndex = 0;
     } else if (location.startsWith('/my-groups') ||
         location.startsWith(AppRoutes.groupList)) {
-      setState(() {
-        _selectedIndex = 1;
-      });
-    } else if (location.startsWith('/notifications')) {
-      setState(() {
-        _selectedIndex = 2;
-      });
+      newIndex = 1;
+    } else if (location.startsWith('/chat') ||
+        location.startsWith(AppRoutes.chatList)) {
+      newIndex = 2;
     } else if (location.startsWith('/bikes') || location == AppRoutes.myBikes) {
-      setState(() {
-        _selectedIndex = 3;
-      });
+      newIndex = 3;
     } else if (location.startsWith('/profile')) {
+      newIndex = 4;
+    }
+
+    if (newIndex != _selectedIndex || isFullScreen != _isFullScreenRoute) {
       setState(() {
-        _selectedIndex = 4;
+        _selectedIndex = newIndex;
+        _isFullScreenRoute = isFullScreen;
       });
     }
   }

@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
+import 'package:biux/core/config/env_config.dart';
 import 'package:http/http.dart' as http;
 
 class PaymentsRepository {
@@ -14,8 +15,8 @@ class PaymentsRepository {
           "language": "es",
           "command": "GET_PAYMENT_METHODS",
           "merchant": {
-            "apiLogin": "pRRXKOl8ikMmt9u",
-            "apiKey": "4Vj8eK4rloUd272L48hsrarnUA",
+            "apiLogin": EnvConfig.payuApiLogin,
+            "apiKey": EnvConfig.payuApiKey,
           },
           "test": "true",
         },

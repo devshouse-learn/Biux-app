@@ -882,7 +882,7 @@ class _ExperienceCard extends StatelessWidget {
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Error al repostear: $e'),
+            content: Text('${Provider.of<LocaleNotifier>(context, listen: false).t('error_reposting')}: $e'),
             behavior: SnackBarBehavior.floating,
           ),
         );

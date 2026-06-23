@@ -1,4 +1,4 @@
-import 'dart:async';
+﻿import 'dart:async';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -28,6 +28,12 @@ class _AppDrawerState extends State<AppDrawer> {
   void initState() {
     super.initState();
     _loadUserDataOnce();
+  }
+
+  @override
+  void dispose() {
+    _sosTimer?.cancel();
+    super.dispose();
   }
 
   void _startSosHold() {
@@ -66,12 +72,13 @@ class _AppDrawerState extends State<AppDrawer> {
 
     // Navegar primero para que el usuario vea la pantalla
     Navigator.pop(context);
+    if (!mounted) return;
     context.push(AppRoutes.emergency);
 
     // Disparar SOS inmediatamente (sin countdown adicional)
     emergencyProvider.triggerSosImmediate(
       userId: uid,
-      userName: user?.name ?? 'Ciclista',
+      userName: user?.name ?? Provider.of<LocaleNotifier>(context, listen: false).t('cyclist'),
     );
   }
 
@@ -255,7 +262,7 @@ class _AppDrawerState extends State<AppDrawer> {
                     const SizedBox(height: 14),
                     // Nombre del usuario
                     Text(
-                      user?.name ?? 'Ciclista',
+                      user?.name ?? Provider.of<LocaleNotifier>(context, listen: false).t('cyclist'),
                       style: const TextStyle(
                         color: Colors.white,
                         fontSize: 18,
@@ -697,7 +704,7 @@ class _AppDrawerState extends State<AppDrawer> {
             ),
           ],
         ),
-        content: const Text('Estas seguro que deseas cerrar sesion?'),
+        content: Text(Provider.of<LocaleNotifier>(context, listen: false).t('confirm_logout')),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(dc).pop(),

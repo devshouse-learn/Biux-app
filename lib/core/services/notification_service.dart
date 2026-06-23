@@ -283,6 +283,7 @@ class NotificationService {
       AppLogger.info('Token FCM guardado', tag: 'Notifications');
 
       // Escuchar cambios de token
+      await _onTokenRefreshSubscription?.cancel();
       _onTokenRefreshSubscription = _fcm.onTokenRefresh.listen((newToken) {
         _updateDeviceToken(userId, newToken);
       });

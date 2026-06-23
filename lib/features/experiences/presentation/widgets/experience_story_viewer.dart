@@ -1001,7 +1001,7 @@ class _ExperienceStoryViewerState extends State<ExperienceStoryViewer>
                             if (modalContext.mounted) {
                               ScaffoldMessenger.of(modalContext).showSnackBar(
                                 SnackBar(
-                                  content: Text('Error al repostear: $e'),
+                                  content: Text('${Provider.of<LocaleNotifier>(context, listen: false).t("error_reposting")}: $e'),
                                 ),
                               );
                             }

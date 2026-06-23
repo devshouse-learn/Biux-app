@@ -154,7 +154,7 @@ class ReportContentDialog {
                             if (context.mounted) {
                               ScaffoldMessenger.of(context).showSnackBar(
                                 SnackBar(
-                                  content: Text('Error enviando reporte'),
+                                  content: Text(Provider.of<LocaleNotifier>(context, listen: false).t('error_sending_report')),
                                   backgroundColor: ColorTokens.error50,
                                 ),
                               );

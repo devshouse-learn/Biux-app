@@ -793,6 +793,7 @@ class ChatProvider extends ChangeNotifier {
     _chatsSub?.cancel();
     _messagesSub?.cancel();
     _activeChatSub?.cancel();
+    _typingSub?.cancel();
     super.dispose();
   }
 }

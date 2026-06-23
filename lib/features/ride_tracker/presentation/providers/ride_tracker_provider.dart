@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:math';
+import 'package:biux/core/config/env_config.dart';
 import 'package:flutter/foundation.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -40,7 +41,7 @@ class RideTrackerProvider with ChangeNotifier {
   bool _routeLoading = false;
   bool _isRerouting = false; // recalculando ruta actualmente
   static const _kOffRouteMeters = 50.0; // desvío máximo tolerado (m)
-  static const _kDirectionsApiKey = 'AIzaSyDiMK4kwhaIkuMxAcioRonPzaozDRJtO20';
+  static const _kDirectionsApiKey = EnvConfig.mapsApiKey;
 
   List<TrackPoint> get points => _points;
   List<RideTrackEntity> get history => _history;

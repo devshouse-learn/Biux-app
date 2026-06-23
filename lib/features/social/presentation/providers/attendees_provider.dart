@@ -272,4 +272,10 @@ class AttendeesProvider extends ChangeNotifier {
     _error = null;
     notifyListeners();
   }
+
+  @override
+  void dispose() {
+    _firestoreAdapter.dispose();
+    super.dispose();
+  }
 }

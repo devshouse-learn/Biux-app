@@ -485,20 +485,19 @@ class _CreateUserScreenState extends State<CreateUserScreen> {
                                     shape: RoundedRectangleBorder(
                                       borderRadius: BorderRadius.circular(16),
                                     ),
-                                    title: const Row(
+                                    title: Row(
                                       children: [
-                                        Icon(
+                                        const Icon(
                                           Icons.block_rounded,
                                           color: Colors.red,
                                         ),
-                                        SizedBox(width: 8),
-                                        Text('Acceso restringido'),
+                                        const SizedBox(width: 8),
+                                        Text(Provider.of<LocaleNotifier>(context, listen: false).t('restricted_access')),
                                       ],
                                     ),
-                                    content: const Text(
-                                      'Lo sentimos, Biux está disponible '
-                                      'Ãºnicamente para usuarios mayores de 13 años.',
-                                      style: TextStyle(height: 1.5),
+                                    content: Text(
+                                      Provider.of<LocaleNotifier>(context, listen: false).t('age_restriction_message'),
+                                      style: const TextStyle(height: 1.5),
                                     ),
                                     actions: [
                                       TextButton(

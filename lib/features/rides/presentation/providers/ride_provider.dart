@@ -442,49 +442,51 @@ class RideProvider extends ChangeNotifier {
 
       final rideRef = _firestore.collection('rides').doc(rideId);
 
-      // Obtener rodada actual para actualizar metadata
-      final rideDoc = await rideRef.get();
-      final rideData = rideDoc.data();
+      // Usar transacción para evitar race conditions con metadata
+      await _firestore.runTransaction((transaction) async {
+        final rideDoc = await transaction.get(rideRef);
+        final rideData = rideDoc.data();
 
-      if (rideData == null) {
-        _setError('Rodada no encontrada');
-        _setLoading(false);
-        return false;
-      }
+        if (rideData == null) {
+          throw Exception('Rodada no encontrada');
+        }
 
-      // Actualizar listas de metadata
-      List<Map<String, dynamic>> participantsMetadata =
-          (rideData['participantsMetadata'] as List?)
-              ?.cast<Map<String, dynamic>>() ??
-          [];
-      List<Map<String, dynamic>> maybeParticipantsMetadata =
-          (rideData['maybeParticipantsMetadata'] as List?)
-              ?.cast<Map<String, dynamic>>() ??
-          [];
+        // Actualizar listas de metadata
+        List<Map<String, dynamic>> participantsMetadata =
+            (rideData['participantsMetadata'] as List?)
+                ?.map((e) => Map<String, dynamic>.from(e as Map))
+                .toList() ??
+            [];
+        List<Map<String, dynamic>> maybeParticipantsMetadata =
+            (rideData['maybeParticipantsMetadata'] as List?)
+                ?.map((e) => Map<String, dynamic>.from(e as Map))
+                .toList() ??
+            [];
 
-      // Remover de ambas listas primero
-      participantsMetadata.removeWhere((m) => m['userId'] == currentUserId);
-      maybeParticipantsMetadata.removeWhere(
-        (m) => m['userId'] == currentUserId,
-      );
+        // Remover de ambas listas primero
+        participantsMetadata.removeWhere((m) => m['userId'] == currentUserId);
+        maybeParticipantsMetadata.removeWhere(
+          (m) => m['userId'] == currentUserId,
+        );
 
-      if (maybe) {
-        maybeParticipantsMetadata.add(participantMetadata.toMap());
-        await rideRef.update({
-          'maybeParticipants': FieldValue.arrayUnion([currentUserId]),
-          'participants': FieldValue.arrayRemove([currentUserId]),
-          'maybeParticipantsMetadata': maybeParticipantsMetadata,
-          'participantsMetadata': participantsMetadata,
-        });
-      } else {
-        participantsMetadata.add(participantMetadata.toMap());
-        await rideRef.update({
-          'participants': FieldValue.arrayUnion([currentUserId]),
-          'maybeParticipants': FieldValue.arrayRemove([currentUserId]),
-          'participantsMetadata': participantsMetadata,
-          'maybeParticipantsMetadata': maybeParticipantsMetadata,
-        });
-      }
+        if (maybe) {
+          maybeParticipantsMetadata.add(participantMetadata.toMap());
+          transaction.update(rideRef, {
+            'maybeParticipants': FieldValue.arrayUnion([currentUserId]),
+            'participants': FieldValue.arrayRemove([currentUserId]),
+            'maybeParticipantsMetadata': maybeParticipantsMetadata,
+            'participantsMetadata': participantsMetadata,
+          });
+        } else {
+          participantsMetadata.add(participantMetadata.toMap());
+          transaction.update(rideRef, {
+            'participants': FieldValue.arrayUnion([currentUserId]),
+            'maybeParticipants': FieldValue.arrayRemove([currentUserId]),
+            'participantsMetadata': participantsMetadata,
+            'maybeParticipantsMetadata': maybeParticipantsMetadata,
+          });
+        }
+      });
 
       // Recargar la rodada actual para actualizar la UI inmediatamente
       await selectRideById(rideId);

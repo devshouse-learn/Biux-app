@@ -142,7 +142,7 @@ class _ReportUserScreenState extends State<ReportUserScreen> {
             CheckboxListTile(
               value: _alsoBlock,
               onChanged: (v) => setState(() => _alsoBlock = v ?? true),
-              title: const Text('Tambien bloquear a este usuario'),
+              title: Text(Provider.of<LocaleNotifier>(context, listen: false).t('also_block_user')),
               activeColor: ColorTokens.primary30,
               contentPadding: EdgeInsets.zero,
             ),

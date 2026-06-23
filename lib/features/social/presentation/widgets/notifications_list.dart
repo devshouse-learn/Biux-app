@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:biux/core/design_system/color_tokens.dart';
+import 'package:biux/core/config/router/app_routes.dart';
 import 'package:provider/provider.dart';
 import 'package:biux/core/design_system/locale_notifier.dart';
 import 'package:biux/features/social/domain/entities/notification_entity.dart';
@@ -89,28 +90,31 @@ class NotificationItem extends StatefulWidget {
 }
 
 class _NotificationItemState extends State<NotificationItem> {
-  LocaleNotifier get l => Provider.of<LocaleNotifier>(context);
-
   bool _isProcessing = false;
   String? _actionResult; // 'accepted', 'rejected'
 
   @override
-  Widget build(BuildContext context) {
-    // Configurar locale español para timeago
+  void initState() {
+    super.initState();
     timeago.setLocaleMessages('es', timeago.EsMessages());
+  }
 
-    final provider = context.read<NotificationsProvider>();
+  @override
+  Widget build(BuildContext context) {
+    // Selector: solo reconstruye si esta notificación específica cambió
+    final notification = context
+        .select<NotificationsProvider, NotificationEntity>(
+          (provider) => provider.notifications.firstWhere(
+            (n) => n.id == widget.notification.id,
+            orElse: () => widget.notification,
+          ),
+        );
     final l = Provider.of<LocaleNotifier>(context);
 
-    final isFollowRequest =
-        widget.notification.type == NotificationType.followRequest;
-
-    debugPrint(
-      '🔍 NotificationItem: id=${widget.notification.id}, type=${widget.notification.type.value}, isFollowRequest=$isFollowRequest, metadata=${widget.notification.metadata}',
-    );
+    final isFollowRequest = notification.type == NotificationType.followRequest;
 
     return Dismissible(
-      key: Key(widget.notification.id),
+      key: Key(notification.id),
       direction: DismissDirection.endToStart,
       background: Container(
         color: Colors.red,
@@ -118,43 +122,75 @@ class _NotificationItemState extends State<NotificationItem> {
         padding: const EdgeInsets.only(right: 16.0),
         child: const Icon(Icons.delete, color: Colors.white),
       ),
+      confirmDismiss: (direction) async {
+        return await showDialog<bool>(
+              context: context,
+              builder: (ctx) => AlertDialog(
+                title: Text(
+                  Provider.of<LocaleNotifier>(
+                    context,
+                    listen: false,
+                  ).t('delete_notification_confirm'),
+                ),
+                actions: [
+                  TextButton(
+                    onPressed: () => Navigator.of(ctx).pop(false),
+                    child: Text(
+                      Provider.of<LocaleNotifier>(
+                        context,
+                        listen: false,
+                      ).t('cancel'),
+                    ),
+                  ),
+                  TextButton(
+                    onPressed: () => Navigator.of(ctx).pop(true),
+                    style: TextButton.styleFrom(foregroundColor: Colors.red),
+                    child: Text(
+                      Provider.of<LocaleNotifier>(
+                        context,
+                        listen: false,
+                      ).t('delete'),
+                    ),
+                  ),
+                ],
+              ),
+            ) ??
+            false;
+      },
       onDismissed: (direction) {
-        provider.deleteNotification(widget.notification.id);
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text(l.t('notification_deleted'))));
+        context.read<NotificationsProvider>().deleteNotification(
+          notification.id,
+        );
       },
       child: ListTile(
         leading: CircleAvatar(
           backgroundImage:
-              widget.notification.fromUserPhoto != null &&
-                  widget.notification.fromUserPhoto!.isNotEmpty
-              ? NetworkImage(widget.notification.fromUserPhoto!)
-              : (widget.notification.fromUserId == 'BIUX_SYSTEM'
+              notification.fromUserPhoto != null &&
+                  notification.fromUserPhoto!.isNotEmpty
+              ? NetworkImage(notification.fromUserPhoto!)
+              : (notification.fromUserId == 'BIUX_SYSTEM'
                     ? const AssetImage('img/biux_logo_background_blue.png')
                     : null),
-          backgroundColor: widget.notification.isRead
+          backgroundColor: notification.isRead
               ? Colors.grey[300]
               : Theme.of(context).primaryColor,
           child:
-              (widget.notification.fromUserPhoto == null ||
-                      widget.notification.fromUserPhoto!.isEmpty) &&
-                  widget.notification.fromUserId != 'BIUX_SYSTEM'
+              (notification.fromUserPhoto == null ||
+                      notification.fromUserPhoto!.isEmpty) &&
+                  notification.fromUserId != 'BIUX_SYSTEM'
               ? Icon(
-                  _getIcon(),
-                  color: widget.notification.isRead
-                      ? Colors.grey
-                      : Colors.white,
+                  _getIconForType(notification.type),
+                  color: notification.isRead ? Colors.grey : Colors.white,
                 )
               : null,
         ),
         title: Text(
-          widget.notification.message,
+          notification.message,
           style: TextStyle(
-            fontWeight: widget.notification.isRead
+            fontWeight: notification.isRead
                 ? FontWeight.normal
                 : FontWeight.bold,
-            color: widget.notification.isRead
+            color: notification.isRead
                 ? null
                 : Theme.of(context).brightness == Brightness.dark
                 ? Colors.white
@@ -164,15 +200,15 @@ class _NotificationItemState extends State<NotificationItem> {
         subtitle: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            if (widget.notification.targetPreview != null)
+            if (notification.targetPreview != null)
               Text(
-                widget.notification.targetPreview!,
+                notification.targetPreview!,
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
                 style: const TextStyle(fontStyle: FontStyle.italic),
               ),
             Text(
-              timeago.format(widget.notification.createdAt, locale: 'es'),
+              timeago.format(notification.createdAt, locale: 'es'),
               style: TextStyle(color: Colors.grey[600], fontSize: 12),
             ),
             // Botones de aceptar/denegar para solicitudes de seguimiento
@@ -225,7 +261,7 @@ class _NotificationItemState extends State<NotificationItem> {
                             borderRadius: BorderRadius.circular(8),
                           ),
                         ),
-                        child: Text('Denegar', style: TextStyle(fontSize: 13)),
+                        child: Text(Provider.of<LocaleNotifier>(context, listen: false).t('deny'), style: const TextStyle(fontSize: 13)),
                       ),
                     ),
                   ],
@@ -257,20 +293,20 @@ class _NotificationItemState extends State<NotificationItem> {
               ),
           ],
         ),
-        tileColor: widget.notification.isRead
+        tileColor: notification.isRead
             ? null
             : Theme.of(context).brightness == Brightness.dark
             ? Colors.grey[900]
             : Colors.blue[50],
         onTap: () {
           // Marcar como leída
-          if (!widget.notification.isRead) {
-            provider.markAsRead(widget.notification.id);
+          if (!notification.isRead) {
+            context.read<NotificationsProvider>().markAsRead(notification.id);
           }
 
           // Navegar al contenido relacionado (no navegar si es follow_request)
           if (!isFollowRequest) {
-            _navigateToTarget(context);
+            _navigateToTarget(context, notification);
           }
         },
       ),
@@ -280,11 +316,22 @@ class _NotificationItemState extends State<NotificationItem> {
   Future<void> _handleAccept(BuildContext context) async {
     setState(() => _isProcessing = true);
 
+    final notificationsProvider = context.read<NotificationsProvider>();
+    final l = Provider.of<LocaleNotifier>(context, listen: false);
+    final isLocalNotification = notificationsProvider.isLocalNotification(
+      widget.notification.id,
+    );
+
     try {
-      final profileProvider = context.read<UserProfileProvider>();
-      final success = await profileProvider.acceptFollowRequest(
-        widget.notification.fromUserId,
-      );
+      bool success = true;
+
+      // Solo llamar a Firebase si no es una notificación local de prueba
+      if (!isLocalNotification) {
+        final profileProvider = context.read<UserProfileProvider>();
+        success = await profileProvider.acceptFollowRequest(
+          widget.notification.fromUserId,
+        );
+      }
 
       if (mounted) {
         setState(() {
@@ -293,9 +340,12 @@ class _NotificationItemState extends State<NotificationItem> {
         });
 
         if (success) {
-          // Marcar la notificación como leída
-          context.read<NotificationsProvider>().markAsRead(
+          // Actualizar la notificación para mostrar que ahora te sigue
+          notificationsProvider.updateLocalNotification(
             widget.notification.id,
+            message: '${widget.notification.fromUserName} empezó a seguirte',
+            type: NotificationType.follow,
+            isRead: true,
           );
         } else {
           ScaffoldMessenger.of(context).showSnackBar(
@@ -316,11 +366,22 @@ class _NotificationItemState extends State<NotificationItem> {
   Future<void> _handleReject(BuildContext context) async {
     setState(() => _isProcessing = true);
 
+    final notificationsProvider = context.read<NotificationsProvider>();
+    final l = Provider.of<LocaleNotifier>(context, listen: false);
+    final isLocalNotification = notificationsProvider.isLocalNotification(
+      widget.notification.id,
+    );
+
     try {
-      final profileProvider = context.read<UserProfileProvider>();
-      final success = await profileProvider.rejectFollowRequest(
-        widget.notification.fromUserId,
-      );
+      bool success = true;
+
+      // Solo llamar a Firebase si no es una notificación local de prueba
+      if (!isLocalNotification) {
+        final profileProvider = context.read<UserProfileProvider>();
+        success = await profileProvider.rejectFollowRequest(
+          widget.notification.fromUserId,
+        );
+      }
 
       if (mounted) {
         setState(() {
@@ -329,9 +390,12 @@ class _NotificationItemState extends State<NotificationItem> {
         });
 
         if (success) {
-          // Marcar la notificación como leída
-          context.read<NotificationsProvider>().markAsRead(
+          // Actualizar la notificación para mostrar que se denegó
+          notificationsProvider.updateLocalNotification(
             widget.notification.id,
+            message:
+                'Denegaste la solicitud de ${widget.notification.fromUserName}',
+            isRead: true,
           );
         } else {
           ScaffoldMessenger.of(
@@ -349,8 +413,8 @@ class _NotificationItemState extends State<NotificationItem> {
     }
   }
 
-  IconData _getIcon() {
-    switch (widget.notification.type) {
+  IconData _getIconForType(NotificationType type) {
+    switch (type) {
       case NotificationType.likePost:
       case NotificationType.likeComment:
       case NotificationType.likeStory:
@@ -370,56 +434,55 @@ class _NotificationItemState extends State<NotificationItem> {
     }
   }
 
-  void _navigateToTarget(BuildContext context) {
-    if (widget.notification.targetType == null ||
-        widget.notification.targetId == null) {
+  void _navigateToTarget(
+    BuildContext context,
+    NotificationEntity notification,
+  ) {
+    if (notification.targetType == null || notification.targetId == null) {
       // Para follow/followRequest, navegar al perfil del remitente
-      if (widget.notification.type == NotificationType.follow ||
-          widget.notification.type == NotificationType.followRequest) {
-        context.push('/user-profile/${widget.notification.fromUserId}');
+      if (notification.type == NotificationType.follow ||
+          notification.type == NotificationType.followRequest) {
+        context.push(AppRoutes.userProfilePath(notification.fromUserId));
       }
       return;
     }
 
-    switch (widget.notification.type) {
+    switch (notification.type) {
       // LIKES - Navegar al contenido específico
       case NotificationType.likePost:
-        // Para posts, ir al detalle del post
-        context.push('/post-detail/${widget.notification.targetId}');
+        context.push(AppRoutes.postDetailPath(notification.targetId!));
         break;
 
       case NotificationType.likeComment:
-        // Para likes en comentarios, usar el contexto guardado en metadata
-        final contextType =
-            widget.notification.metadata?['contextType'] as String?;
+        final contextType = notification.metadata?['contextType'] as String?;
         final contextTargetId =
-            widget.notification.metadata?['contextTargetId'] as String?;
+            notification.metadata?['contextTargetId'] as String?;
 
         if (contextType == 'post' && contextTargetId != null) {
-          // Navegar a los comentarios del post
           final postOwnerId =
-              widget.notification.metadata?['postOwnerId'] ??
-              widget.notification.fromUserId;
-          context.push('/posts/$contextTargetId/comments?ownerId=$postOwnerId');
-        } else if (contextType == 'ride' && contextTargetId != null) {
-          // Navegar al detalle de la rodada con comentarios abiertos
+              notification.metadata?['postOwnerId'] ?? notification.fromUserId;
           context.push(
-            '/rides/$contextTargetId',
+            AppRoutes.postCommentsPath(contextTargetId, ownerId: postOwnerId),
+          );
+        } else if (contextType == 'ride' && contextTargetId != null) {
+          context.push(
+            AppRoutes.rideDetailPath(contextTargetId),
             extra: {'openComments': true},
           );
         } else {
-          // Fallback: usar targetType si no hay metadata
-          if (widget.notification.targetType == NotificationTargetType.post) {
+          if (notification.targetType == NotificationTargetType.post) {
             final postOwnerId =
-                widget.notification.metadata?['postOwnerId'] ??
-                widget.notification.fromUserId;
+                notification.metadata?['postOwnerId'] ??
+                notification.fromUserId;
             context.push(
-              '/posts/${widget.notification.targetId}/comments?ownerId=$postOwnerId',
+              AppRoutes.postCommentsPath(
+                notification.targetId!,
+                ownerId: postOwnerId,
+              ),
             );
-          } else if (widget.notification.targetType ==
-              NotificationTargetType.ride) {
+          } else if (notification.targetType == NotificationTargetType.ride) {
             context.push(
-              '/rides/${widget.notification.targetId}',
+              AppRoutes.rideDetailPath(notification.targetId!),
               extra: {'openComments': true},
             );
           }
@@ -427,74 +490,73 @@ class _NotificationItemState extends State<NotificationItem> {
         break;
 
       case NotificationType.likeStory:
-        // Las historias navegan al perfil del creador
-        context.push('/user-profile/${widget.notification.fromUserId}');
+        context.push(AppRoutes.userProfilePath(notification.fromUserId));
         break;
 
-      // COMENTARIOS - Navegar directamente a la sección de comentarios
+      // COMENTARIOS
       case NotificationType.commentPost:
-        // Para comentarios en posts, ir al detalle del post
-        context.push('/post-detail/${widget.notification.targetId}');
+        context.push(AppRoutes.postDetailPath(notification.targetId!));
         break;
 
       case NotificationType.commentRide:
         context.push(
-          '/rides/${widget.notification.targetId}',
+          AppRoutes.rideDetailPath(notification.targetId!),
           extra: {'openComments': true},
         );
         break;
 
       case NotificationType.replyComment:
-        // Para respuestas, ir directamente a comentarios
-        if (widget.notification.targetType == NotificationTargetType.post) {
+        if (notification.targetType == NotificationTargetType.post) {
           final postOwnerId2 =
-              widget.notification.metadata?['postOwnerId'] ??
-              widget.notification.fromUserId;
+              notification.metadata?['postOwnerId'] ?? notification.fromUserId;
           context.push(
-            '/posts/${widget.notification.targetId}/comments?ownerId=$postOwnerId2',
+            AppRoutes.postCommentsPath(
+              notification.targetId!,
+              ownerId: postOwnerId2,
+            ),
           );
-        } else if (widget.notification.targetType ==
-            NotificationTargetType.ride) {
+        } else if (notification.targetType == NotificationTargetType.ride) {
           context.push(
-            '/rides/${widget.notification.targetId}',
+            AppRoutes.rideDetailPath(notification.targetId!),
             extra: {'openComments': true},
           );
         }
         break;
 
-      // RODADAS - Navegar a detalle de rodada
+      // RODADAS
       case NotificationType.rideJoin:
-        context.push('/rides/${widget.notification.targetId}');
+        context.push(AppRoutes.rideDetailPath(notification.targetId!));
         break;
 
-      // MENCIONES - Navegar segúnn el contexto
+      // MENCIONES
       case NotificationType.mention:
-        if (widget.notification.targetType == NotificationTargetType.post) {
+        if (notification.targetType == NotificationTargetType.post) {
           final postOwnerId3 =
-              widget.notification.metadata?['postOwnerId'] ??
-              widget.notification.fromUserId;
+              notification.metadata?['postOwnerId'] ?? notification.fromUserId;
           context.push(
-            '/posts/${widget.notification.targetId}/comments?ownerId=$postOwnerId3',
+            AppRoutes.postCommentsPath(
+              notification.targetId!,
+              ownerId: postOwnerId3,
+            ),
           );
-        } else if (widget.notification.targetType ==
-            NotificationTargetType.ride) {
+        } else if (notification.targetType == NotificationTargetType.ride) {
           context.push(
-            '/rides/${widget.notification.targetId}',
+            AppRoutes.rideDetailPath(notification.targetId!),
             extra: {'openComments': true},
           );
         } else {
-          context.push('/user-profile/${widget.notification.fromUserId}');
+          context.push(AppRoutes.userProfilePath(notification.fromUserId));
         }
         break;
 
-      // SEGUIMIENTO - Navegar al perfil del usuario
+      // SEGUIMIENTO
       case NotificationType.follow:
-        context.push('/user-profile/${widget.notification.fromUserId}');
+        context.push(AppRoutes.userProfilePath(notification.fromUserId));
         break;
 
-      // SOLICITUD DE SEGUIMIENTO - No navegar (se maneja con botones)
+      // SOLICITUD DE SEGUIMIENTO
       case NotificationType.followRequest:
-        context.push('/user-profile/${widget.notification.fromUserId}');
+        context.push(AppRoutes.userProfilePath(notification.fromUserId));
         break;
     }
   }

@@ -1,4 +1,4 @@
-import 'package:biux/features/users/presentation/providers/user_provider.dart';
+﻿import 'package:biux/features/users/presentation/providers/user_provider.dart';
 import 'package:biux/features/users/data/models/user.dart';
 import 'package:biux/features/experiences/presentation/providers/experience_classic_provider.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -108,6 +108,7 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
   }
 
   void _showExperienceMenu(BuildContext context, dynamic experience) {
+    final l = Provider.of<LocaleNotifier>(context, listen: false);
     showModalBottomSheet(
       context: context,
       backgroundColor: ColorTokens.neutral20,
@@ -131,7 +132,7 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
             ListTile(
               leading: Icon(Icons.edit_outlined, color: ColorTokens.primary50),
               title: Text(
-                'Editar publicación',
+                l.t('edit_post'),
                 style: TextStyle(color: ColorTokens.neutral100),
               ),
               onTap: () async {
@@ -148,7 +149,7 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
             ListTile(
               leading: Icon(Icons.delete_outline, color: ColorTokens.error50),
               title: Text(
-                'Eliminar publicación',
+                l.t('delete_post'),
                 style: TextStyle(color: ColorTokens.error50),
               ),
               onTap: () {
@@ -158,17 +159,17 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
                   builder: (dialogCtx) => AlertDialog(
                     backgroundColor: ColorTokens.neutral20,
                     title: Text(
-                      '¿Eliminar publicación?',
+                      l.t('delete_post_confirm'),
                       style: TextStyle(color: ColorTokens.neutral100),
                     ),
                     content: Text(
-                      'Esta acción no se puede deshacer',
+                      l.t('action_cannot_undo'),
                       style: TextStyle(color: ColorTokens.neutral80),
                     ),
                     actions: [
                       TextButton(
                         onPressed: () => Navigator.pop(dialogCtx),
-                        child: Text('Cancelar'),
+                        child: Text(l.t('cancel')),
                       ),
                       TextButton(
                         onPressed: () async {
@@ -178,9 +179,9 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
                             await provider.deleteExperience(experience.id);
                             if (context.mounted) {
                               ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(
-                                  content: Text('Publicación eliminada'),
-                                  duration: Duration(seconds: 2),
+                                SnackBar(
+                                  content: Text(l.t('post_deleted')),
+                                  duration: const Duration(seconds: 2),
                                 ),
                               );
                             }
@@ -188,14 +189,14 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
                             if (context.mounted) {
                               ScaffoldMessenger.of(context).showSnackBar(
                                 SnackBar(
-                                  content: Text('Error eliminando: $e'),
+                                  content: Text('${l.t('error_deleting')}: $e'),
                                   backgroundColor: ColorTokens.error50,
                                 ),
                               );
                             }
                           }
                         },
-                        child: Text('Eliminar'),
+                        child: Text(l.t('delete')),
                       ),
                     ],
                   ),
@@ -281,7 +282,7 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
                 Padding(
                   padding: const EdgeInsets.all(16),
                   child: Text(
-                    'Seguidores (${followers.length})',
+                    l.t('followers') + ' (${followers.length})',
                     style: const TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
@@ -294,7 +295,7 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
                     future: _getUserById(userId),
                     builder: (context, snapshot) {
                       if (snapshot.connectionState == ConnectionState.waiting) {
-                        return const ListTile(title: Text('Cargando...'));
+                        return ListTile(title: Text(l.t('loading')));
                       }
 
                       if (!snapshot.hasData || snapshot.data == null) {
@@ -338,8 +339,8 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
                               'aŒ ERROR: User ID está vacío, no se puede navegar',
                             );
                             ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                content: Text('Error: Usuario inválido'),
+                              SnackBar(
+                                content: Text(l.t('error_invalid_user')),
                               ),
                             );
                           }
@@ -397,7 +398,7 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
                 Padding(
                   padding: const EdgeInsets.all(16),
                   child: Text(
-                    'Siguiendo (${following.length})',
+                    "${l.t('following')} (${following.length})",
                     style: const TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
@@ -410,7 +411,7 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
                     future: _getUserById(userId),
                     builder: (context, snapshot) {
                       if (snapshot.connectionState == ConnectionState.waiting) {
-                        return const ListTile(title: Text('Cargando...'));
+                        return ListTile(title: Text(l.t('loading')));
                       }
 
                       if (!snapshot.hasData || snapshot.data == null) {
@@ -454,8 +455,8 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
                               'aŒ ERROR: User ID está vacío, no se puede navegar',
                             );
                             ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                content: Text('Error: Usuario inválido'),
+                              SnackBar(
+                                content: Text(l.t('error_invalid_user')),
                               ),
                             );
                           }
@@ -494,6 +495,7 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
   }
 
   void _showEditProfileDialog() {
+    final l = Provider.of<LocaleNotifier>(context, listen: false);
     final nameController = TextEditingController(
       text: widget.userProvider.user?.name ?? '',
     );
@@ -517,7 +519,7 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
                 children: [
                   Icon(Icons.edit, color: ColorTokens.primary30),
                   SizedBox(width: 8),
-                  Text('Editar Perfil'),
+                  Text(l.t('edit_profile')),
                 ],
               ),
               content: SingleChildScrollView(
@@ -527,7 +529,7 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
                   children: [
                     // ========== FOTO DE PERFIL ==========
                     Text(
-                      'Foto de Perfil',
+                      l.t('profile_photo'),
                       style: TextStyle(
                         fontWeight: FontWeight.w600,
                         fontSize: 14,
@@ -579,7 +581,7 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
 
                     // ========== FOTO DE PORTADA ==========
                     Text(
-                      'Foto de Portada',
+                      l.t('cover_photo'),
                       style: TextStyle(
                         fontWeight: FontWeight.w600,
                         fontSize: 14,
@@ -624,7 +626,7 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
                             ),
                             SizedBox(height: 4),
                             Text(
-                              'Agregar portada',
+                              l.t('add_cover'),
                               style: TextStyle(
                                 fontSize: 12,
                                 color: ColorTokens.neutral60,
@@ -638,7 +640,7 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
 
                     // ========== NOMBRE ==========
                     Text(
-                      'Nombre',
+                      l.t('full_name'),
                       style: TextStyle(
                         fontWeight: FontWeight.w600,
                         fontSize: 14,
@@ -648,7 +650,7 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
                     TextField(
                       controller: nameController,
                       decoration: InputDecoration(
-                        hintText: 'Tu nombre completo',
+                        hintText: l.t('your_full_name'),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(8),
                         ),
@@ -662,7 +664,7 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
 
                     // ========== USERNAME ==========
                     Text(
-                      'Nombre de Usuario',
+                      l.t('username'),
                       style: TextStyle(
                         fontWeight: FontWeight.w600,
                         fontSize: 14,
@@ -687,7 +689,7 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
 
                     // ========== DESCRIPCIÃ“N ==========
                     Text(
-                      'Descripción / Bio',
+                      l.t('description_bio'),
                       style: TextStyle(
                         fontWeight: FontWeight.w600,
                         fontSize: 14,
@@ -697,7 +699,7 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
                     TextField(
                       controller: descriptionController,
                       decoration: InputDecoration(
-                        hintText: 'Cuéntales sobre ti',
+                        hintText: l.t('tell_about_yourself'),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(8),
                         ),
@@ -718,7 +720,7 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
                     Navigator.of(dialogContext).pop();
                   },
                   style: Styles.cancelButtonStyle,
-                  child: Text('Cancelar'),
+                  child: Text(l.t('cancel')),
                 ),
                 ElevatedButton.icon(
                   onPressed: () async {
@@ -750,7 +752,7 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
                       if (success) {
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(
-                            content: Text('Perfil actualizado correctamente'),
+                            content: Text(l.t('profile_updated')),
                             backgroundColor: ColorTokens.success40,
                           ),
                         );
@@ -767,7 +769,7 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
                     }
                   },
                   icon: Icon(Icons.check),
-                  label: Text('Guardar'),
+                  label: Text(l.t('save')),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: ColorTokens.primary30,
                     foregroundColor: ColorTokens.neutral100,
@@ -785,6 +787,7 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
 
   @override
   Widget build(BuildContext context) {
+    final l = Provider.of<LocaleNotifier>(context);
     return Scaffold(
       body: widget.userProvider.isLoading
           ? const ShimmerProfileLoading()
@@ -795,11 +798,11 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
                 children: [
                   Icon(Icons.error, size: 64, color: ColorTokens.neutral60),
                   SizedBox(height: 16),
-                  Text('Error cargando datos del perfil'),
+                  Text(l.t('error_loading_profile')),
                   SizedBox(height: 16),
                   ElevatedButton(
                     onPressed: () => widget.userProvider.loadUserData(),
-                    child: Text('Reintentar'),
+                    child: Text(l.t('retry')),
                   ),
                 ],
               ),
@@ -898,7 +901,7 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
                                             size: 20,
                                           ),
                                           SizedBox(width: 10),
-                                          Text('Agregar Historia'),
+                                          Text(l.t('add_story')),
                                         ],
                                       ),
                                     ),
@@ -908,7 +911,7 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
                                         children: [
                                           Icon(Icons.image_search, size: 20),
                                           SizedBox(width: 10),
-                                          Text('Nueva Publicación'),
+                                          Text(l.t('new_post')),
                                         ],
                                       ),
                                     ),
@@ -1653,8 +1656,8 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
                                                                   ctx,
                                                                   false,
                                                                 ),
-                                                            child: const Text(
-                                                              'Cancelar',
+                                                            child: Text(
+                                                              l.t('cancel'),
                                                             ),
                                                           ),
                                                           ElevatedButton(
@@ -1663,8 +1666,8 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
                                                                   ctx,
                                                                   true,
                                                                 ),
-                                                            child: const Text(
-                                                              'Eliminar',
+                                                            child: Text(
+                                                              l.t('delete'),
                                                             ),
                                                           ),
                                                         ],

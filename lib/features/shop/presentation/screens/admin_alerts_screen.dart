@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:biux/core/design_system/color_tokens.dart';
+import 'package:biux/core/design_system/locale_notifier.dart';
 
 class AdminAlertsScreen extends StatelessWidget {
   const AdminAlertsScreen({Key? key}) : super(key: key);
@@ -7,12 +9,13 @@ class AdminAlertsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
+    final l = Provider.of<LocaleNotifier>(context, listen: false);
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text(
-          'Intentos venta bicis robadas',
-          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+        title: Text(
+          l.t('stolen_bike_sale_attempts'),
+          style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
         ),
         backgroundColor: ColorTokens.primary30,
         iconTheme: const IconThemeData(color: Colors.white),
@@ -38,7 +41,7 @@ class AdminAlertsScreen extends StatelessWidget {
               ),
               const SizedBox(height: 20),
               Text(
-                'Alertas de seguridad',
+                l.t('security_alerts'),
                 style: TextStyle(
                   fontSize: 18,
                   color: isDark ? Colors.white : Colors.grey[600],
@@ -48,7 +51,7 @@ class AdminAlertsScreen extends StatelessWidget {
               ),
               const SizedBox(height: 8),
               Text(
-                'Monitoreo de intentos de venta de bicicletas robadas',
+                l.t('monitoring_stolen_bikes'),
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   fontSize: 14,
@@ -59,14 +62,14 @@ class AdminAlertsScreen extends StatelessWidget {
               ElevatedButton.icon(
                 onPressed: () {
                   ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Text('No hay alertas en este momento'),
+                    SnackBar(
+                      content: Text(Provider.of<LocaleNotifier>(context, listen: false).t('no_alerts_now')),
                       duration: Duration(seconds: 2),
                     ),
                   );
                 },
                 icon: const Icon(Icons.refresh),
-                label: const Text('Actualizar alertas'),
+                label: Text(Provider.of<LocaleNotifier>(context, listen: false).t('refresh_alerts')),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.orange[600],
                   foregroundColor: Colors.white,

@@ -1185,6 +1185,13 @@ class _RideCreateScreenState extends State<RideCreateScreen> {
 
   @override
   void dispose() {
+    // Detener escucha de meeting point
+    final meetingPointProvider = Provider.of<MeetingPointProvider>(
+      context,
+      listen: false,
+    );
+    meetingPointProvider.stopListening();
+
     _nameController.dispose();
     _kilometersController.dispose();
     _instructionsController.dispose();

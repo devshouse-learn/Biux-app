@@ -343,6 +343,9 @@ proguard/
 # NDK
 obj/
 
+# Environment secrets
+env.json
+
 # IntelliJ IDEA
 *.iws
 /out/

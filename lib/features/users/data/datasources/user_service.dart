@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -125,9 +126,12 @@ class UserService {
   }
 
   // Escuchar cambios en tiempo real del usuario
-  void listenToUser(String uid, Function(UserModel?) onDataChanged) {
+  StreamSubscription? listenToUser(
+    String uid,
+    Function(UserModel?) onDataChanged,
+  ) {
     try {
-      _firestore
+      return _firestore
           .collection('users')
           .doc(uid)
           .snapshots()
@@ -172,6 +176,7 @@ class UserService {
         tag: 'UserService',
         error: e,
       );
+      return null;
     }
   }
 

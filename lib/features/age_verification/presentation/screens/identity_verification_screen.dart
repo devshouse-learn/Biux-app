@@ -54,7 +54,7 @@ class _IdentityVerificationScreenState
   Future<void> _uploadDocuments() async {
     if (_docFront == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Agrega la parte frontal del documento')),
+        SnackBar(content: Text(Provider.of<LocaleNotifier>(context, listen: false).t('add_front_document'))),
       );
       return;
     }
@@ -100,7 +100,7 @@ class _IdentityVerificationScreenState
       setState(() => _uploading = false);
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error: $e'), backgroundColor: Colors.red),
+          SnackBar(content: Text('${Provider.of<LocaleNotifier>(context, listen: false).t('error_generic')}: $e'), backgroundColor: Colors.red),
         );
       }
     }
@@ -221,9 +221,9 @@ class _IdentityVerificationScreenState
           ),
         ),
         const SizedBox(height: 20),
-        const Text(
-          'Parte frontal del documento *',
-          style: TextStyle(fontSize: 13, fontWeight: FontWeight.w700),
+        Text(
+          l.t('front_document'),
+          style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w700),
         ),
         SizedBox(height: 8),
         _docTile(

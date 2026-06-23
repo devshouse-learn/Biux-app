@@ -142,4 +142,25 @@ class AppRoutes {
   static const String stolenBikesName = 'stolenBikes';
   static const String adminAlerts = '/shop/admin-alerts';
   static const String adminAlertsName = 'adminAlerts';
+
+  // Notificaciones
+  static const String notifications = '/notifications';
+  static const String notificationsName = 'notifications';
+
+  // Posts
+  static const String postDetail = '/post-detail/:postId';
+  static const String postDetailName = 'postDetail';
+  static const String postComments = '/posts/:postId/comments';
+  static const String postCommentsName = 'postComments';
+
+  // Rides (Rodadas)
+  static const String rideDetail = '/rides/:rideId';
+  static const String rideDetailName = 'rideDetail';
+
+  /// Helpers para construir rutas con parámetros
+  static String userProfilePath(String userId) => '/user-profile/$userId';
+  static String postDetailPath(String postId) => '/post-detail/$postId';
+  static String postCommentsPath(String postId, {String? ownerId}) =>
+      '/posts/$postId/comments${ownerId != null ? '?ownerId=$ownerId' : ''}';
+  static String rideDetailPath(String rideId) => '/rides/$rideId';
 }

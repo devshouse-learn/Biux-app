@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:biux/features/social/data/models/attendee_model.dart';
@@ -11,6 +12,7 @@ import "package:flutter/foundation.dart";
 class AttendeesFirestoreAdapter {
   final FirebaseDatabase _realtimeDb;
   final FirebaseFirestore _firestore;
+  final Map<String, StreamSubscription> _subscriptions = {};
 
   AttendeesFirestoreAdapter({
     FirebaseDatabase? realtimeDb,
@@ -21,9 +23,12 @@ class AttendeesFirestoreAdapter {
   /// Sincroniza cambios de Realtime DB a†’ Firestore
   /// Escucha todos los cambios en asistentes y actualiza Firestore
   void startSyncForRide(String rideId) {
+    // No crear duplicados
+    if (_subscriptions.containsKey(rideId)) return;
+
     final ref = _realtimeDb.ref('rides/attendees/$rideId');
 
-    ref.onValue.listen((event) {
+    _subscriptions[rideId] = ref.onValue.listen((event) {
       if (event.snapshot.value == null) {
         _updateFirestoreAttendees(rideId, [], []);
         return;
@@ -51,6 +56,14 @@ class AttendeesFirestoreAdapter {
 
       _updateFirestoreAttendees(rideId, confirmed, maybe);
     });
+  }
+
+  /// Cancela todas las suscripciones activas
+  void dispose() {
+    for (final sub in _subscriptions.values) {
+      sub.cancel();
+    }
+    _subscriptions.clear();
   }
 
   /// Actualiza Firestore con las listas de asistentes

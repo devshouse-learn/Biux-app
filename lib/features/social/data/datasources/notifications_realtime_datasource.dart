@@ -6,45 +6,34 @@ import "package:flutter/foundation.dart";
 class NotificationsRealtimeDatasource {
   final FirebaseDatabase _database;
 
+  /// Límite máximo de notificaciones a cargar
+  static const int _maxNotifications = 100;
+
   NotificationsRealtimeDatasource({FirebaseDatabase? database})
     : _database = database ?? FirebaseDatabase.instance;
 
-  /// Stream de notificaciones del usuario
+  /// Stream de notificaciones del usuario (limitado a las más recientes)
   Stream<List<NotificationModel>> watchUserNotifications(String userId) {
     final ref = _database.ref('notifications/$userId');
-    debugPrint('📡 DATASOURCE: Escuchando notificaciones para userId=$userId');
+    final query = ref.orderByChild('createdAt').limitToLast(_maxNotifications);
 
-    return ref.orderByChild('timestamp').limitToLast(100).onValue.map((event) {
-      debugPrint('📡 DATASOURCE: onValue EVENT RECIBIDO');
-
+    return query.onValue.map((event) {
       if (event.snapshot.value == null) {
-        debugPrint(
-          '📡 DATASOURCE: snapshot.value es NULL - retornando lista vacia',
-        );
         return <NotificationModel>[];
       }
 
       final data = event.snapshot.value as Map<dynamic, dynamic>;
-      debugPrint('📡 DATASOURCE: Firebase devuelve ${data.length} items');
 
       final notifications = <NotificationModel>[];
 
       data.forEach((key, value) {
         if (value is Map) {
-          debugPrint('📡 DATASOURCE: Parseando item key=$key');
           notifications.add(NotificationModel.fromJson(key, value));
         }
       });
 
       // Ordenar por timestamp descendente (más recientes primero)
       notifications.sort((a, b) => b.timestamp.compareTo(a.timestamp));
-
-      debugPrint(
-        '📡 DATASOURCE: Retornando ${notifications.length} notificaciones parseadas',
-      );
-      for (final n in notifications) {
-        debugPrint('📡 DATASOURCE:   - ${n.id} (${n.type})');
-      }
 
       return notifications;
     });
@@ -57,20 +46,20 @@ class NotificationsRealtimeDatasource {
     return ref.onValue
         .map((event) {
           if (event.snapshot.value == null) {
-            debugPrint('   Contador: 0 (null)');
             return 0;
           }
 
           // ⚠️ Las reglas esperan estructura {count: number, lastUpdated: number}
           final data = event.snapshot.value as Map<dynamic, dynamic>?;
           final count = data?['count'] as int? ?? 0;
-          debugPrint('   Contador: $count');
           return count;
         })
-        .handleError((error) {
-          // Retornar 0 en caso de error en vez de fallar
-          return 0;
-        });
+        .handleError(
+          (error) {
+            debugPrint('Error en watchUnreadCount: $error');
+          },
+          test: (error) => false, // No consumir el error, dejarlo pasar como 0
+        );
   }
 
   /// Marca una notificación como leída
@@ -82,19 +71,17 @@ class NotificationsRealtimeDatasource {
 
     await notificationRef.update({'isRead': true});
 
-    // Decrementar contador de no leídas
-    final snapshot = await unreadRef.get();
-
-    // ⚠️ Las reglas esperan estructura {count: number, lastUpdated: number}
-    final currentData = snapshot.value as Map<dynamic, dynamic>?;
-    final currentCount = currentData?['count'] as int? ?? 0;
-
-    if (currentCount > 0) {
-      await unreadRef.set({
-        'count': currentCount - 1,
-        'lastUpdated': DateTime.now().millisecondsSinceEpoch,
-      });
-    }
+    // Decrementar contador de no leídas con transacción atómica
+    await unreadRef.runTransaction((currentData) {
+      if (currentData == null) return Transaction.success(currentData);
+      final data = Map<String, dynamic>.from(currentData as Map);
+      final currentCount = (data['count'] as int?) ?? 0;
+      if (currentCount > 0) {
+        data['count'] = currentCount - 1;
+        data['lastUpdated'] = DateTime.now().millisecondsSinceEpoch;
+      }
+      return Transaction.success(data);
+    });
   }
 
   /// Marca todas las notificaciones como leídas
@@ -167,17 +154,21 @@ class NotificationsRealtimeDatasource {
 
     await notificationRef.set(notificationWithId.toJson());
 
-    // Solo incrementar contador para notificaciones realmente nuevas
+    // Solo incrementar contador para notificaciones realmente nuevas (con transacción)
     if (isNewNotification) {
       final unreadRef = _database.ref('notifications/unread/$userId');
-      final snapshot = await unreadRef.get();
-
-      final currentData = snapshot.value as Map<dynamic, dynamic>?;
-      final currentCount = currentData?['count'] as int? ?? 0;
-
-      await unreadRef.set({
-        'count': currentCount + 1,
-        'lastUpdated': DateTime.now().millisecondsSinceEpoch,
+      await unreadRef.runTransaction((currentData) {
+        if (currentData == null) {
+          return Transaction.success({
+            'count': 1,
+            'lastUpdated': DateTime.now().millisecondsSinceEpoch,
+          });
+        }
+        final data = Map<String, dynamic>.from(currentData as Map);
+        final currentCount = (data['count'] as int?) ?? 0;
+        data['count'] = currentCount + 1;
+        data['lastUpdated'] = DateTime.now().millisecondsSinceEpoch;
+        return Transaction.success(data);
       });
     }
   }
@@ -198,18 +189,16 @@ class NotificationsRealtimeDatasource {
 
       if (!isRead) {
         final unreadRef = _database.ref('notifications/unread/$userId');
-        final unreadSnapshot = await unreadRef.get();
-
-        // ⚠️ Las reglas esperan estructura {count: number, lastUpdated: number}
-        final currentData = unreadSnapshot.value as Map<dynamic, dynamic>?;
-        final currentCount = currentData?['count'] as int? ?? 0;
-
-        if (currentCount > 0) {
-          await unreadRef.set({
-            'count': currentCount - 1,
-            'lastUpdated': DateTime.now().millisecondsSinceEpoch,
-          });
-        }
+        await unreadRef.runTransaction((currentData) {
+          if (currentData == null) return Transaction.success(currentData);
+          final mapData = Map<String, dynamic>.from(currentData as Map);
+          final currentCount = (mapData['count'] as int?) ?? 0;
+          if (currentCount > 0) {
+            mapData['count'] = currentCount - 1;
+            mapData['lastUpdated'] = DateTime.now().millisecondsSinceEpoch;
+          }
+          return Transaction.success(mapData);
+        });
       }
     }
   }

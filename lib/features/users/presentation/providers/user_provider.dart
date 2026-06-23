@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:biux/features/users/data/models/user_model.dart';
 import 'package:biux/core/services/app_logger.dart';
@@ -10,6 +11,7 @@ import 'package:flutter/foundation.dart' show kIsWeb, kReleaseMode;
 
 class UserProvider extends ChangeNotifier {
   final UserService? _userService;
+  StreamSubscription? _userListenerSub;
   // Flag para evitar llamadas remotas en tests
   bool _skipRemoteCalls = false;
 
@@ -173,7 +175,8 @@ class UserProvider extends ChangeNotifier {
     if (uid == null || _skipRemoteCalls) return;
 
     try {
-      _userService!.listenToUser(uid, (userData) {
+      _userListenerSub?.cancel();
+      _userListenerSub = _userService!.listenToUser(uid, (userData) {
         _user = userData;
         notifyListeners();
         AppLogger.debug('🔗”„ Datos de usuario actualizados en tiempo real');
@@ -614,5 +617,11 @@ class UserProvider extends ChangeNotifier {
         notifyListeners();
       }
     } catch (e) {}
+  }
+
+  @override
+  void dispose() {
+    _userListenerSub?.cancel();
+    super.dispose();
   }
 }

@@ -1056,7 +1056,7 @@ class _EmergencyScreenState extends State<EmergencyScreen> {
                 Navigator.pop(ctx);
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
-                    content: Text('${nameC.text.trim()} agregado'),
+                    content: Text('${nameC.text.trim()} ${Provider.of<LocaleNotifier>(context, listen: false).t("contact_added")}'),
                     backgroundColor: Colors.green[700],
                   ),
                 );

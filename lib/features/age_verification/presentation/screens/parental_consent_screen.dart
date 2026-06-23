@@ -67,7 +67,7 @@ class _ParentalConsentScreenState extends State<ParentalConsentScreen> {
       setState(() => _sending = false);
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error: $e'), backgroundColor: Colors.red),
+          SnackBar(content: Text('${Provider.of<LocaleNotifier>(context, listen: false).t('error_generic')}: $e'), backgroundColor: Colors.red),
         );
       }
     }

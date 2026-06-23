@@ -1,5 +1,6 @@
 // ignore_for_file: deprecated_member_use
 import 'dart:io';
+import 'package:biux/core/config/env_config.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:just_audio/just_audio.dart';
@@ -1336,7 +1337,7 @@ class _LocationMessage extends StatelessWidget {
   final double lng;
   const _LocationMessage({required this.lat, required this.lng});
 
-  static const _mapsApiKey = 'AIzaSyDiMK4kwhaIkuMxAcioRonPzaozDRJtO20';
+  static const _mapsApiKey = EnvConfig.mapsApiKey;
 
   @override
   Widget build(BuildContext context) {

@@ -42,6 +42,7 @@ class _PublicUserProfileScreenState extends State<PublicUserProfileScreen> {
 
     // Cargar datos del usuario
     WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
       context.read<UserProfileProvider>().loadUserProfile(widget.userId);
 
       // Verificar si es el usuario actual

@@ -1,5 +1,6 @@
-import 'dart:async';
+﻿import 'dart:async';
 import 'dart:convert';
+import 'package:biux/core/config/env_config.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
@@ -923,11 +924,20 @@ class _RideTrackerScreenState extends State<RideTrackerScreen>
                 p.loadHistory(uid);
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
-                    content: const Row(
+                    content: Row(
                       children: [
-                        Icon(Icons.check_circle, color: Colors.white, size: 18),
-                        SizedBox(width: 8),
-                        Text('Historial actualizado'),
+                        const Icon(
+                          Icons.check_circle,
+                          color: Colors.white,
+                          size: 18,
+                        ),
+                        const SizedBox(width: 8),
+                        Text(
+                          Provider.of<LocaleNotifier>(
+                            context,
+                            listen: false,
+                          ).t('history_updated'),
+                        ),
                       ],
                     ),
                     backgroundColor: ColorTokens.primary30,
@@ -1180,19 +1190,22 @@ class _RideTrackerScreenState extends State<RideTrackerScreen>
                             ],
                           ),
                         ),
-                        const PopupMenuItem(
+                        PopupMenuItem(
                           value: 'delete',
                           child: Row(
                             children: [
-                              Icon(
+                              const Icon(
                                 Icons.delete_outline,
                                 color: Colors.red,
                                 size: 18,
                               ),
-                              SizedBox(width: 8),
+                              const SizedBox(width: 8),
                               Text(
-                                'Eliminar',
-                                style: TextStyle(color: Colors.red),
+                                Provider.of<LocaleNotifier>(
+                                  context,
+                                  listen: false,
+                                ).t('delete'),
+                                style: const TextStyle(color: Colors.red),
                               ),
                             ],
                           ),
@@ -1403,9 +1416,12 @@ class _RideTrackerScreenState extends State<RideTrackerScreen>
                     ),
                   ),
                   onPressed: () => Navigator.pop(ctx),
-                  child: const Text(
-                    'Cerrar',
-                    style: TextStyle(fontWeight: FontWeight.w600),
+                  child: Text(
+                    Provider.of<LocaleNotifier>(
+                      context,
+                      listen: false,
+                    ).t('close'),
+                    style: const TextStyle(fontWeight: FontWeight.w600),
                   ),
                 ),
               ),
@@ -1470,7 +1486,10 @@ class _RideTrackerScreenState extends State<RideTrackerScreen>
                 textCapitalization: TextCapitalization.sentences,
                 style: TextStyle(color: isDark ? Colors.white : Colors.black87),
                 decoration: InputDecoration(
-                  hintText: 'Ej: Ruta del domingo',
+                  hintText: Provider.of<LocaleNotifier>(
+                    context,
+                    listen: false,
+                  ).t('ride_name_hint'),
                   hintStyle: TextStyle(
                     color: isDark ? Colors.white38 : Colors.grey[400],
                   ),
@@ -1541,9 +1560,12 @@ class _RideTrackerScreenState extends State<RideTrackerScreen>
                         Navigator.pop(ctx);
                         await p.renameRide(ride.id, name);
                       },
-                      child: const Text(
-                        'Guardar',
-                        style: TextStyle(fontWeight: FontWeight.w700),
+                      child: Text(
+                        Provider.of<LocaleNotifier>(
+                          context,
+                          listen: false,
+                        ).t('save'),
+                        style: const TextStyle(fontWeight: FontWeight.w700),
                       ),
                     ),
                   ),
@@ -1561,11 +1583,17 @@ class _RideTrackerScreenState extends State<RideTrackerScreen>
       context: context,
       builder: (ctx) => AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        title: const Row(
+        title: Row(
           children: [
-            Icon(Icons.delete_outline, color: Colors.red, size: 22),
-            SizedBox(width: 8),
-            Text('Eliminar rodada', style: TextStyle(fontSize: 17)),
+            const Icon(Icons.delete_outline, color: Colors.red, size: 22),
+            const SizedBox(width: 8),
+            Text(
+              Provider.of<LocaleNotifier>(
+                context,
+                listen: false,
+              ).t('delete_ride'),
+              style: const TextStyle(fontSize: 17),
+            ),
           ],
         ),
         content: Text(
@@ -1670,9 +1698,12 @@ class _RideTrackerScreenState extends State<RideTrackerScreen>
                           Navigator.pop(ctx);
                           p.cancelTracking();
                         },
-                        child: const Text(
-                          'Cancelar',
-                          style: TextStyle(fontWeight: FontWeight.w600),
+                        child: Text(
+                          Provider.of<LocaleNotifier>(
+                            context,
+                            listen: false,
+                          ).t('cancel'),
+                          style: const TextStyle(fontWeight: FontWeight.w600),
                         ),
                       ),
                     ),
@@ -1822,9 +1853,12 @@ class _RideTrackerScreenState extends State<RideTrackerScreen>
                           Navigator.pop(ctx);
                           _showNameDialog(p);
                         },
-                        child: const Text(
-                          'Guardar',
-                          style: TextStyle(fontWeight: FontWeight.w700),
+                        child: Text(
+                          Provider.of<LocaleNotifier>(
+                            context,
+                            listen: false,
+                          ).t('save'),
+                          style: const TextStyle(fontWeight: FontWeight.w700),
                         ),
                       ),
                     ),
@@ -1910,7 +1944,10 @@ class _RideTrackerScreenState extends State<RideTrackerScreen>
                 textCapitalization: TextCapitalization.sentences,
                 style: TextStyle(color: isDark ? Colors.white : Colors.black87),
                 decoration: InputDecoration(
-                  hintText: 'Ej: Ruta del domingo',
+                  hintText: Provider.of<LocaleNotifier>(
+                    context,
+                    listen: false,
+                  ).t('ride_name_hint'),
                   hintStyle: TextStyle(
                     color: isDark ? Colors.white38 : Colors.grey[400],
                   ),
@@ -1981,9 +2018,12 @@ class _RideTrackerScreenState extends State<RideTrackerScreen>
                         Navigator.pop(ctx);
                         await _doSave(p, name, exitAfter);
                       },
-                      child: const Text(
-                        'Guardar',
-                        style: TextStyle(fontWeight: FontWeight.w700),
+                      child: Text(
+                        Provider.of<LocaleNotifier>(
+                          context,
+                          listen: false,
+                        ).t('save'),
+                        style: const TextStyle(fontWeight: FontWeight.w700),
                       ),
                     ),
                   ),
@@ -2015,11 +2055,11 @@ class _RideTrackerScreenState extends State<RideTrackerScreen>
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: const Row(
+          content: Row(
             children: [
-              Icon(Icons.warning_rounded, color: Colors.white, size: 20),
-              SizedBox(width: 10),
-              Text('Rodada muy corta, no se guardó'),
+              const Icon(Icons.warning_rounded, color: Colors.white, size: 20),
+              const SizedBox(width: 10),
+              Text(Provider.of<LocaleNotifier>(context, listen: false).t('ride_too_short')),
             ],
           ),
           backgroundColor: Colors.orange,
@@ -2037,21 +2077,23 @@ class _RideTrackerScreenState extends State<RideTrackerScreen>
       context: context,
       builder: (ctx) => AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        title: const Row(
+        title: Row(
           children: [
-            Icon(Icons.warning_amber_rounded, color: Colors.orange, size: 22),
-            SizedBox(width: 8),
-            Text('¿Salir?', style: TextStyle(fontSize: 17)),
+            const Icon(Icons.warning_amber_rounded, color: Colors.orange, size: 22),
+            const SizedBox(width: 8),
+            Text(Provider.of<LocaleNotifier>(context, listen: false).t('exit_question'), style: const TextStyle(fontSize: 17)),
           ],
         ),
-        content: const Text(
-          'Tienes una rodada en curso. Si sales perderás los datos.',
-          style: TextStyle(fontSize: 14),
+        content: Text(
+          Provider.of<LocaleNotifier>(context, listen: false).t('ride_in_progress_warning'),
+          style: const TextStyle(fontSize: 14),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx),
-            child: Text('Cancelar'),
+            child: Text(
+              Provider.of<LocaleNotifier>(context, listen: false).t('cancel'),
+            ),
           ),
           TextButton(
             onPressed: () {
@@ -2101,7 +2143,7 @@ class _RoutePlannerSheet extends StatefulWidget {
 }
 
 class _RoutePlannerSheetState extends State<_RoutePlannerSheet> {
-  static const String _apiKey = 'AIzaSyDiMK4kwhaIkuMxAcioRonPzaozDRJtO20';
+  static const String _apiKey = EnvConfig.mapsApiKey;
 
   final _destController = TextEditingController();
   List<Map<String, dynamic>> _suggestions = [];
@@ -2351,7 +2393,12 @@ class _RoutePlannerSheetState extends State<_RoutePlannerSheet> {
     showDialog(
       context: context,
       builder: (_) => AlertDialog(
-        title: const Text('No se pudo trazar la ruta'),
+        title: Text(
+          Provider.of<LocaleNotifier>(
+            context,
+            listen: false,
+          ).t('could_not_trace_route'),
+        ),
         content: Text(msg),
         actions: [
           TextButton(

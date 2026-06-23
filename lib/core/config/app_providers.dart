@@ -101,18 +101,6 @@ class AppProviders {
       create: (_) =>
           app_auth.AuthProvider(authRepository: AuthenticationRepository()),
     ),
-    ChangeNotifierProxyProvider<app_auth.AuthProvider, NotificationsProvider?>(
-      create: (_) => null,
-      update: (context, authProvider, previous) {
-        final currentUser = FirebaseAuth.instance.currentUser;
-        if (currentUser == null) return null;
-        if (previous != null) return previous;
-        return NotificationsProvider(
-          repository: NotificationsRepositoryImpl(),
-          userId: currentUser.uid,
-        );
-      },
-    ),
   ];
 
   static List<SingleChildWidget> get _userProviders => [

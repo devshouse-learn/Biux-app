@@ -109,9 +109,15 @@ class GroupProvider extends ChangeNotifier {
   bool get isAdminOfAnyGroup => _adminGroups.isNotEmpty;
   bool get canCreateGroup => !isAdminOfAnyGroup;
 
-  // a”€a”€a”€ Cargar grupos (Use Case: GetGroupsUseCase) a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€
+  void _cancelAllSubscriptions() {
+    for (final sub in _subscriptions) {
+      sub.cancel();
+    }
+    _subscriptions.clear();
+  }
 
   void loadAllGroups() {
+    _cancelAllSubscriptions();
     final subscription = _getGroupsUseCase.call().listen(
       (groups) {
         groups.sort((a, b) => b.memberIds.length.compareTo(a.memberIds.length));
@@ -126,6 +132,7 @@ class GroupProvider extends ChangeNotifier {
 
   void loadUserGroups() {
     if (currentUserId != null) {
+      _cancelAllSubscriptions();
       final subscription = _getGroupsUseCase.byUser(currentUserId!).listen(
         (groups) {
           groups.sort(
@@ -143,6 +150,7 @@ class GroupProvider extends ChangeNotifier {
 
   void loadAdminGroups() {
     if (currentUserId != null) {
+      _cancelAllSubscriptions();
       final subscription = _getGroupsUseCase.adminGroups(currentUserId!).listen(
         (groups) {
           groups.sort(
@@ -159,6 +167,7 @@ class GroupProvider extends ChangeNotifier {
   }
 
   void loadGroupsByCity(String cityId) {
+    _cancelAllSubscriptions();
     final subscription = _getGroupsUseCase.byCity(cityId).listen((groups) {
       groups.sort((a, b) => b.memberIds.length.compareTo(a.memberIds.length));
       _allGroups = groups;
@@ -629,6 +638,7 @@ class GroupProvider extends ChangeNotifier {
       sub.cancel();
     }
     _subscriptions.clear();
+    _userCache.clear();
     super.dispose();
   }
 }
