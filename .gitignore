@@ -440,3 +440,8 @@ deploy-*.log
 .DS_Store
 .vscode/settings.json
 .idea/workspace.xml
+
+# === Temporales de desarrollo ===
+compile_error.log
+*.error.log
+.build-metadata/
