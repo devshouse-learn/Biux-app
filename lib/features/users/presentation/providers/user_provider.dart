@@ -571,15 +571,15 @@ class UserProvider extends ChangeNotifier {
     return ((completed / total) * 100).round();
   }
 
-  /// Campos faltantes del perfil
+  /// Campos faltantes del perfil (devuelve claves de traducción)
   List<String> get missingProfileFields {
     if (_user == null) return [];
     final missing = <String>[];
-    if (!(_user!.name?.isNotEmpty ?? false)) missing.add('Nombre');
-    if (!(_user!.username?.isNotEmpty ?? false))
-      missing.add('Nombre de usuario');
-    if (!(_user!.photoUrl?.isNotEmpty ?? false)) missing.add('Foto de perfil');
-    if (!(_user!.description?.isNotEmpty ?? false)) missing.add('Biografía');
+    if (!(_user!.name?.isNotEmpty ?? false)) missing.add('field_name');
+    if (!(_user!.username?.isNotEmpty ?? false)) missing.add('field_username');
+    if (!(_user!.photoUrl?.isNotEmpty ?? false))
+      missing.add('field_profile_photo');
+    if (!(_user!.description?.isNotEmpty ?? false)) missing.add('field_bio');
     return missing;
   }
 
@@ -591,9 +591,12 @@ class UserProvider extends ChangeNotifier {
     return 'https://biux.app/u/$username';
   }
 
-  String get shareProfileText {
-    final name = _user?.name ?? 'Ciclista';
-    return 'a¡Sígueme en Biux! ï¿½ï¿½ $name\n$publicProfileUrl';
+  /// Clave de traducción para el texto de compartir perfil
+  String shareProfileTextKey = 'follow_me_on_biux';
+
+  String getShareProfileText(String translatedPrefix) {
+    final name = _user?.name ?? '';
+    return '$translatedPrefix $name\n$publicProfileUrl';
   }
 
   /// Guarda el UID del usuario en caché para acceso rápido al arranque

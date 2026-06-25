@@ -56,7 +56,9 @@ class _BiometricSettingsScreenState extends State<BiometricSettingsScreen> {
     if (mounted)
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text(value ? 'Biometria activada' : 'Biometria desactivada'),
+          content: Text(
+            value ? l.t('biometric_activated') : l.t('biometric_deactivated'),
+          ),
           backgroundColor: value ? Colors.green : Colors.grey,
         ),
       );
@@ -118,8 +120,8 @@ class _BiometricSettingsScreenState extends State<BiometricSettingsScreen> {
                         const SizedBox(height: 8),
                         Text(
                           _isAvailable
-                              ? 'Disponible en tu dispositivo'
-                              : 'No disponible',
+                              ? l.t('available_on_device')
+                              : l.t('not_available'),
                           style: TextStyle(
                             color: Colors.white.withValues(alpha: 0.8),
                             fontSize: 14,
@@ -139,7 +141,7 @@ class _BiometricSettingsScreenState extends State<BiometricSettingsScreen> {
                           color: Colors.orange.withValues(alpha: 0.3),
                         ),
                       ),
-                      child: const Row(
+                      child: Row(
                         children: [
                           Icon(
                             Icons.warning_amber_rounded,
@@ -148,7 +150,7 @@ class _BiometricSettingsScreenState extends State<BiometricSettingsScreen> {
                           SizedBox(width: 12),
                           Expanded(
                             child: Text(
-                              'Tu dispositivo no soporta autenticacion biometrica.',
+                              l.t('device_no_biometric_support'),
                               style: TextStyle(fontSize: 13),
                             ),
                           ),
@@ -163,10 +165,10 @@ class _BiometricSettingsScreenState extends State<BiometricSettingsScreen> {
                       child: SwitchListTile(
                         value: _isEnabled,
                         onChanged: _toggle,
-                        title: Text('${l.t('activate_biometric')} $_biometricLabel'),
-                        subtitle: Text(
-                          l.t('request_auth_open_app'),
+                        title: Text(
+                          '${l.t('activate_biometric')} $_biometricLabel',
                         ),
+                        subtitle: Text(l.t('request_auth_open_app')),
                         secondary: Icon(
                           _biometricIcon,
                           color: ColorTokens.primary30,
@@ -185,7 +187,7 @@ class _BiometricSettingsScreenState extends State<BiometricSettingsScreen> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            'Como funciona?',
+                            l.t('how_it_works'),
                             style: TextStyle(fontWeight: FontWeight.w700),
                           ),
                           SizedBox(height: 8),

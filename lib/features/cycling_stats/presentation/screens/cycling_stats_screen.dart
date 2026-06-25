@@ -91,7 +91,7 @@ class _CyclingStatsScreenState extends State<CyclingStatsScreen>
                   const CircularProgressIndicator(),
                   const SizedBox(height: 16),
                   Text(
-                    'Cargando estadísticas...',
+                    l.t('loading_stats'),
                     style: TextStyle(
                       color: Theme.of(context).brightness == Brightness.dark
                           ? Colors.white70
@@ -171,7 +171,7 @@ class _CyclingStatsScreenState extends State<CyclingStatsScreen>
                   ),
                 )
               : const Icon(Icons.sync),
-          tooltip: 'Actualizar estadísticas',
+          tooltip: l.t('refresh_stats'),
           onPressed: provider.isSyncing ? null : _syncAndNotify,
         ),
         IconButton(
@@ -194,7 +194,7 @@ class _CyclingStatsScreenState extends State<CyclingStatsScreen>
           ),
           Tab(
             icon: Icon(Icons.emoji_events_rounded, size: 22),
-            text: 'Ranking',
+            text: l.t('ranking'),
           ),
         ],
       ),
@@ -254,7 +254,7 @@ class _CyclingStatsScreenState extends State<CyclingStatsScreen>
                               ),
                               const SizedBox(height: 4),
                               Text(
-                                '${stats.totalKm.toStringAsFixed(1)} km totales',
+                                '${stats.totalKm.toStringAsFixed(1)} ${l.t('total_km')}',
                                 style: const TextStyle(
                                   color: Colors.white,
                                   fontSize: 20,
@@ -280,8 +280,8 @@ class _CyclingStatsScreenState extends State<CyclingStatsScreen>
                               const SizedBox(height: 4),
                               Text(
                                 stats.level == 'leyenda'
-                                    ? '¡Nivel máximo alcanzado!'
-                                    : '${stats.kmToNextLevel.toStringAsFixed(0)} km para ${stats.nextLevelName}',
+                                    ? l.t('max_level_reached')
+                                    : '${stats.kmToNextLevel.toStringAsFixed(0)} km ${l.t('to_next_level')} ${stats.nextLevelName}',
                                 style: TextStyle(
                                   color: Colors.white.withValues(alpha: 0.6),
                                   fontSize: 11,
@@ -367,7 +367,7 @@ class _CyclingStatsScreenState extends State<CyclingStatsScreen>
                             ),
                       SizedBox(width: 4),
                       Text(
-                        provider.isSyncing ? 'Actualizando...' : l.t('update'),
+                        provider.isSyncing ? l.t('updating') : l.t('update'),
                         style: const TextStyle(
                           fontSize: 11,
                           color: ColorTokens.primary30,
@@ -462,9 +462,9 @@ class _CyclingStatsScreenState extends State<CyclingStatsScreen>
   Widget _buildPeriodFilter() {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final periods = [
-      {'id': 'total', 'label': 'Total'},
-      {'id': 'week', 'label': 'Semana'},
-      {'id': 'month', 'label': 'Mes'},
+      {'id': 'total', 'label': l.t('total')},
+      {'id': 'week', 'label': l.t('week')},
+      {'id': 'month', 'label': l.t('month')},
     ];
 
     return Container(
@@ -600,7 +600,7 @@ class _CyclingStatsScreenState extends State<CyclingStatsScreen>
         icon: Icons.bolt_rounded,
         label: l.t('streak'),
         value: '$currentStreak',
-        unit: 'días',
+        unit: l.t('days_unit'),
         color: const Color(0xFFFFC107),
       ),
     ];
@@ -827,7 +827,7 @@ class _CyclingStatsScreenState extends State<CyclingStatsScreen>
                           ),
                         ),
                         Text(
-                          '${sorted.length} rodadas',
+                          '${sorted.length} ${l.t('rides').toLowerCase()}',
                           style: TextStyle(
                             fontSize: 12,
                             color: isDark ? Colors.white54 : Colors.grey[500],
@@ -1004,7 +1004,7 @@ class _CyclingStatsScreenState extends State<CyclingStatsScreen>
               Icon(Icons.emoji_events_rounded, color: Colors.amber, size: 22),
               SizedBox(width: 8),
               Text(
-                'Récords Personales',
+                l.t('personal_records'),
                 style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
               ),
             ],
@@ -1027,7 +1027,7 @@ class _CyclingStatsScreenState extends State<CyclingStatsScreen>
               Expanded(
                 child: _buildRecordItem(
                   '🗺️',
-                  'Distancia Total',
+                  l.t('total_distance'),
                   '${totalKmAll.toStringAsFixed(1)} km',
                 ),
               ),
@@ -1037,7 +1037,11 @@ class _CyclingStatsScreenState extends State<CyclingStatsScreen>
           Row(
             children: [
               Expanded(
-                child: _buildRecordItem('🔥', 'Mejor Racha', '$streakAll días'),
+                child: _buildRecordItem(
+                  '🔥',
+                  l.t('best_streak'),
+                  '$streakAll ${l.t('days_unit')}',
+                ),
               ),
               Container(
                 width: 1,
@@ -1136,9 +1140,12 @@ class _CyclingStatsScreenState extends State<CyclingStatsScreen>
                 color: ColorTokens.primary30,
               ),
               const SizedBox(width: 8),
-              const Text(
-                'Kilómetros por Mes',
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+              Text(
+                l.t('km_per_month'),
+                style: const TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
               const Spacer(),
               if (last6.isNotEmpty)
@@ -1152,7 +1159,7 @@ class _CyclingStatsScreenState extends State<CyclingStatsScreen>
                     borderRadius: BorderRadius.circular(8),
                   ),
                   child: Text(
-                    'Últimos ${last6.length} meses',
+                    '${l.t('last')} ${last6.length} ${l.t('months')}',
                     style: TextStyle(
                       fontSize: 10,
                       color: ColorTokens.primary30,
@@ -1168,7 +1175,7 @@ class _CyclingStatsScreenState extends State<CyclingStatsScreen>
               height: 120,
               child: Center(
                 child: Text(
-                  'Sin datos aún',
+                  l.t('no_data_yet'),
                   style: TextStyle(
                     color: Theme.of(context).brightness == Brightness.dark
                         ? Colors.white54
@@ -1293,31 +1300,34 @@ class _CyclingStatsScreenState extends State<CyclingStatsScreen>
                 color: Colors.deepPurple[400],
               ),
               const SizedBox(width: 8),
-              const Text(
-                'Resumen de Actividad',
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+              Text(
+                l.t('activity_summary'),
+                style: const TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
             ],
           ),
           const SizedBox(height: 14),
           _buildSummaryRow(
             Icons.route_rounded,
-            'Promedio por rodada',
+            l.t('avg_per_ride'),
             '${avgPerRide.toStringAsFixed(1)} km',
           ),
           _buildSummaryRow(
             Icons.timer_outlined,
-            'Tiempo promedio',
+            l.t('avg_time'),
             '${avgMinPerRide.toStringAsFixed(0)} min',
           ),
           _buildSummaryRow(
             Icons.calendar_today_rounded,
-            'Última rodada',
+            l.t('last_ride'),
             _formatLastRide(stats.lastRideDate),
           ),
           _buildSummaryRow(
             Icons.trending_up_rounded,
-            'Nivel actual',
+            l.t('current_level'),
             '${stats.levelEmoji} ${stats.level.toUpperCase()}',
           ),
         ],
@@ -1362,9 +1372,9 @@ class _CyclingStatsScreenState extends State<CyclingStatsScreen>
   String _formatLastRide(DateTime date) {
     final now = DateTime.now();
     final diff = now.difference(date).inDays;
-    if (diff == 0) return 'Hoy';
-    if (diff == 1) return 'Ayer';
-    if (diff < 7) return 'Hace $diff días';
+    if (diff == 0) return l.t('today');
+    if (diff == 1) return l.t('yesterday');
+    if (diff < 7) return '$diff ${l.t('days_ago')}';
     return '${date.day}/${date.month}/${date.year}';
   }
 
@@ -1425,10 +1435,10 @@ class _CyclingStatsScreenState extends State<CyclingStatsScreen>
                   icon: Icons.leaderboard_rounded,
                   title: _rankingMode == 'amigos'
                       ? l.t('no_friends_ranking')
-                      : 'Ranking vacío',
+                      : l.t('ranking_empty'),
                   subtitle: _rankingMode == 'amigos'
-                      ? 'Sigue a otros ciclistas\npara verlos aquí'
-                      : 'Aún no hay ciclistas en el ranking.\n¡Sé el primero!',
+                      ? l.t('follow_cyclists_hint')
+                      : l.t('be_first_ranking'),
                 )
               : RefreshIndicator(
                   onRefresh: () async {
@@ -1507,9 +1517,9 @@ class _CyclingStatsScreenState extends State<CyclingStatsScreen>
       ),
       child: Column(
         children: [
-          const Text(
-            '🏆 Top 3 Ciclistas',
-            style: TextStyle(
+          Text(
+            '🏆 ${l.t('top_3_cyclists')}',
+            style: const TextStyle(
               color: Colors.white,
               fontSize: 18,
               fontWeight: FontWeight.bold,

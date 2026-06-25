@@ -510,20 +510,20 @@ class _WeatherScreenState extends State<WeatherScreen> {
     final main = wp.weatherData?['weather']?[0]?['main'] ?? '';
 
     if (wp.feelsLike > 28) tips.add(l.t('carry_water_hot'));
-    if (wp.uvIndex > 3) tips.add('Usa protector solar y gafas');
+    if (wp.uvIndex > 3) tips.add(l.t('tip_sunscreen_glasses'));
     if (main == 'Rain' || main == 'Drizzle') {
-      tips.add('Frena con anticipación en mojado');
-      tips.add('Usa luces y ropa reflectiva');
+      tips.add(l.t('tip_brake_wet'));
+      tips.add(l.t('tip_lights_reflective'));
     }
-    if (wp.windSpeed > 20) tips.add('Anticipa ráfagas en zonas abiertas');
-    if (wp.visibility < 5) tips.add('Usa luces delanteras y traseras');
-    if (wp.feelsLike < 15) tips.add('Vístete por capas para el frío');
+    if (wp.windSpeed > 20) tips.add(l.t('tip_wind_gusts'));
+    if (wp.visibility < 5) tips.add(l.t('tip_use_lights'));
+    if (wp.feelsLike < 15) tips.add(l.t('tip_dress_layers'));
     if (wp.humidity > 80) tips.add(l.t('humidity_causes_fatigue'));
 
     // Tips generales si hay pocos contextual
     if (tips.length < 3) {
-      tips.add('Revisa frenos y llantas antes de salir');
-      tips.add('Lleva herramienta básica y parches');
+      tips.add(l.t('tip_check_brakes_tires'));
+      tips.add(l.t('tip_carry_tools'));
     }
     return tips;
   }

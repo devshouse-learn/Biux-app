@@ -97,7 +97,7 @@ class _ActivityScreenTimeScreenState extends State<ActivityScreenTimeScreen> {
               child: Column(
                 children: [
                   Text(
-                    'Promedio Diario',
+                    l.t('daily_average'),
                     style: TextStyle(color: textSecondary, fontSize: 14),
                   ),
                   SizedBox(height: 8),
@@ -111,7 +111,7 @@ class _ActivityScreenTimeScreenState extends State<ActivityScreenTimeScreen> {
                   ),
                   SizedBox(height: 4),
                   Text(
-                    'Últimos 7 días',
+                    l.t('last_7_days'),
                     style: TextStyle(color: barActiveColor, fontSize: 13),
                   ),
                 ],
@@ -121,7 +121,7 @@ class _ActivityScreenTimeScreenState extends State<ActivityScreenTimeScreen> {
 
             // Gráfico de barras - últimos 7 días
             Text(
-              'Últimos 7 días',
+              l.t('last_7_days'),
               style: TextStyle(
                 color: textPrimary,
                 fontSize: 18,

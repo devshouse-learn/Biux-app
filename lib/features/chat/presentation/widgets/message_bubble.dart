@@ -205,7 +205,10 @@ class MessageBubble extends StatelessWidget {
                     ),
                   ),
                   title: Text(
-                    'Responder',
+                    Provider.of<LocaleNotifier>(
+                      context,
+                      listen: false,
+                    ).t('reply_action'),
                     style: TextStyle(
                       color: isDark ? Colors.white : Colors.black87,
                     ),
@@ -230,7 +233,10 @@ class MessageBubble extends StatelessWidget {
                     ),
                   ),
                   title: Text(
-                    'Reaccionar',
+                    Provider.of<LocaleNotifier>(
+                      context,
+                      listen: false,
+                    ).t('react_action'),
                     style: TextStyle(
                       color: isDark ? Colors.white : Colors.black87,
                     ),
@@ -258,7 +264,10 @@ class MessageBubble extends StatelessWidget {
                       ),
                     ),
                     title: Text(
-                      'Copiar texto',
+                      Provider.of<LocaleNotifier>(
+                        context,
+                        listen: false,
+                      ).t('copy_text'),
                       style: TextStyle(
                         color: isDark ? Colors.white : Colors.black87,
                       ),
@@ -296,7 +305,10 @@ class MessageBubble extends StatelessWidget {
                       ),
                     ),
                     title: Text(
-                      'Editar',
+                      Provider.of<LocaleNotifier>(
+                        context,
+                        listen: false,
+                      ).t('edit'),
                       style: TextStyle(
                         color: isDark ? Colors.white : Colors.black87,
                       ),
@@ -312,17 +324,22 @@ class MessageBubble extends StatelessWidget {
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(16),
                           ),
-                          title: const Row(
+                          title: Row(
                             children: [
-                              Icon(
+                              const Icon(
                                 Icons.edit_outlined,
                                 color: Color(0xFF1E8BC3),
                                 size: 20,
                               ),
-                              SizedBox(width: 8),
-                              Text(
-                                'Editar mensaje',
-                                style: TextStyle(fontSize: 16),
+                              const SizedBox(width: 8),
+                              Expanded(
+                                child: Text(
+                                  Provider.of<LocaleNotifier>(
+                                    context,
+                                    listen: false,
+                                  ).t('edit_message_title'),
+                                  style: const TextStyle(fontSize: 16),
+                                ),
                               ),
                             ],
                           ),
@@ -392,7 +409,10 @@ class MessageBubble extends StatelessWidget {
                     ),
                   ),
                   title: Text(
-                    'Reenviar',
+                    Provider.of<LocaleNotifier>(
+                      context,
+                      listen: false,
+                    ).t('forward_action'),
                     style: TextStyle(
                       color: isDark ? Colors.white : Colors.black87,
                     ),
@@ -419,7 +439,15 @@ class MessageBubble extends StatelessWidget {
                     ),
                   ),
                   title: Text(
-                    message.isPinned ? 'Desfijar' : 'Fijar mensaje',
+                    message.isPinned
+                        ? Provider.of<LocaleNotifier>(
+                            context,
+                            listen: false,
+                          ).t('unpin_action')
+                        : Provider.of<LocaleNotifier>(
+                            context,
+                            listen: false,
+                          ).t('pin_message'),
                     style: TextStyle(
                       color: isDark ? Colors.white : Colors.black87,
                     ),
@@ -447,8 +475,14 @@ class MessageBubble extends StatelessWidget {
                   ),
                   title: Text(
                     message.starredBy.isNotEmpty
-                        ? 'Quitar destacado'
-                        : 'Destacar',
+                        ? Provider.of<LocaleNotifier>(
+                            context,
+                            listen: false,
+                          ).t('unstar_action')
+                        : Provider.of<LocaleNotifier>(
+                            context,
+                            listen: false,
+                          ).t('star_action'),
                     style: TextStyle(
                       color: isDark ? Colors.white : Colors.black87,
                     ),
@@ -480,16 +514,25 @@ class MessageBubble extends StatelessWidget {
                     ).t('delete_for_me'),
                     style: const TextStyle(color: Colors.red),
                   ),
-                  subtitle: const Text(
-                    'Solo tÃº dejarás de ver este mensaje',
-                    style: TextStyle(fontSize: 11, color: Colors.red),
+                  subtitle: Text(
+                    Provider.of<LocaleNotifier>(
+                      context,
+                      listen: false,
+                    ).t('only_you_wont_see'),
+                    style: const TextStyle(fontSize: 11, color: Colors.red),
                   ),
                   onTap: () {
                     Navigator.pop(context);
                     _confirmDelete(
                       context,
-                      title: 'Eliminar para mí',
-                      message: '¿Eliminar este mensaje solo para ti?',
+                      title: Provider.of<LocaleNotifier>(
+                        context,
+                        listen: false,
+                      ).t('delete_for_me'),
+                      message: Provider.of<LocaleNotifier>(
+                        context,
+                        listen: false,
+                      ).t('delete_message_for_you_confirm'),
                       onConfirm: () => onDeleteForMe(message),
                     );
                   },
@@ -519,17 +562,25 @@ class MessageBubble extends StatelessWidget {
                         fontWeight: FontWeight.w600,
                       ),
                     ),
-                    subtitle: const Text(
-                      'Todos dejarán de ver este mensaje',
-                      style: TextStyle(fontSize: 11, color: Colors.red),
+                    subtitle: Text(
+                      Provider.of<LocaleNotifier>(
+                        context,
+                        listen: false,
+                      ).t('everyone_wont_see'),
+                      style: const TextStyle(fontSize: 11, color: Colors.red),
                     ),
                     onTap: () {
                       Navigator.pop(context);
                       _confirmDelete(
                         context,
-                        title: 'Eliminar para todos',
-                        message:
-                            '¿Eliminar este mensaje para todos los participantes?',
+                        title: Provider.of<LocaleNotifier>(
+                          context,
+                          listen: false,
+                        ).t('delete_for_all'),
+                        message: Provider.of<LocaleNotifier>(
+                          context,
+                          listen: false,
+                        ).t('delete_message_for_all_confirm'),
                         onConfirm: () => onDeleteForAll(message),
                       );
                     },
@@ -1133,7 +1184,12 @@ class _VideoMessage extends StatelessWidget {
                       ),
                       const SizedBox(width: 4),
                       Text(
-                        _isLocal ? 'Subiendo...' : 'Video',
+                        _isLocal
+                            ? Provider.of<LocaleNotifier>(
+                                context,
+                                listen: false,
+                              ).t('uploading')
+                            : 'Video',
                         style: const TextStyle(
                           color: Colors.white70,
                           fontSize: 11,
@@ -1321,7 +1377,7 @@ class _PollMessage extends StatelessWidget {
         // Total votes
         const SizedBox(height: 4),
         Text(
-          '$totalVotes ${totalVotes == 1 ? 'voto' : 'votos'}',
+          '$totalVotes ${totalVotes == 1 ? Provider.of<LocaleNotifier>(context, listen: false).t('vote_singular') : Provider.of<LocaleNotifier>(context, listen: false).t('votes_plural')}',
           style: TextStyle(
             fontSize: 11,
             color: isMe ? Colors.white60 : Colors.grey,
@@ -1503,9 +1559,15 @@ class _LocationViewerScreen extends StatelessWidget {
                 elevation: 4,
               ),
               icon: const Icon(Icons.directions_bike_rounded, size: 22),
-              label: const Text(
-                'Iniciar ruta',
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700),
+              label: Text(
+                Provider.of<LocaleNotifier>(
+                  context,
+                  listen: false,
+                ).t('start_route'),
+                style: const TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w700,
+                ),
               ),
               onPressed: () {
                 Navigator.pop(context);
@@ -1739,9 +1801,12 @@ class _DeletedBubble extends StatelessWidget {
               color: Colors.grey.shade200,
               borderRadius: BorderRadius.circular(12),
             ),
-            child: const Text(
-              'Mensaje eliminado',
-              style: TextStyle(
+            child: Text(
+              Provider.of<LocaleNotifier>(
+                context,
+                listen: false,
+              ).t('message_deleted'),
+              style: const TextStyle(
                 color: Colors.grey,
                 fontSize: 13,
                 fontStyle: FontStyle.italic,

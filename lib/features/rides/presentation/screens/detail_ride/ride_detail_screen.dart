@@ -198,7 +198,10 @@ class _RideDetailScreenState extends State<RideDetailScreen>
                     indicatorColor: ColorTokens.primary30,
                     tabs: [
                       Tab(icon: Icon(Icons.info_outline), text: l.t('info')),
-                      Tab(icon: Icon(Icons.chat_bubble_outline), text: 'Chat'),
+                      Tab(
+                        icon: Icon(Icons.chat_bubble_outline),
+                        text: l.t('chat'),
+                      ),
                     ],
                   ),
                 ),

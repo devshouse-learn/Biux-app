@@ -298,7 +298,7 @@ class _PublicUserProfileScreenState extends State<PublicUserProfileScreen> {
                                           ? user.fullName
                                           : (user.userName.isNotEmpty
                                                 ? user.userName
-                                                : 'Usuario sin nombre'),
+                                                : l.t('no_name_fallback')),
                                       style: TextStyle(
                                         fontSize: 16,
                                         fontWeight: FontWeight.bold,
@@ -1336,7 +1336,8 @@ class _PublicUserProfileScreenState extends State<PublicUserProfileScreen> {
   Future<void> _shareProfile(BiuxUser user) async {
     await SharePlus.instance.share(
       ShareParams(
-        text: 'Mira el perfil de ${user.fullName} en Biux: @${user.userName}',
+        text:
+            '${l.t("check_profile_of")} ${user.fullName} ${l.t("on_biux")}: @${user.userName}',
       ),
     );
   }

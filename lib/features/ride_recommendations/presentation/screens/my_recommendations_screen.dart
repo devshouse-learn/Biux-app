@@ -52,9 +52,9 @@ class _MyRecommendationsScreenState extends State<MyRecommendationsScreen>
           indicatorColor: ColorTokens.primary30,
           labelColor: Colors.white,
           unselectedLabelColor: Colors.white54,
-          tabs: const [
-            Tab(text: 'Recibidas'),
-            Tab(text: 'Enviadas'),
+          tabs: [
+            Tab(text: l.t('received_tab')),
+            Tab(text: l.t('sent_tab')),
           ],
         ),
       ),

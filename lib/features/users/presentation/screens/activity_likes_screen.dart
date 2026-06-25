@@ -407,7 +407,7 @@ class _ActivityLikesScreenState extends State<ActivityLikesScreen> {
           style: TextStyle(color: ColorTokens.neutral100),
         ),
         content: Text(
-          '¿Quieres quitar tu like? Desaparecerá de esta lista.',
+          l.t('confirm_remove_like'),
           style: TextStyle(color: ColorTokens.neutral80),
         ),
         actions: [

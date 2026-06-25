@@ -674,7 +674,7 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
                     TextField(
                       controller: usernameController,
                       decoration: InputDecoration(
-                        hintText: 'tu_nombre_usuario',
+                        hintText: l.t('username_hint'),
                         prefixText: '@',
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(8),
@@ -923,7 +923,7 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
                                   mainAxisSize: MainAxisSize.min,
                                   children: [
                                     Tooltip(
-                                      message: 'Editar perfil',
+                                      message: l.t('edit_profile'),
                                       child: IconButton(
                                         icon: Icon(
                                           Icons.edit_outlined,
@@ -941,7 +941,7 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
                                       ),
                                     ),
                                     Tooltip(
-                                      message: 'Configuración',
+                                      message: l.t('settings'),
                                       child: IconButton(
                                         icon: Icon(
                                           Icons.menu,
@@ -1028,7 +1028,7 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
                                                     .name!
                                                     .isNotEmpty
                                             ? widget.userProvider.user!.name!
-                                            : 'Sin nombre',
+                                            : l.t('no_name_fallback'),
                                         style: TextStyle(
                                           fontSize: 16,
                                           fontWeight: FontWeight.bold,
@@ -1090,7 +1090,7 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
                                       ),
                                     ),
                                     Text(
-                                      'Posts',
+                                      l.t('posts_label'),
                                       style: TextStyle(
                                         fontSize: 10,
                                         color: ColorTokens.neutral100
@@ -1120,7 +1120,7 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
                                         ),
                                       ),
                                       Text(
-                                        'Seguidores',
+                                        l.t('followers'),
                                         style: TextStyle(
                                           fontSize: 10,
                                           color: ColorTokens.neutral100
@@ -1151,7 +1151,7 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
                                         ),
                                       ),
                                       Text(
-                                        'Siguiendo',
+                                        l.t('following'),
                                         style: TextStyle(
                                           fontSize: 10,
                                           color: ColorTokens.neutral100
@@ -1313,7 +1313,7 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
                                     ),
                                     SizedBox(height: 12),
                                     Text(
-                                      'Error cargando publicaciones',
+                                      l.t('error_loading_posts'),
                                       style: TextStyle(
                                         fontSize: 14,
                                         color: ColorTokens.error50,
@@ -1348,7 +1348,7 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
                                     ),
                                     SizedBox(height: 12),
                                     Text(
-                                      'Sin publicaciones aún',
+                                      l.t('no_posts_yet'),
                                       style: TextStyle(
                                         fontSize: 14,
                                         color: isDark
@@ -1361,7 +1361,7 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
                                     ),
                                     SizedBox(height: 8),
                                     Text(
-                                      'Comienza a compartir',
+                                      l.t('start_sharing'),
                                       style: TextStyle(
                                         fontSize: 12,
                                         color: isDark
@@ -1455,8 +1455,8 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
                                     SizedBox(height: 12),
                                     Text(
                                       _selectedTab == 0
-                                          ? 'Sin publicaciones válidas'
-                                          : 'Sin reposteos aún',
+                                          ? l.t('no_valid_posts')
+                                          : l.t('no_reposts_yet'),
                                       style: TextStyle(
                                         fontSize: 14,
                                         color: ColorTokens.neutral70,
@@ -1466,8 +1466,8 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
                                     SizedBox(height: 8),
                                     Text(
                                       _selectedTab == 0
-                                          ? 'Crea tu primera publicación'
-                                          : 'Repostea publicaciones de otros usuarios',
+                                          ? l.t('create_first_post')
+                                          : l.t('repost_from_others'),
                                       style: TextStyle(
                                         fontSize: 12,
                                         color: ColorTokens.neutral60,
@@ -1643,11 +1643,13 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
                                                     await showDialog<bool>(
                                                       context: context,
                                                       builder: (ctx) => AlertDialog(
-                                                        title: const Text(
-                                                          'Quitar reposteo',
+                                                        title: Text(
+                                                          l.t('remove_repost'),
                                                         ),
-                                                        content: const Text(
-                                                          '¿Deseas eliminar este reposteo de tu perfil?',
+                                                        content: Text(
+                                                          l.t(
+                                                            'remove_repost_confirm',
+                                                          ),
                                                         ),
                                                         actions: [
                                                           TextButton(
@@ -1690,9 +1692,9 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
                                                     ScaffoldMessenger.of(
                                                       context,
                                                     ).showSnackBar(
-                                                      const SnackBar(
+                                                      SnackBar(
                                                         content: Text(
-                                                          'Reposteo eliminado',
+                                                          l.t('repost_removed'),
                                                         ),
                                                         behavior:
                                                             SnackBarBehavior

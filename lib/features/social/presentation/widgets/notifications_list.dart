@@ -240,9 +240,9 @@ class _NotificationItemState extends State<NotificationItem> {
                                   color: Colors.white,
                                 ),
                               )
-                            : const Text(
-                                'Permitir',
-                                style: TextStyle(fontSize: 13),
+                            : Text(
+                                l.t('allow'),
+                                style: const TextStyle(fontSize: 13),
                               ),
                       ),
                     ),
@@ -261,7 +261,13 @@ class _NotificationItemState extends State<NotificationItem> {
                             borderRadius: BorderRadius.circular(8),
                           ),
                         ),
-                        child: Text(Provider.of<LocaleNotifier>(context, listen: false).t('deny'), style: const TextStyle(fontSize: 13)),
+                        child: Text(
+                          Provider.of<LocaleNotifier>(
+                            context,
+                            listen: false,
+                          ).t('deny'),
+                          style: const TextStyle(fontSize: 13),
+                        ),
                       ),
                     ),
                   ],
@@ -394,7 +400,7 @@ class _NotificationItemState extends State<NotificationItem> {
           notificationsProvider.updateLocalNotification(
             widget.notification.id,
             message:
-                'Denegaste la solicitud de ${widget.notification.fromUserName}',
+                '${l.t('you_denied_request')} ${widget.notification.fromUserName}',
             isRead: true,
           );
         } else {

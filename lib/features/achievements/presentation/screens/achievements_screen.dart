@@ -30,7 +30,7 @@ class _AchievementsScreenState extends State<AchievementsScreen>
     {'id': 'rides', 'label': l.t('rides'), 'icon': '🏁'},
     {'id': 'speed', 'label': l.t('speed'), 'icon': '🚀'},
     {'id': 'streak', 'label': l.t('streak'), 'icon': '🔥'},
-    {'id': 'social', 'label': 'Social', 'icon': '👥'},
+    {'id': 'social', 'label': l.t('social'), 'icon': '👥'},
     {'id': 'special', 'label': l.t('special'), 'icon': '⭐'},
     {'id': 'aventura', 'label': l.t('adventure'), 'icon': '🗺️'},
   ];
@@ -82,7 +82,7 @@ class _AchievementsScreenState extends State<AchievementsScreen>
                     ),
                     const SizedBox(height: 16),
                     Text(
-                      'Error al cargar logros',
+                      l.t('error_loading_achievements'),
                       style: const TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
@@ -296,7 +296,7 @@ class _AchievementsScreenState extends State<AchievementsScreen>
                                 _statBadge(
                                   '👥',
                                   '${_countByCategory(provider, 'social')}',
-                                  'Social',
+                                  l.t('social'),
                                 ),
                                 _statBadge(
                                   '⭐',
@@ -384,7 +384,7 @@ class _AchievementsScreenState extends State<AchievementsScreen>
                   child: Row(
                     children: [
                       Text(
-                        '${filtered.length} logros',
+                        '${filtered.length} ${l.t('achievements').toLowerCase()}',
                         style: TextStyle(
                           fontSize: 13,
                           color: Theme.of(context).brightness == Brightness.dark
@@ -394,7 +394,7 @@ class _AchievementsScreenState extends State<AchievementsScreen>
                       ),
                       const Spacer(),
                       Text(
-                        '${filtered.where((a) => a.isUnlocked).length} desbloqueados',
+                        '${filtered.where((a) => a.isUnlocked).length} ${l.t('unlocked').toLowerCase()}',
                         style: TextStyle(
                           fontSize: 13,
                           color: Colors.amber[800],
@@ -421,7 +421,7 @@ class _AchievementsScreenState extends State<AchievementsScreen>
                             ),
                             const SizedBox(height: 12),
                             Text(
-                              'No hay logros en esta categoría',
+                              l.t('no_achievements_category'),
                               style: TextStyle(
                                 color:
                                     Theme.of(context).brightness ==
@@ -581,17 +581,17 @@ class _AchievementsScreenState extends State<AchievementsScreen>
                             color: Colors.amber,
                             borderRadius: BorderRadius.circular(10),
                           ),
-                          child: const Row(
+                          child: Row(
                             mainAxisSize: MainAxisSize.min,
                             children: [
-                              Icon(
+                              const Icon(
                                 Icons.verified,
                                 size: 12,
                                 color: Colors.white,
                               ),
-                              SizedBox(width: 2),
+                              const SizedBox(width: 2),
                               Text(
-                                'Logrado',
+                                l.t('achieved'),
                                 style: TextStyle(
                                   fontSize: 10,
                                   color: Colors.white,
@@ -677,7 +677,13 @@ class _AchievementsScreenState extends State<AchievementsScreen>
 
     // Los 5 niveles internos del logro tocado
     final levels = a.levels;
-    const tierNames = ['Bronce', 'Plata', 'Oro', 'Platino', 'Diamante'];
+    final tierNames = [
+      l.t('tier_bronze'),
+      l.t('tier_silver'),
+      l.t('tier_gold'),
+      l.t('tier_platinum'),
+      l.t('tier_diamond'),
+    ];
 
     final pageCtrl = PageController(initialPage: 0);
     int currentPage = 0;
@@ -743,8 +749,8 @@ class _AchievementsScreenState extends State<AchievementsScreen>
                       const SizedBox(height: 4),
                       Text(
                         a.isUnlocked
-                            ? '¡Todos los niveles completados! 🎯'
-                            : 'Desliza para ver todos los niveles 👉',
+                            ? l.t('all_levels_completed')
+                            : l.t('swipe_to_see_levels'),
                         style: TextStyle(fontSize: 11, color: Colors.grey[500]),
                       ),
                     ],
@@ -848,7 +854,7 @@ class _AchievementsScreenState extends State<AchievementsScreen>
                                 Text(
                                   levelUnlocked
                                       ? descText
-                                      : 'Alcanza ${level.targetValue.toInt()} ${_unitLabel(a.category)} para desbloquear este nivel.',
+                                      : '${l.t('reach')} ${level.targetValue.toInt()} ${_unitLabel(a.category)} ${l.t('to_unlock_level')}',
                                   style: TextStyle(
                                     fontSize: 14,
                                     color: Colors.grey[600],
@@ -928,7 +934,7 @@ class _AchievementsScreenState extends State<AchievementsScreen>
                                 ),
                                 const SizedBox(height: 8),
                                 Text(
-                                  '${(levelProgress * 100).toInt()}% completado',
+                                  '${(levelProgress * 100).toInt()}% ${l.t('completed').toLowerCase()}',
                                   style: TextStyle(
                                     fontSize: 13,
                                     color: Colors.grey[600],
@@ -965,7 +971,7 @@ class _AchievementsScreenState extends State<AchievementsScreen>
                                                 CrossAxisAlignment.start,
                                             children: [
                                               Text(
-                                                '¡Nivel $tierName desbloqueado!',
+                                                '${l.t('level_unlocked_prefix')} $tierName ${l.t('level_unlocked_suffix')}',
                                                 style: const TextStyle(
                                                   fontWeight: FontWeight.w700,
                                                   color: Colors.green,
@@ -974,7 +980,7 @@ class _AchievementsScreenState extends State<AchievementsScreen>
                                               if (a.isUnlocked &&
                                                   a.unlockedAt != null)
                                                 Text(
-                                                  'Completado el ${a.unlockedAt!.day}/${a.unlockedAt!.month}/${a.unlockedAt!.year}',
+                                                  '${l.t('completed_on')} ${a.unlockedAt!.day}/${a.unlockedAt!.month}/${a.unlockedAt!.year}',
                                                   style: TextStyle(
                                                     fontSize: 12,
                                                     color: Colors.grey[600],
@@ -1112,11 +1118,13 @@ class _AchievementsScreenState extends State<AchievementsScreen>
   String _getLevelHint(AchievementEntity a, AchievementLevel level) {
     final remaining = (level.targetValue - a.currentValue);
     final unit = _unitLabel(a.category);
-    if (remaining <= 0) return '¡Casi lo tienes!';
+    if (remaining <= 0) return l.t('almost_there');
     final rem = remaining % 1 == 0
         ? remaining.toInt().toString()
         : remaining.toStringAsFixed(1);
-    return unit.isEmpty ? 'Te faltan $rem más' : 'Te faltan $rem $unit';
+    return unit.isEmpty
+        ? '${l.t('you_need')} $rem ${l.t('more')}'
+        : '${l.t('you_need')} $rem $unit';
   }
 
   String _unitLabel(String cat) => switch (cat) {
@@ -1134,7 +1142,7 @@ class _AchievementsScreenState extends State<AchievementsScreen>
     'rides' => '🏁 ${l.t('rides')}',
     'speed' => '🚀 ${l.t('speed')}',
     'streak' => '🔥 ${l.t('streak')}',
-    'social' => '👥 Social',
+    'social' => '👥 ${l.t('social')}',
     'special' => '⭐ ${l.t('special')}',
     'aventura' => '🗺️ ${l.t('adventure')}',
     _ => '🎯 ${l.t('general')}',
@@ -1147,7 +1155,7 @@ class _AchievementsScreenState extends State<AchievementsScreen>
         .map((a) => '${a.icon} ${a.title}')
         .join('\n');
     final text =
-        'Mis logros en Biux: $unlocked/$total desbloqueados\n\n$names\n\n¡Descarga Biux y empieza a pedalear!';
+        '${l.t('my_achievements_in_biux')}: $unlocked/$total ${l.t('unlocked').toLowerCase()}\n\n$names\n\n${l.t('download_biux_cta')}';
     _showShareOptions(text);
   }
 
@@ -1338,36 +1346,42 @@ class _AchievementsScreenState extends State<AchievementsScreen>
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'Los logros se desbloquean automáticamente al cumplir los objetivos:',
+              l.t('achievements_auto_unlock'),
               style: TextStyle(fontSize: 14),
             ),
             SizedBox(height: 12),
             Text(
-              '🚴 Distancia - Acumula kilómetros',
+              '🚴 ${l.t('distance')} - ${l.t('accumulate_km')}',
               style: TextStyle(fontSize: 13),
             ),
             SizedBox(height: 4),
             Text(
-              '🏁 Rodadas - Completa recorridos',
+              '🏁 ${l.t('rides')} - ${l.t('complete_rides')}',
               style: TextStyle(fontSize: 13),
             ),
             SizedBox(height: 4),
             Text(
-              '🚀 Velocidad - Alcanza velocidades máximas',
+              '🚀 ${l.t('speed')} - ${l.t('reach_max_speeds')}',
               style: TextStyle(fontSize: 13),
             ),
             SizedBox(height: 4),
             Text(
-              '🔥 Racha - Pedalea varios días seguidos',
+              '🔥 ${l.t('streak')} - ${l.t('ride_consecutive_days')}',
               style: TextStyle(fontSize: 13),
             ),
             SizedBox(height: 4),
-            Text('👥 ${Provider.of<LocaleNotifier>(context, listen: false).t('social_join_groups')}', style: const TextStyle(fontSize: 13)),
+            Text(
+              '👥 ${Provider.of<LocaleNotifier>(context, listen: false).t('social_join_groups')}',
+              style: const TextStyle(fontSize: 13),
+            ),
             SizedBox(height: 4),
-            Text('⭐ ${Provider.of<LocaleNotifier>(context, listen: false).t('special_unique_challenges')}', style: const TextStyle(fontSize: 13)),
+            Text(
+              '⭐ ${Provider.of<LocaleNotifier>(context, listen: false).t('special_unique_challenges')}',
+              style: const TextStyle(fontSize: 13),
+            ),
             SizedBox(height: 12),
             Text(
-              'Los logros se sincronizan automáticamente cada semana.\nTambién puedes sincronizar manualmente con el botón 🔄',
+              l.t('achievements_sync_info'),
               style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600),
             ),
           ],
@@ -1628,7 +1642,9 @@ class _AchievementsShareInAppSheetState
                             style: const TextStyle(fontWeight: FontWeight.w600),
                           ),
                           subtitle: Text(
-                            alreadySent ? 'Enviado' : 'Toca para enviar',
+                            alreadySent
+                                ? l.t('sent_status')
+                                : l.t('tap_to_send'),
                             style: TextStyle(
                               fontSize: 12,
                               color: alreadySent
@@ -1657,9 +1673,9 @@ class _AchievementsShareInAppSheetState
                                     tapTargetSize:
                                         MaterialTapTargetSize.shrinkWrap,
                                   ),
-                                  child: const Text(
-                                    'Enviar',
-                                    style: TextStyle(fontSize: 13),
+                                  child: Text(
+                                    l.t('send'),
+                                    style: const TextStyle(fontSize: 13),
                                   ),
                                 ),
                         );

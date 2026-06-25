@@ -257,7 +257,7 @@ class _ActivityCommentsScreenState extends State<ActivityCommentsScreen> {
                       if (item.postAuthorName != null &&
                           item.postAuthorName!.isNotEmpty)
                         Text(
-                          'En post de ${item.postAuthorName}',
+                          '${l.t("in_post_of")} ${item.postAuthorName}',
                           style: TextStyle(
                             color: ColorTokens.neutral80,
                             fontSize: 12,
@@ -303,7 +303,7 @@ class _ActivityCommentsScreenState extends State<ActivityCommentsScreen> {
                                 borderRadius: BorderRadius.circular(4),
                               ),
                               child: Text(
-                                'Respuesta',
+                                l.t('reply_label'),
                                 style: TextStyle(
                                   color: ColorTokens.neutral60,
                                   fontSize: 10,
@@ -349,12 +349,14 @@ class _ActivityCommentsScreenState extends State<ActivityCommentsScreen> {
 
   String _formatTimeAgo(DateTime date) {
     final diff = DateTime.now().difference(date);
-    if (diff.inDays > 365) return 'Hace ${diff.inDays ~/ 365} año(s)';
-    if (diff.inDays > 30) return 'Hace ${diff.inDays ~/ 30} mes(es)';
-    if (diff.inDays > 0) return 'Hace ${diff.inDays}d';
-    if (diff.inHours > 0) return 'Hace ${diff.inHours}h';
-    if (diff.inMinutes > 0) return 'Hace ${diff.inMinutes}m';
-    return 'Ahora';
+    if (diff.inDays > 365)
+      return '${l.t("time_ago")} ${diff.inDays ~/ 365} ${l.t("time_years")}';
+    if (diff.inDays > 30)
+      return '${l.t("time_ago")} ${diff.inDays ~/ 30} ${l.t("time_months")}';
+    if (diff.inDays > 0) return '${l.t("time_ago")} ${diff.inDays}d';
+    if (diff.inHours > 0) return '${l.t("time_ago")} ${diff.inHours}h';
+    if (diff.inMinutes > 0) return '${l.t("time_ago")} ${diff.inMinutes}m';
+    return l.t('time_now');
   }
 }
 

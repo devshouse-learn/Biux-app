@@ -53,9 +53,9 @@ class _LocationPickerScreenState extends State<LocationPickerScreen> {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, _selectedPosition),
-            child: const Text(
-              'Enviar',
-              style: TextStyle(
+            child: Text(
+              l.t('send'),
+              style: const TextStyle(
                 color: Colors.white,
                 fontWeight: FontWeight.w600,
                 fontSize: 15,

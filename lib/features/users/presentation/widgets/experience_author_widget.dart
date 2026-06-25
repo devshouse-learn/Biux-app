@@ -1,9 +1,11 @@
 import 'package:biux/core/design_system/color_tokens.dart';
+import 'package:biux/core/design_system/locale_notifier.dart';
 import 'package:biux/features/users/data/models/user.dart';
 import 'package:biux/core/services/optimized_cache_manager.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:provider/provider.dart';
 
 /// Widget reutilizable para mostrar la información del autor de una experiencia
 /// con la posibilidad de navegar a su perfil
@@ -77,7 +79,10 @@ class ExperienceAuthorWidget extends StatelessWidget {
                 Text(
                   author.fullName.isNotEmpty
                       ? author.fullName
-                      : 'Usuario sin nombre',
+                      : Provider.of<LocaleNotifier>(
+                          context,
+                          listen: false,
+                        ).t('no_name_fallback'),
                   style: TextStyle(
                     fontWeight: FontWeight.bold,
                     fontSize: showFullInfo ? 16 : 14,

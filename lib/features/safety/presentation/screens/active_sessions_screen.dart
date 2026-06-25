@@ -117,7 +117,7 @@ class _ActiveSessionsScreenState extends State<ActiveSessionsScreen> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            '${rawSessions.length + 1} inicio(s) de sesión registrado(s)',
+                            '${rawSessions.length + 1} ${l.t("sessions_registered")}',
                             style: const TextStyle(
                               fontWeight: FontWeight.w700,
                               fontSize: 14,
@@ -125,7 +125,7 @@ class _ActiveSessionsScreenState extends State<ActiveSessionsScreen> {
                           ),
                           const SizedBox(height: 2),
                           Text(
-                            'Dispositivos donde iniciaste sesión con tu número en Biux',
+                            l.t('devices_signed_in'),
                             style: TextStyle(
                               fontSize: 12,
                               color: isDark
@@ -146,11 +146,11 @@ class _ActiveSessionsScreenState extends State<ActiveSessionsScreen> {
                   children: [
                     // Sesión actual (siempre arriba)
                     _SessionTile(
-                      deviceName: 'Este dispositivo',
+                      deviceName: l.t('this_device'),
                       platform: 'android',
                       phoneNumber: data?['phoneNumber'] ?? '',
                       isCurrentDevice: true,
-                      lastActive: 'Ahora',
+                      lastActive: l.t('time_now'),
                       isDark: isDark,
                       onRevoke: null,
                     ),
@@ -168,8 +168,7 @@ class _ActiveSessionsScreenState extends State<ActiveSessionsScreen> {
                       return Padding(
                         padding: const EdgeInsets.only(bottom: 8),
                         child: _SessionTile(
-                          deviceName:
-                              s['deviceName'] ?? 'Dispositivo desconocido',
+                          deviceName: s['deviceName'] ?? l.t('unknown_device'),
                           platform: s['platform'] ?? 'android',
                           phoneNumber: s['phoneNumber'] ?? '',
                           isCurrentDevice: false,
@@ -209,9 +208,7 @@ class _ActiveSessionsScreenState extends State<ActiveSessionsScreen> {
                         context: context,
                         builder: (ctx) => AlertDialog(
                           title: Text(l.t('close_all_sessions')),
-                          content: Text(
-                            '¿Seguro que quieres cerrar sesión en todos los dispositivos?',
-                          ),
+                          content: Text(l.t('confirm_close_all_sessions')),
                           actions: [
                             TextButton(
                               onPressed: () => Navigator.pop(ctx, false),
@@ -303,7 +300,7 @@ class _FirebaseAuthInfo extends StatelessWidget {
               ),
               SizedBox(width: 6),
               Text(
-                'Datos de tu cuenta Firebase',
+                l.t('firebase_account_data'),
                 style: TextStyle(
                   fontSize: 12,
                   fontWeight: FontWeight.w600,
@@ -443,8 +440,8 @@ class _SessionTile extends StatelessWidget {
               ),
             Text(
               isCurrentDevice
-                  ? '✓ Sesión actual'
-                  : 'Último acceso: $lastActive',
+                  ? '✓ ${l.t("current_session")}'
+                  : '${l.t("last_access_label")}: $lastActive',
               style: TextStyle(
                 fontSize: 12,
                 color: isCurrentDevice

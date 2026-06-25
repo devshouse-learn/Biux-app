@@ -57,7 +57,10 @@ class _BlockedUsersScreenState extends State<BlockedUsersScreen> {
                   Icon(Icons.block, size: 64, color: Colors.grey.shade400),
                   const SizedBox(height: 16),
                   Text(
-                    'No has bloqueado a ningún usuario',
+                    Provider.of<LocaleNotifier>(
+                      context,
+                      listen: false,
+                    ).t('no_blocked_users'),
                     style: TextStyle(
                       color: isDark ? Colors.white70 : Colors.grey.shade600,
                       fontSize: 16,
@@ -92,8 +95,11 @@ class _BlockedUsersScreenState extends State<BlockedUsersScreen> {
         title: Text(
           Provider.of<LocaleNotifier>(context, listen: false).t('unblock_user'),
         ),
-        content: const Text(
-          '¿Deseas desbloquear a este usuario? Podrá volver a enviarte mensajes.',
+        content: Text(
+          Provider.of<LocaleNotifier>(
+            context,
+            listen: false,
+          ).t('confirm_unblock_user'),
         ),
         actions: [
           TextButton(
@@ -137,13 +143,22 @@ class _BlockedUserTile extends StatelessWidget {
           .doc(blockedUserId)
           .get(),
       builder: (context, snapshot) {
-        String name = 'Usuario';
+        String name = Provider.of<LocaleNotifier>(
+          context,
+          listen: false,
+        ).t('user_label');
         String? photoUrl;
 
         if (snapshot.hasData && snapshot.data!.exists) {
           final data = snapshot.data!.data() as Map<String, dynamic>?;
           if (data != null) {
-            name = data['username'] ?? data['name'] ?? 'Usuario';
+            name =
+                data['username'] ??
+                data['name'] ??
+                Provider.of<LocaleNotifier>(
+                  context,
+                  listen: false,
+                ).t('user_label');
             photoUrl = data['profileImageUrl'] ?? data['photoUrl'];
           }
         }
@@ -168,9 +183,12 @@ class _BlockedUserTile extends StatelessWidget {
             ),
             trailing: TextButton(
               onPressed: onUnblock,
-              child: const Text(
-                'Desbloquear',
-                style: TextStyle(color: Colors.red),
+              child: Text(
+                Provider.of<LocaleNotifier>(
+                  context,
+                  listen: false,
+                ).t('unblock_action'),
+                style: const TextStyle(color: Colors.red),
               ),
             ),
           ),

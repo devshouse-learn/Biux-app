@@ -431,12 +431,14 @@ class _ActivityStoriesScreenState extends State<ActivityStoriesScreen> {
 
   String _formatDate(DateTime date) {
     final diff = DateTime.now().difference(date);
-    if (diff.inDays > 365) return 'Hace ${diff.inDays ~/ 365} año(s)';
-    if (diff.inDays > 30) return 'Hace ${diff.inDays ~/ 30} mes(es)';
-    if (diff.inDays > 0) return 'Hace ${diff.inDays}d';
-    if (diff.inHours > 0) return 'Hace ${diff.inHours}h';
-    if (diff.inMinutes > 0) return 'Hace ${diff.inMinutes}m';
-    return 'Ahora';
+    if (diff.inDays > 365)
+      return '${l.t("time_ago")} ${diff.inDays ~/ 365} ${l.t("time_years")}';
+    if (diff.inDays > 30)
+      return '${l.t("time_ago")} ${diff.inDays ~/ 30} ${l.t("time_months")}';
+    if (diff.inDays > 0) return '${l.t("time_ago")} ${diff.inDays}d';
+    if (diff.inHours > 0) return '${l.t("time_ago")} ${diff.inHours}h';
+    if (diff.inMinutes > 0) return '${l.t("time_ago")} ${diff.inMinutes}m';
+    return l.t('time_now');
   }
 }
 

@@ -55,7 +55,7 @@ class _ChatSettingsScreenState extends State<ChatSettingsScreen> {
           // --- Tamaño de fuente ---
           SettingsWidgets.buildSectionTitle(l.t('customization'), isDark),
           const SizedBox(height: 12),
-          _buildFontSizeCard(isDark),
+          _buildFontSizeCard(isDark, l),
 
           const SizedBox(height: 24),
 
@@ -98,7 +98,7 @@ class _ChatSettingsScreenState extends State<ChatSettingsScreen> {
     );
   }
 
-  Widget _buildFontSizeCard(bool isDark) {
+  Widget _buildFontSizeCard(bool isDark, LocaleNotifier l) {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -124,7 +124,7 @@ class _ChatSettingsScreenState extends State<ChatSettingsScreen> {
               ),
               const SizedBox(width: 12),
               Text(
-                'Tamaño de fuente',
+                l.t('font_size'),
                 style: TextStyle(
                   color: isDark ? Colors.white : Colors.black87,
                   fontWeight: FontWeight.w600,
@@ -162,7 +162,7 @@ class _ChatSettingsScreenState extends State<ChatSettingsScreen> {
                 borderRadius: BorderRadius.circular(12),
               ),
               child: Text(
-                'Vista previa del texto',
+                l.t('text_preview'),
                 style: TextStyle(
                   fontSize: _fontSize,
                   color: isDark ? Colors.white : Colors.black87,

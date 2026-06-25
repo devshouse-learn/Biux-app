@@ -882,7 +882,9 @@ class _ExperienceCard extends StatelessWidget {
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('${Provider.of<LocaleNotifier>(context, listen: false).t('error_reposting')}: $e'),
+            content: Text(
+              '${Provider.of<LocaleNotifier>(context, listen: false).t('error_reposting')}: $e',
+            ),
             behavior: SnackBarBehavior.floating,
           ),
         );
@@ -1123,7 +1125,7 @@ class _RepostBanner extends StatelessWidget {
             const Icon(Icons.repeat_rounded, size: 14, color: Colors.white),
             const SizedBox(width: 5),
             Text(
-              'Reposteado de @$userName',
+              '${Provider.of<LocaleNotifier>(context, listen: false).t("reposted_from")} @$userName',
               style: const TextStyle(
                 fontSize: 12,
                 color: Colors.white,

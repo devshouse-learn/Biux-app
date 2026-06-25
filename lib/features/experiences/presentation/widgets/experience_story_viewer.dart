@@ -477,7 +477,7 @@ class _ExperienceStoryViewerState extends State<ExperienceStoryViewer>
                             ? user.fullName
                             : (user.userName.isNotEmpty
                                   ? user.userName
-                                  : 'Usuario sin datos'),
+                                  : l.t('user_no_data')),
                         overflow: TextOverflow.ellipsis,
                         maxLines: 1,
                         style: const TextStyle(
@@ -928,7 +928,7 @@ class _ExperienceStoryViewerState extends State<ExperienceStoryViewer>
                   ),
                   const SizedBox(width: 12),
                   Text(
-                    'Repostear historia',
+                    l.t('repost_story'),
                     style: theme.textTheme.titleMedium?.copyWith(
                       fontWeight: FontWeight.bold,
                     ),
@@ -937,7 +937,7 @@ class _ExperienceStoryViewerState extends State<ExperienceStoryViewer>
               ),
               SizedBox(height: 6),
               Text(
-                'Historia de @${widget.experience.user.userName}',
+                '${l.t("story_of")} @${widget.experience.user.userName}',
                 style: theme.textTheme.bodySmall?.copyWith(
                   color: theme.textTheme.bodySmall?.color?.withValues(
                     alpha: 0.6,
@@ -990,10 +990,8 @@ class _ExperienceStoryViewerState extends State<ExperienceStoryViewer>
                               Navigator.pop(modalContext);
                             }
                             messenger.showSnackBar(
-                              const SnackBar(
-                                content: Text(
-                                  'a¡Historia reposteada en tu perfil!',
-                                ),
+                              SnackBar(
+                                content: Text(l.t('story_reposted_success')),
                                 duration: Duration(seconds: 2),
                               ),
                             );
@@ -1001,7 +999,9 @@ class _ExperienceStoryViewerState extends State<ExperienceStoryViewer>
                             if (modalContext.mounted) {
                               ScaffoldMessenger.of(modalContext).showSnackBar(
                                 SnackBar(
-                                  content: Text('${Provider.of<LocaleNotifier>(context, listen: false).t("error_reposting")}: $e'),
+                                  content: Text(
+                                    '${Provider.of<LocaleNotifier>(context, listen: false).t("error_reposting")}: $e',
+                                  ),
                                 ),
                               );
                             }
@@ -1021,7 +1021,9 @@ class _ExperienceStoryViewerState extends State<ExperienceStoryViewer>
                           ),
                         )
                       : const Icon(Icons.repeat_rounded),
-                  label: Text(isLoading ? 'Reposteando...' : 'Repostear'),
+                  label: Text(
+                    isLoading ? l.t('reposting') : l.t('repost_action'),
+                  ),
                 ),
               ),
             ],
@@ -1046,9 +1048,9 @@ class _ExperienceStoryViewerState extends State<ExperienceStoryViewer>
 
     final shareText = StringBuffer();
     if (user.fullName.isNotEmpty) {
-      shareText.write('Historia de ${user.fullName}');
+      shareText.write('${l.t("story_of")} ${user.fullName}');
     } else {
-      shareText.write('Historia de @${user.userName}');
+      shareText.write('${l.t("story_of")} @${user.userName}');
     }
     if (description.isNotEmpty) {
       shareText.write('\n\n$description');
@@ -1056,7 +1058,7 @@ class _ExperienceStoryViewerState extends State<ExperienceStoryViewer>
     if (mediaUrl.isNotEmpty) {
       shareText.write('\n\n$mediaUrl');
     }
-    shareText.write('\n\nCompartido desde Biux');
+    shareText.write('\n\n${l.t("shared_from_biux")}');
 
     SharePlus.instance.share(ShareParams(text: shareText.toString()));
   }
@@ -1276,7 +1278,7 @@ class _ExperienceStoryViewerState extends State<ExperienceStoryViewer>
                           ),
                           const SizedBox(height: 6),
                           Text(
-                            'Nadie ha visto tu historia',
+                            l.t('nobody_viewed_story'),
                             textAlign: TextAlign.center,
                             style: theme.textTheme.bodyMedium?.copyWith(
                               fontWeight: FontWeight.w600,

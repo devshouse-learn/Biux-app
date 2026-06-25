@@ -466,7 +466,7 @@ class _CreateUserScreenState extends State<CreateUserScreen> {
                               if (context.mounted)
                                 ScaffoldMessenger.of(context).showSnackBar(
                                   SnackBarUtils.customSnackBar(
-                                    content: 'Ingresa tu fecha de nacimiento',
+                                    content: l.t('enter_birthdate'),
                                     backgroundColor: ColorTokens.error50,
                                   ),
                                 );
@@ -492,11 +492,19 @@ class _CreateUserScreenState extends State<CreateUserScreen> {
                                           color: Colors.red,
                                         ),
                                         const SizedBox(width: 8),
-                                        Text(Provider.of<LocaleNotifier>(context, listen: false).t('restricted_access')),
+                                        Text(
+                                          Provider.of<LocaleNotifier>(
+                                            context,
+                                            listen: false,
+                                          ).t('restricted_access'),
+                                        ),
                                       ],
                                     ),
                                     content: Text(
-                                      Provider.of<LocaleNotifier>(context, listen: false).t('age_restriction_message'),
+                                      Provider.of<LocaleNotifier>(
+                                        context,
+                                        listen: false,
+                                      ).t('age_restriction_message'),
                                       style: const TextStyle(height: 1.5),
                                     ),
                                     actions: [

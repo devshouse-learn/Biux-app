@@ -295,7 +295,7 @@ class _ChatListScreenState extends State<ChatListScreen>
                             ),
                             const SizedBox(height: 20),
                             Text(
-                              'No tienes conversaciones',
+                              l.t('no_conversations'),
                               style: TextStyle(
                                 color: isDark ? Colors.white : Colors.grey[700],
                                 fontSize: 18,
@@ -304,7 +304,7 @@ class _ChatListScreenState extends State<ChatListScreen>
                             ),
                             const SizedBox(height: 8),
                             Text(
-                              'Inicia un chat con otro ciclista',
+                              l.t('start_chat_with_cyclist'),
                               style: TextStyle(
                                 color: isDark
                                     ? Colors.white54
@@ -548,7 +548,7 @@ class _ChatListScreenState extends State<ChatListScreen>
                                                 Expanded(
                                                   child: Text(
                                                     lastMsg.isEmpty
-                                                        ? 'Sin mensajes aÃºn'
+                                                        ? l.t('no_messages_yet')
                                                         : lastMsg,
                                                     maxLines: 1,
                                                     overflow:
@@ -911,7 +911,7 @@ class _ChatListScreenState extends State<ChatListScreen>
                                 subtitle: isMutual
                                     ? null
                                     : Text(
-                                        'Solicitar mensaje',
+                                        l.t('request_message'),
                                         style: TextStyle(
                                           fontSize: 12,
                                           color: Colors.orange[700],
@@ -1015,7 +1015,7 @@ class _ChatListScreenState extends State<ChatListScreen>
         'fromUserId': _uid,
         'fromUserName': myName,
         'fromUserPhoto': myPhoto,
-        'message': '$myName quiere enviarte un mensaje',
+        'message': l.t('wants_to_message_you').replaceAll('{0}', myName),
         'read': false,
         'createdAt': FieldValue.serverTimestamp(),
       });

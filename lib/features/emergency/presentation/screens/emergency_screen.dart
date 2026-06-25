@@ -436,7 +436,7 @@ class _EmergencyScreenState extends State<EmergencyScreen> {
                       ),
                       const SizedBox(width: 3),
                       Text(
-                        a.userName.isNotEmpty ? a.userName : 'Anónimo',
+                        a.userName.isNotEmpty ? a.userName : l.t('anonymous'),
                         style: TextStyle(color: Colors.grey[500], fontSize: 11),
                       ),
                       const SizedBox(width: 8),
@@ -513,10 +513,10 @@ class _EmergencyScreenState extends State<EmergencyScreen> {
 
   String _timeAgo(DateTime date) {
     final diff = DateTime.now().difference(date);
-    if (diff.inMinutes < 1) return 'Ahora';
-    if (diff.inMinutes < 60) return 'Hace ${diff.inMinutes} min';
-    if (diff.inHours < 24) return 'Hace ${diff.inHours} h';
-    if (diff.inDays < 7) return 'Hace ${diff.inDays} d';
+    if (diff.inMinutes < 1) return l.t('now');
+    if (diff.inMinutes < 60) return '${diff.inMinutes} min';
+    if (diff.inHours < 24) return '${diff.inHours} h';
+    if (diff.inDays < 7) return '${diff.inDays} d';
     return DateFormat('dd/MM/yy').format(date);
   }
 
@@ -759,7 +759,7 @@ class _EmergencyScreenState extends State<EmergencyScreen> {
             Padding(
               padding: const EdgeInsets.all(16),
               child: Text(
-                'Agrega contactos de emergencia para que sean notificados en caso de alerta',
+                l.t('add_emergency_contacts_hint'),
                 style: TextStyle(color: isDark ? Colors.white54 : Colors.grey),
                 textAlign: TextAlign.center,
               ),
@@ -863,9 +863,9 @@ class _EmergencyScreenState extends State<EmergencyScreen> {
                     ),
                   ),
                   const SizedBox(height: 20),
-                  const Text(
-                    'Llamando...',
-                    style: TextStyle(
+                  Text(
+                    l.t('calling'),
+                    style: const TextStyle(
                       fontSize: 22,
                       fontWeight: FontWeight.bold,
                       color: Colors.black87,
@@ -904,9 +904,9 @@ class _EmergencyScreenState extends State<EmergencyScreen> {
                         }
                       },
                       icon: const Icon(Icons.call_end, size: 20),
-                      label: const Text(
-                        'Colgar',
-                        style: TextStyle(
+                      label: Text(
+                        l.t('hang_up'),
+                        style: const TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.w600,
                         ),
@@ -950,7 +950,7 @@ class _EmergencyScreenState extends State<EmergencyScreen> {
     final nameC = TextEditingController();
     final phoneC = TextEditingController();
     String? selRel;
-    const rels = [
+    final rels = [
       'Mamá',
       'Papá',
       'Hermano/a',
@@ -965,6 +965,21 @@ class _EmergencyScreenState extends State<EmergencyScreen> {
       'Vecino/a',
       'Otro',
     ];
+    final relLabels = {
+      'Mamá': l.t('rel_mom'),
+      'Papá': l.t('rel_dad'),
+      'Hermano/a': l.t('rel_sibling'),
+      'Esposo/a': l.t('rel_spouse'),
+      'Novio/a': l.t('rel_partner'),
+      'Hijo/a': l.t('rel_child'),
+      'Tío/a': l.t('rel_uncle'),
+      'Abuelo/a': l.t('rel_grandparent'),
+      'Primo/a': l.t('rel_cousin'),
+      'Amigo/a': l.t('rel_friend'),
+      'Compañero/a': l.t('rel_coworker'),
+      'Vecino/a': l.t('rel_neighbor'),
+      'Otro': l.t('rel_other'),
+    };
 
     showDialog(
       context: context,
@@ -999,7 +1014,7 @@ class _EmergencyScreenState extends State<EmergencyScreen> {
                 TextField(
                   controller: phoneC,
                   decoration: InputDecoration(
-                    labelText: 'Teléfono',
+                    labelText: l.t('phone'),
                     prefixIcon: Icon(Icons.phone),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(10),
@@ -1012,7 +1027,7 @@ class _EmergencyScreenState extends State<EmergencyScreen> {
                 DropdownButtonFormField<String>(
                   initialValue: selRel,
                   decoration: InputDecoration(
-                    labelText: 'Relación',
+                    labelText: l.t('relationship'),
                     prefixIcon: Icon(Icons.family_restroom),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(10),
@@ -1020,7 +1035,12 @@ class _EmergencyScreenState extends State<EmergencyScreen> {
                   ),
                   isExpanded: true,
                   items: rels
-                      .map((r) => DropdownMenuItem(value: r, child: Text(r)))
+                      .map(
+                        (r) => DropdownMenuItem(
+                          value: r,
+                          child: Text(relLabels[r] ?? r),
+                        ),
+                      )
                       .toList(),
                   onChanged: (v) => setD(() => selRel = v),
                 ),
@@ -1056,7 +1076,9 @@ class _EmergencyScreenState extends State<EmergencyScreen> {
                 Navigator.pop(ctx);
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
-                    content: Text('${nameC.text.trim()} ${Provider.of<LocaleNotifier>(context, listen: false).t("contact_added")}'),
+                    content: Text(
+                      '${nameC.text.trim()} ${Provider.of<LocaleNotifier>(context, listen: false).t("contact_added")}',
+                    ),
                     backgroundColor: Colors.green[700],
                   ),
                 );
@@ -1089,23 +1111,23 @@ class _EmergencyScreenState extends State<EmergencyScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Row(
+          Row(
             children: [
               Icon(Icons.tips_and_updates, color: Colors.amber),
               SizedBox(width: 8),
               Text(
-                'Tips de Seguridad',
+                l.t('safety_tips'),
                 style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
               ),
             ],
           ),
           const SizedBox(height: 12),
-          _tip('Usa siempre casco y luces'),
-          _tip('Comparte tu ubicación con alguien de confianza'),
-          _tip('Lleva identificación y datos médicos'),
-          _tip('Revisa tu bicicleta antes de salir'),
-          _tip('Respeta las señales de tránsito'),
-          _tip('Usa ropa reflectiva de noche'),
+          _tip(l.t('tip_helmet_lights')),
+          _tip(l.t('tip_share_location')),
+          _tip(l.t('tip_carry_id')),
+          _tip(l.t('tip_check_bike')),
+          _tip(l.t('tip_respect_signs')),
+          _tip(l.t('tip_reflective_clothing')),
         ],
       ),
     );

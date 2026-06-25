@@ -54,9 +54,7 @@ class _ReportUserScreenState extends State<ReportUserScreen> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(
-            ok
-                ? 'Reporte enviado. Gracias por hacer Biux mas seguro'
-                : 'Error al enviar el reporte',
+            ok ? l.t('report_sent_thanks') : l.t('error_sending_report'),
           ),
           backgroundColor: ok ? Colors.green : Colors.red,
         ),
@@ -90,7 +88,7 @@ class _ReportUserScreenState extends State<ReportUserScreen> {
                   const SizedBox(width: 12),
                   Expanded(
                     child: Text(
-                      'Reportando a \${widget.reportedUserName}',
+                      '${l.t("reporting_user")} ${widget.reportedUserName}',
                       style: const TextStyle(
                         fontWeight: FontWeight.w700,
                         fontSize: 15,
@@ -101,9 +99,9 @@ class _ReportUserScreenState extends State<ReportUserScreen> {
               ),
             ),
             const SizedBox(height: 24),
-            const Text(
-              'Por que reportas este usuario?',
-              style: TextStyle(fontWeight: FontWeight.w700, fontSize: 16),
+            Text(
+              l.t('why_report_this_user'),
+              style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 16),
             ),
             SizedBox(height: 12),
             ...ReportReason.values.map(
@@ -142,7 +140,12 @@ class _ReportUserScreenState extends State<ReportUserScreen> {
             CheckboxListTile(
               value: _alsoBlock,
               onChanged: (v) => setState(() => _alsoBlock = v ?? true),
-              title: Text(Provider.of<LocaleNotifier>(context, listen: false).t('also_block_user')),
+              title: Text(
+                Provider.of<LocaleNotifier>(
+                  context,
+                  listen: false,
+                ).t('also_block_user'),
+              ),
               activeColor: ColorTokens.primary30,
               contentPadding: EdgeInsets.zero,
             ),

@@ -160,7 +160,7 @@ class _ProfileHighlightsState extends State<ProfileHighlights> {
                         SizedBox(
                           width: 64,
                           child: Text(
-                            h['title'] ?? 'Destacado',
+                            h['title'] ?? l.t('highlight_default'),
                             style: TextStyle(
                               fontSize: 11,
                               color: ColorTokens.neutral80,
@@ -249,7 +249,12 @@ class _ProfileHighlightsState extends State<ProfileHighlights> {
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: Text(Provider.of<LocaleNotifier>(context, listen: false).t('rename_highlight')),
+        title: Text(
+          Provider.of<LocaleNotifier>(
+            context,
+            listen: false,
+          ).t('rename_highlight'),
+        ),
         content: TextField(
           controller: controller,
           decoration: InputDecoration(
@@ -298,7 +303,12 @@ class _ProfileHighlightsState extends State<ProfileHighlights> {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Text(Provider.of<LocaleNotifier>(context, listen: false).t('no_stories_to_highlight')),
+              content: Text(
+                Provider.of<LocaleNotifier>(
+                  context,
+                  listen: false,
+                ).t('no_stories_to_highlight'),
+              ),
               backgroundColor: ColorTokens.warning50,
             ),
           );
@@ -331,7 +341,7 @@ class _ProfileHighlightsState extends State<ProfileHighlights> {
                   ),
                   SizedBox(height: 12),
                   Text(
-                    'Selecciona historias:',
+                    l.t('select_stories'),
                     style: TextStyle(fontWeight: FontWeight.w600),
                   ),
                   SizedBox(height: 8),
@@ -415,7 +425,7 @@ class _ProfileHighlightsState extends State<ProfileHighlights> {
                     : () async {
                         final title = titleController.text.trim().isNotEmpty
                             ? titleController.text.trim()
-                            : 'Destacado';
+                            : l.t('highlight_default');
 
                         // Use first selected story's media as cover
                         String coverUrl = '';
@@ -453,7 +463,12 @@ class _ProfileHighlightsState extends State<ProfileHighlights> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(Provider.of<LocaleNotifier>(context, listen: false).t('error_loading_stories')),
+            content: Text(
+              Provider.of<LocaleNotifier>(
+                context,
+                listen: false,
+              ).t('error_loading_stories'),
+            ),
             backgroundColor: ColorTokens.error50,
           ),
         );

@@ -47,8 +47,8 @@ class _MyGroupsScreenState extends State<MyGroupsScreen>
           unselectedLabelColor: Colors.white,
           indicatorColor: Colors.white,
           tabs: [
-            Tab(text: 'Mis Grupos'),
-            Tab(text: 'Explorar'),
+            Tab(text: l.t('my_groups')),
+            Tab(text: l.t('explore_more')),
           ],
         ),
       ),

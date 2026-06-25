@@ -218,7 +218,7 @@ class _GlobalSearchScreenState extends State<GlobalSearchScreen>
   }
 
   Widget _buildUserResults(LocaleNotifier l) {
-    if (_userResults.isEmpty) return _buildNoResults('usuarios', l);
+    if (_userResults.isEmpty) return _buildNoResults(l.t('users_lowercase'), l);
     return ListView.builder(
       padding: const EdgeInsets.all(8),
       itemCount: _userResults.length,
@@ -263,7 +263,8 @@ class _GlobalSearchScreenState extends State<GlobalSearchScreen>
   }
 
   Widget _buildGroupResults(LocaleNotifier l) {
-    if (_groupResults.isEmpty) return _buildNoResults('grupos', l);
+    if (_groupResults.isEmpty)
+      return _buildNoResults(l.t('groups_lowercase'), l);
     return ListView.builder(
       padding: const EdgeInsets.all(8),
       itemCount: _groupResults.length,
@@ -304,7 +305,7 @@ class _GlobalSearchScreenState extends State<GlobalSearchScreen>
   }
 
   Widget _buildRideResults(LocaleNotifier l) {
-    if (_rideResults.isEmpty) return _buildNoResults('rodadas', l);
+    if (_rideResults.isEmpty) return _buildNoResults(l.t('rides_lowercase'), l);
     return ListView.builder(
       padding: const EdgeInsets.all(8),
       itemCount: _rideResults.length,

@@ -117,12 +117,12 @@ class _CreateExperienceScreenState extends State<CreateExperienceScreen> {
                 _isEditMode
                     ? l.t('edit_publication')
                     : widget.isStoryMode
-                    ? 'Nueva Historia'
+                    ? l.t('new_story')
                     : widget.isPostMode
-                    ? 'Nueva Publicación'
+                    ? l.t('new_post')
                     : widget.experienceType == ExperienceType.ride
-                    ? 'Nueva Experiencia de Rodada'
-                    : 'Nueva Experiencia',
+                    ? l.t('new_ride_experience')
+                    : l.t('new_experience'),
                 style: const TextStyle(color: Colors.white),
               ),
               backgroundColor: ColorTokens.primary30,
@@ -144,8 +144,8 @@ class _CreateExperienceScreenState extends State<CreateExperienceScreen> {
                         SizedBox(width: 8),
                         Text(
                           widget.isPostMode
-                              ? 'Descartar Publicación'
-                              : 'Descartar Historia',
+                              ? l.t('discard_post')
+                              : l.t('discard_story'),
                           style: TextStyle(color: Colors.red),
                         ),
                       ],
@@ -340,8 +340,8 @@ class _CreateExperienceScreenState extends State<CreateExperienceScreen> {
                       Expanded(
                         child: Text(
                           _contentType == 'story'
-                              ? 'Historia requiere imagen o video (máximo 30 segundos)'
-                              : 'Agrega fotos o videos a tu publicación',
+                              ? l.t('story_requires_media')
+                              : l.t('add_photos_videos_post'),
                           style: TextStyle(
                             fontSize: 11,
                             fontWeight: FontWeight.w500,
@@ -486,8 +486,8 @@ class _CreateExperienceScreenState extends State<CreateExperienceScreen> {
                 Expanded(
                   child: Text(
                     _contentType == 'story'
-                        ? 'Historia: Texto corto (máximo 100 caracteres)'
-                        : 'Publicación: Escribe lo que quieras compartir',
+                        ? l.t('story_short_text_hint')
+                        : l.t('post_write_hint'),
                     style: TextStyle(
                       fontSize: 12,
                       fontWeight: FontWeight.w500,
@@ -576,7 +576,7 @@ class _CreateExperienceScreenState extends State<CreateExperienceScreen> {
               ),
               const SizedBox(width: 8),
               Text(
-                'Tags (opcional)',
+                l.t('tags_optional'),
                 style: TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.w600,
@@ -653,7 +653,7 @@ class _CreateExperienceScreenState extends State<CreateExperienceScreen> {
               ),
               const SizedBox(width: 8),
               Text(
-                'Información',
+                l.t('information'),
                 style: TextStyle(
                   fontSize: 14,
                   fontWeight: FontWeight.w600,
@@ -666,26 +666,26 @@ class _CreateExperienceScreenState extends State<CreateExperienceScreen> {
           // Información segúnn el tipo de contenido
           if (widget.textOnly) ...[
             _buildInfoItem(
-              '🔗“ Post de solo texto',
-              'No se requiere ni permite multimedia. Solo escribe tu publicación.',
+              l.t('info_text_only_title'),
+              l.t('text_only_post_info'),
             ),
           ] else if (_contentType == 'story') ...[
             _buildInfoItem(
-              'a±ï¸ Historia efímera',
-              'Tu historia desaparecerá en 24 horas.',
+              l.t('info_ephemeral_story_title'),
+              l.t('ephemeral_story_info'),
             ),
             _buildInfoItem(
-              '🔗“¸ Multimedia requerida',
-              'Las historias requieren al menos una imagen o video (<30s).',
+              l.t('info_multimedia_required_title'),
+              l.t('multimedia_required_info'),
             ),
           ] else if (widget.experienceType == ExperienceType.ride) ...[
             _buildInfoItem(
-              '🔗“¹ Videos de hasta 30 segundos',
-              'Los videos se comprimirán automáticamente para optimizar la calidad y el tamaño.',
+              l.t('info_videos_30s_title'),
+              l.t('videos_compress_info'),
             ),
             _buildInfoItem(
-              '🔗“± Máximo 5 elementos',
-              'Puedes agregar hasta 5 imágenes o videos en total.',
+              l.t('info_max_5_items_title'),
+              l.t('max_5_items_info'),
             ),
           ] else ...[
             _buildInfoItem(
@@ -693,8 +693,8 @@ class _CreateExperienceScreenState extends State<CreateExperienceScreen> {
               l.t('exp_create_info_media_optional_desc'),
             ),
             _buildInfoItem(
-              'ï¿½ Máximo 5 elementos',
-              'Puedes agregar hasta 5 imágenes o videos en total.',
+              l.t('info_max_5_items_title'),
+              l.t('max_5_items_info'),
             ),
           ],
         ],
@@ -808,7 +808,7 @@ class _CreateExperienceScreenState extends State<CreateExperienceScreen> {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Text(experienceProvider.error ?? 'Error al actualizar'),
+              content: Text(experienceProvider.error ?? l.t('error_updating')),
               backgroundColor: Colors.red,
             ),
           );
@@ -848,11 +848,11 @@ class _CreateExperienceScreenState extends State<CreateExperienceScreen> {
 
   void _showDeleteDialog(BuildContext context) {
     final title = widget.isPostMode
-        ? 'Descartar Publicación'
-        : 'Descartar Historia';
+        ? l.t('discard_post')
+        : l.t('discard_story');
     final content = widget.isPostMode
-        ? '¿Estás seguro de que deseas descartar esta publicación? Se perderán todos los cambios.'
-        : '¿Estás seguro de que deseas descartar esta historia? Se perderán todos los cambios?';
+        ? l.t('discard_post_confirm')
+        : l.t('discard_story_confirm');
     showDialog(
       context: context,
       builder: (dialogContext) => AlertDialog(
@@ -907,7 +907,7 @@ class _CreateExperienceScreenState extends State<CreateExperienceScreen> {
               MaterialPageRoute(
                 builder: (_) => ImageCropEditorScreen(
                   imageFile: file,
-                  title: 'Ajustar foto - Formato cuadrado',
+                  title: l.t('crop_photo_square'),
                 ),
               ),
             );
@@ -938,7 +938,7 @@ class _CreateExperienceScreenState extends State<CreateExperienceScreen> {
               MaterialPageRoute(
                 builder: (_) => ImageCropEditorScreen(
                   imageFile: file,
-                  title: 'Ajustar imagen - Formato cuadrado',
+                  title: l.t('crop_photo_square'),
                 ),
               ),
             );
@@ -953,7 +953,12 @@ class _CreateExperienceScreenState extends State<CreateExperienceScreen> {
     } on Exception catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('${Provider.of<LocaleNotifier>(context, listen: false).t('error_generic')}: $e'), backgroundColor: Colors.red),
+          SnackBar(
+            content: Text(
+              '${Provider.of<LocaleNotifier>(context, listen: false).t('error_generic')}: $e',
+            ),
+            backgroundColor: Colors.red,
+          ),
         );
       }
     }
@@ -979,7 +984,7 @@ class _CreateExperienceScreenState extends State<CreateExperienceScreen> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            '¿Qué quieres crear?',
+            l.t('what_to_create'),
             style: TextStyle(
               fontSize: 16,
               fontWeight: FontWeight.w600,

@@ -33,6 +33,8 @@ class _RideTrackerScreenState extends State<RideTrackerScreen>
   late AnimationController _pulseController;
   bool _showHistory = false;
 
+  LocaleNotifier get l => Provider.of<LocaleNotifier>(context, listen: false);
+
   // Panel deslizable
   double _panelHeight = 270.0;
   static const double _kPanelMin = 210.0;
@@ -130,10 +132,10 @@ class _RideTrackerScreenState extends State<RideTrackerScreen>
                         ),
                       ],
                     ),
-                    child: const Row(
+                    child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        SizedBox(
+                        const SizedBox(
                           width: 16,
                           height: 16,
                           child: CircularProgressIndicator(
@@ -141,10 +143,10 @@ class _RideTrackerScreenState extends State<RideTrackerScreen>
                             strokeWidth: 2,
                           ),
                         ),
-                        SizedBox(width: 10),
+                        const SizedBox(width: 10),
                         Text(
-                          'Recalculando ruta...',
-                          style: TextStyle(
+                          l.t('recalculating_route'),
+                          style: const TextStyle(
                             color: Colors.white,
                             fontWeight: FontWeight.w700,
                           ),
@@ -226,7 +228,7 @@ class _RideTrackerScreenState extends State<RideTrackerScreen>
           icon: BitmapDescriptor.defaultMarkerWithHue(
             BitmapDescriptor.hueGreen,
           ),
-          infoWindow: const InfoWindow(title: 'Inicio'),
+          infoWindow: InfoWindow(title: l.t('start_point')),
         ),
       );
     }
@@ -236,7 +238,9 @@ class _RideTrackerScreenState extends State<RideTrackerScreen>
           markerId: const MarkerId('dest'),
           position: p.plannedRoute.last,
           icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueRed),
-          infoWindow: InfoWindow(title: p.plannedDestinationName ?? 'Destino'),
+          infoWindow: InfoWindow(
+            title: p.plannedDestinationName ?? l.t('destination'),
+          ),
         ),
       );
     }
@@ -331,7 +335,9 @@ class _RideTrackerScreenState extends State<RideTrackerScreen>
                     ),
                     const SizedBox(width: 8),
                     Text(
-                      p.isPaused ? 'EN PAUSA' : 'GRABANDO',
+                      p.isPaused
+                          ? l.t('paused').toUpperCase()
+                          : l.t('recording').toUpperCase(),
                       style: const TextStyle(
                         color: Colors.white,
                         fontSize: 12,
@@ -418,7 +424,7 @@ class _RideTrackerScreenState extends State<RideTrackerScreen>
       foregroundColor: Colors.white,
       icon: Icon(hasRoute ? Icons.alt_route_rounded : Icons.directions_rounded),
       label: Text(
-        hasRoute ? 'Ruta activa' : 'Planear ruta',
+        hasRoute ? l.t('active_route') : l.t('plan_route'),
         style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 13),
       ),
       onPressed: () => _showRoutePlannerSheet(p),
@@ -533,7 +539,7 @@ class _RideTrackerScreenState extends State<RideTrackerScreen>
                   ),
                 ),
                 Text(
-                  'TIEMPO',
+                  l.t('time_label').toUpperCase(),
                   style: TextStyle(
                     fontSize: 11,
                     fontWeight: FontWeight.w600,
@@ -578,8 +584,8 @@ class _RideTrackerScreenState extends State<RideTrackerScreen>
                         const SizedBox(width: 6),
                         Text(
                           p.isMoving
-                              ? 'En movimiento'
-                              : 'Detenido — esperando...',
+                              ? l.t('in_motion')
+                              : l.t('stopped_waiting'),
                           style: TextStyle(
                             fontSize: 12,
                             fontWeight: FontWeight.w600,
@@ -601,7 +607,7 @@ class _RideTrackerScreenState extends State<RideTrackerScreen>
                       icon: Icons.straighten_rounded,
                       value: p.totalKm.toStringAsFixed(2),
                       unit: 'km',
-                      label: 'Distancia',
+                      label: l.t('distance'),
                       color: isDark ? Colors.white : ColorTokens.primary30,
                     ),
                     _buildDivider(),
@@ -609,7 +615,7 @@ class _RideTrackerScreenState extends State<RideTrackerScreen>
                       icon: Icons.speed_rounded,
                       value: p.currentSpeed.toStringAsFixed(1),
                       unit: 'km/h',
-                      label: 'Velocidad',
+                      label: l.t('speed'),
                       color: const Color(0xFFFF9800),
                     ),
                     _buildDivider(),
@@ -617,7 +623,7 @@ class _RideTrackerScreenState extends State<RideTrackerScreen>
                       icon: Icons.local_fire_department_rounded,
                       value: '${p.calories}',
                       unit: 'kcal',
-                      label: 'Calorías',
+                      label: l.t('calories'),
                       color: const Color(0xFFFF5722),
                     ),
                   ],
@@ -639,7 +645,7 @@ class _RideTrackerScreenState extends State<RideTrackerScreen>
                       mainAxisAlignment: MainAxisAlignment.spaceAround,
                       children: [
                         _buildMiniStat(
-                          'Máx',
+                          l.t('max_abbr'),
                           '${p.maxSpeed.toStringAsFixed(1)} km/h',
                         ),
                         Container(
@@ -648,7 +654,7 @@ class _RideTrackerScreenState extends State<RideTrackerScreen>
                           color: Colors.grey[200],
                         ),
                         _buildMiniStat(
-                          'Prom',
+                          l.t('avg_abbr'),
                           '${p.avgSpeed.toStringAsFixed(1)} km/h',
                         ),
                         Container(
@@ -799,14 +805,14 @@ class _RideTrackerScreenState extends State<RideTrackerScreen>
               );
             }
           },
-          child: const Row(
+          child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Icon(Icons.play_arrow_rounded, size: 28),
-              SizedBox(width: 8),
+              const Icon(Icons.play_arrow_rounded, size: 28),
+              const SizedBox(width: 8),
               Text(
-                'INICIAR RODADA',
-                style: TextStyle(
+                l.t('start_ride').toUpperCase(),
+                style: const TextStyle(
                   fontSize: 17,
                   fontWeight: FontWeight.w800,
                   letterSpacing: 0.5,
@@ -847,7 +853,7 @@ class _RideTrackerScreenState extends State<RideTrackerScreen>
                   ),
                   const SizedBox(width: 6),
                   Text(
-                    p.isPaused ? 'Reanudar' : 'Pausar',
+                    p.isPaused ? l.t('resume') : l.t('pause'),
                     style: const TextStyle(
                       fontSize: 14,
                       fontWeight: FontWeight.w700,
@@ -872,14 +878,17 @@ class _RideTrackerScreenState extends State<RideTrackerScreen>
                 ),
               ),
               onPressed: () => _showFinishConfirmation(p),
-              child: const Row(
+              child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Icon(Icons.stop_rounded, size: 22),
-                  SizedBox(width: 6),
+                  const Icon(Icons.stop_rounded, size: 22),
+                  const SizedBox(width: 6),
                   Text(
-                    'Finalizar',
-                    style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
+                    l.t('finish'),
+                    style: const TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w700,
+                    ),
                   ),
                 ],
               ),
@@ -899,9 +908,12 @@ class _RideTrackerScreenState extends State<RideTrackerScreen>
       appBar: AppBar(
         backgroundColor: ColorTokens.primary30,
         foregroundColor: Colors.white,
-        title: const Text(
-          'Mis Rodadas',
-          style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
+        title: Text(
+          l.t('my_rides'),
+          style: const TextStyle(
+            fontWeight: FontWeight.bold,
+            color: Colors.white,
+          ),
         ),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_rounded),
@@ -917,7 +929,7 @@ class _RideTrackerScreenState extends State<RideTrackerScreen>
         actions: [
           IconButton(
             icon: const Icon(Icons.refresh_rounded),
-            tooltip: 'Actualizar',
+            tooltip: l.t('refresh'),
             onPressed: () {
               final uid = FirebaseAuth.instance.currentUser?.uid;
               if (uid != null) {
@@ -967,7 +979,7 @@ class _RideTrackerScreenState extends State<RideTrackerScreen>
                   ),
                   const SizedBox(height: 16),
                   Text(
-                    'Sin rodadas aún',
+                    l.t('no_rides_yet'),
                     style: TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
@@ -976,7 +988,7 @@ class _RideTrackerScreenState extends State<RideTrackerScreen>
                   ),
                   const SizedBox(height: 8),
                   Text(
-                    'Tus rodadas grabadas aparecerán aquí',
+                    l.t('rides_will_appear_here'),
                     style: TextStyle(fontSize: 14, color: Colors.grey[400]),
                   ),
                 ],
@@ -1025,7 +1037,7 @@ class _RideTrackerScreenState extends State<RideTrackerScreen>
       child: Column(
         children: [
           Text(
-            '${p.history.length} rodadas registradas',
+            '${p.history.length} ${l.t('registered_rides')}',
             style: const TextStyle(color: Colors.white70, fontSize: 13),
           ),
           const SizedBox(height: 12),
@@ -1035,14 +1047,14 @@ class _RideTrackerScreenState extends State<RideTrackerScreen>
               _buildSummaryChip(
                 '📏',
                 '${totalKm.toStringAsFixed(1)} km',
-                'Total',
+                l.t('total'),
               ),
               _buildSummaryChip(
                 '⏱️',
                 '${(totalMin / 60).toStringAsFixed(1)} h',
-                'Tiempo',
+                l.t('time_label'),
               ),
-              _buildSummaryChip('🔥', '$totalCal', 'Calorías'),
+              _buildSummaryChip('🔥', '$totalCal', l.t('calories')),
             ],
           ),
         ],
@@ -1360,12 +1372,12 @@ class _RideTrackerScreenState extends State<RideTrackerScreen>
                       children: [
                         _buildDetailItem(
                           '📏',
-                          'Distancia',
+                          l.t('distance'),
                           '${ride.totalKm.toStringAsFixed(2)} km',
                         ),
                         _buildDetailItem(
                           '⏱️',
-                          'Duración',
+                          l.t('duration'),
                           ride.durationFormatted,
                         ),
                       ],
@@ -1375,12 +1387,12 @@ class _RideTrackerScreenState extends State<RideTrackerScreen>
                       children: [
                         _buildDetailItem(
                           '⚡',
-                          'Vel. Promedio',
+                          l.t('avg_speed'),
                           '${ride.avgSpeed.toStringAsFixed(1)} km/h',
                         ),
                         _buildDetailItem(
                           '🚀',
-                          'Vel. Máxima',
+                          l.t('max_speed_label'),
                           '${ride.maxSpeed.toStringAsFixed(1)} km/h',
                         ),
                       ],
@@ -1390,12 +1402,12 @@ class _RideTrackerScreenState extends State<RideTrackerScreen>
                       children: [
                         _buildDetailItem(
                           '🔥',
-                          'Calorías',
+                          l.t('calories'),
                           '${ride.calories} kcal',
                         ),
                         _buildDetailItem(
                           '📍',
-                          'Puntos GPS',
+                          l.t('gps_points'),
                           '${ride.pointCount}',
                         ),
                       ],
@@ -1474,7 +1486,7 @@ class _RideTrackerScreenState extends State<RideTrackerScreen>
               ),
               const SizedBox(height: 10),
               Text(
-                'Editar nombre',
+                l.t('edit_name'),
                 textAlign: TextAlign.center,
                 style: TextStyle(fontSize: 17, fontWeight: FontWeight.bold),
               ),
@@ -1666,10 +1678,13 @@ class _RideTrackerScreenState extends State<RideTrackerScreen>
                 size: 44,
               ),
               const SizedBox(height: 12),
-              const Text(
-                'Rodada muy corta',
+              Text(
+                l.t('ride_too_short_title'),
                 textAlign: TextAlign.center,
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                style: const TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
               const SizedBox(height: 8),
               Text(
@@ -1830,9 +1845,9 @@ class _RideTrackerScreenState extends State<RideTrackerScreen>
                           ),
                         ),
                         onPressed: () => Navigator.pop(ctx),
-                        child: const Text(
-                          'Continuar',
-                          style: TextStyle(fontWeight: FontWeight.w600),
+                        child: Text(
+                          l.t('continue'),
+                          style: const TextStyle(fontWeight: FontWeight.w600),
                         ),
                       ),
                     ),
@@ -2059,7 +2074,12 @@ class _RideTrackerScreenState extends State<RideTrackerScreen>
             children: [
               const Icon(Icons.warning_rounded, color: Colors.white, size: 20),
               const SizedBox(width: 10),
-              Text(Provider.of<LocaleNotifier>(context, listen: false).t('ride_too_short')),
+              Text(
+                Provider.of<LocaleNotifier>(
+                  context,
+                  listen: false,
+                ).t('ride_too_short'),
+              ),
             ],
           ),
           backgroundColor: Colors.orange,
@@ -2079,13 +2099,26 @@ class _RideTrackerScreenState extends State<RideTrackerScreen>
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
         title: Row(
           children: [
-            const Icon(Icons.warning_amber_rounded, color: Colors.orange, size: 22),
+            const Icon(
+              Icons.warning_amber_rounded,
+              color: Colors.orange,
+              size: 22,
+            ),
             const SizedBox(width: 8),
-            Text(Provider.of<LocaleNotifier>(context, listen: false).t('exit_question'), style: const TextStyle(fontSize: 17)),
+            Text(
+              Provider.of<LocaleNotifier>(
+                context,
+                listen: false,
+              ).t('exit_question'),
+              style: const TextStyle(fontSize: 17),
+            ),
           ],
         ),
         content: Text(
-          Provider.of<LocaleNotifier>(context, listen: false).t('ride_in_progress_warning'),
+          Provider.of<LocaleNotifier>(
+            context,
+            listen: false,
+          ).t('ride_in_progress_warning'),
           style: const TextStyle(fontSize: 14),
         ),
         actions: [
@@ -2101,9 +2134,9 @@ class _RideTrackerScreenState extends State<RideTrackerScreen>
               p.cancelTracking();
               Navigator.of(context).pop();
             },
-            child: const Text(
-              'Descartar',
-              style: TextStyle(fontWeight: FontWeight.w600),
+            child: Text(
+              l.t('discard'),
+              style: const TextStyle(fontWeight: FontWeight.w600),
             ),
           ),
           ElevatedButton(
@@ -2547,7 +2580,10 @@ class _RoutePlannerSheetState extends State<_RoutePlannerSheet> {
                     color: isDark ? Colors.white : Colors.grey[800],
                   ),
                   decoration: InputDecoration(
-                    hintText: 'Hacia dónde vas...',
+                    hintText: Provider.of<LocaleNotifier>(
+                      context,
+                      listen: false,
+                    ).t('where_are_you_going'),
                     hintStyle: TextStyle(
                       color: isDark ? Colors.white38 : Colors.grey[400],
                     ),

@@ -123,7 +123,9 @@ class _RoadReportsScreenState extends State<RoadReportsScreen> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('${Provider.of<LocaleNotifier>(context, listen: false).t('error_location')}: $e'),
+            content: Text(
+              '${Provider.of<LocaleNotifier>(context, listen: false).t('error_location')}: $e',
+            ),
             backgroundColor: Colors.red,
           ),
         );
@@ -140,7 +142,9 @@ class _RoadReportsScreenState extends State<RoadReportsScreen> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(
-              success ? l.t('report_confirmed') : 'Ya confirmaste este reporte',
+              success
+                  ? l.t('report_confirmed')
+                  : l.t('already_confirmed_report'),
             ),
             backgroundColor: success ? Colors.green[700] : Colors.orange,
             duration: const Duration(seconds: 2),
@@ -256,7 +260,7 @@ class _RoadReportsScreenState extends State<RoadReportsScreen> {
                   ),
                   const SizedBox(height: 8),
                   Text(
-                    'a¡Las vías están despejadas!',
+                    l.t('roads_clear'),
                     style: TextStyle(color: Colors.grey[400], fontSize: 13),
                   ),
                 ],
@@ -406,7 +410,7 @@ class _RoadReportsScreenState extends State<RoadReportsScreen> {
                                     ),
                                     const SizedBox(width: 6),
                                     Text(
-                                      'Obteniendo dirección...',
+                                      l.t('getting_address'),
                                       style: TextStyle(
                                         fontSize: 11,
                                         color: Colors.blue.withValues(
@@ -463,9 +467,9 @@ class _RoadReportsScreenState extends State<RoadReportsScreen> {
                       color: ColorTokens.primary30.withValues(alpha: 0.1),
                       borderRadius: BorderRadius.circular(10),
                     ),
-                    child: const Text(
-                      'Tuyo',
-                      style: TextStyle(
+                    child: Text(
+                      l.t('yours'),
+                      style: const TextStyle(
                         fontSize: 10,
                         color: ColorTokens.primary30,
                       ),
@@ -501,7 +505,7 @@ class _RoadReportsScreenState extends State<RoadReportsScreen> {
                     size: 16,
                   ),
                   label: Text(
-                    alreadyConfirmed ? 'Confirmado' : l.t('confirm'),
+                    alreadyConfirmed ? l.t('confirmed') : l.t('confirm'),
                     style: const TextStyle(
                       fontSize: 12,
                       fontWeight: FontWeight.w600,
@@ -522,11 +526,11 @@ class _RoadReportsScreenState extends State<RoadReportsScreen> {
     final descCtrl = TextEditingController();
     bool isSending = false;
     final types = {
-      'pothole': '🔗•³ï¸ Hueco',
-      'obstacle': 'aš ï¸ Obstáculo',
-      'danger': '🔗š¨ Peligro',
-      'construction': '🔗š§ Construcción',
-      'flooding': '🌐Š Inundación',
+      'pothole': l.t('type_pothole'),
+      'obstacle': l.t('type_obstacle'),
+      'danger': l.t('type_danger'),
+      'construction': l.t('type_construction'),
+      'flooding': l.t('type_flooding'),
     };
 
     showModalBottomSheet(
@@ -564,7 +568,7 @@ class _RoadReportsScreenState extends State<RoadReportsScreen> {
               ),
               SizedBox(height: 4),
               Text(
-                'Selecciona el tipo y describe el problema',
+                l.t('select_type_describe'),
                 style: TextStyle(color: Colors.grey[600], fontSize: 13),
               ),
               SizedBox(height: 16),
@@ -630,7 +634,7 @@ class _RoadReportsScreenState extends State<RoadReportsScreen> {
                         )
                       : Icon(Icons.send),
                   label: Text(
-                    isSending ? 'Enviando...' : l.t('send_report_label'),
+                    isSending ? l.t('sending') : l.t('send_report_label'),
                   ),
                   onPressed: isSending
                       ? null

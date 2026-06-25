@@ -219,9 +219,9 @@ class _ActivityPostsScreenState extends State<ActivityPostsScreen> {
 
   String _formatDate(DateTime date) {
     final diff = DateTime.now().difference(date);
-    if (diff.inDays > 0) return 'Hace ${diff.inDays}d';
-    if (diff.inHours > 0) return 'Hace ${diff.inHours}h';
-    if (diff.inMinutes > 0) return 'Hace ${diff.inMinutes}m';
-    return 'Ahora';
+    if (diff.inDays > 0) return '${l.t("time_ago")} ${diff.inDays}d';
+    if (diff.inHours > 0) return '${l.t("time_ago")} ${diff.inHours}h';
+    if (diff.inMinutes > 0) return '${l.t("time_ago")} ${diff.inMinutes}m';
+    return l.t('time_now');
   }
 }

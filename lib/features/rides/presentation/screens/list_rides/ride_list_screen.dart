@@ -73,10 +73,10 @@ class _RideListScreenState extends State<RideListScreen>
         if (rideProvider.error != null) {
           return _buildEmptyState(
             Icons.error_outline,
-            'Error al cargar',
-            rideProvider.error ?? 'Algo salió mal',
+            l.t('error_loading'),
+            rideProvider.error ?? l.t('something_went_wrong'),
             onAction: () => _loadData(),
-            actionText: 'Reintentar',
+            actionText: l.t('retry'),
           );
         }
 
@@ -452,7 +452,7 @@ class _RideListScreenState extends State<RideListScreen>
                               ),
                             ),
                             child: Text(
-                              'Admin',
+                              l.t('admin_badge'),
                               style: TextStyle(
                                 fontSize: 10,
                                 fontWeight: FontWeight.w700,

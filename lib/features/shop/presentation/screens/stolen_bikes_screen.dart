@@ -26,6 +26,8 @@ class _StolenBikesScreenState extends State<StolenBikesScreen>
   late Color _vivantRed;
   late bool _isDark;
 
+  LocaleNotifier get l => Provider.of<LocaleNotifier>(context, listen: false);
+
   final _serialController = TextEditingController();
   VerificationResult? _verificationResult;
   bool _isVerifying = false;
@@ -286,7 +288,7 @@ class _StolenBikesScreenState extends State<StolenBikesScreen>
                   child: TextField(
                     autofocus: true,
                     decoration: InputDecoration(
-                      hintText: 'Buscar...',
+                      hintText: l.t('search'),
                       prefixIcon: const Icon(Icons.search, size: 20),
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(12),
@@ -345,7 +347,7 @@ class _StolenBikesScreenState extends State<StolenBikesScreen>
                               ),
                               const SizedBox(height: 8),
                               Text(
-                                'Sin resultados',
+                                l.t('no_results'),
                                 style: TextStyle(color: _hintColor),
                               ),
                             ],
@@ -501,10 +503,10 @@ class _StolenBikesScreenState extends State<StolenBikesScreen>
             fontWeight: FontWeight.w700,
             fontSize: 13,
           ),
-          tabs: const [
-            Tab(icon: Icon(Icons.list_alt, size: 20), text: 'Listado'),
-            Tab(icon: Icon(Icons.search, size: 20), text: 'Verificar'),
-            Tab(icon: Icon(Icons.report, size: 20), text: 'Reportar'),
+          tabs: [
+            Tab(icon: Icon(Icons.list_alt, size: 20), text: l.t('list_tab')),
+            Tab(icon: Icon(Icons.search, size: 20), text: l.t('verify_tab')),
+            Tab(icon: Icon(Icons.report, size: 20), text: l.t('report_tab')),
           ],
         ),
       ),
@@ -523,15 +525,23 @@ class _StolenBikesScreenState extends State<StolenBikesScreen>
           color: _vivantRed,
           child: Row(
             children: [
-              _statBox(Icons.warning, '${_stolenBikes.length}', 'Reportadas'),
+              _statBox(
+                Icons.warning,
+                '${_stolenBikes.length}',
+                l.t('reported'),
+              ),
               const SizedBox(width: 10),
               _statBox(
                 Icons.location_city,
                 _countCities().toString(),
-                'Ciudades',
+                l.t('cities'),
               ),
               const SizedBox(width: 10),
-              _statBox(Icons.today, _countThisMonth().toString(), 'Este mes'),
+              _statBox(
+                Icons.today,
+                _countThisMonth().toString(),
+                l.t('this_month'),
+              ),
             ],
           ),
         ),
@@ -546,7 +556,7 @@ class _StolenBikesScreenState extends State<StolenBikesScreen>
             children: [
               TextField(
                 decoration: InputDecoration(
-                  hintText: 'Buscar marca, modelo, color o serial...',
+                  hintText: l.t('search_brand_model_serial'),
                   prefixIcon: Icon(Icons.search, color: ColorTokens.primary50),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
@@ -583,7 +593,7 @@ class _StolenBikesScreenState extends State<StolenBikesScreen>
               Row(
                 children: [
                   _searchableChip(
-                    'Ciudad',
+                    l.t('city'),
                     _selectedCity,
                     Icons.location_city,
                     _allCities,
@@ -592,7 +602,7 @@ class _StolenBikesScreenState extends State<StolenBikesScreen>
                   ),
                   const SizedBox(width: 8),
                   _searchableChip(
-                    'Tipo',
+                    l.t('type'),
                     _selectedType,
                     Icons.pedal_bike,
                     _bikeTypes,
@@ -601,7 +611,7 @@ class _StolenBikesScreenState extends State<StolenBikesScreen>
                   ),
                   const SizedBox(width: 8),
                   _smallDropdown(
-                    'Orden',
+                    l.t('order'),
                     _sortBy,
                     _sorts,
                     (v) => setState(() => _sortBy = v!),
@@ -620,7 +630,7 @@ class _StolenBikesScreenState extends State<StolenBikesScreen>
                       CircularProgressIndicator(color: _vivantRed),
                       const SizedBox(height: 12),
                       Text(
-                        'Cargando...',
+                        l.t('loading'),
                         style: TextStyle(color: _subtitleColor),
                       ),
                     ],
@@ -634,7 +644,7 @@ class _StolenBikesScreenState extends State<StolenBikesScreen>
                       Icon(Icons.search_off, size: 56, color: Colors.grey[400]),
                       const SizedBox(height: 12),
                       Text(
-                        'No se encontraron resultados',
+                        l.t('no_results_found'),
                         style: TextStyle(color: _subtitleColor, fontSize: 15),
                       ),
                     ],
@@ -671,16 +681,16 @@ class _StolenBikesScreenState extends State<StolenBikesScreen>
               ),
               borderRadius: BorderRadius.circular(14),
             ),
-            child: const Row(
+            child: Row(
               children: [
-                Icon(Icons.shield, color: Colors.white, size: 36),
+                const Icon(Icons.shield, color: Colors.white, size: 36),
                 SizedBox(width: 12),
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'Verificador de Bicicletas',
+                        l.t('bike_verifier'),
                         style: TextStyle(
                           color: Colors.white,
                           fontSize: 17,
@@ -689,7 +699,7 @@ class _StolenBikesScreenState extends State<StolenBikesScreen>
                       ),
                       SizedBox(height: 4),
                       Text(
-                        'Ingresa el numero de serie para saber si esta reportada como robada.',
+                        l.t('enter_serial_to_check'),
                         style: TextStyle(
                           color: Colors.white70,
                           fontSize: 12,
@@ -703,16 +713,16 @@ class _StolenBikesScreenState extends State<StolenBikesScreen>
             ),
           ),
           const SizedBox(height: 24),
-          const Text(
-            'Numero de serie del cuadro',
-            style: TextStyle(fontWeight: FontWeight.w700, fontSize: 14),
+          Text(
+            l.t('frame_serial_number'),
+            style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 14),
           ),
           const SizedBox(height: 8),
           TextField(
             controller: _serialController,
             textCapitalization: TextCapitalization.characters,
             decoration: InputDecoration(
-              hintText: 'Ej: WTU123H456789',
+              hintText: l.t('serial_example_hint'),
               prefixIcon: const Icon(Icons.fingerprint),
               suffixIcon: IconButton(
                 icon: const Icon(Icons.clear, size: 18),
@@ -756,9 +766,7 @@ class _StolenBikesScreenState extends State<StolenBikesScreen>
                       ),
                     )
                   : const Icon(Icons.verified_user),
-              label: Text(
-                _isVerifying ? 'Verificando...' : 'Verificar Bicicleta',
-              ),
+              label: Text(_isVerifying ? l.t('verifying') : l.t('verify_bike')),
               style: ElevatedButton.styleFrom(
                 backgroundColor: ColorTokens.primary30,
                 foregroundColor: Colors.white,
@@ -796,7 +804,7 @@ class _StolenBikesScreenState extends State<StolenBikesScreen>
                     Icon(Icons.lightbulb, color: Colors.amber[700], size: 20),
                     const SizedBox(width: 8),
                     Text(
-                      'Donde encontrar el serial',
+                      l.t('where_find_serial'),
                       style: TextStyle(
                         fontWeight: FontWeight.w700,
                         fontSize: 13,
@@ -806,10 +814,10 @@ class _StolenBikesScreenState extends State<StolenBikesScreen>
                   ],
                 ),
                 const SizedBox(height: 8),
-                _tip('Parte inferior del cuadro (bottom bracket)'),
-                _tip('Tubo del asiento'),
-                _tip('Vaina inferior cerca del pedal'),
-                _tip('Parte trasera del tubo de direccion'),
+                _tip(l.t('serial_location_bottom')),
+                _tip(l.t('serial_location_seat')),
+                _tip(l.t('serial_location_chainstay')),
+                _tip(l.t('serial_location_headtube')),
               ],
             ),
           ),
@@ -880,10 +888,10 @@ class _StolenBikesScreenState extends State<StolenBikesScreen>
                 children: [
                   Icon(Icons.phone, color: _vivantRed, size: 18),
                   const SizedBox(width: 8),
-                  const Expanded(
+                  Expanded(
                     child: Text(
-                      'Contacta a las autoridades si la encuentras',
-                      style: TextStyle(
+                      l.t('contact_authorities_if_found'),
+                      style: const TextStyle(
                         fontSize: 12,
                         fontWeight: FontWeight.w600,
                       ),
@@ -917,25 +925,25 @@ class _StolenBikesScreenState extends State<StolenBikesScreen>
                 children: [
                   Icon(Icons.info_outline, color: _vivantRed, size: 22),
                   const SizedBox(width: 10),
-                  const Expanded(
+                  Expanded(
                     child: Text(
-                      'Reporta tu bicicleta robada para alertar a la comunidad y evitar su reventa.',
-                      style: TextStyle(fontSize: 12, height: 1.4),
+                      l.t('report_stolen_bike_info'),
+                      style: const TextStyle(fontSize: 12, height: 1.4),
                     ),
                   ),
                 ],
               ),
             ),
             const SizedBox(height: 20),
-            _sectionHeader(Icons.pedal_bike, 'Datos de la Bicicleta'),
+            _sectionHeader(Icons.pedal_bike, l.t('bike_data_section')),
             const SizedBox(height: 12),
             Row(
               children: [
                 Expanded(
                   child: _field(
                     _brandCtrl,
-                    'Marca *',
-                    'Ej: Specialized',
+                    l.t('brand_required'),
+                    l.t('brand_example'),
                     Icons.branding_watermark,
                     true,
                   ),
@@ -944,8 +952,8 @@ class _StolenBikesScreenState extends State<StolenBikesScreen>
                 Expanded(
                   child: _field(
                     _modelCtrl,
-                    'Modelo *',
-                    'Ej: Allez Sprint',
+                    l.t('model_required'),
+                    l.t('model_example'),
                     Icons.info_outline,
                     true,
                   ),
@@ -958,8 +966,8 @@ class _StolenBikesScreenState extends State<StolenBikesScreen>
                 Expanded(
                   child: _field(
                     _colorCtrl,
-                    'Color *',
-                    'Ej: Negro/Rojo',
+                    l.t('color_required'),
+                    l.t('color_example'),
                     Icons.palette,
                     true,
                   ),
@@ -967,12 +975,12 @@ class _StolenBikesScreenState extends State<StolenBikesScreen>
                 const SizedBox(width: 10),
                 Expanded(
                   child: _searchableTapField(
-                    'Tipo *',
+                    l.t('type_required'),
                     _bikeType,
                     Icons.pedal_bike,
                     () async {
                       final r = await _showSearchableSelector(
-                        title: 'Tipo de Bicicleta',
+                        title: l.t('bike_type_title'),
                         items: _bikeTypes,
                         current: _bikeType,
                       );
@@ -985,19 +993,19 @@ class _StolenBikesScreenState extends State<StolenBikesScreen>
             const SizedBox(height: 10),
             _field(
               _serialCtrl,
-              'Numero de Serie *',
-              'Numero del cuadro',
+              l.t('serial_number_required'),
+              l.t('frame_number'),
               Icons.fingerprint,
               true,
             ),
             const SizedBox(height: 10),
             _searchableTapField(
-              'Ciudad *',
+              l.t('city_required'),
               _formCity.isEmpty ? '' : _formCity,
               Icons.location_city,
               () async {
                 final r = await _showSearchableSelector(
-                  title: 'Seleccionar Ciudad',
+                  title: l.t('select_city'),
                   items: _allCities,
                   current: _formCity,
                 );
@@ -1006,7 +1014,7 @@ class _StolenBikesScreenState extends State<StolenBikesScreen>
               isEmpty: _formCity.isEmpty,
             ),
             const SizedBox(height: 20),
-            _sectionHeader(Icons.report_problem, 'Detalles del Robo'),
+            _sectionHeader(Icons.report_problem, l.t('theft_details_section')),
             const SizedBox(height: 12),
             GestureDetector(
               onTap: () async {
@@ -1015,7 +1023,7 @@ class _StolenBikesScreenState extends State<StolenBikesScreen>
                   initialDate: DateTime.now(),
                   firstDate: DateTime(2020),
                   lastDate: DateTime.now(),
-                  helpText: 'Fecha del robo',
+                  helpText: l.t('theft_date'),
                 );
                 if (picked != null) setState(() => _theftDate = picked);
               },
@@ -1040,7 +1048,7 @@ class _StolenBikesScreenState extends State<StolenBikesScreen>
                     Text(
                       _theftDate != null
                           ? '${_theftDate!.day}/${_theftDate!.month}/${_theftDate!.year}'
-                          : 'Fecha del robo *',
+                          : l.t('theft_date_required'),
                       style: TextStyle(
                         color: _theftDate != null
                             ? (Theme.of(context).brightness == Brightness.dark
@@ -1059,16 +1067,16 @@ class _StolenBikesScreenState extends State<StolenBikesScreen>
             const SizedBox(height: 10),
             _field(
               _locationCtrl,
-              'Lugar del robo *',
-              'Direccion o referencia',
+              l.t('theft_location_required'),
+              l.t('address_or_reference'),
               Icons.place,
               true,
             ),
             const SizedBox(height: 10),
             _field(
               _descCtrl,
-              'Descripcion *',
-              'Como sucedio el robo...',
+              l.t('description_required'),
+              l.t('how_theft_happened'),
               Icons.description,
               true,
               maxLines: 3,
@@ -1076,8 +1084,8 @@ class _StolenBikesScreenState extends State<StolenBikesScreen>
             const SizedBox(height: 10),
             _field(
               _policeCtrl,
-              'Numero de denuncia policial',
-              'Opcional',
+              l.t('police_report_number'),
+              l.t('optional'),
               Icons.policy,
               false,
             ),
@@ -1110,7 +1118,7 @@ class _StolenBikesScreenState extends State<StolenBikesScreen>
             const SizedBox(height: 16),
             Center(
               child: Text(
-                'Al enviar confirmas que la informacion es veridica',
+                l.t('submit_confirms_truthful'),
                 style: TextStyle(fontSize: 11, color: _hintColor),
               ),
             ),
@@ -1124,7 +1132,12 @@ class _StolenBikesScreenState extends State<StolenBikesScreen>
     if (!_formKey.currentState!.validate() || _formCity.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text(Provider.of<LocaleNotifier>(context, listen: false).t('fill_required_fields')),
+          content: Text(
+            Provider.of<LocaleNotifier>(
+              context,
+              listen: false,
+            ).t('fill_required_fields'),
+          ),
           behavior: SnackBarBehavior.floating,
         ),
       );
@@ -1133,7 +1146,12 @@ class _StolenBikesScreenState extends State<StolenBikesScreen>
     if (_theftDate == null) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text(Provider.of<LocaleNotifier>(context, listen: false).t('select_theft_date')),
+          content: Text(
+            Provider.of<LocaleNotifier>(
+              context,
+              listen: false,
+            ).t('select_theft_date'),
+          ),
           behavior: SnackBarBehavior.floating,
         ),
       );
@@ -1147,9 +1165,7 @@ class _StolenBikesScreenState extends State<StolenBikesScreen>
         title: Text(
           Provider.of<LocaleNotifier>(context, listen: false).t('report_sent'),
         ),
-        content: const Text(
-          'Tu reporte ha sido registrado. La comunidad sera alertada.',
-        ),
+        content: Text(l.t('report_registered_community_alerted')),
         actions: [
           TextButton(
             onPressed: () {
@@ -1270,7 +1286,8 @@ class _StolenBikesScreenState extends State<StolenBikesScreen>
       controller: ctrl,
       maxLines: maxLines,
       validator: req
-          ? (v) => (v == null || v.trim().isEmpty) ? 'Obligatorio' : null
+          ? (v) =>
+                (v == null || v.trim().isEmpty) ? l.t('required_field') : null
           : null,
       decoration: InputDecoration(
         labelText: label,
@@ -1419,10 +1436,10 @@ class _StolenBikesScreenState extends State<StolenBikesScreen>
               children: [
                 const Icon(Icons.warning, color: Colors.white, size: 16),
                 const SizedBox(width: 6),
-                const Expanded(
+                Expanded(
                   child: Text(
-                    'ROBADA',
-                    style: TextStyle(
+                    l.t('stolen_badge'),
+                    style: const TextStyle(
                       color: Colors.white,
                       fontWeight: FontWeight.w700,
                       fontSize: 11,
@@ -1540,7 +1557,7 @@ class _StolenBikesScreenState extends State<StolenBikesScreen>
                   Icon(Icons.policy, size: 14, color: _hintColor),
                   const SizedBox(width: 4),
                   Text(
-                    'Denuncia: ${theft.policeReportNumber}',
+                    '${l.t('police_report_label')}: ${theft.policeReportNumber}',
                     style: TextStyle(fontSize: 11, color: _subtitleColor),
                   ),
                 ],
@@ -1560,7 +1577,7 @@ class _StolenBikesScreenState extends State<StolenBikesScreen>
                       Icon(Icons.block, size: 12, color: _vivantRed),
                       const SizedBox(width: 4),
                       Text(
-                        'No comprar',
+                        l.t('do_not_buy'),
                         style: TextStyle(
                           fontSize: 10,
                           fontWeight: FontWeight.w700,

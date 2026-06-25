@@ -7,14 +7,14 @@ import 'package:provider/provider.dart';
 
 /// Diálogo para reportar contenido (posts, comentarios, usuarios, rodadas)
 class ReportContentDialog {
-  static const _reasons = [
-    'Contenido inapropiado',
-    'Spam o publicidad',
-    'Acoso o bullying',
-    'Información falsa',
-    'Contenido violento',
-    'Suplantación de identidad',
-    'Otro',
+  static List<String> _reasons(LocaleNotifier l) => [
+    l.t('reason_inappropriate'),
+    l.t('reason_spam'),
+    l.t('reason_harassment'),
+    l.t('reason_false_info'),
+    l.t('reason_violent'),
+    l.t('reason_impersonation'),
+    l.t('reason_other'),
   ];
 
   /// Mostrar diálogo de reporte
@@ -78,7 +78,7 @@ class ReportContentDialog {
               ),
               SizedBox(height: 8),
               Text(
-                '¿Por qué deseas reportar este contenido?',
+                l.t('why_report_content'),
                 style: TextStyle(fontSize: 14, color: Colors.grey.shade600),
               ),
               SizedBox(height: 16),
@@ -88,7 +88,7 @@ class ReportContentDialog {
                 groupValue: selectedReason ?? '',
                 onChanged: (val) => setState(() => selectedReason = val),
                 child: Column(
-                  children: _reasons.map((reason) {
+                  children: _reasons(l).map((reason) {
                     return RadioListTile<String>(
                       value: reason,
                       title: Text(reason, style: TextStyle(fontSize: 14)),
@@ -143,9 +143,7 @@ class ReportContentDialog {
                             if (context.mounted) {
                               ScaffoldMessenger.of(context).showSnackBar(
                                 SnackBar(
-                                  content: Text(
-                                    'Reporte enviado. Revisaremos el contenido.',
-                                  ),
+                                  content: Text(l.t('report_sent_review')),
                                   backgroundColor: ColorTokens.success40,
                                 ),
                               );
@@ -154,7 +152,12 @@ class ReportContentDialog {
                             if (context.mounted) {
                               ScaffoldMessenger.of(context).showSnackBar(
                                 SnackBar(
-                                  content: Text(Provider.of<LocaleNotifier>(context, listen: false).t('error_sending_report')),
+                                  content: Text(
+                                    Provider.of<LocaleNotifier>(
+                                      context,
+                                      listen: false,
+                                    ).t('error_sending_report'),
+                                  ),
                                   backgroundColor: ColorTokens.error50,
                                 ),
                               );

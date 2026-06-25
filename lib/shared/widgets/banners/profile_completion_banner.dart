@@ -64,7 +64,10 @@ class ProfileCompletionBanner extends StatelessWidget {
                 Text(
                   l
                       .t('missing_fields')
-                      .replaceAll('@fields', missing.join(', ')),
+                      .replaceAll(
+                        '@fields',
+                        missing.map((k) => l.t(k)).join(', '),
+                      ),
                   style: TextStyle(fontSize: 12, color: Colors.grey.shade600),
                 ),
               ],

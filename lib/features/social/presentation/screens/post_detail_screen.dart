@@ -80,22 +80,22 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
 
     // Menos de un minuto
     if (difference.inSeconds < 60) {
-      return 'hace ${difference.inSeconds} segundo${difference.inSeconds != 1 ? 's' : ''}';
+      return '${l.t("time_ago_lower")} ${difference.inSeconds} ${l.t(difference.inSeconds != 1 ? "seconds" : "second")}';
     }
 
     // Menos de una hora
     if (difference.inMinutes < 60) {
-      return 'hace ${difference.inMinutes} minuto${difference.inMinutes != 1 ? 's' : ''}';
+      return '${l.t("time_ago_lower")} ${difference.inMinutes} ${l.t(difference.inMinutes != 1 ? "minutes" : "minute")}';
     }
 
     // Menos de un día
     if (difference.inHours < 24) {
-      return 'hace ${difference.inHours} hora${difference.inHours != 1 ? 's' : ''}';
+      return '${l.t("time_ago_lower")} ${difference.inHours} ${l.t(difference.inHours != 1 ? "hours" : "hour")}';
     }
 
     // Menos de 7 días
     if (difference.inDays < 7) {
-      return 'hace ${difference.inDays} día${difference.inDays != 1 ? 's' : ''}';
+      return '${l.t("time_ago_lower")} ${difference.inDays} ${l.t(difference.inDays != 1 ? "days" : "day")}';
     }
 
     // Más de 7 días - mostrar formato DD-MM
@@ -496,7 +496,7 @@ class _RepostBannerDetail extends StatelessWidget {
             const Icon(Icons.repeat_rounded, size: 14, color: Colors.white),
             const SizedBox(width: 5),
             Text(
-              'Reposteado de @$userName',
+              '${Provider.of<LocaleNotifier>(context, listen: false).t("reposted_from")} @$userName',
               style: const TextStyle(
                 fontSize: 12,
                 color: Colors.white,

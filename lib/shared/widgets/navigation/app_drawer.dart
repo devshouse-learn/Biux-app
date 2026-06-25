@@ -78,7 +78,9 @@ class _AppDrawerState extends State<AppDrawer> {
     // Disparar SOS inmediatamente (sin countdown adicional)
     emergencyProvider.triggerSosImmediate(
       userId: uid,
-      userName: user?.name ?? Provider.of<LocaleNotifier>(context, listen: false).t('cyclist'),
+      userName:
+          user?.name ??
+          Provider.of<LocaleNotifier>(context, listen: false).t('cyclist'),
     );
   }
 
@@ -262,7 +264,11 @@ class _AppDrawerState extends State<AppDrawer> {
                     const SizedBox(height: 14),
                     // Nombre del usuario
                     Text(
-                      user?.name ?? Provider.of<LocaleNotifier>(context, listen: false).t('cyclist'),
+                      user?.name ??
+                          Provider.of<LocaleNotifier>(
+                            context,
+                            listen: false,
+                          ).t('cyclist'),
                       style: const TextStyle(
                         color: Colors.white,
                         fontSize: 18,
@@ -362,8 +368,8 @@ class _AppDrawerState extends State<AppDrawer> {
                                 children: [
                                   Text(
                                     _sosHolding
-                                        ? 'Activando SOS...'
-                                        : 'Emergencia SOS',
+                                        ? l.t('activating_sos')
+                                        : l.t('emergency_sos'),
                                     style: TextStyle(
                                       color: _sosHolding
                                           ? Colors.red
@@ -375,8 +381,8 @@ class _AppDrawerState extends State<AppDrawer> {
                                   const SizedBox(height: 2),
                                   Text(
                                     _sosHolding
-                                        ? 'Suelta para cancelar'
-                                        : 'Mantén presionado 3s',
+                                        ? l.t('release_to_cancel')
+                                        : l.t('hold_3s'),
                                     style: TextStyle(
                                       color: _sosHolding
                                           ? Colors.red.withValues(alpha: 0.8)
@@ -415,12 +421,12 @@ class _AppDrawerState extends State<AppDrawer> {
               padding: const EdgeInsets.symmetric(vertical: 8),
               children: [
                 // ===== CICLISMO =====
-                _sec('CICLISMO'),
+                _sec(l.t('cycling').toUpperCase()),
                 _item(
                   Icons.gps_fixed,
                   Colors.green,
-                  'Grabar Rodada',
-                  'GPS tracking en tiempo real',
+                  l.t('record_ride'),
+                  l.t('gps_realtime_tracking'),
                   () {
                     Navigator.pop(context);
                     context.push(AppRoutes.rideTracker);
@@ -429,8 +435,8 @@ class _AppDrawerState extends State<AppDrawer> {
                 _item(
                   Icons.directions_bike_rounded,
                   Colors.green,
-                  'Mis Rodadas',
-                  'Historial de tus rides grabados',
+                  l.t('my_rides'),
+                  l.t('ride_history'),
                   () {
                     Navigator.pop(context);
                     context.push(AppRoutes.rideTracker, extra: true);
@@ -440,7 +446,7 @@ class _AppDrawerState extends State<AppDrawer> {
                   Icons.bar_chart_rounded,
                   Colors.blue,
                   l.t('my_stats'),
-                  'Km, velocidad, nivel y ranking',
+                  l.t('stats_subtitle'),
                   () {
                     Navigator.pop(context);
                     context.push(AppRoutes.cyclingStats);
@@ -449,8 +455,8 @@ class _AppDrawerState extends State<AppDrawer> {
                 _item(
                   Icons.emoji_events,
                   Colors.amber,
-                  'Logros',
-                  'Medallas y desafios desbloqueados',
+                  l.t('achievements'),
+                  l.t('achievements_subtitle'),
                   () {
                     Navigator.pop(context);
                     context.push(AppRoutes.achievements);
@@ -463,12 +469,12 @@ class _AppDrawerState extends State<AppDrawer> {
                 ),
 
                 // ===== COMUNIDAD =====
-                _sec('COMUNIDAD'),
+                _sec(l.t('community').toUpperCase()),
                 _item(
                   Icons.storefront,
                   Colors.deepPurple,
                   l.t('business_events'),
-                  'Publicidad y eventos con registro',
+                  l.t('business_events_subtitle'),
                   () {
                     Navigator.pop(context);
                     context.push('/promotions');
@@ -481,12 +487,12 @@ class _AppDrawerState extends State<AppDrawer> {
                 ),
 
                 // ===== SEGURIDAD =====
-                _sec('SEGURIDAD'),
+                _sec(l.t('safety_section').toUpperCase()),
                 _item(
                   Icons.sos,
                   Colors.red,
-                  'Emergencia SOS',
-                  'Boton de panico y contactos',
+                  l.t('emergency_sos'),
+                  l.t('panic_button_contacts'),
                   () {
                     Navigator.pop(context);
                     context.push(AppRoutes.emergency);
@@ -495,8 +501,8 @@ class _AppDrawerState extends State<AppDrawer> {
                 _item(
                   Icons.report_problem_outlined,
                   Colors.orange,
-                  'Reportes Viales',
-                  'Baches, obras y peligros en ruta',
+                  l.t('road_reports_title'),
+                  l.t('road_reports_subtitle'),
                   () {
                     Navigator.pop(context);
                     context.push(AppRoutes.roadReports);
@@ -506,7 +512,7 @@ class _AppDrawerState extends State<AppDrawer> {
                   Icons.car_crash,
                   Colors.deepOrange,
                   l.t('report_accident'),
-                  'Reportar un incidente vial',
+                  l.t('report_incident'),
                   () {
                     Navigator.pop(context);
                     context.push('/accidents/report');
@@ -515,8 +521,8 @@ class _AppDrawerState extends State<AppDrawer> {
                 _item(
                   Icons.warning_amber_rounded,
                   ColorTokens.error50,
-                  'Bicicletas Robadas',
-                  'Base de datos publica',
+                  l.t('stolen_bikes'),
+                  l.t('stolen_bikes_subtitle'),
                   () {
                     Navigator.pop(context);
                     context.push('/shop/stolen-bikes');
@@ -530,8 +536,8 @@ class _AppDrawerState extends State<AppDrawer> {
                     return _item(
                       Icons.admin_panel_settings,
                       ColorTokens.secondary50,
-                      'Dashboard Alertas',
-                      'Intentos venta bicis robadas',
+                      l.t('alerts_dashboard'),
+                      l.t('alerts_dashboard_subtitle'),
                       () {
                         Navigator.pop(context);
                         context.push('/shop/admin-alerts');
@@ -546,12 +552,12 @@ class _AppDrawerState extends State<AppDrawer> {
                 ),
 
                 // ===== APRENDIZAJE =====
-                _sec('APRENDIZAJE'),
+                _sec(l.t('learning').toUpperCase()),
                 _item(
                   Icons.menu_book_rounded,
                   Colors.teal,
-                  'Educacion Vial',
-                  'Seguridad, mecanica y consejos',
+                  l.t('road_education'),
+                  l.t('education_subtitle'),
                   () {
                     Navigator.pop(context);
                     context.push(AppRoutes.education);
@@ -560,8 +566,8 @@ class _AppDrawerState extends State<AppDrawer> {
                 _item(
                   Icons.cloud_rounded,
                   Colors.lightBlue,
-                  'Clima',
-                  'Condiciones para rodar hoy',
+                  l.t('weather_title'),
+                  l.t('weather_subtitle'),
                   () {
                     Navigator.pop(context);
                     context.push('/weather');
@@ -603,7 +609,7 @@ class _AppDrawerState extends State<AppDrawer> {
                     ),
                   ),
                   title: Text(
-                    'Cerrar Sesion',
+                    l.t('close_session_drawer'),
                     style: TextStyle(
                       color: ColorTokens.error50,
                       fontWeight: FontWeight.w600,
@@ -704,7 +710,12 @@ class _AppDrawerState extends State<AppDrawer> {
             ),
           ],
         ),
-        content: Text(Provider.of<LocaleNotifier>(context, listen: false).t('confirm_logout')),
+        content: Text(
+          Provider.of<LocaleNotifier>(
+            context,
+            listen: false,
+          ).t('confirm_logout'),
+        ),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(dc).pop(),

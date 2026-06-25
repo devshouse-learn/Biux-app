@@ -45,7 +45,7 @@ class _TwoFactorScreenState extends State<TwoFactorScreen> {
       );
       setState(() => _codeSent = true);
     } on Exception catch (e) {
-      _showSnack('Error al enviar el código: \$e');
+      _showSnack('${l.t("error_sending_code")}: $e');
     } finally {
       setState(() => _loading = false);
     }
@@ -54,20 +54,20 @@ class _TwoFactorScreenState extends State<TwoFactorScreen> {
   Future<void> _verifyCode() async {
     final code = _codeControllers.map((c) => c.text).join();
     if (code.length < 6) {
-      _showSnack('Introduce los 6 dígitos');
+      _showSnack(l.t('enter_6_digits'));
       return;
     }
     setState(() => _loading = true);
     try {
       final ok = await TwoFactorService.verifyCode(code);
       if (ok) {
-        _showSnack('2FA activado correctamente');
+        _showSnack(l.t('2fa_activated'));
         if (mounted) Navigator.pop(context);
       } else {
-        _showSnack('Código incorrecto');
+        _showSnack(l.t('incorrect_code'));
       }
     } on Exception catch (e) {
-      _showSnack('Error al verificar: \$e');
+      _showSnack('${l.t("error_verifying")}: $e');
     } finally {
       setState(() => _loading = false);
     }
@@ -287,7 +287,7 @@ class _InfoCard extends StatelessWidget {
                 ),
                 SizedBox(height: 4),
                 Text(
-                  'La verificación en dos pasos añade una capa extra de seguridad a tu cuenta.',
+                  l.t('two_factor_extra_security'),
                   style: TextStyle(fontSize: 12, color: Colors.grey),
                 ),
               ],

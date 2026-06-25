@@ -1011,7 +1011,7 @@ class _UserProfileScreenState extends State<UserProfileScreen>
                         if (provider.following.isEmpty) {
                           return Center(
                             child: Text(
-                              'No sigue a nadie aÃºn',
+                              l.t('not_following_anyone'),
                               style: TextStyle(
                                 color: ColorTokens.neutral60,
                                 fontSize: 14,

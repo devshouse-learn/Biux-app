@@ -44,30 +44,30 @@ class _ReportFlowScreenState extends State<ReportFlowScreen> {
   bool _sending = false;
 
   // ── Motivos para reportar una publicación ───────────────────────────
-  static const List<String> _postReasons = [
-    'Contenido sexual o de desnudos',
-    'Violencia o amenazas',
-    'Acoso o bullying',
-    'Información falsa o engañosa',
-    'Spam o estafa',
-    'Discurso de odio o símbolos',
-    'Venta de artículos ilegales o regulados',
-    'Propiedad intelectual o derechos de autor',
-    'Contenido perturbador o gráfico',
-    'Otro motivo',
+  List<String> get _postReasons => [
+    l.t('report_reason_sexual'),
+    l.t('report_reason_violence'),
+    l.t('report_reason_harassment'),
+    l.t('report_reason_false_info'),
+    l.t('report_reason_spam'),
+    l.t('report_reason_hate'),
+    l.t('report_reason_illegal_sales'),
+    l.t('report_reason_intellectual_property'),
+    l.t('report_reason_disturbing'),
+    l.t('report_reason_other'),
   ];
 
   // ── Motivos para reportar la cuenta ─────────────────────────────────
-  static const List<String> _accountReasons = [
-    'Se hace pasar por otra persona',
-    'Cuenta que no le pertenece (hackeada)',
-    'Cuenta falsa o engañosa',
-    'Nombre de usuario inapropiado',
-    'Spam o cuenta automatizada',
-    'Posible menor de edad',
-    'Promueve autolesiones o trastornos alimenticios',
-    'Venta de productos ilegales',
-    'Otro motivo',
+  List<String> get _accountReasons => [
+    l.t('report_reason_impersonation'),
+    l.t('report_reason_hacked'),
+    l.t('report_reason_fake_account'),
+    l.t('report_reason_inappropriate_username'),
+    l.t('report_reason_automated'),
+    l.t('report_reason_underage'),
+    l.t('report_reason_self_harm'),
+    l.t('report_reason_illegal_products'),
+    l.t('report_reason_other'),
   ];
 
   // ── Cargar publicaciones del usuario reportado ──────────────────────
@@ -196,7 +196,7 @@ class _ReportFlowScreenState extends State<ReportFlowScreen> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            '¿Qué quieres reportar?',
+            l.t('what_do_you_want_to_report'),
             style: TextStyle(
               fontSize: 22,
               fontWeight: FontWeight.bold,
@@ -227,7 +227,7 @@ class _ReportFlowScreenState extends State<ReportFlowScreen> {
                     ),
                     const SizedBox(width: 8),
                     Text(
-                      'Tu reporte es anónimo',
+                      l.t('your_report_is_anonymous'),
                       style: TextStyle(
                         fontWeight: FontWeight.w700,
                         fontSize: 14,
@@ -240,8 +240,7 @@ class _ReportFlowScreenState extends State<ReportFlowScreen> {
                 ),
                 const SizedBox(height: 8),
                 Text(
-                  'La persona a la que reportes no sabrá quién realizó '
-                  'el reporte. Nuestro equipo revisará tu caso.',
+                  l.t('report_anonymous_detail'),
                   style: TextStyle(
                     fontSize: 13,
                     color: isDark ? Colors.white70 : Colors.black87,
@@ -270,8 +269,7 @@ class _ReportFlowScreenState extends State<ReportFlowScreen> {
                 const SizedBox(width: 10),
                 Expanded(
                   child: Text(
-                    'Si alguien se encuentra en peligro inmediato, '
-                    'llama a los servicios de emergencia locales.',
+                    l.t('emergency_danger_warning'),
                     style: TextStyle(
                       fontSize: 13,
                       color: isDark ? Colors.red.shade300 : Colors.red.shade700,
@@ -388,7 +386,7 @@ class _ReportFlowScreenState extends State<ReportFlowScreen> {
         Padding(
           padding: const EdgeInsets.fromLTRB(20, 20, 20, 4),
           child: Text(
-            'Selecciona la publicación',
+            l.t('select_the_post'),
             style: TextStyle(
               fontSize: 18,
               fontWeight: FontWeight.bold,
@@ -399,7 +397,7 @@ class _ReportFlowScreenState extends State<ReportFlowScreen> {
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 20),
           child: Text(
-            'Toca la publicación que quieres reportar',
+            l.t('tap_post_to_report'),
             style: TextStyle(
               fontSize: 13,
               color: isDark ? Colors.grey.shade400 : Colors.grey.shade500,
@@ -422,7 +420,7 @@ class _ReportFlowScreenState extends State<ReportFlowScreen> {
                   ),
                   const SizedBox(height: 12),
                   Text(
-                    'Este usuario no tiene publicaciones',
+                    l.t('user_has_no_posts'),
                     style: TextStyle(color: Colors.grey.shade500),
                   ),
                 ],
@@ -476,9 +474,7 @@ class _ReportFlowScreenState extends State<ReportFlowScreen> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            type == 'post'
-                ? '¿Por qué reportas esta publicación?'
-                : '¿Por qué reportas esta cuenta?',
+            type == 'post' ? l.t('why_report_post') : l.t('why_report_account'),
             style: TextStyle(
               fontSize: 18,
               fontWeight: FontWeight.bold,
@@ -487,7 +483,7 @@ class _ReportFlowScreenState extends State<ReportFlowScreen> {
           ),
           const SizedBox(height: 6),
           Text(
-            'Selecciona el motivo que mejor se ajuste',
+            l.t('select_best_reason'),
             style: TextStyle(
               fontSize: 13,
               color: isDark ? Colors.grey.shade400 : Colors.grey.shade500,
@@ -518,7 +514,7 @@ class _ReportFlowScreenState extends State<ReportFlowScreen> {
                     child: Text(
                       (_selectedPost!['description'] as String).isNotEmpty
                           ? _selectedPost!['description'] as String
-                          : 'Publicación seleccionada',
+                          : l.t('selected_post'),
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
                       style: const TextStyle(fontSize: 13),
@@ -672,7 +668,7 @@ class _ReportFlowScreenState extends State<ReportFlowScreen> {
             ),
             const SizedBox(height: 20),
             Text(
-              'Reporte enviado',
+              l.t('report_sent_title'),
               style: TextStyle(
                 fontSize: 20,
                 fontWeight: FontWeight.bold,
@@ -681,8 +677,7 @@ class _ReportFlowScreenState extends State<ReportFlowScreen> {
             ),
             const SizedBox(height: 8),
             Text(
-              'Gracias por ayudar a mantener BIUX seguro.\n'
-              'Nuestro equipo revisará tu reporte.',
+              l.t('report_sent_message'),
               textAlign: TextAlign.center,
               style: TextStyle(
                 fontSize: 14,
@@ -704,7 +699,7 @@ class _ReportFlowScreenState extends State<ReportFlowScreen> {
                   ),
                 ),
                 child: Text(
-                  'Listo',
+                  l.t('done'),
                   style: TextStyle(
                     color: isDark ? Colors.white : ColorTokens.primary30,
                     fontWeight: FontWeight.w600,

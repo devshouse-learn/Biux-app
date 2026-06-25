@@ -1,4 +1,4 @@
-// ignore_for_file: deprecated_member_use
+﻿// ignore_for_file: deprecated_member_use
 import 'dart:async';
 import 'dart:io';
 import 'package:flutter/material.dart';
@@ -70,6 +70,8 @@ class _ChatScreenState extends State<ChatScreen> {
   StreamSubscription? _onlineSub;
   StreamSubscription? _pinnedSub;
 
+  LocaleNotifier get l => Provider.of<LocaleNotifier>(context, listen: false);
+
   @override
   void initState() {
     super.initState();
@@ -135,7 +137,7 @@ class _ChatScreenState extends State<ChatScreen> {
               data['name'] ??
               data['userName'] ??
               data['username'] ??
-              'Ciclista';
+              l.t('cyclist_label');
           _otherPhoto =
               data['photo'] ?? data['photoUrl'] ?? data['photoURL'] ?? '';
           _loadingProfile = false;
@@ -369,7 +371,7 @@ class _ChatScreenState extends State<ChatScreen> {
     final currentUser = FirebaseAuth.instance.currentUser;
     final myName = userProvider.user?.name?.isNotEmpty == true
         ? userProvider.user!.name!
-        : (currentUser?.displayName ?? 'Usuario');
+        : (currentUser?.displayName ?? l.t('user_label'));
     final myPhoto = userProvider.user?.photoUrl ?? currentUser?.photoURL;
     await _provider.sendMediaFiles(
       chatId: widget.chat.id,
@@ -525,7 +527,7 @@ class _ChatScreenState extends State<ChatScreen> {
     final currentUser = FirebaseAuth.instance.currentUser;
     final myName = userProvider.user?.name?.isNotEmpty == true
         ? userProvider.user!.name!
-        : (currentUser?.displayName ?? 'Usuario');
+        : (currentUser?.displayName ?? l.t('user_label'));
     final myPhoto = userProvider.user?.photoUrl ?? currentUser?.photoURL;
     await _provider.sendLocationMessage(
       chatId: widget.chat.id,
@@ -553,7 +555,7 @@ class _ChatScreenState extends State<ChatScreen> {
     final currentUser = FirebaseAuth.instance.currentUser;
     final myName = userProvider.user?.name?.isNotEmpty == true
         ? userProvider.user!.name!
-        : (currentUser?.displayName ?? 'Usuario');
+        : (currentUser?.displayName ?? l.t('user_label'));
     final myPhoto = userProvider.user?.photoUrl ?? currentUser?.photoURL;
     await _provider.sendPollMessage(
       chatId: widget.chat.id,
@@ -570,7 +572,7 @@ class _ChatScreenState extends State<ChatScreen> {
     final currentUser = FirebaseAuth.instance.currentUser;
     final myName = userProvider.user?.name?.isNotEmpty == true
         ? userProvider.user!.name!
-        : (currentUser?.displayName ?? 'Usuario');
+        : (currentUser?.displayName ?? l.t('user_label'));
     final myPhoto = userProvider.user?.photoUrl ?? currentUser?.photoURL;
     await _provider.sendMediaFiles(
       chatId: widget.chat.id,
@@ -597,9 +599,12 @@ class _ChatScreenState extends State<ChatScreen> {
       builder: (ctx) => AlertDialog(
         title: Text(l.t('block_user')),
         content: Text(
-          '¿Deseas bloquear a ${_otherName.isNotEmpty ? _otherName : 'este usuario'}? '
-          'No podrá enviarte mensajes, ver tu foto de perfil '
-          'ni tu información. También será removido de tus seguidores.',
+          l
+              .t('confirm_block_user')
+              .replaceAll(
+                '{0}',
+                _otherName.isNotEmpty ? _otherName : l.t('this_user'),
+              ),
         ),
         actions: [
           TextButton(
@@ -640,8 +645,12 @@ class _ChatScreenState extends State<ChatScreen> {
       builder: (ctx) => AlertDialog(
         title: Text(l.t('unblock_user')),
         content: Text(
-          '¿Deseas desbloquear a ${_otherName.isNotEmpty ? _otherName : 'este usuario'}? '
-          'Podrá enviarte mensajes y ver tu perfil nuevamente.',
+          l
+              .t('confirm_unblock_user')
+              .replaceAll(
+                '{0}',
+                _otherName.isNotEmpty ? _otherName : l.t('this_user'),
+              ),
         ),
         actions: [
           TextButton(
@@ -742,7 +751,9 @@ class _ChatScreenState extends State<ChatScreen> {
     final userProvider = context.read<UserProvider>();
     final currentUser = FirebaseAuth.instance.currentUser;
     final myName =
-        userProvider.user?.name ?? currentUser?.displayName ?? 'Usuario';
+        userProvider.user?.name ??
+        currentUser?.displayName ??
+        l.t('user_label');
     final myPhoto = userProvider.user?.photoUrl ?? currentUser?.photoURL;
     final chats = provider.chats.where((c) => c.id != widget.chat.id).toList();
 
@@ -769,19 +780,22 @@ class _ChatScreenState extends State<ChatScreen> {
                   borderRadius: BorderRadius.circular(2),
                 ),
               ),
-              const Padding(
-                padding: EdgeInsets.all(12),
+              Padding(
+                padding: const EdgeInsets.all(12),
                 child: Text(
-                  'Reenviar a...',
-                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                  l.t('forward_to'),
+                  style: const TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
               ),
               if (chats.isEmpty)
-                const Padding(
-                  padding: EdgeInsets.all(16),
+                Padding(
+                  padding: const EdgeInsets.all(16),
                   child: Text(
-                    'No hay otros chats disponibles',
-                    style: TextStyle(color: Colors.grey),
+                    l.t('no_other_chats'),
+                    style: const TextStyle(color: Colors.grey),
                   ),
                 )
               else
@@ -845,24 +859,24 @@ class _ChatScreenState extends State<ChatScreen> {
     final now = DateTime.now();
     final today = DateTime(now.year, now.month, now.day);
     final yesterday = today.subtract(const Duration(days: 1));
-    if (date == today) return 'Hoy';
-    if (date == yesterday) return 'Ayer';
-    const months = [
+    if (date == today) return l.t('today');
+    if (date == yesterday) return l.t('yesterday');
+    final monthNames = [
       '',
-      'ene',
-      'feb',
-      'mar',
-      'abr',
-      'may',
-      'jun',
-      'jul',
-      'ago',
-      'sep',
-      'oct',
-      'nov',
-      'dic',
+      l.t('month_jan'),
+      l.t('month_feb'),
+      l.t('month_mar'),
+      l.t('month_apr'),
+      l.t('month_may'),
+      l.t('month_jun'),
+      l.t('month_jul'),
+      l.t('month_aug'),
+      l.t('month_sep'),
+      l.t('month_oct'),
+      l.t('month_nov'),
+      l.t('month_dec'),
     ];
-    return '${date.day} ${months[date.month]} ${date.year}';
+    return '${date.day} ${monthNames[date.month]} ${date.year}';
   }
 
   @override
@@ -875,7 +889,7 @@ class _ChatScreenState extends State<ChatScreen> {
         ? userProvider.user!.name!
         : (currentUser?.displayName?.isNotEmpty == true
               ? currentUser!.displayName!
-              : 'Usuario');
+              : l.t('user_label'));
     final myPhoto = userProvider.user?.photoUrl?.isNotEmpty == true
         ? userProvider.user!.photoUrl
         : currentUser?.photoURL;
@@ -916,7 +930,13 @@ class _ChatScreenState extends State<ChatScreen> {
                     ),
                   ),
                   const SizedBox(width: 10),
-                  Text(Provider.of<LocaleNotifier>(context, listen: false).t('loading'), style: const TextStyle(fontSize: 14)),
+                  Text(
+                    Provider.of<LocaleNotifier>(
+                      context,
+                      listen: false,
+                    ).t('loading'),
+                    style: const TextStyle(fontSize: 14),
+                  ),
                 ],
               )
             : Row(
@@ -956,10 +976,10 @@ class _ChatScreenState extends State<ChatScreen> {
                           builder: (_, p, __) => AnimatedSwitcher(
                             duration: const Duration(milliseconds: 200),
                             child: p.someoneIsTyping
-                                ? const Text(
-                                    'escribiendo...',
-                                    key: ValueKey('typing'),
-                                    style: TextStyle(
+                                ? Text(
+                                    l.t('typing'),
+                                    key: const ValueKey('typing'),
+                                    style: const TextStyle(
                                       fontSize: 11,
                                       color: Colors.greenAccent,
                                       fontStyle: FontStyle.italic,
@@ -1272,7 +1292,7 @@ class _ChatScreenState extends State<ChatScreen> {
                         mainAxisSize: MainAxisSize.min,
                         children: [
                           Text(
-                            'Bloqueaste a ${_otherName.isNotEmpty ? _otherName : "este usuario"}',
+                            '${l.t("you_blocked")} ${_otherName.isNotEmpty ? _otherName : l.t("this_user")}',
                             textAlign: TextAlign.center,
                             style: TextStyle(
                               color: isDark
@@ -1299,7 +1319,7 @@ class _ChatScreenState extends State<ChatScreen> {
                               ),
                             ),
                             child: Text(
-                              'Desbloquear',
+                              l.t('unblock'),
                               style: TextStyle(
                                 color: isDark
                                     ? Colors.white
@@ -1368,6 +1388,7 @@ class _PinnedMessageBanner extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l = Provider.of<LocaleNotifier>(context, listen: false);
     return GestureDetector(
       onTap: onTap,
       child: Container(
@@ -1389,9 +1410,9 @@ class _PinnedMessageBanner extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text(
-                    'Mensaje fijado',
-                    style: TextStyle(
+                  Text(
+                    l.t('pinned_message'),
+                    style: const TextStyle(
                       fontSize: 11,
                       color: Color(0xFF1E8BC3),
                       fontWeight: FontWeight.w600,
@@ -1399,9 +1420,9 @@ class _PinnedMessageBanner extends StatelessWidget {
                   ),
                   Text(
                     message.type == MessageType.voice
-                        ? '🔗Ž¤ Mensaje de voz'
+                        ? '🎤 ${l.t("voice_message")}'
                         : message.type == MessageType.image
-                        ? '🔗–¼ï¸ Imagen'
+                        ? '🖼️ ${l.t("image_msg")}'
                         : message.content,
                     style: TextStyle(
                       fontSize: 12,
@@ -1538,6 +1559,7 @@ class _StarToastState extends State<_StarToast>
 
   @override
   Widget build(BuildContext context) {
+    final l = Provider.of<LocaleNotifier>(context, listen: false);
     return Positioned(
       bottom: 100,
       left: 0,
@@ -1553,14 +1575,14 @@ class _StarToastState extends State<_StarToast>
                 color: Colors.black87,
                 borderRadius: BorderRadius.circular(20),
               ),
-              child: const Row(
+              child: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Icon(Icons.star, color: Colors.amber, size: 16),
-                  SizedBox(width: 6),
+                  const Icon(Icons.star, color: Colors.amber, size: 16),
+                  const SizedBox(width: 6),
                   Text(
-                    'Destacaste este mensaje',
-                    style: TextStyle(
+                    l.t('you_starred_message'),
+                    style: const TextStyle(
                       color: Colors.white,
                       fontSize: 13,
                       fontWeight: FontWeight.w500,
