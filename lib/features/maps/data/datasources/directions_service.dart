@@ -71,6 +71,7 @@ class DirectionsService {
             },
           );
 
+
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
 
@@ -105,7 +106,8 @@ class DirectionsService {
         debugPrint('aŒ HTTP Error: ${response.statusCode}');
         debugPrint('Response body: ${response.body}');
       }
-    } on SocketException catch (e) {}
+    } on SocketException catch (e) {
+    }
 
     return null;
   }

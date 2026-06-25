@@ -18,7 +18,8 @@ class AuthNotifier extends ChangeNotifier {
     _user = FirebaseAuth.instance.currentUser;
 
     if (_isWebPlatform) {
-    } else {}
+    } else {
+    }
 
     _authSubscription = FirebaseAuth.instance.authStateChanges().listen((user) {
       if (!_isWebPlatform) {

@@ -1534,7 +1534,7 @@ class _RideTrackerScreenState extends State<RideTrackerScreen>
                             onPressed: () => Navigator.pop(ctx),
                             child: Text(
                               Provider.of<LocaleNotifier>(
-                                context,
+                                ctx,
                                 listen: false,
                               ).t('cancel'),
                             ),
@@ -1549,7 +1549,7 @@ class _RideTrackerScreenState extends State<RideTrackerScreen>
                             onPressed: () => Navigator.pop(ctx),
                             child: Text(
                               Provider.of<LocaleNotifier>(
-                                context,
+                                ctx,
                                 listen: false,
                               ).t('cancel'),
                             ),
@@ -1616,7 +1616,7 @@ class _RideTrackerScreenState extends State<RideTrackerScreen>
           TextButton(
             onPressed: () => Navigator.pop(ctx),
             child: Text(
-              Provider.of<LocaleNotifier>(context, listen: false).t('cancel'),
+              Provider.of<LocaleNotifier>(ctx, listen: false).t('cancel'),
             ),
           ),
           ElevatedButton(
@@ -1648,7 +1648,7 @@ class _RideTrackerScreenState extends State<RideTrackerScreen>
               );
             },
             child: Text(
-              Provider.of<LocaleNotifier>(context, listen: false).t('delete'),
+              Provider.of<LocaleNotifier>(ctx, listen: false).t('delete'),
             ),
           ),
         ],
@@ -1995,7 +1995,7 @@ class _RideTrackerScreenState extends State<RideTrackerScreen>
                             onPressed: () => Navigator.pop(ctx),
                             child: Text(
                               Provider.of<LocaleNotifier>(
-                                context,
+                                ctx,
                                 listen: false,
                               ).t('cancel'),
                             ),
@@ -2010,7 +2010,7 @@ class _RideTrackerScreenState extends State<RideTrackerScreen>
                             onPressed: () => Navigator.pop(ctx),
                             child: Text(
                               Provider.of<LocaleNotifier>(
-                                context,
+                                ctx,
                                 listen: false,
                               ).t('cancel'),
                             ),
@@ -2153,7 +2153,7 @@ class _RideTrackerScreenState extends State<RideTrackerScreen>
             },
             child: Text(
               Provider.of<LocaleNotifier>(
-                context,
+                ctx,
                 listen: false,
               ).t('save_and_exit'),
             ),

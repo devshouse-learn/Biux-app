@@ -169,9 +169,9 @@ class _RideCreateScreenState extends State<RideCreateScreen> {
                               color: Colors.blue.withValues(alpha: 0.15),
                             ),
                           ),
-                          child: const Row(
+                          child: Row(
                             children: [
-                              SizedBox(
+                              const SizedBox(
                                 width: 16,
                                 height: 16,
                                 child: CircularProgressIndicator(
@@ -179,12 +179,14 @@ class _RideCreateScreenState extends State<RideCreateScreen> {
                                   color: Colors.blue,
                                 ),
                               ),
-                              SizedBox(width: 10),
-                              Text(
-                                'Cargando clima...',
-                                style: TextStyle(
-                                  fontSize: 13,
-                                  color: Colors.blue,
+                              const SizedBox(width: 10),
+                              Consumer<LocaleNotifier>(
+                                builder: (context, l, _) => Text(
+                                  l.t('loading'),
+                                  style: const TextStyle(
+                                    fontSize: 13,
+                                    color: Colors.blue,
+                                  ),
                                 ),
                               ),
                             ],

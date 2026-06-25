@@ -319,6 +319,7 @@ class UserProfileRepositoryImpl implements UserProfileRepository {
     try {
       if (_currentUserId == null || _currentUserId == userId) return false;
 
+
       final currentUser = await _firestore
           .collection('users')
           .doc(_currentUserId)
@@ -345,6 +346,7 @@ class UserProfileRepositoryImpl implements UserProfileRepository {
             'status': 'pending',
             'createdAt': FieldValue.serverTimestamp(),
           });
+
 
       // Create notification in Realtime Database (where the app reads from)
       try {

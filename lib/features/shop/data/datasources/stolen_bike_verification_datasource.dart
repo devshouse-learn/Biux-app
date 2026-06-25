@@ -23,6 +23,7 @@ class StolenBikeVerificationService {
     String? sellerName,
   }) async {
     try {
+
       // Buscar bicicletas registradas con ese número de serie
       final bikes = await bikeRepository.searchBikes(frameSerial: frameSerial);
 
@@ -42,6 +43,7 @@ class StolenBikeVerificationService {
       for (final bike in bikes) {
         // Verificar si la bicicleta está actualmente reportada como robada
         if (bike.status.toString().contains('stolen')) {
+
           // Obtener detalles del reporte de robo
           final theftReports = await bikeRepository.getTheftReports(bike.id);
           final activeReport = theftReports.firstWhere(

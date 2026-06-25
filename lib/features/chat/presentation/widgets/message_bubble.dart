@@ -361,7 +361,7 @@ class MessageBubble extends StatelessWidget {
                               onPressed: () => Navigator.pop(ctx),
                               child: Text(
                                 Provider.of<LocaleNotifier>(
-                                  context,
+                                  ctx,
                                   listen: false,
                                 ).t('cancel'),
                               ),

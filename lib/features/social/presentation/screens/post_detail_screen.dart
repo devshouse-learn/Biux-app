@@ -58,9 +58,10 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
       }
     } on FirebaseException catch (e) {
       if (mounted) {
+        final l = Provider.of<LocaleNotifier>(context, listen: false);
         setState(() {
           _isLoading = false;
-          _error = 'Error cargando la publicación: $e';
+          _error = '${l.t('error_loading_stories')}: $e';
         });
       }
     }

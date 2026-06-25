@@ -351,7 +351,7 @@ class WeatherProvider extends ChangeNotifier {
       case 'peligroso':
         return 'Peligroso para ciclistas - permanece en interior \u26d4';
       default:
-        return 'Cargando condiciones...';
+        return 'Cargando condiciones...'; // TODO: Traducir usando LocaleNotifier
     }
   }
 

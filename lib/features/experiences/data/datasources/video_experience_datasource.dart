@@ -54,7 +54,8 @@ class VideoExperienceService {
         maxDuration: const Duration(seconds: maxVideoDurationSeconds),
       );
 
-      if (video != null) {}
+      if (video != null) {
+      }
 
       return video;
     } on FirebaseException catch (e) {
@@ -71,6 +72,7 @@ class VideoExperienceService {
     Function(double)? onProgress,
   }) async {
     try {
+
       final fileName =
           '${DateTime.now().millisecondsSinceEpoch}_${videoFile.name}';
       final videosRef = _storage.ref().child(
@@ -93,6 +95,7 @@ class VideoExperienceService {
       final snapshot = await uploadTask;
       final downloadUrl = await snapshot.ref.getDownloadURL();
 
+
       return VideoUploadResult(
         videoUrl: downloadUrl,
         fileName: fileName,
@@ -114,6 +117,7 @@ class VideoExperienceService {
   }) async {
     VideoPlayerController? controller;
     try {
+
       controller = VideoPlayerController.networkUrl(Uri.parse(videoUrl));
       await controller.initialize();
 

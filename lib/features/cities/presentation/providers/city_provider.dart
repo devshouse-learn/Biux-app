@@ -197,6 +197,7 @@ class CityProvider extends ChangeNotifier {
 
       await prefs.setString(_cacheKey, json.encode(jsonList));
       await prefs.setInt(_cacheTimeKey, DateTime.now().millisecondsSinceEpoch);
+
     } on Exception catch (e) {
       debugPrint('aŒ Error guardando caché de ciudades: $e');
     }

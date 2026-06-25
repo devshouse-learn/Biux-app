@@ -94,7 +94,8 @@ class BikeProvider extends ChangeNotifier {
       debugPrint(
         '🔗š´ BikeProvider: Se encontraron ${_userBikes.length} bicicletas',
       );
-      if (_userBikes.isNotEmpty) {}
+      if (_userBikes.isNotEmpty) {
+      }
       _setState(BikeProviderState.loaded);
     } on Exception catch (e) {
       debugPrint('aŒ BikeProvider: Error cargando bicicletas: $e');

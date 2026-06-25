@@ -149,6 +149,7 @@ class AttendeesFirestoreAdapter {
           Duration(milliseconds: 100),
         ); // Evitar rate limiting
       }
+
     } on FirebaseException catch (e) {
       debugPrint('aŒ Error en migración masiva: $e');
     }

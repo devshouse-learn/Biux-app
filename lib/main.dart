@@ -44,7 +44,8 @@ import 'package:biux/core/services/welcome_notification_service.dart';
 Future<void> _syncOfflineRides() async {
   try {
     final pending = await OfflineRideDatasource.getPending();
-    if (pending.isNotEmpty) {}
+    if (pending.isNotEmpty) {
+    }
   } catch (e) {}
 }
 
@@ -142,16 +143,13 @@ Future<void> _initServicesAsync() async {
     ConnectivityService().initialize();
 
     // Auto-sync rodadas offline cuando se restaure la conexión
-    ConnectivityService().statusStream.listen(
-      (status) {
-        if (status == ConnectivityStatus.online) {
-          _syncOfflineRides();
-        }
-      },
-      onError: (e) {
-        debugPrint('[Connectivity] Error en listener: $e');
-      },
-    );
+    ConnectivityService().statusStream.listen((status) {
+      if (status == ConnectivityStatus.online) {
+        _syncOfflineRides();
+      }
+    }, onError: (e) {
+      debugPrint('[Connectivity] Error en listener: $e');
+    });
     RemoteConfigService().initialize();
     NotificationService().initialize();
     // Inicializar Push Notifications

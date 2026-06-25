@@ -118,6 +118,7 @@ class EditUserScreenBloc extends ChangeNotifier {
 
   Future<void> uploadUpdate(BuildContext context) async {
     try {
+
       // Crear usuario con todos los datos (preservar los que no cambian)
       final uploadUser = BiuxUser(
         id: user.id,
@@ -147,7 +148,8 @@ class EditUserScreenBloc extends ChangeNotifier {
 
       if (imageNew != null) {
         await UserFirebaseRepository().uploadPhoto(user.id, imageNew);
-      } else {}
+      } else {
+      }
 
       // Verificar si hay foto de portada nueva para subir
       if (profileCoverNew != null) {
@@ -155,7 +157,8 @@ class EditUserScreenBloc extends ChangeNotifier {
           user.id,
           profileCoverNew,
         );
-      } else {}
+      } else {
+      }
 
       // Recargar datos del usuario para asegurar sincronización
       await getUser();
