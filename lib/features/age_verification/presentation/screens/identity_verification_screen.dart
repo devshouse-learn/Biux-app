@@ -54,7 +54,14 @@ class _IdentityVerificationScreenState
   Future<void> _uploadDocuments() async {
     if (_docFront == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(Provider.of<LocaleNotifier>(context, listen: false).t('add_front_document'))),
+        SnackBar(
+          content: Text(
+            Provider.of<LocaleNotifier>(
+              context,
+              listen: false,
+            ).t('add_front_document'),
+          ),
+        ),
       );
       return;
     }
@@ -100,7 +107,12 @@ class _IdentityVerificationScreenState
       setState(() => _uploading = false);
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('${Provider.of<LocaleNotifier>(context, listen: false).t('error_generic')}: $e'), backgroundColor: Colors.red),
+          SnackBar(
+            content: Text(
+              '${Provider.of<LocaleNotifier>(context, listen: false).t('error_generic')}: $e',
+            ),
+            backgroundColor: Colors.red,
+          ),
         );
       }
     }
@@ -146,18 +158,17 @@ class _IdentityVerificationScreenState
           ),
         ),
         const SizedBox(height: 20),
-        const Center(
+        Center(
           child: Text(
-            'Verifica tu identidad',
-            style: TextStyle(fontSize: 20, fontWeight: FontWeight.w800),
+            l.t('verify_identity_title'),
+            style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w800),
             textAlign: TextAlign.center,
           ),
         ),
         const SizedBox(height: 8),
         Center(
           child: Text(
-            'Para mayor seguridad en la comunidad Biux,\n'
-            'necesitamos verificar tu identidad.',
+            l.t('verify_identity_description'),
             style: TextStyle(
               fontSize: 13,
               color: Colors.grey[600],
@@ -181,8 +192,7 @@ class _IdentityVerificationScreenState
               const SizedBox(width: 10),
               Expanded(
                 child: Text(
-                  'Tus documentos están protegidos con cifrado y solo serán '
-                  'usados para verificar tu identidad. No serán compartidos con terceros.',
+                  l.t('documents_protected'),
                   style: TextStyle(
                     fontSize: 12,
                     color: Colors.blue[800],
@@ -261,7 +271,7 @@ class _IdentityVerificationScreenState
                   )
                 : const Icon(Icons.upload_rounded),
             label: Text(
-              _uploading ? 'Subiendo...' : 'Enviar para verificación',
+              _uploading ? l.t('uploading') : l.t('send_for_verification'),
               style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w700),
             ),
             style: ElevatedButton.styleFrom(
@@ -280,9 +290,9 @@ class _IdentityVerificationScreenState
           height: 48,
           child: TextButton(
             onPressed: () => context.go('/stories'),
-            child: const Text(
-              'Verificar más tarde (acceso limitado)',
-              style: TextStyle(color: Colors.grey, fontSize: 13),
+            child: Text(
+              l.t('verify_later_limited'),
+              style: const TextStyle(color: Colors.grey, fontSize: 13),
             ),
           ),
         ),
@@ -411,10 +421,9 @@ class _IdentityVerificationScreenState
             color: Colors.green.withValues(alpha: 0.08),
             borderRadius: BorderRadius.circular(14),
           ),
-          child: const Text(
-            'Revisaremos tus documentos en 24-48 horas. '
-            'Mientras tanto puedes usar Biux con acceso básico.',
-            style: TextStyle(fontSize: 14, height: 1.6),
+          child: Text(
+            l.t('review_documents_msg'),
+            style: const TextStyle(fontSize: 14, height: 1.6),
             textAlign: TextAlign.center,
           ),
         ),

@@ -265,22 +265,25 @@ class _RideDetailScreenState extends State<RideDetailScreen>
                 children: [
                   const Icon(Icons.cancel, color: Colors.white, size: 32),
                   const SizedBox(width: 12),
-                  const Expanded(
+                  Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          'Rodada cancelada',
-                          style: TextStyle(
+                          l.t('ride_cancelled'),
+                          style: const TextStyle(
                             color: Colors.white,
                             fontSize: 18,
                             fontWeight: FontWeight.bold,
                           ),
                         ),
-                        SizedBox(height: 4),
+                        const SizedBox(height: 4),
                         Text(
-                          'Esta rodada ha sido cancelada por el organizador.',
-                          style: TextStyle(color: Colors.white, fontSize: 13),
+                          l.t('ride_cancelled_by_organizer'),
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 13,
+                          ),
                         ),
                       ],
                     ),
@@ -416,7 +419,7 @@ class _RideDetailScreenState extends State<RideDetailScreen>
             ),
             const SizedBox(height: 12),
             Text(
-              'Confirma tu asistencia para acceder al chat',
+              l.t('confirm_attendance_for_chat'),
               style: TextStyle(color: Colors.grey[500], fontSize: 13),
               textAlign: TextAlign.center,
             ),

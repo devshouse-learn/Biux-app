@@ -134,7 +134,7 @@ class _GroupListScreenState extends State<GroupListScreen> {
         ),
         borderRadius: BorderRadius.circular(16),
       ),
-      child: const Row(
+      child: Row(
         children: [
           Text('🚴', style: TextStyle(fontSize: 28)),
           SizedBox(width: 12),
@@ -143,7 +143,7 @@ class _GroupListScreenState extends State<GroupListScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'Aquí nadie rueda solo',
+                  l.t('nobody_rides_alone'),
                   style: TextStyle(
                     color: Colors.white,
                     fontSize: 16,
@@ -152,7 +152,7 @@ class _GroupListScreenState extends State<GroupListScreen> {
                 ),
                 SizedBox(height: 4),
                 Text(
-                  'Únete y no te pierdas ninguna salida',
+                  l.t('join_dont_miss'),
                   style: TextStyle(color: Colors.white70, fontSize: 13),
                 ),
               ],
@@ -186,7 +186,7 @@ class _GroupListScreenState extends State<GroupListScreen> {
           overflow: TextOverflow.ellipsis,
         ),
         subtitle: Text(
-          '${group.memberIds.length} miembros',
+          '${group.memberIds.length} ${l.t('members')}',
           style: const TextStyle(fontSize: 13),
         ),
         trailing: _buildStatusChip(provider.getUserStatus(group)),

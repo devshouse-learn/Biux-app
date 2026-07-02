@@ -377,6 +377,16 @@ class _CreateExperienceScreenState extends State<CreateExperienceScreen> {
                     key: ValueKey(item.filePath),
                     mediaItem: item,
                     onRemove: () => provider.removeMediaItem(index),
+                    onTap: item.mediaType == MediaType.image
+                        ? () => _openCropEditor(context, provider, index)
+                        : null,
+                    onEditDescription: _contentType == 'story'
+                        ? () => _showMediaDescriptionDialog(
+                            context,
+                            provider,
+                            index,
+                          )
+                        : null,
                   );
                 },
               ),
@@ -933,33 +943,36 @@ class _CreateExperienceScreenState extends State<CreateExperienceScreen> {
           }
         }
       } else {
-        // Seleccionar desde galería
+        // Seleccionar múltiples desde galería
         final navigator = Navigator.of(context);
 
         final imagePicker = provider.imagePicker;
-        final XFile? pickedFile = await imagePicker.pickImage(
-          source: ImageSource.gallery,
+        final maxAllowed = 5 - provider.mediaItems.length;
+        final List<XFile> pickedFiles = await imagePicker.pickMultiImage(
           maxWidth: 1080,
           maxHeight: 1350,
           imageQuality: 85,
+          limit: maxAllowed > 0 ? maxAllowed : 1,
         );
 
-        if (pickedFile != null && mounted) {
-          final file = File(pickedFile.path);
-          if (file.existsSync()) {
-            // Abrir el editor de crop
-            final croppedFile = await navigator.push<File>(
-              MaterialPageRoute(
-                builder: (_) => ImageCropEditorScreen(
-                  imageFile: file,
-                  title: l.t('crop_photo_square'),
+        if (pickedFiles.isNotEmpty && mounted) {
+          for (final pickedFile in pickedFiles) {
+            if (!mounted) break;
+            final file = File(pickedFile.path);
+            if (file.existsSync()) {
+              // Abrir el editor de crop para cada imagen
+              final croppedFile = await navigator.push<File>(
+                MaterialPageRoute(
+                  builder: (_) => ImageCropEditorScreen(
+                    imageFile: file,
+                    title: l.t('crop_photo_square'),
+                  ),
                 ),
-              ),
-            );
+              );
 
-            if (croppedFile != null) {
-              // Añadir la imagen recortada al provider
-              provider.addCroppedImage(croppedFile);
+              if (croppedFile != null) {
+                provider.addCroppedImage(croppedFile);
+              }
             }
           }
         }
@@ -976,6 +989,80 @@ class _CreateExperienceScreenState extends State<CreateExperienceScreen> {
         );
       }
     }
+  }
+
+  /// Abre el editor de crop para una imagen ya seleccionada
+  Future<void> _openCropEditor(
+    BuildContext context,
+    ExperienceCreatorProvider provider,
+    int index,
+  ) async {
+    final item = provider.mediaItems[index];
+    final file = File(item.filePath);
+    if (!file.existsSync()) return;
+
+    final navigator = Navigator.of(context);
+    final croppedFile = await navigator.push<File>(
+      MaterialPageRoute(
+        builder: (_) => ImageCropEditorScreen(
+          imageFile: file,
+          title: l.t('crop_photo_square'),
+        ),
+      ),
+    );
+
+    if (croppedFile != null) {
+      final newItem = provider.mediaItems[index].copyWith(
+        filePath: croppedFile.path,
+      );
+      provider.replaceMediaItem(index, newItem);
+    }
+  }
+
+  /// Muestra diálogo para editar la descripción de un media item individual
+  void _showMediaDescriptionDialog(
+    BuildContext context,
+    ExperienceCreatorProvider provider,
+    int index,
+  ) {
+    final item = provider.mediaItems[index];
+    final controller = TextEditingController(text: item.description ?? '');
+    final l = Provider.of<LocaleNotifier>(context, listen: false);
+
+    showDialog(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        title: Text(l.t('media_description')),
+        content: TextField(
+          controller: controller,
+          maxLines: 3,
+          maxLength: 100,
+          autofocus: true,
+          decoration: InputDecoration(
+            hintText: l.t('media_description_hint'),
+            border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(dialogContext),
+            child: Text(l.t('cancel')),
+          ),
+          ElevatedButton(
+            onPressed: () {
+              provider.updateMediaDescription(index, controller.text.trim());
+              Navigator.pop(dialogContext);
+            },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: ColorTokens.primary30,
+              foregroundColor: Colors.white,
+            ),
+            child: Text(l.t('save')),
+          ),
+        ],
+      ),
+    );
   }
 
   /// Construye el selector de tipo de contenido (Story vs Post)

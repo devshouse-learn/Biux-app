@@ -524,7 +524,7 @@ class _ExperienceStoryViewerState extends State<ExperienceStoryViewer>
                               const SizedBox(width: 3),
                               Flexible(
                                 child: Text(
-                                  'de @${widget.experience.originalAuthorUserName}',
+                                  '${l.t('from_at_user').replaceAll('{user}', widget.experience.originalAuthorUserName ?? '')}',
                                   overflow: TextOverflow.ellipsis,
                                   maxLines: 1,
                                   style: const TextStyle(
@@ -560,9 +560,9 @@ class _ExperienceStoryViewerState extends State<ExperienceStoryViewer>
             ),
             if (isPaused) const SizedBox(height: 4),
             if (isPaused)
-              const Text(
-                'Pausado',
-                style: TextStyle(color: Colors.white, fontSize: 12),
+              Text(
+                l.t('paused'),
+                style: const TextStyle(color: Colors.white, fontSize: 12),
               ),
           ],
         ),
@@ -584,7 +584,7 @@ class _ExperienceStoryViewerState extends State<ExperienceStoryViewer>
       builder: (dialogContext) => AlertDialog(
         backgroundColor: theme.dialogTheme.backgroundColor,
         title: Text(
-          '¿Estás seguro/a que quieres eliminar esta historia?',
+          l.t('confirm_delete_story_question'),
           style: TextStyle(color: theme.textTheme.titleLarge?.color),
         ),
         content: Text(
@@ -810,9 +810,9 @@ class _ExperienceStoryViewerState extends State<ExperienceStoryViewer>
                       color: Colors.green,
                     ),
                   ),
-                  title: const Text(
-                    'Repostear',
-                    style: TextStyle(fontWeight: FontWeight.w600),
+                  title: Text(
+                    l.t('repost'),
+                    style: const TextStyle(fontWeight: FontWeight.w600),
                   ),
                   subtitle: Text(l.t('add_story_yours')),
                   shape: RoundedRectangleBorder(
@@ -1356,7 +1356,7 @@ class _ExperienceStoryViewerState extends State<ExperienceStoryViewer>
     } else if (difference.inMinutes > 0) {
       return '${difference.inMinutes}m';
     } else {
-      return 'ahora';
+      return l.t('time_now');
     }
   }
 

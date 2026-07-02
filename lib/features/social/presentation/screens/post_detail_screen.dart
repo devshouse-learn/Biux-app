@@ -113,7 +113,7 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
     final isRepost = _experience?.isRepost == true;
     return Scaffold(
       appBar: AppBar(
-        title: Text(isRepost ? 'Reposteo' : l.t('publication')),
+        title: Text(isRepost ? l.t('repost_noun') : l.t('publication')),
         elevation: 0,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
@@ -173,7 +173,7 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
                 userName:
                     (experience.originalAuthorUserName?.isNotEmpty == true)
                     ? experience.originalAuthorUserName!
-                    : 'usuario',
+                    : l.t('user_default'),
                 authorId: experience.originalAuthorId,
                 currentUserId: currentUserId,
               )
@@ -217,7 +217,14 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
                           builder: (dialogCtx) => AlertDialog(
                             title: Text(l.t('repost_publication')),
                             content: Text(
-                              'De @${experience.user.userName.isNotEmpty ? experience.user.userName : experience.user.fullName}',
+                              l
+                                  .t('from_at_user')
+                                  .replaceAll(
+                                    '{user}',
+                                    experience.user.userName.isNotEmpty
+                                        ? experience.user.userName
+                                        : experience.user.fullName,
+                                  ),
                             ),
                             actions: [
                               TextButton(
@@ -329,39 +336,11 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
     );
   }
 
-  /// Construye el botón de opciones (menÃº de tres puntos)
+  /// Construye el botón de opciones (menú de tres puntos)
   Widget _buildPostOptions(BuildContext context, ExperienceEntity experience) {
-    return PopupMenuButton<String>(
-      color: Colors.grey[800],
-      onSelected: (value) {
-        if (value == 'edit') {
-          context.push('/edit-post/${experience.id}', extra: experience);
-        } else if (value == 'delete') {
-          _showDeletePostConfirmation(context, experience);
-        }
-      },
-      itemBuilder: (BuildContext context) => [
-        PopupMenuItem<String>(
-          value: 'edit',
-          child: Row(
-            children: [
-              Icon(Icons.edit, size: 18),
-              SizedBox(width: 8),
-              Text(l.t('edit')),
-            ],
-          ),
-        ),
-        PopupMenuItem<String>(
-          value: 'delete',
-          child: Row(
-            children: [
-              Icon(Icons.delete, color: Colors.red, size: 18),
-              SizedBox(width: 8),
-              Text(l.t('delete'), style: TextStyle(color: Colors.red)),
-            ],
-          ),
-        ),
-      ],
+    return GestureDetector(
+      behavior: HitTestBehavior.opaque,
+      onTap: () => _showPostOptionsSheet(context, experience),
       child: Container(
         padding: const EdgeInsets.all(8),
         decoration: BoxDecoration(
@@ -369,6 +348,59 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
           shape: BoxShape.circle,
         ),
         child: const Icon(Icons.more_vert, color: Colors.white, size: 20),
+      ),
+    );
+  }
+
+  /// Muestra bottom sheet con opciones del post (editar/eliminar)
+  void _showPostOptionsSheet(
+    BuildContext context,
+    ExperienceEntity experience,
+  ) {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.grey[900],
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+      ),
+      builder: (ctx) => SafeArea(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              width: 40,
+              height: 4,
+              margin: const EdgeInsets.only(top: 12, bottom: 16),
+              decoration: BoxDecoration(
+                color: Colors.grey[600],
+                borderRadius: BorderRadius.circular(2),
+              ),
+            ),
+            ListTile(
+              leading: const Icon(Icons.edit, color: Colors.white),
+              title: Text(
+                l.t('edit'),
+                style: const TextStyle(color: Colors.white),
+              ),
+              onTap: () {
+                Navigator.pop(ctx);
+                context.push('/edit-post/${experience.id}', extra: experience);
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.delete, color: Colors.red),
+              title: Text(
+                l.t('delete'),
+                style: const TextStyle(color: Colors.red),
+              ),
+              onTap: () {
+                Navigator.pop(ctx);
+                _showDeletePostConfirmation(context, experience);
+              },
+            ),
+            const SizedBox(height: 8),
+          ],
+        ),
       ),
     );
   }

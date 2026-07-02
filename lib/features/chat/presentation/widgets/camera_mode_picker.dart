@@ -382,9 +382,18 @@ class _CameraModePickerState extends State<CameraModePicker>
                 Text(
                   _isVideo
                       ? (_isRecording
-                            ? 'Toca para detener'
-                            : 'Toca para grabar')
-                      : 'Toca para capturar',
+                            ? Provider.of<LocaleNotifier>(
+                                context,
+                                listen: false,
+                              ).t('tap_to_stop')
+                            : Provider.of<LocaleNotifier>(
+                                context,
+                                listen: false,
+                              ).t('tap_to_record'))
+                      : Provider.of<LocaleNotifier>(
+                          context,
+                          listen: false,
+                        ).t('tap_to_capture'),
                   style: const TextStyle(color: Colors.white54, fontSize: 12),
                 ),
               ],

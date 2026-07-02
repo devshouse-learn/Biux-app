@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:biux/features/achievements/domain/entities/achievement_entity.dart';
 import 'package:biux/core/design_system/color_tokens.dart';
+import 'package:biux/core/design_system/locale_notifier.dart';
 
 class AchievementUnlockedOverlay extends StatefulWidget {
   final AchievementEntity achievement;
@@ -73,19 +75,29 @@ class _AchievementUnlockedOverlayState extends State<AchievementUnlockedOverlay>
             children: [
               const Text('🏆', style: TextStyle(fontSize: 48)),
               const SizedBox(height: 8),
-              const Text(
-                '¡Logro Desbloqueado!',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                ),
+              Builder(
+                builder: (context) {
+                  final l = Provider.of<LocaleNotifier>(context, listen: false);
+                  return Text(
+                    l.t('achievement_unlocked'),
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  );
+                },
               ),
               const SizedBox(height: 4),
-              Text(
-                widget.achievement.title,
-                style: const TextStyle(color: Colors.white70, fontSize: 14),
-                textAlign: TextAlign.center,
+              Builder(
+                builder: (context) {
+                  final l = Provider.of<LocaleNotifier>(context, listen: false);
+                  return Text(
+                    l.t(widget.achievement.title),
+                    style: const TextStyle(color: Colors.white70, fontSize: 14),
+                    textAlign: TextAlign.center,
+                  );
+                },
               ),
             ],
           ),

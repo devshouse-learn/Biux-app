@@ -33,7 +33,7 @@ class WelcomeScreen extends StatelessWidget {
               ),
               SizedBox(height: 16),
               Text(
-                'Biux es tu comunidad ciclista. Únete a grupos, planifica rodadas y conecta con otros ciclistas.',
+                l.t('welcome_community_description'),
                 textAlign: TextAlign.center,
                 style: TextStyle(color: Colors.white70, fontSize: 16),
               ),

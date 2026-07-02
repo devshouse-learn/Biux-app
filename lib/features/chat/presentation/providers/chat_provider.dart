@@ -87,8 +87,7 @@ class ChatProvider extends ChangeNotifier {
             debugPrint(
               'aŒ Error al escuchar mensajes del chat $chatId: $error',
             );
-            _error =
-                'No se pudieron cargar los mensajes. Verifica tu conexión.';
+            _error = 'could_not_load_messages';
             notifyListeners();
           },
         );
@@ -266,7 +265,7 @@ class ChatProvider extends ChangeNotifier {
       await _ds.sendMessage(chatId: chatId, message: message);
     } on FirebaseException catch (e) {
       _removeOptimistic(tempId);
-      _error = 'No se pudo enviar la imagen';
+      _error = 'could_not_send_image';
       notifyListeners();
     }
   }
@@ -325,7 +324,7 @@ class ChatProvider extends ChangeNotifier {
       await _ds.sendMessage(chatId: chatId, message: message);
     } on FirebaseException catch (e) {
       _removeOptimistic(tempId);
-      _error = 'No se pudo enviar el video';
+      _error = 'could_not_send_video';
       notifyListeners();
     }
   }
@@ -429,7 +428,7 @@ class ChatProvider extends ChangeNotifier {
       await _ds.sendMessage(chatId: chatId, message: message);
     } on FirebaseException catch (e) {
       _removeOptimistic(tempId);
-      _error = 'No se pudo enviar el audio';
+      _error = 'could_not_send_audio';
       notifyListeners();
     }
   }

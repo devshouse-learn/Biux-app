@@ -24,7 +24,7 @@ class BirthDatePicker extends StatelessWidget {
       initialDate: initial,
       firstDate: DateTime(now.year - 100),
       lastDate: DateTime(now.year - 5),
-      helpText: 'Selecciona tu fecha de nacimiento',
+      helpText: l.t('select_birth_date'),
       cancelText: l.t('cancel'),
       confirmText: l.t('confirm'),
       builder: (context, child) {

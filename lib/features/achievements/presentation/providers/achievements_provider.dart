@@ -52,7 +52,7 @@ class AchievementsProvider with ChangeNotifier {
       }).toList();
     } catch (e) {
       debugPrint('Error loading achievements: $e');
-      _error = 'Error al cargar logros: $e';
+      _error = e.toString();
     }
     _isLoading = false;
     notifyListeners();

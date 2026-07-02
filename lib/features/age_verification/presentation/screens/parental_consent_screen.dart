@@ -67,7 +67,12 @@ class _ParentalConsentScreenState extends State<ParentalConsentScreen> {
       setState(() => _sending = false);
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('${Provider.of<LocaleNotifier>(context, listen: false).t('error_generic')}: $e'), backgroundColor: Colors.red),
+          SnackBar(
+            content: Text(
+              '${Provider.of<LocaleNotifier>(context, listen: false).t('error_generic')}: $e',
+            ),
+            backgroundColor: Colors.red,
+          ),
         );
       }
     }
@@ -115,10 +120,10 @@ class _ParentalConsentScreenState extends State<ParentalConsentScreen> {
             ),
           ),
           const SizedBox(height: 20),
-          const Center(
+          Center(
             child: Text(
-              'Se requiere autorización',
-              style: TextStyle(fontSize: 20, fontWeight: FontWeight.w800),
+              l.t('authorization_required'),
+              style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w800),
               textAlign: TextAlign.center,
             ),
           ),
@@ -151,35 +156,25 @@ class _ParentalConsentScreenState extends State<ParentalConsentScreen> {
                   ],
                 ),
                 const SizedBox(height: 8),
-                const Text(
-                  'Biux permite el uso de la app a partir de los 13 años. '
-                  'Como eres menor de 18, necesitamos que un padre, madre o tutor '
-                  'legal autorice tu registro.',
-                  style: TextStyle(fontSize: 13, height: 1.5),
+                Text(
+                  l.t('parental_consent_explanation'),
+                  style: const TextStyle(fontSize: 13, height: 1.5),
                 ),
               ],
             ),
           ),
           const SizedBox(height: 20),
-          _step(
-            '1',
-            'Enviaremos un correo a tu padre/madre o tutor',
-            Icons.email_outlined,
-          ),
+          _step('1', l.t('will_send_email_parent'), Icons.email_outlined),
           _step(
             '2',
-            'Deberán confirmar que autorizan tu registro',
+            l.t('must_confirm_registration'),
             Icons.check_circle_outline_rounded,
           ),
-          _step(
-            '3',
-            'Una vez aprobado, tendrás acceso completo',
-            Icons.lock_open_rounded,
-          ),
+          _step('3', l.t('once_approved_full_access'), Icons.lock_open_rounded),
           const SizedBox(height: 20),
-          const Text(
-            'Correo del padre, madre o tutor *',
-            style: TextStyle(fontSize: 13, fontWeight: FontWeight.w700),
+          Text(
+            l.t('parent_email_label'),
+            style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w700),
           ),
           SizedBox(height: 8),
           TextFormField(
@@ -197,8 +192,8 @@ class _ParentalConsentScreenState extends State<ParentalConsentScreen> {
               ),
             ),
             validator: (v) {
-              if (v == null || v.isEmpty) return 'Ingresa el correo';
-              if (!v.contains('@')) return 'Correo inválido';
+              if (v == null || v.isEmpty) return l.t('enter_email');
+              if (!v.contains('@')) return l.t('invalid_email');
               return null;
             },
           ),
@@ -286,8 +281,7 @@ class _ParentalConsentScreenState extends State<ParentalConsentScreen> {
             borderRadius: BorderRadius.circular(14),
           ),
           child: Text(
-            'Enviamos un correo a ${_emailCtrl.text} para solicitar autorización. '
-            'Tu cuenta estará activa una vez que tu tutor apruebe la solicitud.',
+            l.t('consent_email_sent').replaceAll('{email}', _emailCtrl.text),
             style: const TextStyle(fontSize: 14, height: 1.6),
             textAlign: TextAlign.center,
           ),
@@ -317,9 +311,9 @@ class _ParentalConsentScreenState extends State<ParentalConsentScreen> {
             await FirebaseAuth.instance.signOut();
             if (context.mounted) context.go(AppRoutes.login);
           },
-          child: const Text(
-            'Salir por ahora',
-            style: TextStyle(color: Colors.grey),
+          child: Text(
+            l.t('exit_for_now'),
+            style: const TextStyle(color: Colors.grey),
           ),
         ),
       ],

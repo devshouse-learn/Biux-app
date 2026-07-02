@@ -279,6 +279,10 @@ class AppTranslations {
     'parent_email_label': 'Correo del padre, madre o tutor *',
     'enter_email': 'Ingresa el correo',
     'invalid_email': 'Correo inválido',
+    'verify_later_limited': 'Verificar más tarde (acceso limitado)',
+    'select_birth_date': 'Selecciona tu fecha de nacimiento',
+    'consent_email_sent':
+        'Enviamos un correo a {email} para solicitar autorización. Tu cuenta estará activa una vez que tu tutor apruebe la solicitud.',
     'identity_verification': 'Verificación de identidad',
     'front_document': 'Parte frontal del documento *',
     'back_document': 'Parte trasera (opcional)',
@@ -286,6 +290,22 @@ class AppTranslations {
     'uploading': 'Subiendo...',
     'send_for_verification': 'Enviar para verificación',
     'professional_id': 'Cédula profesional',
+    'verify_identity_title': 'Verifica tu identidad',
+    'verify_identity_description':
+        'Para mayor seguridad en la comunidad Biux, necesitamos verificar tu identidad.',
+    'documents_protected':
+        'Tus documentos están protegidos con cifrado y solo serán usados para verificar tu identidad. No serán compartidos con terceros.',
+    'review_documents_msg':
+        'Revisaremos tus documentos en 24-48 horas. Mientras tanto puedes usar Biux con acceso básico.',
+    'authorization_required': 'Se requiere autorización',
+    'parental_consent_explanation':
+        'Biux permite el uso de la app a partir de los 13 años. Como eres menor de 18, necesitamos que un padre, madre o tutor legal autorice tu registro.',
+    'will_send_email_parent': 'Enviaremos un correo a tu padre/madre o tutor',
+    'must_confirm_registration': 'Deberán confirmar que autorizan tu registro',
+    'once_approved_full_access': 'Una vez aprobado, tendrás acceso completo',
+    'exit_for_now': 'Salir por ahora',
+    'welcome_community_description':
+        'Biux es tu comunidad ciclista. Únete a grupos, planifica rodadas y conecta con otros ciclistas.',
 
     // Achievements extras
     'syncing_achievements': 'Sincronizando logros...',
@@ -301,6 +321,13 @@ class AppTranslations {
     'share_achievements': 'Compartir logros',
     'choose_how_share': 'Elige cómo quieres compartir tus logros',
     'share_outside_biux': 'WhatsApp, Instagram, X y más',
+    'achievement_unlocked': '¡Logro Desbloqueado!',
+    'share_with_friends_biux': 'Compartir con amigos en Biux',
+    'share_outside_biux_label': 'Compartir fuera de Biux',
+    'send_to_friends_biux': 'Enviar a amigos en Biux',
+    'no_chats_yet': 'No tienes chats aún',
+    'unlocked_level_share': 'Desbloqueé el nivel',
+    'in_biux_app': 'en Biux - App para Ciclistas',
     'general': 'General',
 
     // Auth extras
@@ -326,6 +353,8 @@ class AppTranslations {
     // Groups extras
     'nobody_rides_alone': 'Aquí nadie rueda solo',
     'join_dont_miss': 'Únete y no te pierdas ninguna salida',
+    'delete_group_confirm_message':
+        'Esta acción es permanente y eliminará "{name}" para todos los miembros. ¿Estás seguro?',
 
     // Weather extras
     'feels_like': 'Sensación térmica',
@@ -403,6 +432,10 @@ class AppTranslations {
         'Únete a nuestras rodadas semanales y conoce ciclistas de tu zona',
     'repost_deleted': 'Reposteo eliminado',
     'repost': 'Repostear',
+    'repost_noun': 'Reposteo',
+    'from_at_user': 'De @{user}',
+    'confirm_delete_story_question':
+        '¿Estás seguro/a que quieres eliminar esta historia?',
     'error_reposting': 'Error al repostear',
     'write_share_prompt': 'Publicación: Escribe lo que quieras compartir',
     'experience_published': '¡Experiencia publicada exitosamente!',
@@ -1196,6 +1229,28 @@ class AppTranslations {
     'product_published_success': 'Producto publicado exitosamente',
     'error_publishing': 'Error al publicar',
     'user_not_authenticated': 'Usuario no autenticado',
+    'error_loading_rides': 'Error al cargar las rodadas',
+    'error_creating_ride': 'Error al crear la rodada',
+    'error_updating_ride': 'Error al actualizar la rodada',
+    'error_joining_ride': 'Error al unirse a la rodada',
+    'error_leaving_ride': 'Error al salirse de la rodada',
+    'error_cancelling_ride': 'Error al cancelar la rodada',
+    'ride_date_cannot_be_past':
+        'La fecha de la rodada no puede ser en el pasado',
+    'ride_km_must_be_positive': 'Los kil\u00f3metros deben ser mayor a 0',
+    'ride_name_min_chars': 'El nombre debe tener al menos 3 caracteres',
+    'no_permission_edit_ride': 'No tienes permisos para editar esta rodada',
+    'only_organizer_can_cancel': 'Solo el organizador puede cancelar la rodada',
+    'group_no_name': 'Grupo sin nombre',
+    'could_not_load_messages':
+        'No se pudieron cargar los mensajes. Verifica tu conexi\u00f3n.',
+    'could_not_send_image': 'No se pudo enviar la imagen',
+    'could_not_send_video': 'No se pudo enviar el video',
+    'could_not_send_audio': 'No se pudo enviar el audio',
+    'slide_to_cancel': 'Desliza para cancelar',
+    'tap_to_stop': 'Toca para detener',
+    'tap_to_record': 'Toca para grabar',
+    'tap_to_capture': 'Toca para capturar',
     // Shop screen pro
     'biux_store_title': '🚴 Tienda Biux',
     'search_products_hint': 'Buscar productos...',
@@ -1273,6 +1328,11 @@ class AppTranslations {
     // Bikes
     'bike': 'Bicicleta',
     'bike_not_found': 'Bicicleta no encontrada',
+    'bike_id_required': 'El ID de la bicicleta es requerido',
+    'reporter_id_required': 'El ID del reportero es requerido',
+    'only_owner_can_report': 'Solo el propietario puede reportar el robo',
+    'bike_already_reported_stolen':
+        'Esta bicicleta ya está reportada como robada',
     'transfer': 'Transferir',
     'delete_bike': 'Eliminar Bicicleta',
     'deleting_bike': 'Eliminando bicicleta...',
@@ -1407,6 +1467,8 @@ class AppTranslations {
     'exp_create_story_text': 'Texto de historia',
     'exp_create_story_text_help': 'Texto corto (máximo 100 caracteres)',
     'exp_create_story_text_hint': 'Escribe un texto corto para tu historia...',
+    'media_description': 'Descripción de la imagen',
+    'media_description_hint': 'Escribe una descripción para esta imagen...',
     'exp_create_what_to_create': 'Elige el tipo de post que quieres compartir',
     'stories_above_posts_below':
         'Las stories van arriba en círculos.\nAquí van las publicaciones con más contenido.',
@@ -4528,9 +4590,6 @@ class AppTranslations {
     'level_unlocked_prefix': '¡Nivel',
     'level_unlocked_suffix': 'desbloqueado!',
     'completed_on': 'Completado el',
-    'unlocked_level_share': 'Desbloqueé el nivel',
-    'of': 'de',
-    'in_biux_app': 'en Biux - App para Ciclistas.',
     'almost_there': '¡Casi lo tienes!',
     'you_need': 'Te faltan',
     'more': 'más',
@@ -4719,12 +4778,47 @@ class AppTranslations {
         'Solicitud enviada. Recibirás un email con tus datos en 48h.',
     'ride_cancelled_by_organizer':
         'Esta rodada ha sido cancelada por el organizador.',
+    'confirm_attendance_for_chat':
+        'Confirma tu asistencia para acceder al chat',
+    'no': 'No',
     'ride_deleted': 'Rodada eliminada',
     'ride_finished_no_add':
         'Rodada finalizada - No se pueden agregar participantes',
     'ride_in_progress_warning':
         'Tienes una rodada en curso. Si sales perderás los datos.',
     'ride_name_question': '¿Cómo se llama esta rodada?',
+    'delete_ride_confirm': '¿Eliminar la rodada de {km} km del {date}?',
+    'ride_min_30_seconds':
+        'La rodada debe durar al menos 30 segundos para poder guardarla. Llevas {seconds} segundos.',
+    'waiting_gps': 'Esperando señal GPS. Inténtalo en un momento.',
+    'write_destination_first': 'Escribe un destino primero.',
+    'address_not_found':
+        'No se encontró la dirección "{address}". Escribe un nombre más específico.',
+    'route_not_found':
+        'No se encontró ninguna ruta hacia "{address}". Verifica que la dirección exista y esté dentro de un área con calles.',
+    'error_tracing_route': 'Error al trazar ruta',
+    'my_current_location': 'Mi ubicación actual',
+    'getting_gps': 'Obteniendo GPS...',
+    'tracing_route': 'Trazando ruta...',
+    'trace_bike_route': 'Trazar ruta en bicicleta',
+    'sos_quick_button': 'SOS activado desde botón rápido',
+    'sos_from_biux': 'SOS activado desde Biux',
+    'error_sending_sos': 'Error al enviar SOS',
+    'recommended_by': 'Recomendado por {name}',
+    'sent_label': 'Enviada',
+    'avg_speed_label': 'Vel avg',
+    'calories_label': 'Calorías',
+    'featured_places': 'Sitios destacados',
+    'my_ride_date': 'Mi rodada del {date}',
+    'recommendation_sent_to': 'Recomendación enviada a {name}',
+    'tell_friend_about_route':
+        'Cuéntale a tu amigo qué encontrará en esta ruta...',
+    'featured_places_max': 'Sitios destacados (máx. 5)',
+    'change_label': 'Cambiar',
+    'not_following_anyone_yet': 'Aún no sigues a nadie',
+    'sending_label': 'Enviando...',
+    'report_zone': 'Reportar zona',
+    'legend_label': 'Leyenda',
     'rides_registered': 'rodadas registradas',
     'rides_will_appear': 'Tus rodadas grabadas aparecerán aquí',
     'route_type': 'Tipo de ruta',
@@ -4978,7 +5072,8 @@ class AppTranslations {
     'reply_label': 'Respuesta',
     'time_years': 'año(s)',
     'time_months': 'mes(es)',
-    'confirm_remove_like': '¿Quieres quitar tu like? Desaparecerá de esta lista.',
+    'confirm_remove_like':
+        '¿Quieres quitar tu like? Desaparecerá de esta lista.',
     'time_ago_lower': 'hace',
     'second': 'segundo',
     'seconds': 'segundos',
@@ -5245,6 +5340,10 @@ class AppTranslations {
     'parent_email_label': 'Parent or guardian email *',
     'enter_email': 'Enter email',
     'invalid_email': 'Invalid email',
+    'verify_later_limited': 'Verify later (limited access)',
+    'select_birth_date': 'Select your date of birth',
+    'consent_email_sent':
+        'We sent an email to {email} to request authorization. Your account will be active once your guardian approves the request.',
     'identity_verification': 'Identity verification',
     'front_document': 'Front of document *',
     'back_document': 'Back (optional)',
@@ -5252,6 +5351,23 @@ class AppTranslations {
     'uploading': 'Uploading...',
     'send_for_verification': 'Send for verification',
     'professional_id': 'Professional ID',
+    'verify_identity_title': 'Verify your identity',
+    'verify_identity_description':
+        'For greater security in the Biux community, we need to verify your identity.',
+    'documents_protected':
+        'Your documents are protected with encryption and will only be used to verify your identity. They will not be shared with third parties.',
+    'review_documents_msg':
+        'We will review your documents in 24-48 hours. Meanwhile you can use Biux with basic access.',
+    'authorization_required': 'Authorization required',
+    'parental_consent_explanation':
+        'Biux allows app use from age 13. Since you are under 18, we need a parent or legal guardian to authorize your registration.',
+    'will_send_email_parent': 'We will send an email to your parent/guardian',
+    'must_confirm_registration':
+        'They must confirm they authorize your registration',
+    'once_approved_full_access': 'Once approved, you will have full access',
+    'exit_for_now': 'Exit for now',
+    'welcome_community_description':
+        'Biux is your cycling community. Join groups, plan rides and connect with other cyclists.',
 
     // Achievements extras
     'syncing_achievements': 'Syncing achievements...',
@@ -5268,6 +5384,13 @@ class AppTranslations {
     'share_achievements': 'Share achievements',
     'choose_how_share': 'Choose how you want to share your achievements',
     'share_outside_biux': 'WhatsApp, Instagram, X and more',
+    'achievement_unlocked': 'Achievement Unlocked!',
+    'share_with_friends_biux': 'Share with friends on Biux',
+    'share_outside_biux_label': 'Share outside Biux',
+    'send_to_friends_biux': 'Send to friends on Biux',
+    'no_chats_yet': 'You don\'t have chats yet',
+    'unlocked_level_share': 'I unlocked the level',
+    'in_biux_app': 'on Biux - Cycling App',
     'general': 'General',
 
     // Auth extras
@@ -5293,6 +5416,8 @@ class AppTranslations {
     // Groups extras
     'nobody_rides_alone': 'Nobody rides alone here',
     'join_dont_miss': 'Join and don\'t miss any ride',
+    'delete_group_confirm_message':
+        'This action is permanent and will delete "{name}" for all members. Are you sure?',
 
     // Weather extras
     'feels_like': 'Feels like',
@@ -5370,6 +5495,10 @@ class AppTranslations {
         'Join our weekly rides and meet cyclists from your area',
     'repost_deleted': 'Repost deleted',
     'repost': 'Repost',
+    'repost_noun': 'Repost',
+    'from_at_user': 'From @{user}',
+    'confirm_delete_story_question':
+        'Are you sure you want to delete this story?',
     'error_reposting': 'Error reposting',
     'write_share_prompt': 'Post: Write what you want to share',
     'experience_published': 'Experience published successfully!',
@@ -6133,6 +6262,27 @@ class AppTranslations {
     'product_published_success': 'Product published successfully',
     'error_publishing': 'Error publishing',
     'user_not_authenticated': 'User not authenticated',
+    'error_loading_rides': 'Error loading rides',
+    'error_creating_ride': 'Error creating ride',
+    'error_updating_ride': 'Error updating ride',
+    'error_joining_ride': 'Error joining ride',
+    'error_leaving_ride': 'Error leaving ride',
+    'error_cancelling_ride': 'Error cancelling ride',
+    'ride_date_cannot_be_past': 'Ride date cannot be in the past',
+    'ride_km_must_be_positive': 'Kilometers must be greater than 0',
+    'ride_name_min_chars': 'Name must be at least 3 characters',
+    'no_permission_edit_ride': 'You don\'t have permission to edit this ride',
+    'only_organizer_can_cancel': 'Only the organizer can cancel the ride',
+    'group_no_name': 'Unnamed group',
+    'could_not_load_messages':
+        'Could not load messages. Check your connection.',
+    'could_not_send_image': 'Could not send the image',
+    'could_not_send_video': 'Could not send the video',
+    'could_not_send_audio': 'Could not send the audio',
+    'slide_to_cancel': 'Slide to cancel',
+    'tap_to_stop': 'Tap to stop',
+    'tap_to_record': 'Tap to record',
+    'tap_to_capture': 'Tap to capture',
     'biux_store_title': '🚴 Biux Store',
     'search_products_hint': 'Search products...',
     'product_info_menu': 'Product Info',
@@ -6209,6 +6359,10 @@ class AppTranslations {
     // Bikes
     'bike': 'Bike',
     'bike_not_found': 'Bike not found',
+    'bike_id_required': 'Bike ID is required',
+    'reporter_id_required': 'Reporter ID is required',
+    'only_owner_can_report': 'Only the owner can report the theft',
+    'bike_already_reported_stolen': 'This bike is already reported as stolen',
     'transfer': 'Transfer',
     'delete_bike': 'Delete Bike',
     'deleting_bike': 'Deleting bike...',
@@ -6336,6 +6490,8 @@ class AppTranslations {
     'exp_create_story_text': 'Story text',
     'exp_create_story_text_help': 'Short text (max 100 characters)',
     'exp_create_story_text_hint': 'Write a short text for your story...',
+    'media_description': 'Image description',
+    'media_description_hint': 'Write a description for this image...',
     'exp_create_what_to_create': 'Choose the type of post you want to share',
     'stories_above_posts_below':
         'Stories appear above in circles.\nPosts with more content go here.',
@@ -8533,6 +8689,91 @@ class AppTranslations {
     'achievement_almost_century_desc': '90 km in a single ride',
     'achievement_ultra_adventure': 'Ultra Adventurer',
     'achievement_ultra_adventure_desc': '150 km in a single ride',
+    // === 5-Level Achievements ===
+    'achievement_dist_explorer': 'Route Explorer',
+    'achievement_dist_explorer_desc':
+        'Your first kilometers on the bike. Every km is a step toward adventure!',
+    'achievement_dist_traveler': 'Great Traveler',
+    'achievement_dist_traveler_desc':
+        'You rack up kilometers with passion. The road is your second home.',
+    'achievement_dist_runner': 'Tireless Rider',
+    'achievement_dist_runner_desc':
+        'Your dedication knows no limits. The asphalt knows you by heart.',
+    'achievement_dist_ultra': 'Ultra Cyclist',
+    'achievement_dist_ultra_desc':
+        'Big numbers don\'t scare you. You are pure elite on two wheels.',
+    'achievement_dist_legend': 'Asphalt Legend',
+    'achievement_dist_legend_desc':
+        'Numbers few achieve. Your name is written in cycling history.',
+    'achievement_rides_starter': 'First Rides',
+    'achievement_rides_starter_desc':
+        'The start of the cycling habit! Keep the wheels turning.',
+    'achievement_rides_regular': 'Regular Cyclist',
+    'achievement_rides_regular_desc':
+        'You\'re already a familiar face in the group. Always ready to ride.',
+    'achievement_rides_veteran': 'Pedaling Veteran',
+    'achievement_rides_veteran_desc':
+        'Rides in your body and kilometers of experience on the pedals.',
+    'achievement_speed_cruiser': 'Cruising Speed',
+    'achievement_speed_cruiser_desc':
+        'You ride at a good pace. Smooth, steady, unstoppable.',
+    'achievement_speed_sprinter': 'Sprinter',
+    'achievement_speed_sprinter_desc':
+        'The engine awakens! Your speed is starting to impress everyone.',
+    'achievement_speed_racer': 'Speed Racer',
+    'achievement_speed_racer_desc':
+        'Competition speeds. The wind can\'t catch you anymore.',
+    'achievement_speed_rocket': 'Rocket on Two Wheels',
+    'achievement_speed_rocket_desc':
+        'Those speeds hurt against the wind. And you love every second!',
+    'achievement_speed_sonic': 'Supersonic',
+    'achievement_speed_sonic_desc':
+        'Record-breaking numbers. You are a speed legend on a bike.',
+    'achievement_streak_init': 'First Warm-Up',
+    'achievement_streak_init_desc':
+        'The streak begins. Don\'t break it, iron cyclist!',
+    'achievement_streak_habit': 'Cycling Habit',
+    'achievement_streak_habit_desc':
+        '21 days straight: the habit is now part of your identity.',
+    'achievement_streak_machine': 'Pedaling Machine',
+    'achievement_streak_machine_desc':
+        'No rain, tiredness, or excuse can stop you. You are unstoppable.',
+    'achievement_streak_iron': 'Iron Cyclist',
+    'achievement_streak_iron_desc':
+        'Your body and mind are pure steel on two wheels.',
+    'achievement_streak_legend': 'Cycling Phenomenon',
+    'achievement_streak_legend_desc':
+        'A whole year cycling. That\'s not just sport, it\'s a lifestyle.',
+    'achievement_social_member': 'Group Member',
+    'achievement_social_member_desc':
+        'Cycling in community is always better. Welcome to the group!',
+    'achievement_social_popular': 'Popular on the Route',
+    'achievement_social_popular_desc':
+        'Many people know your bike. You keep making friends on wheels.',
+    'achievement_social_connector': 'Community Connector',
+    'achievement_social_connector_desc':
+        'You connect groups, people, and routes. You are the cycling nexus.',
+    'achievement_social_networker': 'Cycling Networker',
+    'achievement_social_networker_desc':
+        'Your network is huge. Wherever you go, friends with bikes await you.',
+    'achievement_social_ambassador': 'Cycling Ambassador',
+    'achievement_social_ambassador_desc':
+        'You represent the essence of social cycling. A true icon!',
+    'achievement_aventura_start': 'First Big Outing',
+    'achievement_aventura_start_desc':
+        'A ride you\'ll remember. The beginning of adventure on two wheels.',
+    'achievement_aventura_explorer': 'Path Explorer',
+    'achievement_aventura_explorer_desc':
+        '75 km in one go. That\'s true adventurous spirit!',
+    'achievement_aventura_fondo': 'Gran Fondo',
+    'achievement_aventura_fondo_desc':
+        'Epic days that define you as a limitless endurance cyclist.',
+    'achievement_aventura_ultra': 'Ultra Adventure',
+    'achievement_aventura_ultra_desc':
+        'Over 200 km in a single outing. You are an ultra adventurer!',
+    'achievement_aventura_expedition': 'Grand Expedition',
+    'achievement_aventura_expedition_desc':
+        '500 km at once. That\'s not a ride, it\'s an authentic expedition.',
 
     // === Shared Screens ===
     'location_move_map': 'Move the map to select',
@@ -9236,9 +9477,6 @@ class AppTranslations {
     'level_unlocked_prefix': 'Level',
     'level_unlocked_suffix': 'unlocked!',
     'completed_on': 'Completed on',
-    'unlocked_level_share': 'I unlocked level',
-    'of': 'of',
-    'in_biux_app': 'in Biux - Cycling App.',
     'almost_there': 'Almost there!',
     'you_need': 'You need',
     'more': 'more',
@@ -9423,11 +9661,45 @@ class AppTranslations {
         'Request sent. You will receive an email with your data within 48h.',
     'ride_cancelled_by_organizer':
         'This ride has been cancelled by the organizer.',
+    'confirm_attendance_for_chat': 'Confirm your attendance to access the chat',
+    'no': 'No',
     'ride_deleted': 'Ride deleted',
     'ride_finished_no_add': 'Ride finished - Cannot add participants',
     'ride_in_progress_warning':
         'You have a ride in progress. If you exit you will lose the data.',
     'ride_name_question': 'What is this ride called?',
+    'delete_ride_confirm': 'Delete the {km} km ride from {date}?',
+    'ride_min_30_seconds':
+        'The ride must last at least 30 seconds to be saved. You have been riding for {seconds} seconds.',
+    'waiting_gps': 'Waiting for GPS signal. Try again in a moment.',
+    'write_destination_first': 'Write a destination first.',
+    'address_not_found':
+        'Address "{address}" not found. Try a more specific name.',
+    'route_not_found':
+        'No route found to "{address}". Verify the address exists and is in an area with roads.',
+    'error_tracing_route': 'Error tracing route',
+    'my_current_location': 'My current location',
+    'getting_gps': 'Getting GPS...',
+    'tracing_route': 'Tracing route...',
+    'trace_bike_route': 'Trace bike route',
+    'sos_quick_button': 'SOS activated from quick button',
+    'sos_from_biux': 'SOS activated from Biux',
+    'error_sending_sos': 'Error sending SOS',
+    'recommended_by': 'Recommended by {name}',
+    'sent_label': 'Sent',
+    'avg_speed_label': 'Avg speed',
+    'calories_label': 'Calories',
+    'featured_places': 'Featured places',
+    'my_ride_date': 'My ride on {date}',
+    'recommendation_sent_to': 'Recommendation sent to {name}',
+    'tell_friend_about_route':
+        'Tell your friend what they will find on this route...',
+    'featured_places_max': 'Featured places (max. 5)',
+    'change_label': 'Change',
+    'not_following_anyone_yet': 'You are not following anyone yet',
+    'sending_label': 'Sending...',
+    'report_zone': 'Report zone',
+    'legend_label': 'Legend',
     'rides_registered': 'registered rides',
     'rides_will_appear': 'Your recorded rides will appear here',
     'route_type': 'Route type',
@@ -9678,7 +9950,8 @@ class AppTranslations {
     'reply_label': 'Reply',
     'time_years': 'year(s)',
     'time_months': 'month(s)',
-    'confirm_remove_like': 'Do you want to remove your like? It will disappear from this list.',
+    'confirm_remove_like':
+        'Do you want to remove your like? It will disappear from this list.',
     'time_ago_lower': 'ago',
     'second': 'second',
     'seconds': 'seconds',
@@ -9950,6 +10223,10 @@ class AppTranslations {
     'parent_email_label': 'Email do pai, mãe ou responsável *',
     'enter_email': 'Insira o email',
     'invalid_email': 'Email inválido',
+    'verify_later_limited': 'Verificar mais tarde (acesso limitado)',
+    'select_birth_date': 'Selecione sua data de nascimento',
+    'consent_email_sent':
+        'Enviamos um email para {email} para solicitar autorização. Sua conta estará ativa após seu tutor aprovar a solicitação.',
     'identity_verification': 'Verificação de identidade',
     'front_document': 'Frente do documento *',
     'back_document': 'Verso (opcional)',
@@ -9971,6 +10248,13 @@ class AppTranslations {
     'share_achievements': 'Compartilhar conquistas',
     'choose_how_share': 'Escolha como quer compartilhar suas conquistas',
     'share_outside_biux': 'WhatsApp, Instagram, X e mais',
+    'achievement_unlocked': 'Conquista Desbloqueada!',
+    'share_with_friends_biux': 'Compartilhar com amigos no Biux',
+    'share_outside_biux_label': 'Compartilhar fora do Biux',
+    'send_to_friends_biux': 'Enviar para amigos no Biux',
+    'no_chats_yet': 'Você ainda não tem chats',
+    'unlocked_level_share': 'Desbloqueei o nível',
+    'in_biux_app': 'no Biux - App para Ciclistas',
     'general': 'Geral',
     'restricted_access': 'Acesso restrito',
     'only_13_plus': 'apenas para usuários com 13 anos ou mais.',
@@ -9992,6 +10276,8 @@ class AppTranslations {
     'password_not_match': 'As senhas não coincidem',
     'nobody_rides_alone': 'Aqui ninguém pedala sozinho',
     'join_dont_miss': 'Participe e não perca nenhuma pedalada',
+    'delete_group_confirm_message':
+        'Esta ação é permanente e excluirá "{name}" para todos os membros. Tem certeza?',
     'feels_like': 'Sensação térmica',
     'uv_index': 'Índice UV',
     'precipitation': 'Precipitação',
@@ -10061,6 +10347,10 @@ class AppTranslations {
         'Participe de nossas pedaladas semanais e conheça ciclistas da sua região',
     'repost_deleted': 'Repostagem excluída',
     'repost': 'Repostar',
+    'repost_noun': 'Repostagem',
+    'from_at_user': 'De @{user}',
+    'confirm_delete_story_question':
+        'Tem certeza que deseja excluir esta história?',
     'error_reposting': 'Erro ao repostar',
     'write_share_prompt': 'Publicação: Escreva o que quiser compartilhar',
     'experience_published': 'Experiência publicada com sucesso!',
@@ -10823,6 +11113,29 @@ class AppTranslations {
     'product_published_success': 'Produto publicado com sucesso',
     'error_publishing': 'Erro ao publicar',
     'user_not_authenticated': 'Usuário não autenticado',
+    'error_loading_rides': 'Erro ao carregar pedaladas',
+    'error_creating_ride': 'Erro ao criar pedalada',
+    'error_updating_ride': 'Erro ao atualizar pedalada',
+    'error_joining_ride': 'Erro ao entrar na pedalada',
+    'error_leaving_ride': 'Erro ao sair da pedalada',
+    'error_cancelling_ride': 'Erro ao cancelar pedalada',
+    'ride_date_cannot_be_past': 'A data da pedalada não pode ser no passado',
+    'ride_km_must_be_positive': 'Os quilômetros devem ser maiores que 0',
+    'ride_name_min_chars': 'O nome deve ter pelo menos 3 caracteres',
+    'no_permission_edit_ride':
+        'Você não tem permissão para editar esta pedalada',
+    'only_organizer_can_cancel':
+        'Somente o organizador pode cancelar a pedalada',
+    'group_no_name': 'Grupo sem nome',
+    'could_not_load_messages':
+        'Não foi possível carregar as mensagens. Verifique sua conexão.',
+    'could_not_send_image': 'Não foi possível enviar a imagem',
+    'could_not_send_video': 'Não foi possível enviar o vídeo',
+    'could_not_send_audio': 'Não foi possível enviar o áudio',
+    'slide_to_cancel': 'Deslize para cancelar',
+    'tap_to_stop': 'Toque para parar',
+    'tap_to_record': 'Toque para gravar',
+    'tap_to_capture': 'Toque para capturar',
     'biux_store_title': '🚴 Loja Biux',
     'search_products_hint': 'Buscar produtos...',
     'product_info_menu': 'Info de Produtos',
@@ -10899,6 +11212,11 @@ class AppTranslations {
     // Bikes
     'bike': 'Bicicleta',
     'bike_not_found': 'Bicicleta não encontrada',
+    'bike_id_required': 'O ID da bicicleta é obrigatório',
+    'reporter_id_required': 'O ID do denunciante é obrigatório',
+    'only_owner_can_report': 'Somente o proprietário pode reportar o roubo',
+    'bike_already_reported_stolen':
+        'Esta bicicleta já foi reportada como roubada',
     'transfer': 'Transferir',
     'delete_bike': 'Excluir Bicicleta',
     'deleting_bike': 'Excluindo bicicleta...',
@@ -11033,6 +11351,8 @@ class AppTranslations {
     'exp_create_story_text': 'Texto da história',
     'exp_create_story_text_help': 'Texto curto (máximo 100 caracteres)',
     'exp_create_story_text_hint': 'Escreva um texto curto para sua história...',
+    'media_description': 'Descrição da imagem',
+    'media_description_hint': 'Escreva uma descrição para esta imagem...',
     'exp_create_what_to_create':
         'Escolha o tipo de post que deseja compartilhar',
     'stories_above_posts_below':
@@ -13263,6 +13583,91 @@ class AppTranslations {
     'achievement_almost_century_desc': '90 km em uma única saída',
     'achievement_ultra_adventure': 'Ultra Aventureiro',
     'achievement_ultra_adventure_desc': '150 km em uma única saída',
+    // === Conquistas com sistema de 5 níveis ===
+    'achievement_dist_explorer': 'Explorador de Rotas',
+    'achievement_dist_explorer_desc':
+        'Seus primeiros quilômetros na bike. Cada km é um passo rumo à aventura!',
+    'achievement_dist_traveler': 'Grande Viajante',
+    'achievement_dist_traveler_desc':
+        'Você acumula quilômetros com paixão. A estrada é sua segunda casa.',
+    'achievement_dist_runner': 'Pedalador Incansável',
+    'achievement_dist_runner_desc':
+        'Sua dedicação não tem limites. O asfalto te conhece de cor.',
+    'achievement_dist_ultra': 'Ultra Ciclista',
+    'achievement_dist_ultra_desc':
+        'Números grandes não te assustam. Você é elite pura sobre duas rodas.',
+    'achievement_dist_legend': 'Lenda do Asfalto',
+    'achievement_dist_legend_desc':
+        'Números que poucos alcançam. Seu nome está escrito na história do ciclismo.',
+    'achievement_rides_starter': 'Primeiras Pedaladas',
+    'achievement_rides_starter_desc':
+        'O início do hábito ciclista! Que a roda não pare.',
+    'achievement_rides_regular': 'Ciclista Habitual',
+    'achievement_rides_regular_desc':
+        'Você já é um rosto conhecido no grupo. Sempre pronto para pedalar.',
+    'achievement_rides_veteran': 'Veterano do Pedal',
+    'achievement_rides_veteran_desc':
+        'Pedaladas no corpo e quilômetros de experiência nos pedais.',
+    'achievement_speed_cruiser': 'Velocidade de Cruzeiro',
+    'achievement_speed_cruiser_desc':
+        'Você pedala em bom ritmo. Fluido, constante, imparável.',
+    'achievement_speed_sprinter': 'Sprinter',
+    'achievement_speed_sprinter_desc':
+        'O motor acordou! Sua velocidade está impressionando a todos.',
+    'achievement_speed_racer': 'Velocista',
+    'achievement_speed_racer_desc':
+        'Velocidades de competição. O vento já não te alcança.',
+    'achievement_speed_rocket': 'Foguete em Duas Rodas',
+    'achievement_speed_rocket_desc':
+        'Essas velocidades doem contra o vento. E você ama cada segundo!',
+    'achievement_speed_sonic': 'Supersônico',
+    'achievement_speed_sonic_desc':
+        'Números que quebram recordes. Você é uma lenda da velocidade na bike.',
+    'achievement_streak_init': 'Primeiro Aquecimento',
+    'achievement_streak_init_desc':
+        'A sequência começa. Não a quebre, ciclista de ferro!',
+    'achievement_streak_habit': 'Hábito Ciclista',
+    'achievement_streak_habit_desc':
+        '21 dias seguidos: o hábito já faz parte da sua identidade.',
+    'achievement_streak_machine': 'Máquina de Pedalar',
+    'achievement_streak_machine_desc':
+        'Nem chuva, cansaço ou desculpa te para. Você é imparável.',
+    'achievement_streak_iron': 'Ciclista de Ferro',
+    'achievement_streak_iron_desc':
+        'Seu corpo e sua mente são aço puro sobre duas rodas.',
+    'achievement_streak_legend': 'Fenômeno Ciclista',
+    'achievement_streak_legend_desc':
+        'Um ano inteiro pedalando. Isso não é só esporte, é estilo de vida.',
+    'achievement_social_member': 'Membro do Grupo',
+    'achievement_social_member_desc':
+        'Pedalar em comunidade sempre é melhor. Bem-vindo ao grupo!',
+    'achievement_social_popular': 'Popular na Rota',
+    'achievement_social_popular_desc':
+        'Muita gente conhece sua bike. Você continua fazendo amigos sobre rodas.',
+    'achievement_social_connector': 'Conector de Comunidades',
+    'achievement_social_connector_desc':
+        'Você une grupos, pessoas e rotas. É o elo ciclista da região.',
+    'achievement_social_networker': 'Networker Ciclista',
+    'achievement_social_networker_desc':
+        'Sua rede é enorme. Onde for, há amigos com bike te esperando.',
+    'achievement_social_ambassador': 'Embaixador do Ciclismo',
+    'achievement_social_ambassador_desc':
+        'Você representa a essência do ciclismo social. Um verdadeiro ícone!',
+    'achievement_aventura_start': 'Primeira Grande Saída',
+    'achievement_aventura_start_desc':
+        'Uma pedalada que você vai lembrar. O início da aventura sobre duas rodas.',
+    'achievement_aventura_explorer': 'Explorador de Caminhos',
+    'achievement_aventura_explorer_desc':
+        '75 km de uma vez. Isso é espírito aventureiro de verdade!',
+    'achievement_aventura_fondo': 'Gran Fondo',
+    'achievement_aventura_fondo_desc':
+        'Jornadas épicas que te definem como ciclista de fundo sem limites.',
+    'achievement_aventura_ultra': 'Ultra Aventura',
+    'achievement_aventura_ultra_desc':
+        'Mais de 200 km em uma única saída. Você é um ultra aventureiro!',
+    'achievement_aventura_expedition': 'Grande Expedição',
+    'achievement_aventura_expedition_desc':
+        '500 km de uma vez. Isso não é uma pedalada, é uma autêntica expedição.',
 
     // === Shared Screens ===
     'location_move_map': 'Mova o mapa para selecionar',
@@ -13977,9 +14382,6 @@ class AppTranslations {
     'level_unlocked_prefix': 'Nível',
     'level_unlocked_suffix': 'desbloqueado!',
     'completed_on': 'Completado em',
-    'unlocked_level_share': 'Desbloqueei o nível',
-    'of': 'de',
-    'in_biux_app': 'no Biux - App para Ciclistas.',
     'almost_there': 'Quase lá!',
     'you_need': 'Faltam',
     'more': 'mais',
@@ -14165,6 +14567,8 @@ class AppTranslations {
         'Solicitação enviada. Você receberá um email com seus dados em 48h.',
     'ride_cancelled_by_organizer':
         'Esta pedalada foi cancelada pelo organizador.',
+    'confirm_attendance_for_chat': 'Confirme sua presença para acessar o chat',
+    'no': 'Não',
     'ride_deleted': 'Pedalada excluída',
     'ride_finished_no_add':
         'Pedalada finalizada - Não é possível adicionar participantes',
@@ -14427,7 +14831,8 @@ class AppTranslations {
     'reply_label': 'Resposta',
     'time_years': 'ano(s)',
     'time_months': 'mês(es)',
-    'confirm_remove_like': 'Quer remover seu like? Ele desaparecerá desta lista.',
+    'confirm_remove_like':
+        'Quer remover seu like? Ele desaparecerá desta lista.',
     'time_ago_lower': 'há',
     'second': 'segundo',
     'seconds': 'segundos',
@@ -14706,6 +15111,10 @@ class AppTranslations {
     'parent_email_label': 'Email du parent ou tuteur *',
     'enter_email': 'Entrez l\'email',
     'invalid_email': 'Email invalide',
+    'verify_later_limited': 'Vérifier plus tard (accès limité)',
+    'select_birth_date': 'Sélectionnez votre date de naissance',
+    'consent_email_sent':
+        'Nous avons envoyé un email à {email} pour demander une autorisation. Votre compte sera actif une fois que votre tuteur aura approuvé la demande.',
     'identity_verification': 'Vérification d\'identité',
     'front_document': 'Recto du document *',
     'back_document': 'Verso (optionnel)',
@@ -14727,6 +15136,13 @@ class AppTranslations {
     'share_achievements': 'Partager les réalisations',
     'choose_how_share': 'Choisissez comment partager vos réalisations',
     'share_outside_biux': 'WhatsApp, Instagram, X et plus',
+    'achievement_unlocked': 'Réalisation Débloquée !',
+    'share_with_friends_biux': 'Partager avec des amis sur Biux',
+    'share_outside_biux_label': 'Partager en dehors de Biux',
+    'send_to_friends_biux': 'Envoyer à des amis sur Biux',
+    'no_chats_yet': 'Vous n\'avez pas encore de chats',
+    'unlocked_level_share': 'J\'ai débloqué le niveau',
+    'in_biux_app': 'sur Biux - App Cyclistes',
     'general': 'Général',
     'restricted_access': 'Accès restreint',
     'only_13_plus': 'uniquement pour les utilisateurs de 13 ans ou plus.',
@@ -14750,6 +15166,8 @@ class AppTranslations {
     'password_not_match': 'Les mots de passe ne correspondent pas',
     'nobody_rides_alone': 'Personne ne roule seul ici',
     'join_dont_miss': 'Rejoignez et ne manquez aucune sortie',
+    'delete_group_confirm_message':
+        'Cette action est permanente et supprimera "{name}" pour tous les membres. Êtes-vous sûr ?',
     'feels_like': 'Ressenti',
     'uv_index': 'Indice UV',
     'precipitation': 'Précipitation',
@@ -14819,6 +15237,10 @@ class AppTranslations {
         'Rejoignez nos sorties hebdomadaires et rencontrez des cyclistes de votre région',
     'repost_deleted': 'Repost supprimé',
     'repost': 'Reposter',
+    'repost_noun': 'Repost',
+    'from_at_user': 'De @{user}',
+    'confirm_delete_story_question':
+        'Êtes-vous sûr(e) de vouloir supprimer cette story ?',
     'error_reposting': 'Erreur lors du repost',
     'write_share_prompt': 'Publication: Écrivez ce que vous voulez partager',
     'experience_published': 'Expérience publiée avec succès!',
@@ -15593,6 +16015,29 @@ class AppTranslations {
     'product_published_success': 'Produit publié avec succès',
     'error_publishing': 'Erreur de publication',
     'user_not_authenticated': 'Utilisateur non authentifié',
+    'error_loading_rides': 'Erreur lors du chargement des sorties',
+    'error_creating_ride': 'Erreur lors de la création de la sortie',
+    'error_updating_ride': 'Erreur lors de la mise à jour de la sortie',
+    'error_joining_ride': 'Erreur pour rejoindre la sortie',
+    'error_leaving_ride': 'Erreur pour quitter la sortie',
+    'error_cancelling_ride': 'Erreur lors de l\'annulation de la sortie',
+    'ride_date_cannot_be_past':
+        'La date de la sortie ne peut pas être dans le passé',
+    'ride_km_must_be_positive': 'Les kilomètres doivent être supérieurs à 0',
+    'ride_name_min_chars': 'Le nom doit contenir au moins 3 caractères',
+    'no_permission_edit_ride':
+        'Vous n\'avez pas la permission de modifier cette sortie',
+    'only_organizer_can_cancel': 'Seul l\'organisateur peut annuler la sortie',
+    'group_no_name': 'Groupe sans nom',
+    'could_not_load_messages':
+        'Impossible de charger les messages. Vérifiez votre connexion.',
+    'could_not_send_image': 'Impossible d\'envoyer l\'image',
+    'could_not_send_video': 'Impossible d\'envoyer la vidéo',
+    'could_not_send_audio': 'Impossible d\'envoyer l\'audio',
+    'slide_to_cancel': 'Glissez pour annuler',
+    'tap_to_stop': 'Appuyez pour arrêter',
+    'tap_to_record': 'Appuyez pour enregistrer',
+    'tap_to_capture': 'Appuyez pour capturer',
     'biux_store_title': '🚴 Boutique Biux',
     'search_products_hint': 'Rechercher des produits...',
     'product_info_menu': 'Info des Produits',
@@ -15669,6 +16114,10 @@ class AppTranslations {
     // Bikes
     'bike': 'Vélo',
     'bike_not_found': 'Vélo non trouvé',
+    'bike_id_required': 'L\'ID du vélo est requis',
+    'reporter_id_required': 'L\'ID du déclarant est requis',
+    'only_owner_can_report': 'Seul le propriétaire peut signaler le vol',
+    'bike_already_reported_stolen': 'Ce vélo est déjà signalé comme volé',
     'transfer': 'Transférer',
     'delete_bike': 'Supprimer le vélo',
     'deleting_bike': 'Suppression du vélo...',
@@ -15805,6 +16254,8 @@ class AppTranslations {
     'exp_create_story_text': 'Texte de la story',
     'exp_create_story_text_help': 'Texte court (max 100 caractères)',
     'exp_create_story_text_hint': 'Écrivez un texte court pour votre story...',
+    'media_description': 'Description de l\'image',
+    'media_description_hint': 'Écrivez une description pour cette image...',
     'exp_create_what_to_create': 'Choisissez le type de post à partager',
     'stories_above_posts_below':
         'Les stories apparaissent en haut en cercles.\nLes publications avec plus de contenu vont ici.',
@@ -18064,6 +18515,91 @@ class AppTranslations {
     'achievement_almost_century_desc': '90 km en une seule sortie',
     'achievement_ultra_adventure': 'Ultra Aventurier',
     'achievement_ultra_adventure_desc': '150 km en une seule sortie',
+    // === Réalisations système 5 niveaux ===
+    'achievement_dist_explorer': 'Explorateur de Routes',
+    'achievement_dist_explorer_desc':
+        'Vos premiers kilomètres à vélo. Chaque km est un pas vers l\'aventure !',
+    'achievement_dist_traveler': 'Grand Voyageur',
+    'achievement_dist_traveler_desc':
+        'Vous accumulez les kilomètres avec passion. La route est votre deuxième maison.',
+    'achievement_dist_runner': 'Rouleur Infatigable',
+    'achievement_dist_runner_desc':
+        'Votre dévouement n\'a pas de limites. L\'asphalte vous connaît par cœur.',
+    'achievement_dist_ultra': 'Ultra Cycliste',
+    'achievement_dist_ultra_desc':
+        'Les grands chiffres ne vous font pas peur. Vous êtes l\'élite sur deux roues.',
+    'achievement_dist_legend': 'Légende de l\'Asphalte',
+    'achievement_dist_legend_desc':
+        'Des chiffres que peu atteignent. Votre nom est inscrit dans l\'histoire du cyclisme.',
+    'achievement_rides_starter': 'Premières Sorties',
+    'achievement_rides_starter_desc':
+        'Le début de l\'habitude cycliste ! Que la roue ne s\'arrête pas.',
+    'achievement_rides_regular': 'Cycliste Régulier',
+    'achievement_rides_regular_desc':
+        'Vous êtes déjà un visage connu dans le groupe. Toujours prêt à rouler.',
+    'achievement_rides_veteran': 'Vétéran du Pédalage',
+    'achievement_rides_veteran_desc':
+        'Des sorties dans le corps et des kilomètres d\'expérience sur les pédales.',
+    'achievement_speed_cruiser': 'Vitesse de Croisière',
+    'achievement_speed_cruiser_desc':
+        'Vous roulez à bon rythme. Fluide, constant, inarrêtable.',
+    'achievement_speed_sprinter': 'Sprinter',
+    'achievement_speed_sprinter_desc':
+        'Le moteur se réveille ! Votre vitesse commence à impressionner tout le monde.',
+    'achievement_speed_racer': 'Vélociste',
+    'achievement_speed_racer_desc':
+        'Des vitesses de compétition. Le vent ne vous rattrape plus.',
+    'achievement_speed_rocket': 'Fusée sur Deux Roues',
+    'achievement_speed_rocket_desc':
+        'Ces vitesses font mal face au vent. Et vous adorez chaque seconde !',
+    'achievement_speed_sonic': 'Supersonique',
+    'achievement_speed_sonic_desc':
+        'Des chiffres qui battent des records. Vous êtes une légende de la vitesse à vélo.',
+    'achievement_streak_init': 'Premier Échauffement',
+    'achievement_streak_init_desc':
+        'La série commence. Ne la brisez pas, cycliste de fer !',
+    'achievement_streak_habit': 'Habitude Cycliste',
+    'achievement_streak_habit_desc':
+        '21 jours d\'affilée : l\'habitude fait désormais partie de votre identité.',
+    'achievement_streak_machine': 'Machine à Pédaler',
+    'achievement_streak_machine_desc':
+        'Ni pluie, fatigue ni excuse ne vous arrête. Vous êtes inarrêtable.',
+    'achievement_streak_iron': 'Cycliste de Fer',
+    'achievement_streak_iron_desc':
+        'Votre corps et votre esprit sont de l\'acier pur sur deux roues.',
+    'achievement_streak_legend': 'Phénomène Cycliste',
+    'achievement_streak_legend_desc':
+        'Une année entière à pédaler. Ce n\'est pas que du sport, c\'est un mode de vie.',
+    'achievement_social_member': 'Membre du Groupe',
+    'achievement_social_member_desc':
+        'Pédaler en communauté c\'est toujours mieux. Bienvenue dans le groupe !',
+    'achievement_social_popular': 'Populaire sur la Route',
+    'achievement_social_popular_desc':
+        'Beaucoup de gens connaissent votre vélo. Vous continuez à vous faire des amis sur roues.',
+    'achievement_social_connector': 'Connecteur de Communautés',
+    'achievement_social_connector_desc':
+        'Vous reliez groupes, personnes et routes. Vous êtes le lien cycliste de la région.',
+    'achievement_social_networker': 'Networker Cycliste',
+    'achievement_social_networker_desc':
+        'Votre réseau est énorme. Partout où vous allez, des amis à vélo vous attendent.',
+    'achievement_social_ambassador': 'Ambassadeur du Cyclisme',
+    'achievement_social_ambassador_desc':
+        'Vous représentez l\'essence du cyclisme social. Une vraie icône !',
+    'achievement_aventura_start': 'Première Grande Sortie',
+    'achievement_aventura_start_desc':
+        'Une sortie dont vous vous souviendrez. Le début de l\'aventure sur deux roues.',
+    'achievement_aventura_explorer': 'Explorateur de Chemins',
+    'achievement_aventura_explorer_desc':
+        '75 km d\'un coup. Ça c\'est le vrai esprit aventurier !',
+    'achievement_aventura_fondo': 'Gran Fondo',
+    'achievement_aventura_fondo_desc':
+        'Des journées épiques qui vous définissent comme cycliste de fond sans limites.',
+    'achievement_aventura_ultra': 'Ultra Aventure',
+    'achievement_aventura_ultra_desc':
+        'Plus de 200 km en une seule sortie. Vous êtes un ultra aventurier !',
+    'achievement_aventura_expedition': 'Grande Expédition',
+    'achievement_aventura_expedition_desc':
+        '500 km d\'un coup. Ce n\'est pas une sortie, c\'est une authentique expédition.',
 
     // === Shared Screens ===
     'location_move_map': 'Déplacez la carte pour sélectionner',
@@ -18807,9 +19343,6 @@ class AppTranslations {
     'level_unlocked_prefix': 'Niveau',
     'level_unlocked_suffix': 'débloqué !',
     'completed_on': 'Complété le',
-    'unlocked_level_share': 'J\'ai débloqué le niveau',
-    'of': 'de',
-    'in_biux_app': 'dans Biux - App pour Cyclistes.',
     'almost_there': 'Presque !',
     'you_need': 'Il vous manque',
     'more': 'de plus',
@@ -19000,6 +19533,9 @@ class AppTranslations {
         'Demande envoyée. Vous recevrez un email avec vos données sous 48h.',
     'ride_cancelled_by_organizer':
         'Cette sortie a été annulée par l\'organisateur.',
+    'confirm_attendance_for_chat':
+        'Confirmez votre présence pour accéder au chat',
+    'no': 'Non',
     'ride_deleted': 'Sortie supprimée',
     'ride_finished_no_add':
         'Sortie terminée - Impossible d\'ajouter des participants',
@@ -19265,7 +19801,8 @@ class AppTranslations {
     'reply_label': 'Réponse',
     'time_years': 'an(s)',
     'time_months': 'mois',
-    'confirm_remove_like': 'Voulez-vous retirer votre like ? Il disparaîtra de cette liste.',
+    'confirm_remove_like':
+        'Voulez-vous retirer votre like ? Il disparaîtra de cette liste.',
     'time_ago_lower': 'il y a',
     'second': 'seconde',
     'seconds': 'secondes',
@@ -19531,6 +20068,10 @@ class AppTranslations {
     'parent_email_label': 'Email del genitore o tutore *',
     'enter_email': 'Inserisci l\'email',
     'invalid_email': 'Email non valida',
+    'verify_later_limited': 'Verifica più tardi (accesso limitato)',
+    'select_birth_date': 'Seleziona la tua data di nascita',
+    'consent_email_sent':
+        'Abbiamo inviato un\'email a {email} per richiedere l\'autorizzazione. Il tuo account sarà attivo una volta che il tuo tutore avrà approvato la richiesta.',
     'identity_verification': 'Verifica dell\'identità',
     'front_document': 'Fronte del documento *',
     'back_document': 'Retro (opzionale)',
@@ -19552,6 +20093,13 @@ class AppTranslations {
     'share_achievements': 'Condividi risultati',
     'choose_how_share': 'Scegli come condividere i tuoi risultati',
     'share_outside_biux': 'WhatsApp, Instagram, X e altro',
+    'achievement_unlocked': 'Risultato Sbloccato!',
+    'share_with_friends_biux': 'Condividi con amici su Biux',
+    'share_outside_biux_label': 'Condividi fuori da Biux',
+    'send_to_friends_biux': 'Invia ad amici su Biux',
+    'no_chats_yet': 'Non hai ancora chat',
+    'unlocked_level_share': 'Ho sbloccato il livello',
+    'in_biux_app': 'su Biux - App per Ciclisti',
     'general': 'Generale',
     'restricted_access': 'Accesso limitato',
     'only_13_plus': 'solo per utenti di 13 anni o più.',
@@ -19573,6 +20121,8 @@ class AppTranslations {
     'password_not_match': 'Le password non corrispondono',
     'nobody_rides_alone': 'Qui nessuno pedala da solo',
     'join_dont_miss': 'Unisciti e non perdere nessuna uscita',
+    'delete_group_confirm_message':
+        'Questa azione è permanente e cancellerà "{name}" per tutti i membri. Sei sicuro?',
     'feels_like': 'Percepita',
     'uv_index': 'Indice UV',
     'precipitation': 'Precipitazione',
@@ -19642,6 +20192,10 @@ class AppTranslations {
         'Unisciti alle nostre uscite settimanali e conosci ciclisti della tua zona',
     'repost_deleted': 'Repost eliminato',
     'repost': 'Ripubblica',
+    'repost_noun': 'Ripubblicazione',
+    'from_at_user': 'Da @{user}',
+    'confirm_delete_story_question':
+        'Sei sicuro/a di voler eliminare questa storia?',
     'error_reposting': 'Errore nella ripubblicazione',
     'write_share_prompt': 'Pubblicazione: Scrivi ciò che vuoi condividere',
     'experience_published': 'Esperienza pubblicata con successo!',
@@ -20338,6 +20892,30 @@ class AppTranslations {
     'product_published_success': 'Prodotto publicado exitosamente',
     'error_publishing': 'Errore al pubblicare',
     'user_not_authenticated': 'Utente no autenticado',
+    'error_loading_rides': 'Errore nel caricamento delle pedalate',
+    'error_creating_ride': 'Errore nella creazione della pedalata',
+    'error_updating_ride': 'Errore nell\'aggiornamento della pedalata',
+    'error_joining_ride': 'Errore nell\'unirsi alla pedalata',
+    'error_leaving_ride': 'Errore nell\'uscire dalla pedalata',
+    'error_cancelling_ride': 'Errore nell\'annullamento della pedalata',
+    'ride_date_cannot_be_past':
+        'La data della pedalata non può essere nel passato',
+    'ride_km_must_be_positive': 'I chilometri devono essere maggiori di 0',
+    'ride_name_min_chars': 'Il nome deve avere almeno 3 caratteri',
+    'no_permission_edit_ride':
+        'Non hai il permesso di modificare questa pedalata',
+    'only_organizer_can_cancel':
+        'Solo l\'organizzatore può annullare la pedalata',
+    'group_no_name': 'Gruppo senza nome',
+    'could_not_load_messages':
+        'Impossibile caricare i messaggi. Verifica la connessione.',
+    'could_not_send_image': 'Impossibile inviare l\'immagine',
+    'could_not_send_video': 'Impossibile inviare il video',
+    'could_not_send_audio': 'Impossibile inviare l\'audio',
+    'slide_to_cancel': 'Scorri per annullare',
+    'tap_to_stop': 'Tocca per fermare',
+    'tap_to_record': 'Tocca per registrare',
+    'tap_to_capture': 'Tocca per catturare',
     // Shop screen pro
     'biux_store_title': '🚴 Negozio Biux',
     'search_products_hint': 'Cercare prodottos...',
@@ -20411,6 +20989,11 @@ class AppTranslations {
     // Bikes
     'bike': 'Bicicletta',
     'bike_not_found': 'Bicicletta no encontrada',
+    'bike_id_required': 'L\'ID della bicicletta è obbligatorio',
+    'reporter_id_required': 'L\'ID del segnalante è obbligatorio',
+    'only_owner_can_report': 'Solo il proprietario può segnalare il furto',
+    'bike_already_reported_stolen':
+        'Questa bicicletta è già segnalata come rubata',
     'transfer': 'Transferir',
     'delete_bike': 'Eliminare Bicicletta',
     'deleting_bike': 'Eliminando bicicletta...',
@@ -20517,6 +21100,8 @@ class AppTranslations {
     'exp_create_story_text': 'Texto de storia',
     'exp_create_story_text_help': 'Texto corto (massimo 100 caracteres)',
     'exp_create_story_text_hint': 'Escribe un texto corto per il tuo storia...',
+    'media_description': 'Descrizione dell\'immagine',
+    'media_description_hint': 'Scrivi una descrizione per questa immagine...',
     'exp_create_what_to_create':
         'Elige il tipo de post que quieres condividere',
     'create_post': 'Creare Pubblicazione',
@@ -22356,41 +22941,101 @@ class AppTranslations {
     'achievement_training_route': 'Percorso de Entrenamiento',
     'achievement_advanced_route': 'Percorso Avanzada',
     'achievement_almost_century': 'Casi il Centurión',
-    'achievement_ultra_adventure': 'Ultra Aventurero',
-    // === Logros con sistema de 5 niveles ===
-    'achievement_dist_explorer': 'Explorador de Percorsos',
-    'achievement_dist_traveler': 'Gran Viajero',
-    'achievement_dist_runner': 'Rodador Incansable',
+    'achievement_ultra_adventure': 'Ultra Avventuriero',
+    // === Risultati sistema 5 livelli ===
+    'achievement_dist_explorer': 'Esploratore di Percorsi',
+    'achievement_dist_explorer_desc':
+        'I tuoi primi chilometri in bici. Ogni km è un passo verso l\'avventura!',
+    'achievement_dist_traveler': 'Grande Viaggiatore',
+    'achievement_dist_traveler_desc':
+        'Accumuli chilometri con passione. La strada è la tua seconda casa.',
+    'achievement_dist_runner': 'Pedalatore Instancabile',
+    'achievement_dist_runner_desc':
+        'La tua dedizione non ha limiti. L\'asfalto ti conosce a memoria.',
     'achievement_dist_ultra': 'Ultra Ciclista',
-    'achievement_dist_legend': 'Leyenda dil Asfalto',
-    'achievement_rides_starter': 'Primas Pedalatas',
-    'achievement_rides_regular': 'Ciclista Habitual',
-    'achievement_rides_veteran': 'Veterano dil Pedaleo',
+    'achievement_dist_ultra_desc':
+        'I grandi numeri non ti spaventano. Sei pura élite su due ruote.',
+    'achievement_dist_legend': 'Leggenda dell\'Asfalto',
+    'achievement_dist_legend_desc':
+        'Numeri che pochi raggiungono. Il tuo nome è scritto nella storia del ciclismo.',
+    'achievement_rides_starter': 'Prime Pedalate',
+    'achievement_rides_starter_desc':
+        'L\'inizio dell\'abitudine ciclista! Che la ruota non si fermi.',
+    'achievement_rides_regular': 'Ciclista Abituale',
+    'achievement_rides_regular_desc':
+        'Sei già un volto noto nel gruppo. Sempre pronto a pedalare.',
+    'achievement_rides_veteran': 'Veterano della Pedalata',
+    'achievement_rides_veteran_desc':
+        'Pedalate nel corpo e chilometri di esperienza sui pedali.',
     'achievement_rides_master': 'Maestro della Pedalata',
-    'achievement_rides_legend': 'Leyenda de Pedalatas',
-    'achievement_speed_cruiser': 'Velocità de Crucero',
+    'achievement_rides_master_desc':
+        'Il tuo contatore non si ferma. Sei l\'esempio vivente della costanza ciclista.',
+    'achievement_rides_legend': 'Leggenda delle Pedalate',
+    'achievement_rides_legend_desc':
+        'Migliaia di pedalate e continui. Sei un\'istituzione della comunità Biux.',
+    'achievement_speed_cruiser': 'Velocità di Crociera',
+    'achievement_speed_cruiser_desc':
+        'Pedali a buon ritmo. Fluido, costante, inarrestabile.',
     'achievement_speed_sprinter': 'Sprinter',
+    'achievement_speed_sprinter_desc':
+        'Il motore si sveglia! La tua velocità sta iniziando a impressionare tutti.',
     'achievement_speed_racer': 'Velocista',
-    'achievement_speed_rocket': 'Cohete in Dos Ruedas',
-    'achievement_speed_sonic': 'Supersónico',
-    'achievement_streak_init': 'Primer Calentamiento',
-    'achievement_streak_habit': 'Hábito Ciclista',
-    'achievement_streak_machine': 'Máquina de Pedalear',
-    'achievement_streak_iron': 'Ciclista de Hierro',
-    'achievement_streak_legend': 'Fenómeno Ciclista',
-    'achievement_social_member': 'Membro dil Gruppo',
-    'achievement_social_popular': 'Popular in la Percorso',
-    'achievement_social_connector': 'Conector de Comunidades',
+    'achievement_speed_racer_desc':
+        'Velocità da competizione. Il vento non ti raggiunge più.',
+    'achievement_speed_rocket': 'Razzo su Due Ruote',
+    'achievement_speed_rocket_desc':
+        'Quelle velocità fanno male contro il vento. E adori ogni secondo!',
+    'achievement_speed_sonic': 'Supersonico',
+    'achievement_speed_sonic_desc':
+        'Numeri da record. Sei una leggenda della velocità in bici.',
+    'achievement_streak_init': 'Primo Riscaldamento',
+    'achievement_streak_init_desc':
+        'La serie inizia. Non spezzarla, ciclista di ferro!',
+    'achievement_streak_habit': 'Abitudine Ciclista',
+    'achievement_streak_habit_desc':
+        '21 giorni di fila: l\'abitudine è ormai parte della tua identità.',
+    'achievement_streak_machine': 'Macchina da Pedalata',
+    'achievement_streak_machine_desc':
+        'Né pioggia, stanchezza né scuse ti fermano. Sei inarrestabile.',
+    'achievement_streak_iron': 'Ciclista di Ferro',
+    'achievement_streak_iron_desc':
+        'Il tuo corpo e la tua mente sono puro acciaio su due ruote.',
+    'achievement_streak_legend': 'Fenomeno Ciclista',
+    'achievement_streak_legend_desc':
+        'Un anno intero a pedalare. Non è solo sport, è uno stile di vita.',
+    'achievement_social_member': 'Membro del Gruppo',
+    'achievement_social_member_desc':
+        'Pedalare in comunità è sempre meglio. Benvenuto nel gruppo!',
+    'achievement_social_popular': 'Popolare sul Percorso',
+    'achievement_social_popular_desc':
+        'Tante persone conoscono la tua bici. Continui a farti amici su ruote.',
+    'achievement_social_connector': 'Connettore di Comunità',
+    'achievement_social_connector_desc':
+        'Unisci gruppi, persone e percorsi. Sei il nesso ciclista della regione.',
     'achievement_social_networker': 'Networker Ciclista',
-    'achievement_social_ambassador': 'Embajador dil Ciclismo',
-    'achievement_aventura_start': 'Prima Gran Salida',
-    'achievement_aventura_explorer': 'Explorador de Caminos',
+    'achievement_social_networker_desc':
+        'La tua rete è enorme. Ovunque vai, ci sono amici in bici che ti aspettano.',
+    'achievement_social_ambassador': 'Ambasciatore del Ciclismo',
+    'achievement_social_ambassador_desc':
+        'Rappresenti l\'essenza del ciclismo sociale. Una vera icona!',
+    'achievement_aventura_start': 'Prima Grande Uscita',
+    'achievement_aventura_start_desc':
+        'Una pedalata che ricorderai. L\'inizio dell\'avventura su due ruote.',
+    'achievement_aventura_explorer': 'Esploratore di Sentieri',
+    'achievement_aventura_explorer_desc':
+        '75 km in una volta. Questo è vero spirito avventuriero!',
     'achievement_aventura_fondo': 'Gran Fondo',
-    'achievement_aventura_ultra': 'Ultra Aventura',
-    'achievement_aventura_expedition': 'Gran Expedición',
+    'achievement_aventura_fondo_desc':
+        'Giornate epiche che ti definiscono come ciclista di fondo senza limiti.',
+    'achievement_aventura_ultra': 'Ultra Avventura',
+    'achievement_aventura_ultra_desc':
+        'Più di 200 km in un\'unica uscita. Sei un ultra avventuriero!',
+    'achievement_aventura_expedition': 'Grande Spedizione',
+    'achievement_aventura_expedition_desc':
+        '500 km in una volta. Non è una pedalata, è un\'autentica spedizione.',
 
     // === Shared Screens ===
-    'location_move_map': 'Mueve il mappa per selezionare',
+    'location_move_map': 'Muove il mappa per selezionare',
     'location_confirm': 'Conferma',
     'location_selected': 'Posizione seleccionada',
     'no_connection_title': 'Senza connessione',
@@ -23045,9 +23690,6 @@ class AppTranslations {
     'level_unlocked_prefix': 'Livello',
     'level_unlocked_suffix': 'sbloccato!',
     'completed_on': 'Completato il',
-    'unlocked_level_share': 'Ho sbloccato il livello',
-    'of': 'di',
-    'in_biux_app': 'in Biux - App per Ciclisti.',
     'almost_there': 'Ci sei quasi!',
     'you_need': 'Ti mancano',
     'more': 'in più',
@@ -23236,6 +23878,9 @@ class AppTranslations {
         'Richiesta inviata. Riceverai un\'email con i tuoi dati entro 48h.',
     'ride_cancelled_by_organizer':
         'Questa pedalata è stata annullata dall\'organizzatore.',
+    'confirm_attendance_for_chat':
+        'Conferma la tua presenza per accedere alla chat',
+    'no': 'No',
     'ride_deleted': 'Pedalata eliminata',
     'ride_finished_no_add':
         'Pedalata terminata - Non è possibile aggiungere partecipanti',
@@ -23499,7 +24144,8 @@ class AppTranslations {
     'reply_label': 'Risposta',
     'time_years': 'anno/i',
     'time_months': 'mese/i',
-    'confirm_remove_like': 'Vuoi rimuovere il tuo like? Scomparirà da questa lista.',
+    'confirm_remove_like':
+        'Vuoi rimuovere il tuo like? Scomparirà da questa lista.',
     'time_ago_lower': 'fa',
     'second': 'secondo',
     'seconds': 'secondi',

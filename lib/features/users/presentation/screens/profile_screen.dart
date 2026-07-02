@@ -1492,68 +1492,77 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
                               itemCount: experiences.length,
                               itemBuilder: (context, index) {
                                 final experience = experiences[index];
-                                return GestureDetector(
-                                  onTap: () {
-                                    context.push(
-                                      '/post-detail/${experience.id}',
-                                    );
-                                  },
-                                  onLongPress: () {
-                                    _showExperienceMenu(context, experience);
-                                  },
-                                  child: Container(
-                                    decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(8),
-                                      border: Border.all(
-                                        color: ColorTokens.primary30,
-                                        width: 1,
-                                      ),
-                                    ),
-                                    child: Stack(
-                                      fit: StackFit.expand,
-                                      children: [
-                                        // Imagen/thumbnail de la experiencia optimizada
-                                        experience.media.isNotEmpty
-                                            ? Builder(
-                                                builder: (context) {
-                                                  final media =
-                                                      experience.media.first;
-                                                  final isVideo =
-                                                      media.mediaType ==
-                                                      MediaType.video;
-                                                  final displayUrl = isVideo
-                                                      ? (media
-                                                                    .thumbnailUrl
-                                                                    ?.isNotEmpty ==
-                                                                true
-                                                            ? media
-                                                                  .thumbnailUrl!
-                                                            : media.url)
-                                                      : media.url;
-                                                  return Stack(
-                                                    fit: StackFit.expand,
-                                                    children: [
-                                                      CachedNetworkImage(
-                                                        imageUrl: displayUrl,
-                                                        fit: BoxFit.cover,
-                                                        cacheManager:
-                                                            OptimizedCacheManager
-                                                                .instance,
-                                                        memCacheWidth: 400,
-                                                        memCacheHeight: 400,
-                                                        fadeInDuration:
-                                                            const Duration(
-                                                              milliseconds: 100,
-                                                            ),
-                                                        fadeOutDuration:
-                                                            const Duration(
-                                                              milliseconds: 50,
-                                                            ),
-                                                        placeholder:
-                                                            (
-                                                              context,
-                                                              url,
-                                                            ) => Container(
+                                return Stack(
+                                  children: [
+                                    // Contenido principal con navegación
+                                    Positioned.fill(
+                                      child: GestureDetector(
+                                        onTap: () {
+                                          context.push(
+                                            '/post-detail/${experience.id}',
+                                          );
+                                        },
+                                        onLongPress: () {
+                                          _showExperienceMenu(
+                                            context,
+                                            experience,
+                                          );
+                                        },
+                                        child: Container(
+                                          decoration: BoxDecoration(
+                                            borderRadius: BorderRadius.circular(
+                                              8,
+                                            ),
+                                            border: Border.all(
+                                              color: ColorTokens.primary30,
+                                              width: 1,
+                                            ),
+                                          ),
+                                          child: ClipRRect(
+                                            borderRadius: BorderRadius.circular(
+                                              8,
+                                            ),
+                                            child: experience.media.isNotEmpty
+                                                ? Builder(
+                                                    builder: (context) {
+                                                      final media = experience
+                                                          .media
+                                                          .first;
+                                                      final isVideo =
+                                                          media.mediaType ==
+                                                          MediaType.video;
+                                                      final displayUrl = isVideo
+                                                          ? (media
+                                                                        .thumbnailUrl
+                                                                        ?.isNotEmpty ==
+                                                                    true
+                                                                ? media
+                                                                      .thumbnailUrl!
+                                                                : media.url)
+                                                          : media.url;
+                                                      return Stack(
+                                                        fit: StackFit.expand,
+                                                        children: [
+                                                          CachedNetworkImage(
+                                                            imageUrl:
+                                                                displayUrl,
+                                                            fit: BoxFit.cover,
+                                                            cacheManager:
+                                                                OptimizedCacheManager
+                                                                    .instance,
+                                                            memCacheWidth: 400,
+                                                            memCacheHeight: 400,
+                                                            fadeInDuration:
+                                                                const Duration(
+                                                                  milliseconds:
+                                                                      100,
+                                                                ),
+                                                            fadeOutDuration:
+                                                                const Duration(
+                                                                  milliseconds:
+                                                                      50,
+                                                                ),
+                                                            placeholder: (context, url) => Container(
                                                               color: ColorTokens
                                                                   .neutral20,
                                                               child: Center(
@@ -1569,41 +1578,39 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
                                                                 ),
                                                               ),
                                                             ),
-                                                        errorWidget: (context, url, error) {
-                                                          final expId =
-                                                              experience.id
-                                                                  .toString();
-                                                          if (!_failedImageIds
-                                                              .contains(
-                                                                expId,
-                                                              )) {
-                                                            WidgetsBinding
-                                                                .instance
-                                                                .addPostFrameCallback((
-                                                                  _,
-                                                                ) {
-                                                                  if (mounted) {
-                                                                    setState(() {
-                                                                      _failedImageIds
-                                                                          .add(
+                                                            errorWidget: (context, url, error) {
+                                                              final expId =
+                                                                  experience.id
+                                                                      .toString();
+                                                              if (!_failedImageIds
+                                                                  .contains(
+                                                                    expId,
+                                                                  )) {
+                                                                WidgetsBinding
+                                                                    .instance
+                                                                    .addPostFrameCallback((
+                                                                      _,
+                                                                    ) {
+                                                                      if (mounted) {
+                                                                        setState(() {
+                                                                          _failedImageIds.add(
                                                                             expId,
                                                                           );
+                                                                        });
+                                                                      }
                                                                     });
-                                                                  }
-                                                                });
-                                                          }
-                                                          return SizedBox.shrink();
-                                                        },
-                                                      ),
-                                                      if (isVideo)
-                                                        Center(
-                                                          child: Container(
-                                                            padding:
-                                                                const EdgeInsets.all(
-                                                                  8,
-                                                                ),
-                                                            decoration:
-                                                                BoxDecoration(
+                                                              }
+                                                              return SizedBox.shrink();
+                                                            },
+                                                          ),
+                                                          if (isVideo)
+                                                            Center(
+                                                              child: Container(
+                                                                padding:
+                                                                    const EdgeInsets.all(
+                                                                      8,
+                                                                    ),
+                                                                decoration: BoxDecoration(
                                                                   color: Colors
                                                                       .black
                                                                       .withValues(
@@ -1613,197 +1620,196 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
                                                                   shape: BoxShape
                                                                       .circle,
                                                                 ),
-                                                            child: const Icon(
-                                                              Icons.play_arrow,
-                                                              color:
-                                                                  Colors.white,
-                                                              size: 24,
-                                                            ),
-                                                          ),
-                                                        ),
-                                                    ],
-                                                  );
-                                                },
-                                              )
-                                            : Container(
-                                                color: ColorTokens.neutral20,
-                                                child: Icon(
-                                                  Icons.image,
-                                                  color: ColorTokens.neutral60,
-                                                ),
-                                              ),
-                                        // Badge de repost con línea diagonal (quitar repost al tocar)
-                                        if (_selectedTab == 1)
-                                          Positioned(
-                                            top: 4,
-                                            left: 4,
-                                            child: GestureDetector(
-                                              onTap: () async {
-                                                final confirmed =
-                                                    await showDialog<bool>(
-                                                      context: context,
-                                                      builder: (ctx) => AlertDialog(
-                                                        title: Text(
-                                                          l.t('remove_repost'),
-                                                        ),
-                                                        content: Text(
-                                                          l.t(
-                                                            'remove_repost_confirm',
-                                                          ),
-                                                        ),
-                                                        actions: [
-                                                          TextButton(
-                                                            onPressed: () =>
-                                                                Navigator.pop(
-                                                                  ctx,
-                                                                  false,
+                                                                child: const Icon(
+                                                                  Icons
+                                                                      .play_arrow,
+                                                                  color: Colors
+                                                                      .white,
+                                                                  size: 24,
                                                                 ),
-                                                            child: Text(
-                                                              l.t('cancel'),
+                                                              ),
                                                             ),
-                                                          ),
-                                                          ElevatedButton(
-                                                            onPressed: () =>
-                                                                Navigator.pop(
-                                                                  ctx,
-                                                                  true,
-                                                                ),
-                                                            child: Text(
-                                                              l.t('delete'),
-                                                            ),
-                                                          ),
                                                         ],
-                                                      ),
-                                                    );
-                                                if (confirmed != true ||
-                                                    !mounted)
-                                                  return;
-                                                try {
-                                                  final provider = context
-                                                      .read<
-                                                        ExperienceProvider
-                                                      >();
-                                                  await provider
-                                                      .deleteExperience(
-                                                        experience.id,
                                                       );
-                                                  if (mounted) {
-                                                    _refreshExperiences();
-                                                    ScaffoldMessenger.of(
-                                                      context,
-                                                    ).showSnackBar(
-                                                      SnackBar(
-                                                        content: Text(
-                                                          l.t('repost_removed'),
-                                                        ),
-                                                        behavior:
-                                                            SnackBarBehavior
-                                                                .floating,
-                                                      ),
-                                                    );
-                                                  }
-                                                } catch (e) {}
-                                              },
-                                              child: Container(
-                                                padding: const EdgeInsets.all(
-                                                  4,
-                                                ),
-                                                decoration: BoxDecoration(
-                                                  color: ColorTokens.primary30
-                                                      .withValues(alpha: 0.85),
-                                                  shape: BoxShape.circle,
-                                                ),
-                                                child: Stack(
-                                                  alignment: Alignment.center,
-                                                  children: [
-                                                    const Icon(
-                                                      Icons.repeat_rounded,
-                                                      color: Colors.white,
-                                                      size: 14,
+                                                    },
+                                                  )
+                                                : Container(
+                                                    color:
+                                                        ColorTokens.neutral20,
+                                                    child: Icon(
+                                                      Icons.image,
+                                                      color:
+                                                          ColorTokens.neutral60,
                                                     ),
-                                                    Transform.rotate(
-                                                      angle: -0.785,
-                                                      child: Container(
-                                                        width: 18,
-                                                        height: 2,
-                                                        color: Colors.white,
-                                                      ),
-                                                    ),
-                                                  ],
-                                                ),
-                                              ),
-                                            ),
+                                                  ),
                                           ),
-                                        // Botón de 3 puntos (menÃº)
-                                        Positioned(
-                                          top: 4,
-                                          right: 4,
-                                          child: GestureDetector(
-                                            onTap: () {
-                                              _showExperienceMenu(
-                                                context,
-                                                experience,
+                                        ),
+                                      ),
+                                    ),
+                                    // Badge de repost (fuera del GestureDetector principal)
+                                    if (_selectedTab == 1)
+                                      Positioned(
+                                        top: 4,
+                                        left: 4,
+                                        child: GestureDetector(
+                                          behavior: HitTestBehavior.opaque,
+                                          onTap: () async {
+                                            final confirmed =
+                                                await showDialog<bool>(
+                                                  context: context,
+                                                  builder: (ctx) => AlertDialog(
+                                                    title: Text(
+                                                      l.t('remove_repost'),
+                                                    ),
+                                                    content: Text(
+                                                      l.t(
+                                                        'remove_repost_confirm',
+                                                      ),
+                                                    ),
+                                                    actions: [
+                                                      TextButton(
+                                                        onPressed: () =>
+                                                            Navigator.pop(
+                                                              ctx,
+                                                              false,
+                                                            ),
+                                                        child: Text(
+                                                          l.t('cancel'),
+                                                        ),
+                                                      ),
+                                                      ElevatedButton(
+                                                        onPressed: () =>
+                                                            Navigator.pop(
+                                                              ctx,
+                                                              true,
+                                                            ),
+                                                        child: Text(
+                                                          l.t('delete'),
+                                                        ),
+                                                      ),
+                                                    ],
+                                                  ),
+                                                );
+                                            if (confirmed != true || !mounted)
+                                              return;
+                                            try {
+                                              final provider = context
+                                                  .read<ExperienceProvider>();
+                                              await provider.deleteExperience(
+                                                experience.id,
                                               );
-                                            },
-                                            child: Container(
-                                              padding: const EdgeInsets.all(4),
-                                              decoration: BoxDecoration(
-                                                color: Colors.black.withValues(
-                                                  alpha: 0.6,
+                                              if (mounted) {
+                                                _refreshExperiences();
+                                                ScaffoldMessenger.of(
+                                                  context,
+                                                ).showSnackBar(
+                                                  SnackBar(
+                                                    content: Text(
+                                                      l.t('repost_removed'),
+                                                    ),
+                                                    behavior: SnackBarBehavior
+                                                        .floating,
+                                                  ),
+                                                );
+                                              }
+                                            } catch (e) {}
+                                          },
+                                          child: Container(
+                                            padding: const EdgeInsets.all(4),
+                                            decoration: BoxDecoration(
+                                              color: ColorTokens.primary30
+                                                  .withValues(alpha: 0.85),
+                                              shape: BoxShape.circle,
+                                            ),
+                                            child: Stack(
+                                              alignment: Alignment.center,
+                                              children: [
+                                                const Icon(
+                                                  Icons.repeat_rounded,
+                                                  color: Colors.white,
+                                                  size: 14,
                                                 ),
-                                                shape: BoxShape.circle,
-                                              ),
-                                              child: const Icon(
-                                                Icons.more_vert,
-                                                color: Colors.white,
-                                                size: 16,
-                                              ),
+                                                Transform.rotate(
+                                                  angle: -0.785,
+                                                  child: Container(
+                                                    width: 18,
+                                                    height: 2,
+                                                    color: Colors.white,
+                                                  ),
+                                                ),
+                                              ],
                                             ),
                                           ),
                                         ),
-                                        // Indicador de mÃºltiples imágenes
-                                        if (experience.media.length > 1)
-                                          Positioned(
-                                            bottom: 4,
-                                            right: 4,
-                                            child: Container(
-                                              padding:
-                                                  const EdgeInsets.symmetric(
-                                                    horizontal: 6,
-                                                    vertical: 2,
-                                                  ),
-                                              decoration: BoxDecoration(
-                                                color: Colors.black.withValues(
-                                                  alpha: 0.6,
-                                                ),
-                                                borderRadius:
-                                                    BorderRadius.circular(8),
-                                              ),
-                                              child: Row(
-                                                mainAxisSize: MainAxisSize.min,
-                                                children: [
-                                                  const Icon(
-                                                    Icons.photo_library,
-                                                    color: Colors.white,
-                                                    size: 12,
-                                                  ),
-                                                  const SizedBox(width: 2),
-                                                  Text(
-                                                    '${experience.media.length}',
-                                                    style: const TextStyle(
-                                                      color: Colors.white,
-                                                      fontSize: 10,
-                                                      fontWeight:
-                                                          FontWeight.w600,
-                                                    ),
-                                                  ),
-                                                ],
-                                              ),
+                                      ),
+                                    // Botón de 3 puntos (menú) - fuera del GestureDetector principal
+                                    Positioned(
+                                      top: 4,
+                                      right: 4,
+                                      child: GestureDetector(
+                                        behavior: HitTestBehavior.opaque,
+                                        onTap: () {
+                                          _showExperienceMenu(
+                                            context,
+                                            experience,
+                                          );
+                                        },
+                                        child: Container(
+                                          padding: const EdgeInsets.all(4),
+                                          decoration: BoxDecoration(
+                                            color: Colors.black.withValues(
+                                              alpha: 0.6,
+                                            ),
+                                            shape: BoxShape.circle,
+                                          ),
+                                          child: const Icon(
+                                            Icons.more_vert,
+                                            color: Colors.white,
+                                            size: 16,
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                    // Indicador de múltiples imágenes
+                                    if (experience.media.length > 1)
+                                      Positioned(
+                                        bottom: 4,
+                                        right: 4,
+                                        child: Container(
+                                          padding: const EdgeInsets.symmetric(
+                                            horizontal: 6,
+                                            vertical: 2,
+                                          ),
+                                          decoration: BoxDecoration(
+                                            color: Colors.black.withValues(
+                                              alpha: 0.6,
+                                            ),
+                                            borderRadius: BorderRadius.circular(
+                                              8,
                                             ),
                                           ),
-                                      ],
-                                    ),
-                                  ),
+                                          child: Row(
+                                            mainAxisSize: MainAxisSize.min,
+                                            children: [
+                                              const Icon(
+                                                Icons.photo_library,
+                                                color: Colors.white,
+                                                size: 12,
+                                              ),
+                                              const SizedBox(width: 2),
+                                              Text(
+                                                '${experience.media.length}',
+                                                style: const TextStyle(
+                                                  color: Colors.white,
+                                                  fontSize: 10,
+                                                  fontWeight: FontWeight.w600,
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      ),
+                                  ],
                                 );
                               },
                             );

@@ -19,28 +19,28 @@ class ReportBikeTheftUseCase {
   }) async {
     // Validaciones
     if (bikeId.trim().isEmpty) {
-      throw ArgumentError('El ID de la bicicleta es requerido');
+      throw ArgumentError('bike_id_required');
     }
     if (reporterId.trim().isEmpty) {
-      throw ArgumentError('El ID del reportero es requerido');
+      throw ArgumentError('reporter_id_required');
     }
     if (location.trim().isEmpty) {
-      throw ArgumentError('La ubicación del robo es requerida');
+      throw ArgumentError('theft_location_required');
     }
     if (description.trim().isEmpty) {
-      throw ArgumentError('La descripción del robo es requerida');
+      throw ArgumentError('theft_description_required');
     }
 
     // Verificar que la bicicleta existe y pertenece al usuario
     final bike = await repository.getBikeById(bikeId);
     if (bike == null) {
-      throw ArgumentError('La bicicleta no existe');
+      throw ArgumentError('bike_not_found');
     }
     if (bike.ownerId != reporterId) {
-      throw ArgumentError('Solo el propietario puede reportar el robo');
+      throw ArgumentError('only_owner_can_report');
     }
     if (bike.status == BikeStatus.stolen) {
-      throw ArgumentError('Esta bicicleta ya está reportada como robada');
+      throw ArgumentError('bike_already_reported_stolen');
     }
 
     // Crear reporte de robo

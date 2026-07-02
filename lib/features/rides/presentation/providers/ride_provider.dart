@@ -63,7 +63,7 @@ class RideProvider extends ChangeNotifier {
 
       _setLoading(false);
     } catch (e) {
-      _setError('Error al cargar las rodadas: $e');
+      _setError('error_loading_rides');
       _setLoading(false);
     }
   }
@@ -89,7 +89,7 @@ class RideProvider extends ChangeNotifier {
 
       _setLoading(false);
     } catch (e) {
-      _setError('Error al cargar las rodadas del grupo: $e');
+      _setError('error_loading_rides');
       _setLoading(false);
     }
   }
@@ -97,7 +97,7 @@ class RideProvider extends ChangeNotifier {
   // Cargar rodadas del usuario actual
   Future<void> loadUserRides() async {
     if (currentUserId == null) {
-      _setError('Usuario no autenticado');
+      _setError('user_not_authenticated');
       return;
     }
 
@@ -117,7 +117,7 @@ class RideProvider extends ChangeNotifier {
 
       _setLoading(false);
     } on FirebaseException catch (e) {
-      _setError('Error al cargar las rodadas del usuario: $e');
+      _setError('error_loading_rides');
       _setLoading(false);
     }
   }
@@ -135,22 +135,22 @@ class RideProvider extends ChangeNotifier {
     String? imageUrl, // Imagen opcional de la rodada
   }) async {
     if (currentUserId == null) {
-      _setError('Usuario no autenticado');
+      _setError('user_not_authenticated');
       return false;
     }
     // Validar que la fecha no sea en el pasado
     if (dateTime.isBefore(DateTime.now())) {
-      _setError('La fecha de la rodada no puede ser en el pasado');
+      _setError('ride_date_cannot_be_past');
       return false;
     }
     // Validar kilómetros
     if (kilometers <= 0) {
-      _setError('Los kilómetros deben ser mayor a 0');
+      _setError('ride_km_must_be_positive');
       return false;
     }
     // Validar nombre mínimo
     if (name.trim().length < 3) {
-      _setError('El nombre debe tener al menos 3 caracteres');
+      _setError('ride_name_min_chars');
       return false;
     }
 
@@ -207,7 +207,7 @@ class RideProvider extends ChangeNotifier {
       _setLoading(false);
       return true;
     } on FirebaseException catch (e) {
-      _setError('Error al crear la rodada: $e');
+      _setError('error_creating_ride');
       _setLoading(false);
       return false;
     }
@@ -227,7 +227,7 @@ class RideProvider extends ChangeNotifier {
     bool removeImage = false, // Flag para eliminar la imagen actual
   }) async {
     if (currentUserId == null) {
-      _setError('Usuario no autenticado');
+      _setError('user_not_authenticated');
       return false;
     }
 
@@ -238,14 +238,14 @@ class RideProvider extends ChangeNotifier {
       // Verificar que el usuario es el creador de la rodada
       final rideDoc = await _firestore.collection('rides').doc(rideId).get();
       if (!rideDoc.exists) {
-        _setError('La rodada no existe');
+        _setError('ride_not_found');
         _setLoading(false);
         return false;
       }
 
       final rideData = rideDoc.data()!;
       if (rideData['createdBy'] != currentUserId) {
-        _setError('No tienes permisos para editar esta rodada');
+        _setError('no_permission_edit_ride');
         _setLoading(false);
         return false;
       }
@@ -321,7 +321,7 @@ class RideProvider extends ChangeNotifier {
       _setLoading(false);
       return true;
     } on FirebaseException catch (e) {
-      _setError('Error al actualizar la rodada: $e');
+      _setError('error_updating_ride');
       _setLoading(false);
       return false;
     }
@@ -330,7 +330,7 @@ class RideProvider extends ChangeNotifier {
   // Unirse a una rodada
   Future<bool> joinRide(String rideId, {bool maybe = false}) async {
     if (currentUserId == null) {
-      _setError('Usuario no autenticado');
+      _setError('user_not_authenticated');
       return false;
     }
 
@@ -399,7 +399,6 @@ class RideProvider extends ChangeNotifier {
             userData['profilePicture'] ??
             userData['avatar'] ??
             _auth.currentUser?.photoURL;
-
       } else {
         // CRÃTICO: Si no existe el documento en Firestore, crearlo con datos básicos
         debugPrint(
@@ -430,7 +429,6 @@ class RideProvider extends ChangeNotifier {
             },
             SetOptions(merge: true),
           ); // merge: true para no sobrescribir si existe
-
         } on FirebaseException catch (e) {
           debugPrint('aŒ Error creando documento de usuario: $e');
         }
@@ -495,7 +493,7 @@ class RideProvider extends ChangeNotifier {
       _setLoading(false);
       return true;
     } on FirebaseException catch (e) {
-      _setError('Error al unirse a la rodada: $e');
+      _setError('error_joining_ride');
       _setLoading(false);
       return false;
     }
@@ -504,7 +502,7 @@ class RideProvider extends ChangeNotifier {
   // Salirse de una rodada
   Future<bool> leaveRide(String rideId) async {
     if (currentUserId == null) {
-      _setError('Usuario no autenticado');
+      _setError('user_not_authenticated');
       return false;
     }
 
@@ -554,7 +552,7 @@ class RideProvider extends ChangeNotifier {
       _setLoading(false);
       return true;
     } on FirebaseException catch (e) {
-      _setError('Error al salirse de la rodada: $e');
+      _setError('error_leaving_ride');
       _setLoading(false);
       return false;
     }
@@ -593,7 +591,7 @@ class RideProvider extends ChangeNotifier {
 
       _setLoading(false);
     } catch (e) {
-      _setError('Error al cargar las rodadas del grupo: $e');
+      _setError('error_loading_rides');
       _setLoading(false);
     }
   }
@@ -619,7 +617,7 @@ class RideProvider extends ChangeNotifier {
   // Unirse a una rodada como "tal vez"
   Future<bool> maybeJoinRide(String rideId) async {
     if (currentUserId == null) {
-      _setError('Usuario no autenticado');
+      _setError('user_not_authenticated');
       return false;
     }
 
@@ -637,7 +635,7 @@ class RideProvider extends ChangeNotifier {
       _setLoading(false);
       return true;
     } on FirebaseException catch (e) {
-      _setError('Error al marcar como "tal vez" en la rodada: $e');
+      _setError('error_joining_ride');
       _setLoading(false);
       return false;
     }
@@ -646,7 +644,7 @@ class RideProvider extends ChangeNotifier {
   // Cancelar una rodada (solo el creador puede hacerlo)
   Future<bool> cancelRide(String rideId) async {
     if (currentUserId == null) {
-      _setError('Usuario no autenticado');
+      _setError('user_not_authenticated');
       return false;
     }
 
@@ -659,14 +657,14 @@ class RideProvider extends ChangeNotifier {
       // Verificar que el usuario actual es el creador
       final rideDoc = await rideRef.get();
       if (!rideDoc.exists) {
-        _setError('La rodada no existe');
+        _setError('ride_not_found');
         _setLoading(false);
         return false;
       }
 
       final rideData = rideDoc.data() as Map<String, dynamic>;
       if (rideData['createdBy'] != currentUserId) {
-        _setError('Solo el organizador puede cancelar la rodada');
+        _setError('only_organizer_can_cancel');
         _setLoading(false);
         return false;
       }
@@ -684,7 +682,7 @@ class RideProvider extends ChangeNotifier {
       _setLoading(false);
       return true;
     } on FirebaseException catch (e) {
-      _setError('Error al cancelar la rodada: $e');
+      _setError('error_cancelling_ride');
       _setLoading(false);
       return false;
     }
@@ -699,7 +697,7 @@ class RideProvider extends ChangeNotifier {
       final rideDoc = await _firestore.collection('rides').doc(rideId).get();
 
       if (!rideDoc.exists) {
-        _setError('Rodada no encontrada');
+        _setError('ride_not_found');
         _selectedRide = null;
         _setLoading(false);
         return;
@@ -708,7 +706,7 @@ class RideProvider extends ChangeNotifier {
       _selectedRide = RideModel.fromFirestore(rideDoc.data()!, rideDoc.id);
       _setLoading(false);
     } on FirebaseException catch (e) {
-      _setError('Error al cargar la rodada: $e');
+      _setError('error_loading_rides');
       _selectedRide = null;
       _setLoading(false);
     }
@@ -726,7 +724,7 @@ class RideProvider extends ChangeNotifier {
       final groupData = groupDoc.data()!;
       return {
         'id': groupDoc.id,
-        'name': groupData['name'] ?? 'Grupo sin nombre',
+        'name': groupData['name'] ?? 'group_no_name',
         'description': groupData['description'] ?? '',
         'memberCount': groupData['numberMembers'] ?? 0,
         'imageUrl': groupData['logo'] ?? groupData['logoUrl'],

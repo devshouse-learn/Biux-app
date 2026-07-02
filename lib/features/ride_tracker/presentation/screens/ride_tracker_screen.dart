@@ -1609,7 +1609,13 @@ class _RideTrackerScreenState extends State<RideTrackerScreen>
           ],
         ),
         content: Text(
-          '¿Eliminar la rodada de ${ride.totalKm.toStringAsFixed(1)} km del ${ride.startTime.day}/${ride.startTime.month}/${ride.startTime.year}?',
+          l
+              .t('delete_ride_confirm')
+              .replaceAll('{km}', ride.totalKm.toStringAsFixed(1))
+              .replaceAll(
+                '{date}',
+                '${ride.startTime.day}/${ride.startTime.month}/${ride.startTime.year}',
+              ),
           style: const TextStyle(fontSize: 14),
         ),
         actions: [
@@ -1688,7 +1694,9 @@ class _RideTrackerScreenState extends State<RideTrackerScreen>
               ),
               const SizedBox(height: 8),
               Text(
-                'La rodada debe durar al menos 30 segundos para poder guardarla. Llevas ${p.durationSec} segundos.',
+                l
+                    .t('ride_min_30_seconds')
+                    .replaceAll('{seconds}', p.durationSec.toString()),
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   fontSize: 14,
@@ -2028,7 +2036,7 @@ class _RideTrackerScreenState extends State<RideTrackerScreen>
                       ),
                       onPressed: () async {
                         final name = ctrl.text.trim().isEmpty
-                            ? 'Mi rodada'
+                            ? l.t('my_ride')
                             : ctrl.text.trim();
                         Navigator.pop(ctx);
                         await _doSave(p, name, exitAfter);
@@ -2370,13 +2378,20 @@ class _RoutePlannerSheetState extends State<_RoutePlannerSheet> {
   Future<void> _traceRoute() async {
     final origin = widget.provider.livePosition;
     if (origin == null) {
-      _showError('Esperando señal GPS. Inténtalo en un momento.');
+      _showError(
+        Provider.of<LocaleNotifier>(context, listen: false).t('waiting_gps'),
+      );
       return;
     }
 
     final destText = _destController.text.trim();
     if (destText.isEmpty) {
-      _showError('Escribe un destino primero.');
+      _showError(
+        Provider.of<LocaleNotifier>(
+          context,
+          listen: false,
+        ).t('write_destination_first'),
+      );
       return;
     }
 
@@ -2391,7 +2406,10 @@ class _RoutePlannerSheetState extends State<_RoutePlannerSheet> {
 
       if (dest == null) {
         _showError(
-          'No se encontró la dirección "$destText". Escribe un nombre más específico.',
+          Provider.of<LocaleNotifier>(
+            context,
+            listen: false,
+          ).t('address_not_found').replaceAll('{address}', destText),
         );
         return;
       }
@@ -2404,8 +2422,10 @@ class _RoutePlannerSheetState extends State<_RoutePlannerSheet> {
 
       if (points == null || points.isEmpty) {
         _showError(
-          'No se encontró ninguna ruta hacia "$destText". '
-          'Verifica que la dirección exista y esté dentro de un área con calles.',
+          Provider.of<LocaleNotifier>(
+            context,
+            listen: false,
+          ).t('route_not_found').replaceAll('{address}', destText),
         );
         return;
       }
@@ -2415,7 +2435,9 @@ class _RoutePlannerSheetState extends State<_RoutePlannerSheet> {
       if (mounted) Navigator.of(context).pop();
     } catch (e) {
       debugPrint('_traceRoute error: $e');
-      _showError('Error al trazar ruta: $e');
+      _showError(
+        '${Provider.of<LocaleNotifier>(context, listen: false).t('error_tracing_route')}: $e',
+      );
     } finally {
       if (mounted) setState(() => _loadingRoute = false);
     }
@@ -2492,7 +2514,10 @@ class _RoutePlannerSheetState extends State<_RoutePlannerSheet> {
                     ),
                     const SizedBox(width: 8),
                     Text(
-                      'Planear ruta',
+                      Provider.of<LocaleNotifier>(
+                        context,
+                        listen: false,
+                      ).t('plan_route'),
                       style: TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.w800,
@@ -2546,8 +2571,14 @@ class _RoutePlannerSheetState extends State<_RoutePlannerSheet> {
                       const SizedBox(width: 10),
                       Text(
                         widget.provider.livePosition != null
-                            ? 'Mi ubicación actual'
-                            : 'Obteniendo GPS...',
+                            ? Provider.of<LocaleNotifier>(
+                                context,
+                                listen: false,
+                              ).t('my_current_location')
+                            : Provider.of<LocaleNotifier>(
+                                context,
+                                listen: false,
+                              ).t('getting_gps'),
                         style: TextStyle(
                           fontSize: 14,
                           color: isDark ? Colors.white70 : Colors.grey[700],
@@ -2736,8 +2767,14 @@ class _RoutePlannerSheetState extends State<_RoutePlannerSheet> {
                         : const Icon(Icons.alt_route_rounded),
                     label: Text(
                       _loadingRoute
-                          ? 'Trazando ruta...'
-                          : 'Trazar ruta en bicicleta',
+                          ? Provider.of<LocaleNotifier>(
+                              context,
+                              listen: false,
+                            ).t('tracing_route')
+                          : Provider.of<LocaleNotifier>(
+                              context,
+                              listen: false,
+                            ).t('trace_bike_route'),
                       style: const TextStyle(
                         fontSize: 15,
                         fontWeight: FontWeight.w700,

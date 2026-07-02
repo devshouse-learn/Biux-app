@@ -766,7 +766,7 @@ class _AchievementsScreenState extends State<AchievementsScreen>
                           final level = levels[i];
                           final tierName = i < tierNames.length
                               ? tierNames[i]
-                              : 'Nivel ${i + 1}';
+                              : '${l.t('level_label')} ${i + 1}';
                           final levelUnlocked =
                               a.currentValue >= level.targetValue;
                           final levelProgress = level.targetValue > 0
@@ -1002,7 +1002,7 @@ class _AchievementsScreenState extends State<AchievementsScreen>
                                           SharePlus.instance.share(
                                             ShareParams(
                                               text:
-                                                  'Desbloqueé el nivel $tierName de "${l.t(a.title)}" (${level.icon}) en Biux - App para Ciclistas.',
+                                                  '${l.t('unlocked_level_share')} $tierName de "${l.t(a.title)}" (${level.icon}) ${l.t('in_biux_app')}.',
                                             ),
                                           );
                                         },
@@ -1228,9 +1228,9 @@ class _AchievementsScreenState extends State<AchievementsScreen>
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          const Text(
-                            'Compartir con amigos en Biux',
-                            style: TextStyle(
+                          Text(
+                            l.t('share_with_friends_biux'),
+                            style: const TextStyle(
                               fontWeight: FontWeight.w700,
                               fontSize: 15,
                             ),
@@ -1287,9 +1287,9 @@ class _AchievementsScreenState extends State<AchievementsScreen>
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          const Text(
-                            'Compartir fuera de Biux',
-                            style: TextStyle(
+                          Text(
+                            l.t('share_outside_biux_label'),
+                            style: const TextStyle(
                               fontWeight: FontWeight.w700,
                               fontSize: 15,
                             ),
@@ -1559,7 +1559,7 @@ class _AchievementsShareInAppSheetState
             ),
             const SizedBox(height: 16),
             Text(
-              'Enviar a amigos en Biux',
+              l.t('send_to_friends_biux'),
               style: TextStyle(fontSize: 17, fontWeight: FontWeight.bold),
             ),
             SizedBox(height: 14),
@@ -1593,7 +1593,7 @@ class _AchievementsShareInAppSheetState
                           ),
                           const SizedBox(height: 12),
                           Text(
-                            'No tienes chats aun',
+                            l.t('no_chats_yet'),
                             style: TextStyle(
                               color: Colors.grey[400],
                               fontSize: 14,

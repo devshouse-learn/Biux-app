@@ -98,7 +98,7 @@ class EmergencyProvider with ChangeNotifier {
             'userName': userName,
             'latitude': pos.latitude,
             'longitude': pos.longitude,
-            'message': message ?? 'SOS activado desde Biux',
+            'message': message ?? 'sos_from_biux',
             'active': true,
             'createdAt': FieldValue.serverTimestamp(),
             'contacts': _contacts.map((c) => c.toMap()).toList(),
@@ -130,7 +130,7 @@ class EmergencyProvider with ChangeNotifier {
             notifyListeners();
           });
     } on FirebaseException catch (e) {
-      _error = 'Error al enviar SOS: \$e';
+      _error = 'error_sending_sos';
       notifyListeners();
     }
   }
@@ -181,7 +181,7 @@ class EmergencyProvider with ChangeNotifier {
         _contacts.map((c) => c.toMap()).toList(),
       );
     } on FirebaseException catch (e) {
-      _error = 'Error al guardar: \$e';
+      _error = 'error_saving';
       notifyListeners();
     }
   }

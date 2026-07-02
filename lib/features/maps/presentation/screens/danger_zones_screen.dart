@@ -46,7 +46,7 @@ class _DangerZonesScreenState extends State<DangerZonesScreen> {
               _reportMode ? Icons.close_rounded : Icons.add_location_rounded,
             ),
             onPressed: () => setState(() => _reportMode = !_reportMode),
-            tooltip: _reportMode ? l.t('cancel') : 'Reportar zona',
+            tooltip: _reportMode ? l.t('cancel') : l.t('report_zone'),
           ),
         ],
       ),
@@ -69,7 +69,8 @@ class _DangerZonesScreenState extends State<DangerZonesScreen> {
                   ),
                   infoWindow: InfoWindow(
                     title: z.typeLabel,
-                    snippet: '\${z.description} • \${z.reportCount} reportes',
+                    snippet:
+                        '${z.description} • ${l.t('reports_count').replaceAll('{count}', z.reportCount.toString())}',
                   ),
                   onTap: () => _showZoneDetail(context, z),
                 );
@@ -109,7 +110,7 @@ class _DangerZonesScreenState extends State<DangerZonesScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'Leyenda',
+                    l.t('legend_label'),
                     style: TextStyle(fontWeight: FontWeight.w700, fontSize: 12),
                   ),
                   SizedBox(height: 6),
@@ -203,7 +204,7 @@ class _DangerZonesScreenState extends State<DangerZonesScreen> {
                 ),
                 const SizedBox(width: 4),
                 Text(
-                  'Reportado por \${zone.reportedByName}',
+                  l.t('reported_by').replaceAll('{name}', zone.reportedByName),
                   style: const TextStyle(fontSize: 12, color: Colors.grey),
                 ),
                 const Spacer(),
@@ -214,7 +215,9 @@ class _DangerZonesScreenState extends State<DangerZonesScreen> {
                 ),
                 const SizedBox(width: 4),
                 Text(
-                  '\${zone.reportCount} reportes',
+                  l
+                      .t('reports_count')
+                      .replaceAll('{count}', zone.reportCount.toString()),
                   style: const TextStyle(
                     fontSize: 12,
                     fontWeight: FontWeight.w700,

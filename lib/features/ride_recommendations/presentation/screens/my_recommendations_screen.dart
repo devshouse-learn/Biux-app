@@ -125,9 +125,9 @@ class _RecommendationCard extends StatelessWidget {
 
   String _timeAgo(DateTime date) {
     final diff = DateTime.now().difference(date);
-    if (diff.inMinutes < 60) return 'hace ${diff.inMinutes}m';
-    if (diff.inHours < 24) return 'hace ${diff.inHours}h';
-    if (diff.inDays < 7) return 'hace ${diff.inDays}d';
+    if (diff.inMinutes < 60) return '${diff.inMinutes}m';
+    if (diff.inHours < 24) return '${diff.inHours}h';
+    if (diff.inDays < 7) return '${diff.inDays}d';
     return '${date.day}/${date.month}/${date.year}';
   }
 
@@ -195,7 +195,12 @@ class _RecommendationCard extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          isReceived ? rec.fromUserName : 'Enviada',
+                          isReceived
+                              ? rec.fromUserName
+                              : Provider.of<LocaleNotifier>(
+                                  context,
+                                  listen: false,
+                                ).t('sent_label'),
                           style: const TextStyle(
                             fontSize: 13,
                             fontWeight: FontWeight.w700,
@@ -367,7 +372,7 @@ class _RecommendationDetailSheet extends StatelessWidget {
             ),
             const SizedBox(height: 4),
             Text(
-              'Recomendado por ${rec.fromUserName}',
+              l.t('recommended_by').replaceAll('{name}', rec.fromUserName),
               style: TextStyle(fontSize: 13, color: Colors.grey[500]),
             ),
             SizedBox(height: 16),
@@ -386,13 +391,21 @@ class _RecommendationDetailSheet extends StatelessWidget {
                     '${rec.totalKm.toStringAsFixed(1)} km',
                     l.t('distance'),
                   ),
-                  _detailStat('⏱️', rec.estimatedTimeFormatted, 'Duracion'),
+                  _detailStat(
+                    '⏱️',
+                    rec.estimatedTimeFormatted,
+                    l.t('duration_label'),
+                  ),
                   _detailStat(
                     '⚡',
                     '${rec.avgSpeed.toStringAsFixed(1)} km/h',
-                    'Vel avg',
+                    l.t('avg_speed_label'),
                   ),
-                  _detailStat('🔥', '${rec.calories} kcal', 'Calorias'),
+                  _detailStat(
+                    '🔥',
+                    '${rec.calories} kcal',
+                    l.t('calories_label'),
+                  ),
                 ],
               ),
             ),
@@ -413,9 +426,12 @@ class _RecommendationDetailSheet extends StatelessWidget {
             ),
             if (rec.description.isNotEmpty) ...[
               const SizedBox(height: 14),
-              const Text(
-                'Descripcion',
-                style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
+              Text(
+                l.t('description'),
+                style: const TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w700,
+                ),
               ),
               const SizedBox(height: 6),
               Text(
@@ -429,9 +445,12 @@ class _RecommendationDetailSheet extends StatelessWidget {
             ],
             if (rec.highlights.isNotEmpty) ...[
               const SizedBox(height: 14),
-              const Text(
-                'Sitios destacados',
-                style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
+              Text(
+                l.t('featured_places'),
+                style: const TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w700,
+                ),
               ),
               const SizedBox(height: 8),
               ...rec.highlights.map(

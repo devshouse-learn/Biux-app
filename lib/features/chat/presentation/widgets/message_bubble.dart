@@ -175,9 +175,9 @@ class MessageBubble extends StatelessWidget {
                   ),
                   child: Text(
                     message.type == MessageType.voice
-                        ? '🔗Ž¤ Mensaje de voz'
+                        ? '🎤 ${Provider.of<LocaleNotifier>(context, listen: false).t('voice_message')}'
                         : message.type == MessageType.image
-                        ? '🔗–¼ï¸ Imagen'
+                        ? '🖼️ ${Provider.of<LocaleNotifier>(context, listen: false).t('image')}'
                         : message.content.length > 40
                         ? message.content.substring(0, 40) + '...'
                         : message.content,

@@ -34,7 +34,9 @@ class _SendRecommendationSheetState extends State<SendRecommendationSheet> {
   void initState() {
     super.initState();
     final d = widget.track.startTime;
-    _nameCtrl.text = 'Mi rodada del ${d.day}/${d.month}/${d.year}';
+    _nameCtrl.text = l
+        .t('my_ride_date')
+        .replaceAll('{date}', '${d.day}/${d.month}/${d.year}');
     WidgetsBinding.instance.addPostFrameCallback((_) {
       context.read<RideRecommendationProvider>().loadFriends();
     });
@@ -104,7 +106,9 @@ class _SendRecommendationSheetState extends State<SendRecommendationSheet> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(
-              'Recomendación enviada a ${_selectedFriend!.fullName}',
+              l
+                  .t('recommendation_sent_to')
+                  .replaceAll('{name}', _selectedFriend!.fullName),
             ),
             backgroundColor: Colors.green,
           ),
@@ -228,9 +232,12 @@ class _SendRecommendationSheetState extends State<SendRecommendationSheet> {
                       _stat(widget.track.durationFormatted, l.t('duration')),
                       _stat(
                         '${widget.track.avgSpeed.toStringAsFixed(1)} km/h',
-                        'Vel avg',
+                        l.t('avg_speed_label'),
                       ),
-                      _stat('${widget.track.calories} kcal', 'Calorías'),
+                      _stat(
+                        '${widget.track.calories} kcal',
+                        l.t('calories_label'),
+                      ),
                     ],
                   ),
                 ),
@@ -310,8 +317,7 @@ class _SendRecommendationSheetState extends State<SendRecommendationSheet> {
                   controller: _descCtrl,
                   maxLines: 3,
                   decoration: InputDecoration(
-                    hintText:
-                        'Cuéntale a tu amigo qué encontrará en esta ruta...',
+                    hintText: l.t('tell_friend_about_route'),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(12),
                     ),
@@ -325,7 +331,7 @@ class _SendRecommendationSheetState extends State<SendRecommendationSheet> {
 
                 // Sitios destacados
                 Text(
-                  'Sitios destacados (máx. 5)',
+                  l.t('featured_places_max'),
                   style: TextStyle(fontSize: 13, fontWeight: FontWeight.w700),
                 ),
                 SizedBox(height: 6),
@@ -390,7 +396,7 @@ class _SendRecommendationSheetState extends State<SendRecommendationSheet> {
                       ),
                     ),
                     Text(
-                      'Opcional',
+                      l.t('optional_label'),
                       style: TextStyle(fontSize: 11, color: Colors.grey[400]),
                     ),
                   ],
@@ -475,13 +481,17 @@ class _SendRecommendationSheetState extends State<SendRecommendationSheet> {
                               color: Colors.black54,
                               borderRadius: BorderRadius.circular(20),
                             ),
-                            child: const Row(
+                            child: Row(
                               mainAxisSize: MainAxisSize.min,
                               children: [
-                                Icon(Icons.edit, color: Colors.white, size: 14),
-                                SizedBox(width: 4),
+                                const Icon(
+                                  Icons.edit,
+                                  color: Colors.white,
+                                  size: 14,
+                                ),
+                                const SizedBox(width: 4),
                                 Text(
-                                  'Cambiar',
+                                  l.t('change_label'),
                                   style: TextStyle(
                                     color: Colors.white,
                                     fontSize: 11,
@@ -517,7 +527,7 @@ class _SendRecommendationSheetState extends State<SendRecommendationSheet> {
                         Icon(Icons.people_outline, color: Colors.grey[400]),
                         const SizedBox(width: 10),
                         Text(
-                          'Aún no sigues a nadie',
+                          l.t('not_following_anyone_yet'),
                           style: TextStyle(
                             color: Colors.grey[500],
                             fontSize: 13,
@@ -607,7 +617,9 @@ class _SendRecommendationSheetState extends State<SendRecommendationSheet> {
                           )
                         : Icon(Icons.send_rounded),
                     label: Text(
-                      _sending ? 'Enviando...' : l.t('send_recommendation'),
+                      _sending
+                          ? l.t('sending_label')
+                          : l.t('send_recommendation'),
                       style: const TextStyle(
                         fontSize: 15,
                         fontWeight: FontWeight.w700,

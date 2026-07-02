@@ -929,9 +929,13 @@ class _ChatInputState extends State<ChatInput>
       widget.onSendVoice(url, secs);
     } on FirebaseException catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text('${Provider.of<LocaleNotifier>(context, listen: false).t('error_sending_audio')}: $e')));
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              '${Provider.of<LocaleNotifier>(context, listen: false).t('error_sending_audio')}: $e',
+            ),
+          ),
+        );
       }
     } finally {
       if (mounted) setState(() => _isUploadingAudio = false);
@@ -1488,7 +1492,10 @@ class _HoldingRecordingBar extends StatelessWidget {
               children: [
                 Icon(Icons.chevron_left, size: 16, color: Colors.grey.shade500),
                 Text(
-                  'Desliza para cancelar',
+                  Provider.of<LocaleNotifier>(
+                    context,
+                    listen: false,
+                  ).t('slide_to_cancel'),
                   style: TextStyle(fontSize: 11, color: Colors.grey.shade500),
                 ),
               ],
@@ -1615,7 +1622,7 @@ class _RecordingBarState extends State<_RecordingBar> {
                     color: Colors.grey.withOpacity(0.8),
                   ),
                   Text(
-                    'Desliza para cancelar',
+                    l.t('slide_to_cancel'),
                     style: TextStyle(
                       fontSize: 11,
                       color: Colors.grey.withOpacity(0.8),

@@ -20,9 +20,9 @@ class _StolenBikesScreenState extends State<StolenBikesScreen>
   List<StolenBikeInfo> _stolenBikes = [];
   bool _isLoading = true;
   String _searchQuery = '';
-  String _selectedCity = 'Todas';
-  String _selectedType = 'Todas';
-  String _sortBy = 'Reciente';
+  String _selectedCity = 'all';
+  String _selectedType = 'all';
+  String _sortBy = 'recent';
   late Color _vivantRed;
   late bool _isDark;
 
@@ -42,7 +42,7 @@ class _StolenBikesScreenState extends State<StolenBikesScreen>
   final _policeCtrl = TextEditingController();
   String _formCity = '';
   DateTime? _theftDate;
-  String _bikeType = 'Ruta';
+  String _bikeType = 'road';
 
   static const _allCities = [
     'Bogota',
@@ -92,15 +92,36 @@ class _StolenBikesScreenState extends State<StolenBikesScreen>
     'Girardot',
   ];
 
-  static const _bikeTypes = [
-    'Ruta',
-    'MTB',
-    'Urbana',
-    'Electrica',
-    'Infantil',
-    'Otra',
+  static const _bikeTypeKeys = [
+    'road',
+    'mtb',
+    'urban',
+    'electric',
+    'kids',
+    'other',
   ];
-  final _sorts = ['Reciente', 'Ciudad', 'Marca'];
+
+  static const _bikeTypeTranslationKeys = {
+    'road': 'bike_type_road',
+    'mtb': 'bike_type_mtb',
+    'urban': 'bike_type_urban',
+    'electric': 'bike_type_electric',
+    'kids': 'bike_type_kids',
+    'other': 'bike_type_other',
+  };
+
+  static const _sortKeys = ['recent', 'city', 'brand'];
+
+  static const _sortTranslationKeys = {
+    'recent': 'sort_recent',
+    'city': 'sort_city',
+    'brand': 'sort_brand',
+  };
+
+  String _translateBikeType(String key) =>
+      l.t(_bikeTypeTranslationKeys[key] ?? key);
+
+  String _translateSort(String key) => l.t(_sortTranslationKeys[key] ?? key);
 
   @override
   void initState() {
@@ -145,19 +166,18 @@ class _StolenBikesScreenState extends State<StolenBikesScreen>
 
   List<StolenBikeInfo> get _filtered {
     var list = _stolenBikes;
-    if (_selectedCity != 'Todas') {
+    if (_selectedCity != 'all') {
       list = list
           .where(
             (i) => i.bike.city.toLowerCase() == _selectedCity.toLowerCase(),
           )
           .toList();
     }
-    if (_selectedType != 'Todas') {
+    if (_selectedType != 'all') {
+      final typeDisplay = _translateBikeType(_selectedType).toLowerCase();
       list = list
           .where(
-            (i) => i.bike.type.toString().toLowerCase().contains(
-              _selectedType.toLowerCase(),
-            ),
+            (i) => i.bike.type.toString().toLowerCase().contains(typeDisplay),
           )
           .toList();
     }
@@ -174,10 +194,10 @@ class _StolenBikesScreenState extends State<StolenBikesScreen>
           .toList();
     }
     switch (_sortBy) {
-      case 'Ciudad':
+      case 'city':
         list.sort((a, b) => a.bike.city.compareTo(b.bike.city));
         break;
-      case 'Marca':
+      case 'brand':
         list.sort((a, b) => a.bike.brand.compareTo(b.bike.brand));
         break;
       default:
@@ -221,9 +241,15 @@ class _StolenBikesScreenState extends State<StolenBikesScreen>
     required String title,
     required List<String> items,
     String? current,
-    bool addTodas = false,
+    bool addAll = false,
+    String Function(String)? displayMapper,
   }) async {
-    final allItems = addTodas ? ['Todas', ...items] : items;
+    final allItems = addAll ? ['all', ...items] : items;
+    String displayFor(String item) {
+      if (item == 'all') return l.t('all_filter');
+      return displayMapper != null ? displayMapper(item) : item;
+    }
+
     String filter = '';
     return showModalBottomSheet<String>(
       context: context,
@@ -235,7 +261,9 @@ class _StolenBikesScreenState extends State<StolenBikesScreen>
               ? allItems
               : allItems
                     .where(
-                      (e) => e.toLowerCase().contains(filter.toLowerCase()),
+                      (e) => displayFor(
+                        e,
+                      ).toLowerCase().contains(filter.toLowerCase()),
                     )
                     .toList();
           final isDarkSheet = Theme.of(ctx).brightness == Brightness.dark;
@@ -327,7 +355,7 @@ class _StolenBikesScreenState extends State<StolenBikesScreen>
                   child: Align(
                     alignment: Alignment.centerLeft,
                     child: Text(
-                      '${filtered.length} resultado${filtered.length != 1 ? "s" : ""}',
+                      '${filtered.length} ${l.t('results_count')}',
                       style: TextStyle(fontSize: 12, color: _hintColor),
                     ),
                   ),
@@ -368,7 +396,7 @@ class _StolenBikesScreenState extends State<StolenBikesScreen>
                             return ListTile(
                               dense: true,
                               leading: Icon(
-                                item == 'Todas'
+                                item == 'all'
                                     ? Icons.public
                                     : Icons.location_city,
                                 size: 20,
@@ -377,7 +405,7 @@ class _StolenBikesScreenState extends State<StolenBikesScreen>
                                     : Colors.grey[400],
                               ),
                               title: Text(
-                                item,
+                                displayFor(item),
                                 style: TextStyle(
                                   fontSize: 14,
                                   fontWeight: isSelected
@@ -411,12 +439,14 @@ class _StolenBikesScreenState extends State<StolenBikesScreen>
   Widget _searchableChip(
     String label,
     String value,
+    String displayValue,
     IconData icon,
     List<String> items,
-    bool addTodas,
-    ValueChanged<String> onChanged,
-  ) {
-    final isAll = value == 'Todas';
+    bool addAll,
+    ValueChanged<String> onChanged, {
+    String Function(String)? displayMapper,
+  }) {
+    final isAll = value == 'all';
     return Expanded(
       child: GestureDetector(
         onTap: () async {
@@ -424,7 +454,8 @@ class _StolenBikesScreenState extends State<StolenBikesScreen>
             title: label,
             items: items,
             current: value,
-            addTodas: addTodas,
+            addAll: addAll,
+            displayMapper: displayMapper,
           );
           if (result != null) onChanged(result);
         },
@@ -453,7 +484,7 @@ class _StolenBikesScreenState extends State<StolenBikesScreen>
               const SizedBox(width: 4),
               Expanded(
                 child: Text(
-                  value,
+                  displayValue,
                   style: TextStyle(
                     fontSize: 12,
                     fontWeight: isAll ? FontWeight.w400 : FontWeight.w600,
@@ -595,6 +626,7 @@ class _StolenBikesScreenState extends State<StolenBikesScreen>
                   _searchableChip(
                     l.t('city'),
                     _selectedCity,
+                    _selectedCity == 'all' ? l.t('all_filter') : _selectedCity,
                     Icons.location_city,
                     _allCities,
                     true,
@@ -604,16 +636,20 @@ class _StolenBikesScreenState extends State<StolenBikesScreen>
                   _searchableChip(
                     l.t('type'),
                     _selectedType,
+                    _selectedType == 'all'
+                        ? l.t('all_filter')
+                        : _translateBikeType(_selectedType),
                     Icons.pedal_bike,
-                    _bikeTypes,
+                    _bikeTypeKeys,
                     true,
                     (v) => setState(() => _selectedType = v),
+                    displayMapper: _translateBikeType,
                   ),
                   const SizedBox(width: 8),
                   _smallDropdown(
                     l.t('order'),
                     _sortBy,
-                    _sorts,
+                    _sortKeys,
                     (v) => setState(() => _sortBy = v!),
                   ),
                 ],
@@ -976,13 +1012,14 @@ class _StolenBikesScreenState extends State<StolenBikesScreen>
                 Expanded(
                   child: _searchableTapField(
                     l.t('type_required'),
-                    _bikeType,
+                    _translateBikeType(_bikeType),
                     Icons.pedal_bike,
                     () async {
                       final r = await _showSearchableSelector(
                         title: l.t('bike_type_title'),
-                        items: _bikeTypes,
+                        items: _bikeTypeKeys,
                         current: _bikeType,
+                        displayMapper: _translateBikeType,
                       );
                       if (r != null) setState(() => _bikeType = r);
                     },
@@ -1192,7 +1229,7 @@ class _StolenBikesScreenState extends State<StolenBikesScreen>
     _policeCtrl.clear();
     setState(() {
       _theftDate = null;
-      _bikeType = 'Ruta';
+      _bikeType = 'road';
       _formCity = '';
     });
   }
@@ -1265,7 +1302,12 @@ class _StolenBikesScreenState extends State<StolenBikesScreen>
                   : const Color(0xFF16242D),
             ),
             items: items
-                .map((e) => DropdownMenuItem(value: e, child: Text(e)))
+                .map(
+                  (e) => DropdownMenuItem(
+                    value: e,
+                    child: Text(_translateSort(e)),
+                  ),
+                )
                 .toList(),
             onChanged: onChanged,
           ),
