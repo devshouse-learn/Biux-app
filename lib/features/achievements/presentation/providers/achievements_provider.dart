@@ -3,6 +3,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:biux/features/achievements/domain/entities/achievement_entity.dart';
 import 'package:biux/features/achievements/data/datasources/achievements_datasource.dart';
 import 'package:biux/features/achievements/data/datasources/achievements_sync_service.dart';
+import 'package:biux/core/services/app_logger.dart';
 
 class AchievementsProvider with ChangeNotifier {
   final AchievementsDatasource _datasource = AchievementsDatasource();
@@ -51,7 +52,11 @@ class AchievementsProvider with ChangeNotifier {
         return a;
       }).toList();
     } catch (e) {
-      debugPrint('Error loading achievements: $e');
+      AppLogger.error(
+        'Error loading achievements',
+        error: e,
+        tag: 'AchievementsProvider',
+      );
       _error = e.toString();
     }
     _isLoading = false;
@@ -127,7 +132,11 @@ class AchievementsProvider with ChangeNotifier {
         }
         await batch.commit();
       } catch (e) {
-        debugPrint('Error saving achievements: $e');
+        AppLogger.error(
+          'Error saving achievements',
+          error: e,
+          tag: 'AchievementsProvider',
+        );
       }
     }
 
@@ -140,7 +149,7 @@ class AchievementsProvider with ChangeNotifier {
     try {
       await AchievementsSyncService.syncIfNeeded(userId);
     } catch (e) {
-      debugPrint('Sync error: $e');
+      AppLogger.error('Sync error', error: e, tag: 'AchievementsProvider');
     }
     _isSyncing = false;
     notifyListeners();
@@ -154,7 +163,7 @@ class AchievementsProvider with ChangeNotifier {
       await AchievementsSyncService.fullSync(userId);
       await loadAchievements(userId);
     } on FirebaseException catch (e) {
-      debugPrint('forceSync error: $e');
+      AppLogger.error('forceSync error', error: e, tag: 'AchievementsProvider');
     }
     _isSyncing = false;
     notifyListeners();

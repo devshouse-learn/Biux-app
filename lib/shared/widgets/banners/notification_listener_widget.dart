@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:biux/core/design_system/locale_notifier.dart';
 import 'package:biux/core/services/notification_service.dart';
+import 'package:biux/core/services/app_logger.dart';
 
 /// Widget que escucha las notificaciones push y navega segúnn el tipo
 class BiuxNotificationListener extends StatefulWidget {

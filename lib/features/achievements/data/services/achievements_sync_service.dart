@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/foundation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:biux/core/services/app_logger.dart';
 
 /// Servicio que sincroniza logros automaticamente cada semana
 /// o cuando el usuario abre la pantalla de logros
@@ -17,18 +18,24 @@ class AchievementsSyncService {
       final daysSinceSync = (now - lastSync) / (1000 * 60 * 60 * 24);
 
       if (daysSinceSync >= _syncIntervalDays) {
-        debugPrint(
-          '🔗”„ Logros: Sincronizando (ultima vez hace \${daysSinceSync.toInt()} dias)',
+        AppLogger.debug(
+          'Logros: Sincronizando (ultima vez hace ${daysSinceSync.toInt()} dias)',
+          tag: 'AchievementsSyncService',
         );
         await fullSync(userId);
         await prefs.setInt(_lastSyncKey, now);
       } else {
-        debugPrint(
-          'a­ï¸ Logros: No necesita sincronizar (faltan \${(_syncIntervalDays - daysSinceSync).toInt()} dias)',
+        AppLogger.debug(
+          'Logros: No necesita sincronizar (faltan ${(_syncIntervalDays - daysSinceSync).toInt()} dias)',
+          tag: 'AchievementsSyncService',
         );
       }
     } on FirebaseException catch (e) {
-      debugPrint('aŒ Error en sincronizacion semanal de logros: \$e');
+      AppLogger.error(
+        'Error en sincronizacion semanal de logros',
+        error: e,
+        tag: 'AchievementsSyncService',
+      );
     }
   }
 
@@ -66,7 +73,11 @@ class AchievementsSyncService {
         }
       }
     } on FirebaseException catch (e) {
-      debugPrint('Error obteniendo historial de rodadas: \$e');
+      AppLogger.error(
+        'Error obteniendo historial de rodadas',
+        error: e,
+        tag: 'AchievementsSyncService',
+      );
     }
 
     // 2. Calcular racha de dias consecutivos
@@ -81,7 +92,11 @@ class AchievementsSyncService {
           .get();
       groupCount = groupSnap.docs.length;
     } on FirebaseException catch (e) {
-      debugPrint('Error: ' + e.toString());
+      AppLogger.error(
+        'Error obteniendo grupos del usuario',
+        error: e,
+        tag: 'AchievementsSyncService',
+      );
     }
 
     // 4. Detectar logros especiales
@@ -195,8 +210,9 @@ class AchievementsSyncService {
         .doc(userId)
         .set(updates, SetOptions(merge: true));
 
-    debugPrint(
-      '🔗“Š Sync completo: \${accumKm.toStringAsFixed(1)} km, \$totalRides rodadas, max \${bestMaxSpeed.toStringAsFixed(1)} km/h, racha \$streak dias, \$groupCount grupos',
+    AppLogger.info(
+      'Sync completo: ${accumKm.toStringAsFixed(1)} km, $totalRides rodadas, max ${bestMaxSpeed.toStringAsFixed(1)} km/h, racha $streak dias, $groupCount grupos',
+      tag: 'AchievementsSyncService',
     );
   }
 

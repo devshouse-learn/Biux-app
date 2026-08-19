@@ -223,7 +223,7 @@ class UserFirebaseRepository extends UserRepositoryAbstract {
     try {
       await _auth.sendPasswordResetEmail(email: user);
     } on FirebaseAuthException catch (e) {
-      debugPrint(e.toString());
+      AppLogger.error('Error al enviar reset email', error: e, tag: 'UserRepo');
       if (e.code == 'invalid-email') {
       } else if (e.code == 'user-not-found') {
       } else {}
@@ -233,11 +233,7 @@ class UserFirebaseRepository extends UserRepositoryAbstract {
   @override
   Future<BiuxUser> updateUser(BiuxUser user) async {
     try {
-      debugPrint('   - ID: ${user.id}');
-      debugPrint('   - Nombre: ${user.fullName}');
-      debugPrint('   - Teléfono: ${user.whatsapp}');
-      debugPrint('   - Ciudad: ${user.cityId.name}');
-      debugPrint('   - Descripción: ${user.description}');
+      AppLogger.debug('Actualizando usuario ${user.id}', tag: 'UserRepo');
 
       await firestore.collection(collection).doc(user.id).update({
         AppStrings.fullName: user.fullName,
@@ -249,7 +245,11 @@ class UserFirebaseRepository extends UserRepositoryAbstract {
       final response = await this.getUserId(user.id);
       return response;
     } on FirebaseException catch (e) {
-      debugPrint('aŒ Error al actualizar en Firestore: $e');
+      AppLogger.error(
+        'Error al actualizar usuario en Firestore',
+        error: e,
+        tag: 'UserRepo',
+      );
       rethrow; // Propagar el error para que se capture en la pantalla
     }
   }
@@ -280,7 +280,11 @@ class UserFirebaseRepository extends UserRepositoryAbstract {
       final response = await this.getUserId(id);
       return response;
     } on FirebaseException catch (e) {
-      debugPrint('Error: ' + e.toString());
+      AppLogger.error(
+        'Error al obtener usuario por ID',
+        error: e,
+        tag: 'UserRepo',
+      );
     }
   }
 
@@ -301,7 +305,11 @@ class UserFirebaseRepository extends UserRepositoryAbstract {
         });
       }
     } on FirebaseException catch (e) {
-      debugPrint('aŒ Error al subir foto de portada: $e');
+      AppLogger.error(
+        'Error al subir foto de portada',
+        error: e,
+        tag: 'UserRepo',
+      );
     }
   }
 

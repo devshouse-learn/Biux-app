@@ -10,6 +10,7 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:biux/core/config/api_config.dart';
 import 'package:biux/core/exceptions/authorization_exceptions.dart';
+import 'package:biux/core/exceptions/backend_exceptions.dart';
 import 'package:biux/core/services/app_logger.dart';
 
 class AuthenticationRepository implements AuthRepositoryInterface {
@@ -167,7 +168,7 @@ class AuthenticationRepository implements AuthRepositoryInterface {
                 'Timeout enviando OTP',
                 tag: 'AuthenticationRepository',
               );
-              return throw Exception('OTP request timeout');
+              throw TimeoutException(const Duration(seconds: 30));
             },
           );
 
@@ -185,12 +186,23 @@ class AuthenticationRepository implements AuthRepositoryInterface {
           'Error enviando OTP: código ${response.statusCode}',
           tag: 'AuthenticationRepository',
         );
-        throw Exception('Error sending OTP');
+        throw ServerException(
+          'No se pudo enviar el código OTP',
+          response.statusCode,
+          details: 'Verifica tu número de teléfono',
+        );
       }
     } on ValidationException catch (e) {
       AppLogger.warning(
         'Validación fallida: ${e.message}',
         tag: 'AuthenticationRepository',
+      );
+      rethrow;
+    } on TimeoutException catch (e) {
+      AppLogger.error(
+        'Timeout en sendOTP: ${e.message}',
+        tag: 'AuthenticationRepository',
+        error: e,
       );
       rethrow;
     } on FirebaseException catch (e) {
@@ -199,14 +211,18 @@ class AuthenticationRepository implements AuthRepositoryInterface {
         tag: 'AuthenticationRepository',
         error: e,
       );
-      throw Exception('Firebase error sending OTP');
+      throw OTPException('Error en autenticación: ${e.code}');
     } catch (e) {
       AppLogger.error(
         'Error inesperado enviando OTP: $e',
         tag: 'AuthenticationRepository',
         error: e,
       );
-      throw Exception('Error sending OTP');
+      throw RepositoryException(
+        'AuthenticationRepository',
+        'sendOTP',
+        'Error inesperado: $e',
+      );
     }
   }
 

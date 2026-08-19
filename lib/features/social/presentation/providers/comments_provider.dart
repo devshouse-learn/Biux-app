@@ -5,6 +5,7 @@ import 'package:biux/features/social/domain/entities/comment_entity.dart';
 import 'package:biux/features/social/domain/entities/notification_entity.dart';
 import 'package:biux/features/social/domain/repositories/comments_repository.dart';
 import 'package:biux/features/social/domain/repositories/notifications_repository.dart';
+import 'package:biux/core/services/app_logger.dart';
 
 /// Provider para gestionar comentarios
 class CommentsProvider extends ChangeNotifier {
@@ -70,7 +71,11 @@ class CommentsProvider extends ChangeNotifier {
 
       _userDataLoaded = true;
     } on FirebaseException catch (e) {
-      debugPrint('Error cargando datos de usuario en CommentsProvider: $e');
+      AppLogger.error(
+        'Error cargando datos de usuario en CommentsProvider',
+        error: e,
+        tag: 'CommentsProvider',
+      );
       _cachedUserName = null;
       _cachedUserPhoto = null;
       _userDataLoaded = true;
@@ -156,8 +161,9 @@ class CommentsProvider extends ChangeNotifier {
   }) async {
     // Cooldown: prevenir spam de comentarios
     if (_isInCommentCooldown(targetId)) {
-      debugPrint(
-        'a³ Comentario en cooldown para $targetId, espera ${_commentCooldownDuration.inSeconds}s',
+      AppLogger.debug(
+        'Comentario en cooldown para $targetId, espera ${_commentCooldownDuration.inSeconds}s',
+        tag: 'CommentsProvider',
       );
       _error = 'comments_cooldown';
       notifyListeners();
@@ -210,11 +216,15 @@ class CommentsProvider extends ChangeNotifier {
         return null;
       }
 
-      debugPrint('Firebase Auth UID: ${currentUser.uid}');
+      AppLogger.debug(
+        'Firebase Auth UID: ${currentUser.uid}',
+        tag: 'CommentsProvider',
+      );
 
       if (currentUser.uid != userId) {
-        debugPrint(
+        AppLogger.warning(
           'WARNING: Firebase Auth UID no coincide con Provider userId',
+          tag: 'CommentsProvider',
         );
       }
 
@@ -232,7 +242,7 @@ class CommentsProvider extends ChangeNotifier {
         parentCommentId: parentCommentId,
       );
 
-      debugPrint('Comentario creado: $commentId');
+      AppLogger.debug('Comentario creado: $commentId', tag: 'CommentsProvider');
 
       // Crear notificación para el dueño del contenido
       if (targetOwnerId != userIdForComment) {
@@ -286,7 +296,11 @@ class CommentsProvider extends ChangeNotifier {
 
       return commentId;
     } on FirebaseException catch (e) {
-      debugPrint('Error al crear comentario: $e');
+      AppLogger.error(
+        'Error al crear comentario',
+        error: e,
+        tag: 'CommentsProvider',
+      );
 
       // Detectar tipo de error específico
       if (e.toString().contains('MissingPluginException')) {
@@ -361,10 +375,10 @@ class CommentsProvider extends ChangeNotifier {
       _error = null;
       notifyListeners();
 
-      debugPrint('   Tipo: $type');
-      debugPrint('   TargetId: $targetId');
-      debugPrint('   CommentId: $commentId');
-      debugPrint('   UserId actual: $userId');
+      AppLogger.debug(
+        'Tipo: $type, TargetId: $targetId, CommentId: $commentId, UserId actual: $userId',
+        tag: 'CommentsProvider',
+      );
 
       await _repository.deleteComment(
         type: type,
@@ -377,8 +391,12 @@ class CommentsProvider extends ChangeNotifier {
       notifyListeners();
     } catch (e, st) {
       final errorMsg = e.toString();
-      debugPrint('aŒ Error al eliminar comentario: $errorMsg');
-      debugPrint('Stack trace: $st');
+      AppLogger.error(
+        'Error al eliminar comentario',
+        error: e,
+        tag: 'CommentsProvider',
+      );
+      AppLogger.debug('Stack trace: $st', tag: 'CommentsProvider');
 
       if (errorMsg.contains('permiso')) {
         _error = 'comments_delete_no_permission';

@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/foundation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:biux/core/services/app_logger.dart';
 
 /// Servicio que sincroniza logros automaticamente cada semana
 /// o cuando el usuario abre la pantalla de logros

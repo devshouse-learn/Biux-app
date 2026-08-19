@@ -1,6 +1,7 @@
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
 import "package:flutter/foundation.dart";
+import 'package:biux/core/services/app_logger.dart';
 
 /// Servicio para gestionar el estado de visualización de historias en almacenamiento local
 /// Similar a Instagram, marca qué historias ya fueron vistas por el usuario actual
@@ -30,7 +31,11 @@ class StoryViewsLocalService {
 
       return viewedStories;
     } on Exception catch (e) {
-      debugPrint('Error al decodificar historias vistas: $e');
+      AppLogger.error(
+        'Error al decodificar historias vistas',
+        error: e,
+        tag: 'StoryViewsLocalService',
+      );
       return {};
     }
   }

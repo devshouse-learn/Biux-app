@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:biux/core/services/image_compression_service.dart';
+import 'package:biux/core/services/app_logger.dart';
 
 /// Servicio optimizado para Firebase Storage que reduce costos significativamente
 /// - Comprime imágenes antes de subir
@@ -88,7 +89,11 @@ class OptimizedStorageService {
       // Retornar URL optimizada para CDN
       return _optimizeCdnUrl(downloadUrl);
     } on FirebaseException catch (e) {
-      debugPrint('Error subiendo imagen de usuario: $e');
+      AppLogger.error(
+        'Error subiendo imagen de usuario',
+        error: e,
+        tag: 'OptimizedStorageService',
+      );
       return null;
     }
   }
@@ -148,7 +153,11 @@ class OptimizedStorageService {
 
       return results;
     } on FirebaseException catch (e) {
-      debugPrint('Error subiendo imagen de grupo: $e');
+      AppLogger.error(
+        'Error subiendo imagen de grupo',
+        error: e,
+        tag: 'OptimizedStorageService',
+      );
       return null;
     }
   }
@@ -186,7 +195,11 @@ class OptimizedStorageService {
       await _cleanupTempFiles([compressedFile]);
       return _optimizeCdnUrl(downloadUrl);
     } on FirebaseException catch (e) {
-      debugPrint('Error subiendo imagen de rodada: $e');
+      AppLogger.error(
+        'Error subiendo imagen de rodada',
+        error: e,
+        tag: 'OptimizedStorageService',
+      );
       return null;
     }
   }
@@ -227,7 +240,11 @@ class OptimizedStorageService {
       await _cleanupTempFiles([compressedFile]);
       return _optimizeCdnUrl(downloadUrl);
     } on FirebaseException catch (e) {
-      debugPrint('Error subiendo historia: $e');
+      AppLogger.error(
+        'Error subiendo historia',
+        error: e,
+        tag: 'OptimizedStorageService',
+      );
       return null;
     }
   }
@@ -301,7 +318,11 @@ class OptimizedStorageService {
       await _cleanupTempFiles([compressedFile]);
       return _optimizeCdnUrl(downloadUrl);
     } on FirebaseException catch (e) {
-      debugPrint('Error subiendo imagen de bicicleta: $e');
+      AppLogger.error(
+        'Error subiendo imagen de bicicleta',
+        error: e,
+        tag: 'OptimizedStorageService',
+      );
       return null;
     }
   }
@@ -341,7 +362,11 @@ class OptimizedStorageService {
       await ref.delete();
       return true;
     } on FirebaseException catch (e) {
-      debugPrint('Error eliminando imagen: $e');
+      AppLogger.error(
+        'Error eliminando imagen',
+        error: e,
+        tag: 'OptimizedStorageService',
+      );
       return false;
     }
   }
@@ -354,7 +379,7 @@ class OptimizedStorageService {
           await file.delete();
         }
       } on FirebaseException catch (e) {
-        debugPrint('Error limpiando archivo temporal: $e');
+        AppLogger.warning('Error limpiando archivo temporal', error: e);
       }
     }
   }
@@ -380,7 +405,11 @@ class OptimizedStorageService {
         'estimatedMonthlyCost': _calculateEstimatedCost(totalSize),
       };
     } on FirebaseException catch (e) {
-      debugPrint('Error obteniendo estadísticas: $e');
+      AppLogger.error(
+        'Error obteniendo estadísticas',
+        error: e,
+        tag: 'OptimizedStorageService',
+      );
       return {};
     }
   }
@@ -476,7 +505,11 @@ class OptimizedStorageService {
 
       return results;
     } on FirebaseException catch (e) {
-      debugPrint('Error subiendo contenido de experiencia: $e');
+      AppLogger.error(
+        'Error subiendo contenido de experiencia',
+        error: e,
+        tag: 'OptimizedStorageService',
+      );
       return null;
     }
   }
@@ -519,12 +552,16 @@ class OptimizedStorageService {
       try {
         await tempRef.delete();
       } on FirebaseException catch (e) {
-        debugPrint('Advertencia: No se pudo eliminar imagen temporal: $e');
+        AppLogger.warning('No se pudo eliminar imagen temporal', error: e);
       }
 
       return _optimizeCdnUrl(newDownloadUrl);
     } on FirebaseException catch (e) {
-      debugPrint('Error moviendo imagen temporal: $e');
+      AppLogger.error(
+        'Error moviendo imagen temporal',
+        error: e,
+        tag: 'OptimizedStorageService',
+      );
       return null;
     }
   }

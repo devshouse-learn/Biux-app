@@ -3,6 +3,7 @@ import 'package:biux/features/users/data/models/user.dart';
 import 'package:biux/features/users/data/repositories/user_profile_repository_impl.dart';
 import 'package:biux/features/users/domain/repositories/user_profile_repository.dart';
 import 'package:biux/features/experiences/domain/repositories/experience_repository.dart';
+import 'package:biux/core/services/app_logger.dart';
 import 'package:biux/features/experiences/data/repositories/experience_repository_impl.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';

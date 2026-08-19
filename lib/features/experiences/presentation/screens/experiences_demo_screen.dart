@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:biux/core/design_system/locale_notifier.dart';
+import 'package:biux/core/services/app_logger.dart';
 import 'package:biux/features/experiences/domain/entities/experience_entity.dart';
 import 'package:biux/features/experiences/presentation/widgets/experience_story_viewer.dart';
 import 'package:biux/features/users/domain/entities/user_entity.dart';
@@ -302,7 +303,10 @@ class _ExperiencesDemoScreenState extends State<ExperiencesDemoScreen> {
               onClose: _closeExperience,
               onTap: () {
                 // Aquí podrías agregar lógica adicional como pausar/reanudar
-                debugPrint('Experience tapped');
+                AppLogger.debug(
+                  'Experience tapped',
+                  tag: 'ExperiencesDemoScreen',
+                );
               },
             ),
         ],

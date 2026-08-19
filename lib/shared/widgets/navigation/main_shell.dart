@@ -177,15 +177,19 @@ class _MainShellState extends State<MainShell> {
               unselectedItemColor: isDark
                   ? ColorTokens.neutral70
                   : ColorTokens.neutral60,
-              showSelectedLabels: false,
-              showUnselectedLabels: false,
+              showSelectedLabels: true,
+              showUnselectedLabels: true,
               elevation: 0,
               items: [
-                _buildNavItem(Icons.home, 0),
-                _buildGroupsNavItem(1),
-                _buildNavItem(Icons.chat_bubble_outline, 2),
-                _buildNavItem(Icons.pedal_bike, 3),
-                _buildNavItem(Icons.person, 4),
+                _buildNavItem(Icons.home, 0, l.t('nav_home')),
+                _buildGroupsNavItem(1, l.t('nav_groups')),
+                _buildNavItem(
+                  Icons.chat_bubble_outline,
+                  2,
+                  l.t('nav_messages'),
+                ),
+                _buildNavItem(Icons.pedal_bike, 3, l.t('nav_routes')),
+                _buildNavItem(Icons.person, 4, l.t('nav_profile')),
               ],
             ),
           ),
@@ -198,7 +202,11 @@ class _MainShellState extends State<MainShell> {
     );
   }
 
-  BottomNavigationBarItem _buildNavItem(IconData icon, int index) {
+  BottomNavigationBarItem _buildNavItem(
+    IconData icon,
+    int index,
+    String label,
+  ) {
     final isSelected = _selectedIndex == index;
     return BottomNavigationBarItem(
       icon: Column(
@@ -221,11 +229,11 @@ class _MainShellState extends State<MainShell> {
           ),
         ],
       ),
-      label: '',
+      label: label,
     );
   }
 
-  BottomNavigationBarItem _buildGroupsNavItem(int index) {
+  BottomNavigationBarItem _buildGroupsNavItem(int index, String label) {
     final isSelected = _selectedIndex == index;
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final iconColor = isSelected
@@ -251,7 +259,7 @@ class _MainShellState extends State<MainShell> {
           ),
         ],
       ),
-      label: '',
+      label: label,
     );
   }
 

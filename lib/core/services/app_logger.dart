@@ -65,6 +65,8 @@ class AppLogger {
 
     // Solo imprimir en debug
     if (kDebugMode) {
+      // Nota: AppLogger.debug usa debugPrint internamente
+      // Este es el punto final de salida - no convertir a AppLogger
       debugPrint(line);
     }
   }

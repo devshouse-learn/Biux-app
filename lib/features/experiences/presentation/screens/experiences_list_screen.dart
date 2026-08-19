@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:biux/core/services/app_logger.dart';
 import 'package:biux/features/experiences/presentation/providers/experience_classic_provider.dart';
 import 'package:biux/features/experiences/domain/entities/experience_entity.dart';
 import 'package:biux/features/experiences/domain/entities/advertisement_entity.dart';
@@ -119,7 +120,11 @@ class _ExperiencesListScreenState extends State<ExperiencesListScreen>
         // Esperar un poco para que los streams se actualicen
         await Future.delayed(const Duration(milliseconds: 300));
       } catch (e) {
-        debugPrint('Error al cargar feed: $e');
+        AppLogger.error(
+          'Error al cargar feed',
+          error: e,
+          tag: 'ExperiencesListScreen',
+        );
       }
     }
   }

@@ -1,6 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:biux/core/services/app_logger.dart';
 import 'package:biux/features/social/domain/entities/like_entity.dart';
 import 'package:biux/features/social/domain/repositories/likes_repository.dart';
 import 'package:biux/features/social/domain/repositories/notifications_repository.dart';
@@ -77,7 +78,11 @@ class LikesProvider extends ChangeNotifier {
 
       _userDataLoaded = true;
     } on FirebaseException catch (e) {
-      debugPrint('aš ï¸ Error cargando datos de usuario en LikesProvider: $e');
+      AppLogger.error(
+        'Error cargando datos de usuario en LikesProvider',
+        error: e,
+        tag: 'LikesProvider',
+      );
       _cachedUserName = 'Usuario';
       _cachedUserPhoto = null;
       _userDataLoaded = true;

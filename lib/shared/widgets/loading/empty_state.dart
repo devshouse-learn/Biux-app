@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:biux/core/design_system/color_tokens.dart';
 import 'package:biux/core/design_system/locale_notifier.dart';
+import 'package:biux/core/design_system/empty_state_cta_button.dart';
 
 class EmptyState extends StatelessWidget {
   final IconData icon;
@@ -149,21 +150,10 @@ class EmptyState extends StatelessWidget {
             ),
             if (actionText != null && onAction != null) ...[
               const SizedBox(height: 24),
-              ElevatedButton.icon(
-                onPressed: onAction,
-                icon: const Icon(Icons.add_rounded, size: 20),
-                label: Text(actionText!),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: ColorTokens.primary30,
-                  foregroundColor: Colors.white,
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 28,
-                    vertical: 14,
-                  ),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(14),
-                  ),
-                ),
+              EmptyStateCTAButton(
+                text: actionText!,
+                onPressed: onAction!,
+                icon: Icons.add_rounded,
               ),
             ],
           ],

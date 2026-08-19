@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:biux/core/design_system/color_tokens.dart';
 import 'package:biux/core/design_system/locale_notifier.dart';
+import 'package:biux/core/services/app_logger.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 
 class GlobalSearchScreen extends StatefulWidget {
@@ -89,7 +90,7 @@ class _GlobalSearchScreenState extends State<GlobalSearchScreen>
         });
       }
     } on FirebaseException catch (e) {
-      debugPrint('Error searching: $e');
+      AppLogger.error('Error searching', error: e, tag: 'GlobalSearchScreen');
       if (mounted) setState(() => _isSearching = false);
     }
   }

@@ -3,6 +3,7 @@ import 'package:biux/core/services/optimized_storage_service.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:biux/core/services/app_logger.dart';
 
 enum RideParticipationStatus {
   notParticipating,
@@ -190,11 +191,18 @@ class RideProvider extends ChangeNotifier {
           if (finalImageUrl != null) {
             await docRef.update({'imageUrl': finalImageUrl});
           } else {
-            debugPrint('Error moviendo imagen temporal, usando URL temporal');
+            AppLogger.warning(
+              'Error moviendo imagen temporal, usando URL temporal',
+              tag: 'RideProvider',
+            );
             await docRef.update({'imageUrl': imageUrl});
           }
         } on FirebaseException catch (e) {
-          debugPrint('Error moviendo imagen temporal: $e');
+          AppLogger.error(
+            'Error moviendo imagen temporal',
+            error: e,
+            tag: 'RideProvider',
+          );
           // Continuar sin la imagen si hay error
         }
       } else if (imageUrl != null) {
@@ -271,7 +279,11 @@ class RideProvider extends ChangeNotifier {
           try {
             await OptimizedStorageService.deleteImage(currentImageUrl);
           } on FirebaseException catch (e) {
-            debugPrint('Error eliminando imagen anterior: $e');
+            AppLogger.error(
+              'Error eliminando imagen anterior',
+              error: e,
+              tag: 'RideProvider',
+            );
           }
         }
         updateData['imageUrl'] = FieldValue.delete();
@@ -292,7 +304,11 @@ class RideProvider extends ChangeNotifier {
               updateData['imageUrl'] = imageUrl;
             }
           } on FirebaseException catch (e) {
-            debugPrint('Error moviendo imagen temporal: $e');
+            AppLogger.error(
+              'Error moviendo imagen temporal',
+              error: e,
+              tag: 'RideProvider',
+            );
             updateData['imageUrl'] = imageUrl;
           }
         } else {
@@ -305,7 +321,11 @@ class RideProvider extends ChangeNotifier {
           try {
             await OptimizedStorageService.deleteImage(currentImageUrl);
           } on FirebaseException catch (e) {
-            debugPrint('Error eliminando imagen anterior: $e');
+            AppLogger.error(
+              'Error eliminando imagen anterior',
+              error: e,
+              tag: 'RideProvider',
+            );
           }
         }
       }
@@ -347,14 +367,17 @@ class RideProvider extends ChangeNotifier {
       final userData = userDoc.data();
 
       // 🔗” DEBUG: Ver exactamente qué datos tenemos
-      debugPrint(
-        '🔗” DEBUG joinRide - Firebase Auth displayName: ${_auth.currentUser?.displayName}',
+      AppLogger.debug(
+        'DEBUG joinRide - Firebase Auth displayName: ${_auth.currentUser?.displayName}',
+        tag: 'RideProvider',
       );
-      debugPrint(
-        '🔗” DEBUG joinRide - Firebase Auth email: ${_auth.currentUser?.email}',
+      AppLogger.debug(
+        'DEBUG joinRide - Firebase Auth email: ${_auth.currentUser?.email}',
+        tag: 'RideProvider',
       );
-      debugPrint(
-        '🔗” DEBUG joinRide - Firebase Auth phoneNumber: ${_auth.currentUser?.phoneNumber}',
+      AppLogger.debug(
+        'DEBUG joinRide - Firebase Auth phoneNumber: ${_auth.currentUser?.phoneNumber}',
+        tag: 'RideProvider',
       );
 
       // Crear metadata del participante con fallbacks
@@ -401,10 +424,14 @@ class RideProvider extends ChangeNotifier {
             _auth.currentUser?.photoURL;
       } else {
         // CRÃTICO: Si no existe el documento en Firestore, crearlo con datos básicos
-        debugPrint(
-          'aš ï¸ DEBUG joinRide - No se encontró documento de usuario en Firestore',
+        AppLogger.warning(
+          'DEBUG joinRide - No se encontró documento de usuario en Firestore',
+          tag: 'RideProvider',
         );
-        debugPrint('aš ï¸ Creando documento básico para el usuario...');
+        AppLogger.debug(
+          'Creando documento básico para el usuario...',
+          tag: 'RideProvider',
+        );
 
         // Usar teléfono como nombre temporal si no hay displayName
         userName =
@@ -430,7 +457,11 @@ class RideProvider extends ChangeNotifier {
             SetOptions(merge: true),
           ); // merge: true para no sobrescribir si existe
         } on FirebaseException catch (e) {
-          debugPrint('aŒ Error creando documento de usuario: $e');
+          AppLogger.error(
+            'Error creando documento de usuario',
+            error: e,
+            tag: 'RideProvider',
+          );
         }
       }
 
@@ -731,7 +762,11 @@ class RideProvider extends ChangeNotifier {
         'logoUrl': groupData['logo'] ?? groupData['logoUrl'],
       };
     } on FirebaseException catch (e) {
-      debugPrint('Error al cargar información del grupo: $e');
+      AppLogger.error(
+        'Error al cargar información del grupo',
+        error: e,
+        tag: 'RideProvider',
+      );
       return null;
     }
   }

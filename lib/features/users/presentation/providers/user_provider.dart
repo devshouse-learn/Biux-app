@@ -24,17 +24,10 @@ class UserProvider extends ChangeNotifier {
   bool get isLoading => _isLoading;
   String? get error => _error;
 
-  // 🔗”´ Constructor que auto-inicializa en web
+  /// Constructor que inicializa el proveedor
   UserProvider() : _userService = UserService() {
-    AppLogger.debug('🔗Ÿ¦ UserProvider constructor llamado');
-    if (kIsWeb && !kReleaseMode) {
-      AppLogger.debug(
-        '🌐 Es WEB - Creando usuario admin de prueba automáticamente',
-      );
-      _createWebTestUser();
-    } else {
-      loadUserData();
-    }
+    AppLogger.debug('UserProvider constructor llamado');
+    loadUserData();
   }
 
   /// Constructor especial para pruebas que evita llamadas remotas si se solicita
@@ -44,47 +37,6 @@ class UserProvider extends ChangeNotifier {
     _user = initialUser;
     _isLoading = false;
     _skipRemoteCalls = skipRemote;
-  }
-
-  // 🔗”´ Crear usuario admin de prueba SOLO para Chrome web
-  Future<void> _createWebTestUser() async {
-    AppLogger.debug(
-      '🔗Ÿ¦ Creando usuario admin para CHROME web (desarrollo)...',
-    );
-    _setLoading(true);
-
-    try {
-      // aš ï¸ IMPORTANTE: Este usuario SOLO existe en Chrome
-      // En simuladores móviles, los usuarios deben solicitar permisos a través de Firebase
-      _user = UserModel(
-        uid: 'web-chrome-admin-uid',
-        name: 'Admin Chrome (Desarrollo)',
-        email: 'admin.chrome@biux.dev',
-        phoneNumber: '+1234567890',
-        isAdmin: true, // a† ADMIN SOLO EN CHROME WEB
-        canSellProducts: true,
-      );
-
-      AppLogger.info('✅ Usuario admin de Chrome creado (SOLO WEB)');
-      AppLogger.debug('🔗‘¤ Nombre: ${_user!.name}');
-      AppLogger.debug('🔗›¡ï¸ Es admin: ${_user!.isAdmin}');
-      AppLogger.debug('🔗›’ Puede vender: ${_user!.canSellProducts}');
-      AppLogger.info('✅ Puede crear productos: ${_user!.canCreateProducts}');
-      AppLogger.debug('');
-      AppLogger.warning('aš ï¸  IMPORTANTE:');
-      AppLogger.debug('   - Este admin SOLO funciona en Chrome web');
-      AppLogger.debug(
-        '   - En simuladores móviles, los usuarios deben pedir permiso',
-      );
-      AppLogger.debug('');
-
-      notifyListeners(); // a† IMPORTANTE: Notificar a los listeners
-    } on FirebaseException catch (e) {
-      AppLogger.error('aŒ Error creando usuario de prueba: $e');
-      _error = 'user_error_creating_test';
-    }
-
-    _setLoading(false);
   }
 
   Future<void> loadUserData() async {

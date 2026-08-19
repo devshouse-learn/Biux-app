@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import "package:flutter/foundation.dart";
+import 'package:biux/core/services/app_logger.dart';
 
 /// Helper para forzar autenticación en Realtime Database
 ///
@@ -24,29 +25,33 @@ class RealtimeDatabaseAuthHelper {
     final currentUser = _auth.currentUser;
 
     if (currentUser == null) {
-      debugPrint(
-        'aŒ RealtimeDB Auth: No hay usuario autenticado en Firebase Auth',
+      AppLogger.error(
+        'RealtimeDB Auth: No hay usuario autenticado en Firebase Auth',
+        tag: 'RealtimeDatabaseAuthHelper',
       );
       return false;
     }
 
-    debugPrint(
-      '🔗” RealtimeDB Auth: Verificando autenticación para ${currentUser.uid}',
+    AppLogger.debug(
+      'RealtimeDB Auth: Verificando autenticación para ${currentUser.uid}',
+      tag: 'RealtimeDatabaseAuthHelper',
     );
 
     for (int attempt = 1; attempt <= maxAttempts; attempt++) {
       try {
         // 1. Forzar refresh del token
-        debugPrint(
-          '🔗”„ RealtimeDB Auth: Intento $attempt/$maxAttempts - Refrescando token...',
+        AppLogger.debug(
+          'RealtimeDB Auth: Intento $attempt/$maxAttempts - Refrescando token...',
+          tag: 'RealtimeDatabaseAuthHelper',
         );
         final token = await currentUser.getIdToken(
           true,
         ); // true = force refresh
 
         if (token == null || token.isEmpty) {
-          debugPrint(
-            'aš ï¸ RealtimeDB Auth: Token es null o vacío en intento $attempt',
+          AppLogger.warning(
+            'RealtimeDB Auth: Token es null o vacío en intento $attempt',
+            tag: 'RealtimeDatabaseAuthHelper',
           );
           if (attempt < maxAttempts) {
             await Future.delayed(delayBetweenAttempts);
@@ -55,8 +60,9 @@ class RealtimeDatabaseAuthHelper {
           return false;
         }
 
-        debugPrint(
-          '✅ RealtimeDB Auth: Token obtenido (${token.substring(0, 20)}...)',
+        AppLogger.info(
+          'RealtimeDB Auth: Token obtenido (${token.substring(0, 20)}...)',
+          tag: 'RealtimeDatabaseAuthHelper',
         );
 
         // 2. Verificar que Realtime Database reconoce la autenticación
@@ -65,28 +71,37 @@ class RealtimeDatabaseAuthHelper {
         final snapshot = await connectedRef.get();
 
         if (snapshot.value == true) {
-          debugPrint(
-            '✅ RealtimeDB Auth: Realtime Database conectado y autenticado',
+          AppLogger.info(
+            'RealtimeDB Auth: Realtime Database conectado y autenticado',
+            tag: 'RealtimeDatabaseAuthHelper',
           );
           return true;
         }
 
-        debugPrint(
-          'aš ï¸ RealtimeDB Auth: Realtime Database no conectado en intento $attempt',
+        AppLogger.warning(
+          'RealtimeDB Auth: Realtime Database no conectado en intento $attempt',
+          tag: 'RealtimeDatabaseAuthHelper',
         );
 
         if (attempt < maxAttempts) {
           await Future.delayed(delayBetweenAttempts);
         }
       } on FirebaseException catch (e) {
-        debugPrint('aŒ RealtimeDB Auth: Error en intento $attempt: $e');
+        AppLogger.error(
+          'RealtimeDB Auth: Error en intento $attempt',
+          error: e,
+          tag: 'RealtimeDatabaseAuthHelper',
+        );
         if (attempt < maxAttempts) {
           await Future.delayed(delayBetweenAttempts);
         }
       }
     }
 
-    debugPrint('aŒ RealtimeDB Auth: Falló después de $maxAttempts intentos');
+    AppLogger.error(
+      'RealtimeDB Auth: Falló después de $maxAttempts intentos',
+      tag: 'RealtimeDatabaseAuthHelper',
+    );
     return false;
   }
 
@@ -100,7 +115,11 @@ class RealtimeDatabaseAuthHelper {
         // Pequeña espera para que se propague
         await Future.delayed(Duration(milliseconds: 100));
       } on FirebaseException catch (e) {
-        debugPrint('aš ï¸ RealtimeDB Auth: Error en quick refresh: $e');
+        AppLogger.error(
+          'RealtimeDB Auth: Error en quick refresh',
+          error: e,
+          tag: 'RealtimeDatabaseAuthHelper',
+        );
       }
     }
   }

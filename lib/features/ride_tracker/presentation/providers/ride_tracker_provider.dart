@@ -112,7 +112,11 @@ class RideTrackerProvider with ChangeNotifier {
             notifyListeners();
           });
     } on FirebaseException catch (e) {
-      debugPrint('initLivePosition error: $e');
+      AppLogger.error(
+        'initLivePosition error',
+        error: e,
+        tag: 'RideTrackerProvider',
+      );
     }
   }
 
@@ -161,7 +165,11 @@ class RideTrackerProvider with ChangeNotifier {
         return true;
       }
     } on FirebaseException catch (e) {
-      debugPrint('fetchAndSetRoute error: $e');
+      AppLogger.error(
+        'fetchAndSetRoute error',
+        error: e,
+        tag: 'RideTrackerProvider',
+      );
     }
     _routeLoading = false;
     notifyListeners();
@@ -224,10 +232,17 @@ class RideTrackerProvider with ChangeNotifier {
         _plannedRoute = points;
         _fullPlannedRoute = List.from(points);
       } else {
-        debugPrint('aš ï¸ No se pudo recalcular ruta');
+        AppLogger.warning(
+          'No se pudo recalcular ruta',
+          tag: 'RideTrackerProvider',
+        );
       }
     } on FirebaseException catch (e) {
-      debugPrint('_rerouteFrom error: $e');
+      AppLogger.error(
+        '_rerouteFrom error',
+        error: e,
+        tag: 'RideTrackerProvider',
+      );
     } finally {
       _isRerouting = false;
       notifyListeners();
@@ -380,7 +395,11 @@ class RideTrackerProvider with ChangeNotifier {
             notifyListeners();
           },
           onError: (e) {
-            debugPrint('Error GPS stream: $e');
+            AppLogger.error(
+              'Error GPS stream',
+              error: e,
+              tag: 'RideTrackerProvider',
+            );
           },
         );
 
@@ -468,7 +487,11 @@ class RideTrackerProvider with ChangeNotifier {
         _saveBackgroundData(userId, trackId, savedPoints, savedStart);
         return true;
       } on FirebaseException catch (e) {
-        debugPrint('Error Firestore, guardando offline: $e');
+        AppLogger.warning(
+          'Error Firestore, guardando offline',
+          error: e,
+          tag: 'RideTrackerProvider',
+        );
         return _saveOffline(
           userId,
           name,
@@ -530,10 +553,17 @@ class RideTrackerProvider with ChangeNotifier {
 
       _savedOffline = true;
       _resetTrackingState();
-      debugPrint('Rodada guardada offline: ${offlineRide.id}');
+      AppLogger.debug(
+        'Rodada guardada offline: ${offlineRide.id}',
+        tag: 'RideTrackerProvider',
+      );
       return true;
     } on FirebaseException catch (e) {
-      debugPrint('Error guardando offline: $e');
+      AppLogger.error(
+        'Error guardando offline',
+        error: e,
+        tag: 'RideTrackerProvider',
+      );
       _isSaving = false;
       notifyListeners();
       return false;
@@ -594,9 +624,16 @@ class RideTrackerProvider with ChangeNotifier {
 
         await OfflineRideDatasource.markSynced(ride.id);
         synced++;
-        debugPrint('Rodada sincronizada: ${ride.id} -> $trackId');
+        AppLogger.debug(
+          'Rodada sincronizada: ${ride.id} -> $trackId',
+          tag: 'RideTrackerProvider',
+        );
       } on FirebaseException catch (e) {
-        debugPrint('Error sincronizando ${ride.id}: $e');
+        AppLogger.error(
+          'Error sincronizando ${ride.id}',
+          error: e,
+          tag: 'RideTrackerProvider',
+        );
       }
     }
 
@@ -617,10 +654,17 @@ class RideTrackerProvider with ChangeNotifier {
             trackId,
             savedPoints.map((p) => p.toMap()).toList(),
           );
-          debugPrint('[BG] Puntos GPS guardados: ${savedPoints.length}');
+          AppLogger.debug(
+            '[BG] Puntos GPS guardados: ${savedPoints.length}',
+            tag: 'RideTrackerProvider',
+          );
         }
       } on FirebaseException catch (e) {
-        debugPrint('[BG] Error guardando puntos: $e');
+        AppLogger.error(
+          '[BG] Error guardando puntos',
+          error: e,
+          tag: 'RideTrackerProvider',
+        );
       }
 
       try {
@@ -674,9 +718,16 @@ class RideTrackerProvider with ChangeNotifier {
           streak,
           startTime,
         );
-        debugPrint('[BG] Stats y logros actualizados');
+        AppLogger.debug(
+          '[BG] Stats y logros actualizados',
+          tag: 'RideTrackerProvider',
+        );
       } on FirebaseException catch (e) {
-        debugPrint('[BG] Error actualizando stats: $e');
+        AppLogger.error(
+          '[BG] Error actualizando stats',
+          error: e,
+          tag: 'RideTrackerProvider',
+        );
       }
     });
   }
@@ -697,7 +748,7 @@ class RideTrackerProvider with ChangeNotifier {
           .get();
       groupCount = gs.docs.length;
     } on FirebaseException catch (e) {
-      debugPrint('Error: ' + e.toString());
+      AppLogger.error('Error', error: e, tag: 'RideTrackerProvider');
     }
 
     bool isNight = false;
@@ -830,14 +881,22 @@ class RideTrackerProvider with ChangeNotifier {
       final data = await _ds.getUserTracks(userId);
       _history = _mapHistory(data);
     } on FirebaseException catch (e) {
-      debugPrint('Error loading history: $e');
+      AppLogger.error(
+        'Error loading history',
+        error: e,
+        tag: 'RideTrackerProvider',
+      );
       // Fallback sin orderBy (no requiere índice compuesto)
       try {
         final data = await _ds.getUserTracksSimple(userId);
         _history = _mapHistory(data);
         _history.sort((a, b) => b.startTime.compareTo(a.startTime));
       } catch (e2) {
-        debugPrint('Error loading history (fallback): $e2');
+        AppLogger.error(
+          'Error loading history (fallback)',
+          error: e2,
+          tag: 'RideTrackerProvider',
+        );
       }
     }
     _isLoading = false;
@@ -872,7 +931,11 @@ class RideTrackerProvider with ChangeNotifier {
       _history.removeWhere((r) => r.id == trackId);
       notifyListeners();
     } on FirebaseException catch (e) {
-      debugPrint('Error deleting ride: $e');
+      AppLogger.error(
+        'Error deleting ride',
+        error: e,
+        tag: 'RideTrackerProvider',
+      );
     }
   }
 
@@ -885,7 +948,11 @@ class RideTrackerProvider with ChangeNotifier {
         notifyListeners();
       }
     } on FirebaseException catch (e) {
-      debugPrint('Error renaming ride: $e');
+      AppLogger.error(
+        'Error renaming ride',
+        error: e,
+        tag: 'RideTrackerProvider',
+      );
     }
   }
 

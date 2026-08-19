@@ -1,6 +1,7 @@
 import 'dart:ui' as ui;
 
 import 'package:biux/core/config/images.dart';
+import 'package:biux/core/services/app_logger.dart';
 import 'package:biux/features/maps/data/models/meeting_point.dart';
 import 'package:biux/features/maps/presentation/providers/location_provider.dart';
 import 'package:biux/features/roads/data/models/route.dart';
@@ -239,8 +240,9 @@ class MapProvider extends ChangeNotifier {
         route.destinationLongitude,
       );
 
-      debugPrint(
-        '🔗—ºï¸ Obteniendo ruta de ciclismo desde ${origin} hasta ${destination}',
+      AppLogger.debug(
+        'Obteniendo ruta de ciclismo desde ${origin} hasta ${destination}',
+        tag: 'MapProvider',
       );
 
       // Obtener la ruta real usando Google Directions API para ciclismo
@@ -251,8 +253,9 @@ class MapProvider extends ChangeNotifier {
       );
 
       if (directionResult != null && directionResult.points.isNotEmpty) {
-        debugPrint(
-          '✅ Ruta obtenida exitosamente con ${directionResult.points.length} puntos',
+        AppLogger.debug(
+          'Ruta obtenida exitosamente con ${directionResult.points.length} puntos',
+          tag: 'MapProvider',
         );
 
         final polylines = {

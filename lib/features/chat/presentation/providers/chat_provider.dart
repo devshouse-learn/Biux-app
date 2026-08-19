@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_image_compress/flutter_image_compress.dart';
 import 'package:mime/mime.dart';
+import 'package:biux/core/services/app_logger.dart';
 import 'package:biux/features/chat/data/datasources/chat_datasource.dart';
 import 'package:biux/features/chat/domain/entities/message_entity.dart';
 
@@ -84,19 +85,28 @@ class ChatProvider extends ChangeNotifier {
             notifyListeners();
           },
           onError: (error) {
-            debugPrint(
-              'aŒ Error al escuchar mensajes del chat $chatId: $error',
+            AppLogger.error(
+              'Error al escuchar mensajes del chat $chatId',
+              error: error,
+              tag: 'ChatProvider',
             );
             _error = 'could_not_load_messages';
             notifyListeners();
           },
         );
-    _activeChatSub = _ds.getChatStream(chatId).listen((chat) {
-      _activeChat = chat;
-      // Re-aplicar estado de lectura con los timestamps actualizados
-      _messages = _applyReadStatus(_messages);
-      notifyListeners();
-    }, onError: (e) => debugPrint('aŒ Error en getChatStream $chatId: $e'));
+    _activeChatSub = _ds.getChatStream(chatId).listen(
+      (chat) {
+        _activeChat = chat;
+        // Re-aplicar estado de lectura con los timestamps actualizados
+        _messages = _applyReadStatus(_messages);
+        notifyListeners();
+      },
+      onError: (e) => AppLogger.error(
+        'Error en getChatStream $chatId',
+        error: e,
+        tag: 'ChatProvider',
+      ),
+    );
     _ds.markMessagesAsRead(chatId);
 
     // Escuchar typing de otros participantes

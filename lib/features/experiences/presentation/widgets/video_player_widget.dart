@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:video_player/video_player.dart';
 import 'package:biux/core/design_system/locale_notifier.dart';
+import 'package:biux/core/services/app_logger.dart';
 
 /// Widget para reproducir videos en las experiencias
 /// Soporta videos de hasta 30 segundos con controles automáticos
@@ -109,7 +110,11 @@ class _VideoPlayerWidgetState extends State<VideoPlayerWidget> {
         _hasError = true;
         _errorMessage = e.toString();
       });
-      debugPrint('Error inicializando video: $e');
+      AppLogger.error(
+        'Error inicializando video',
+        error: e,
+        tag: 'VideoPlayerWidget',
+      );
     }
   }
 

@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/foundation.dart';
+import 'package:biux/core/services/app_logger.dart';
 
 class RoadReportsDatasource {
   final _fs = FirebaseFirestore.instance;
@@ -14,7 +15,11 @@ class RoadReportsDatasource {
           .get();
       return s.docs.map((d) => {'id': d.id, ...d.data()}).toList();
     } on FirebaseException catch (e) {
-      debugPrint('Error con indice compuesto, intentando sin orderBy: $e');
+      AppLogger.warning(
+        'Error con indice compuesto, intentando sin orderBy',
+        error: e,
+        tag: 'RoadReportsDatasource',
+      );
       try {
         final s = await _fs
             .collection('road_reports')
@@ -30,7 +35,11 @@ class RoadReportsDatasource {
         });
         return list;
       } catch (e2) {
-        debugPrint('Error cargando reportes: $e2');
+        AppLogger.error(
+          'Error cargando reportes',
+          error: e2,
+          tag: 'RoadReportsDatasource',
+        );
         return [];
       }
     }
@@ -45,7 +54,10 @@ class RoadReportsDatasource {
     required double lng,
   }) async {
     try {
-      debugPrint('Creando reporte: type=$type, lat=$lat, lng=$lng');
+      AppLogger.debug(
+        'Creando reporte: type=$type, lat=$lat, lng=$lng',
+        tag: 'RoadReportsDatasource',
+      );
       await _fs.collection('road_reports').add({
         'userId': userId,
         'userName': userName,
@@ -58,9 +70,16 @@ class RoadReportsDatasource {
         'isActive': true,
         'createdAt': FieldValue.serverTimestamp(),
       });
-      debugPrint('Reporte creado exitosamente');
+      AppLogger.debug(
+        'Reporte creado exitosamente',
+        tag: 'RoadReportsDatasource',
+      );
     } on FirebaseException catch (e) {
-      debugPrint('Error creando reporte: $e');
+      AppLogger.error(
+        'Error creando reporte',
+        error: e,
+        tag: 'RoadReportsDatasource',
+      );
       rethrow;
     }
   }
@@ -73,7 +92,10 @@ class RoadReportsDatasource {
       // Primero leer el documento
       final snapshot = await docRef.get();
       if (!snapshot.exists) {
-        debugPrint('Reporte no existe: $reportId');
+        AppLogger.warning(
+          'Reporte no existe: $reportId',
+          tag: 'RoadReportsDatasource',
+        );
         return false;
       }
 
@@ -82,7 +104,10 @@ class RoadReportsDatasource {
 
       // Verificar si ya confirmo
       if (confirmedBy.contains(userId)) {
-        debugPrint('Usuario $userId ya confirmo el reporte $reportId');
+        AppLogger.debug(
+          'Usuario $userId ya confirmo el reporte $reportId',
+          tag: 'RoadReportsDatasource',
+        );
         return false;
       }
 
@@ -92,10 +117,17 @@ class RoadReportsDatasource {
         'confirmedBy': FieldValue.arrayUnion([userId]),
       });
 
-      debugPrint('Reporte $reportId confirmado por $userId');
+      AppLogger.debug(
+        'Reporte $reportId confirmado por $userId',
+        tag: 'RoadReportsDatasource',
+      );
       return true;
     } on FirebaseException catch (e) {
-      debugPrint('Error confirmando reporte: $e');
+      AppLogger.error(
+        'Error confirmando reporte',
+        error: e,
+        tag: 'RoadReportsDatasource',
+      );
       return false;
     }
   }
@@ -104,7 +136,11 @@ class RoadReportsDatasource {
     try {
       await _fs.collection('road_reports').doc(id).update({'isActive': false});
     } on FirebaseException catch (e) {
-      debugPrint('Error desactivando reporte: $e');
+      AppLogger.error(
+        'Error desactivando reporte',
+        error: e,
+        tag: 'RoadReportsDatasource',
+      );
       rethrow;
     }
   }

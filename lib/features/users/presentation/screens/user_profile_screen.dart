@@ -11,6 +11,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:share_plus/share_plus.dart';
+import 'package:biux/core/services/app_logger.dart';
 
 class UserProfileScreen extends StatefulWidget {
   final String userId;
@@ -1098,7 +1099,11 @@ class _UserProfileScreenState extends State<UserProfileScreen>
 
       await SharePlus.instance.share(ShareParams(text: shareText));
     } on Exception catch (e) {
-      debugPrint('Error al compartir perfil: $e');
+      AppLogger.error(
+        'Error al compartir perfil',
+        error: e,
+        tag: 'UserProfileScreen',
+      );
     }
   }
 }

@@ -3,6 +3,7 @@ import 'package:flutter_image_compress/flutter_image_compress.dart';
 import 'package:path/path.dart' as path;
 import 'package:path_provider/path_provider.dart';
 import "package:flutter/foundation.dart";
+import 'package:biux/core/services/app_logger.dart';
 
 /// Servicio para comprimir imágenes antes de subirlas a Firebase
 /// Esto reduce significativamente los costos de almacenamiento y transferencia
@@ -43,13 +44,18 @@ class ImageCompressionService {
 
       // Verificar que la compresión fue exitosa
       final compressedSize = await File(compressedFile.path).length();
-      debugPrint(
-        'Imagen comprimida: ${fileSize ~/ 1024}KB a†’ ${compressedSize ~/ 1024}KB',
+      AppLogger.debug(
+        'Imagen comprimida: ${fileSize ~/ 1024}KB a ${compressedSize ~/ 1024}KB',
+        tag: 'ImageCompressionService',
       );
 
       return File(compressedFile.path);
     } on Exception catch (e) {
-      debugPrint('Error comprimiendo imagen: $e');
+      AppLogger.error(
+        'Error comprimiendo imagen',
+        error: e,
+        tag: 'ImageCompressionService',
+      );
       return file; // Retornar archivo original si falla
     }
   }
@@ -65,12 +71,17 @@ class ImageCompressionService {
         format: CompressFormat.jpeg,
       );
 
-      debugPrint(
-        'Bytes comprimidos: ${bytes.length ~/ 1024}KB a†’ ${compressedBytes.length ~/ 1024}KB',
+      AppLogger.debug(
+        'Bytes comprimidos: ${bytes.length ~/ 1024}KB a ${compressedBytes.length ~/ 1024}KB',
+        tag: 'ImageCompressionService',
       );
       return compressedBytes;
     } on Exception catch (e) {
-      debugPrint('Error comprimiendo bytes: $e');
+      AppLogger.error(
+        'Error comprimiendo bytes',
+        error: e,
+        tag: 'ImageCompressionService',
+      );
       return bytes;
     }
   }
@@ -95,7 +106,11 @@ class ImageCompressionService {
 
       return compressedFile != null ? File(compressedFile.path) : file;
     } on Exception catch (e) {
-      debugPrint('Error comprimiendo avatar: $e');
+      AppLogger.error(
+        'Error comprimiendo avatar',
+        error: e,
+        tag: 'ImageCompressionService',
+      );
       return file;
     }
   }
@@ -120,7 +135,11 @@ class ImageCompressionService {
 
       return compressedFile != null ? File(compressedFile.path) : file;
     } on Exception catch (e) {
-      debugPrint('Error comprimiendo thumbnail: $e');
+      AppLogger.error(
+        'Error comprimiendo thumbnail',
+        error: e,
+        tag: 'ImageCompressionService',
+      );
       return file;
     }
   }

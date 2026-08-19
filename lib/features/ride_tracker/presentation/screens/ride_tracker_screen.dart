@@ -1,6 +1,7 @@
 ﻿import 'dart:async';
 import 'dart:convert';
 import 'package:biux/core/config/env_config.dart';
+import 'package:biux/core/services/app_logger.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
@@ -2262,14 +2263,21 @@ class _RoutePlannerSheetState extends State<_RoutePlannerSheet> {
       final res = await http.get(uri).timeout(const Duration(seconds: 8));
       if (res.statusCode == 200) {
         final data = jsonDecode(res.body);
-        debugPrint('Geocode place_id status: ${data['status']}');
+        AppLogger.debug(
+          'Geocode place_id status: ${data['status']}',
+          tag: 'RideTrackerScreen',
+        );
         if (data['status'] == 'OK' && data['results'].isNotEmpty) {
           final loc = data['results'][0]['geometry']['location'];
           return LatLng(loc['lat'] as double, loc['lng'] as double);
         }
       }
     } catch (e) {
-      debugPrint('_getPlaceLatLng error: $e');
+      AppLogger.error(
+        '_getPlaceLatLng error',
+        error: e,
+        tag: 'RideTrackerScreen',
+      );
     }
     return null;
   }
@@ -2288,14 +2296,17 @@ class _RoutePlannerSheetState extends State<_RoutePlannerSheet> {
       final res = await http.get(uri).timeout(const Duration(seconds: 8));
       if (res.statusCode == 200) {
         final data = jsonDecode(res.body);
-        debugPrint('Geocode text status: ${data['status']}');
+        AppLogger.debug(
+          'Geocode text status: ${data['status']}',
+          tag: 'RideTrackerScreen',
+        );
         if (data['status'] == 'OK' && data['results'].isNotEmpty) {
           final loc = data['results'][0]['geometry']['location'];
           return LatLng(loc['lat'] as double, loc['lng'] as double);
         }
       }
     } catch (e) {
-      debugPrint('_geocodeText error: $e');
+      AppLogger.error('_geocodeText error', error: e, tag: 'RideTrackerScreen');
     }
     return null;
   }
@@ -2324,14 +2335,20 @@ class _RoutePlannerSheetState extends State<_RoutePlannerSheet> {
           .get(Uri.parse(url))
           .timeout(const Duration(seconds: 15));
       if (res.statusCode != 200) {
-        debugPrint('HTTP ${res.statusCode}');
+        AppLogger.warning('HTTP ${res.statusCode}', tag: 'RideTrackerScreen');
         return null;
       }
       final data = jsonDecode(res.body);
-      debugPrint('Directions status: ${data['status']}');
+      AppLogger.debug(
+        'Directions status: ${data['status']}',
+        tag: 'RideTrackerScreen',
+      );
       if (data['status'] != 'OK' || (data['routes'] as List).isEmpty) {
         if (data['error_message'] != null) {
-          debugPrint('API error_message: ${data['error_message']}');
+          AppLogger.warning(
+            'API error_message: ${data['error_message']}',
+            tag: 'RideTrackerScreen',
+          );
         }
         return null;
       }
@@ -2346,7 +2363,11 @@ class _RoutePlannerSheetState extends State<_RoutePlannerSheet> {
       }
       return points;
     } catch (e) {
-      debugPrint('_callDirections error: $e');
+      AppLogger.error(
+        '_callDirections error',
+        error: e,
+        tag: 'RideTrackerScreen',
+      );
     }
     return null;
   }
@@ -2434,7 +2455,7 @@ class _RoutePlannerSheetState extends State<_RoutePlannerSheet> {
 
       if (mounted) Navigator.of(context).pop();
     } catch (e) {
-      debugPrint('_traceRoute error: $e');
+      AppLogger.error('_traceRoute error', error: e, tag: 'RideTrackerScreen');
       _showError(
         '${Provider.of<LocaleNotifier>(context, listen: false).t('error_tracing_route')}: $e',
       );

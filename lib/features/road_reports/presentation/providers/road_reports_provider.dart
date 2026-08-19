@@ -41,7 +41,11 @@ class RoadReportsProvider with ChangeNotifier {
         );
       }).toList();
     } on Exception catch (e) {
-      debugPrint('Error cargando reportes: $e');
+      AppLogger.error(
+        'Error cargando reportes',
+        error: e,
+        tag: 'RoadReportsProvider',
+      );
       _error = e.toString();
     }
     _isLoading = false;

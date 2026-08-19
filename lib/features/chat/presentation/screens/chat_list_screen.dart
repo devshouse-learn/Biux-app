@@ -4,6 +4,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:go_router/go_router.dart';
 import 'package:biux/core/design_system/color_tokens.dart';
+import 'package:biux/core/services/app_logger.dart';
 import 'package:biux/features/chat/presentation/providers/chat_provider.dart';
 
 import 'package:timeago/timeago.dart' as timeago;
@@ -239,7 +240,11 @@ class _ChatListScreenState extends State<ChatListScreen>
                       return const Center(child: CircularProgressIndicator());
                     }
                     if (snapshot.hasError) {
-                      debugPrint('Error en chats stream: ${snapshot.error}');
+                      AppLogger.error(
+                        'Error en chats stream',
+                        error: snapshot.error,
+                        tag: 'ChatListScreen',
+                      );
                       return Center(
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,

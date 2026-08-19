@@ -18,7 +18,7 @@ class RideRepository {
           .add(ride.toFirestore());
       return docRef.id;
     } on FirebaseException catch (e) {
-      debugPrint('Error creating ride: $e');
+      AppLogger.error('Error creating ride', error: e, tag: 'RideRepository');
       return null;
     }
   }
@@ -101,7 +101,7 @@ class RideRepository {
       }
       return null;
     } on FirebaseException catch (e) {
-      debugPrint('Error getting ride: $e');
+      AppLogger.error('Error getting ride', error: e, tag: 'RideRepository');
       return null;
     }
   }

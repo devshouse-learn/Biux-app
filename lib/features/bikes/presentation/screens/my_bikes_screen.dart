@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:biux/core/design_system/color_tokens.dart';
 import 'package:biux/core/design_system/locale_notifier.dart';
+import 'package:biux/core/design_system/biux_loading_indicator.dart';
 import 'package:biux/features/bikes/presentation/providers/bike_provider.dart';
 import 'package:biux/features/bikes/domain/entities/bike_entity.dart';
 import 'package:biux/features/bikes/domain/entities/bike_enums.dart';
@@ -59,9 +60,7 @@ class _MyBikesScreenState extends State<MyBikesScreen> {
       body: Consumer<BikeProvider>(
         builder: (context, bikeProvider, child) {
           if (bikeProvider.isLoading) {
-            return const Center(
-              child: CircularProgressIndicator(color: ColorTokens.primary30),
-            );
+            return const CenterLoadingIndicator();
           }
 
           if (bikeProvider.hasError) {

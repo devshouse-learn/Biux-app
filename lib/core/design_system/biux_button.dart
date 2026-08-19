@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'color_tokens.dart';
+import 'biux_loading_indicator.dart';
 
 enum BiuxButtonType { primary, secondary, danger, success }
 
@@ -83,13 +85,14 @@ class BiuxButton extends StatelessWidget {
     }
 
     final buttonChild = isLoading
-        ? SizedBox(
-            width: iconSize,
-            height: iconSize,
-            child: CircularProgressIndicator(
-              strokeWidth: 2,
-              valueColor: AlwaysStoppedAnimation<Color>(foregroundColor),
-            ),
+        ? BiuxLoadingIndicator(
+            size: iconSize <= 18
+                ? LoadingSize.small
+                : iconSize <= 20
+                ? LoadingSize.medium
+                : LoadingSize.large,
+            color: foregroundColor,
+            strokeWidth: 2,
           )
         : Row(
             mainAxisSize: isFullWidth ? MainAxisSize.max : MainAxisSize.min,
@@ -114,8 +117,17 @@ class BiuxButton extends StatelessWidget {
             ],
           );
 
+    final isDisabled = isLoading || onPressed == null;
+    final buttonCallback = isDisabled
+        ? null
+        : () {
+            // Haptic feedback
+            HapticFeedback.mediumImpact();
+            onPressed?.call();
+          };
+
     final button = ElevatedButton(
-      onPressed: isLoading ? null : onPressed,
+      onPressed: buttonCallback,
       style: ElevatedButton.styleFrom(
         backgroundColor: backgroundColor,
         foregroundColor: foregroundColor,
@@ -126,6 +138,9 @@ class BiuxButton extends StatelessWidget {
         ),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
         disabledBackgroundColor: colorScheme.onSurface.withValues(alpha: 0.12),
+        disabledForegroundColor: colorScheme.onSurface.withValues(alpha: 0.38),
+        elevation: isDisabled ? 0 : 4,
+        shadowColor: backgroundColor.withValues(alpha: 0.4),
       ),
       child: buttonChild,
     );

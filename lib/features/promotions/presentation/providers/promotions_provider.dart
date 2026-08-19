@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:biux/core/services/app_logger.dart';
 import 'package:biux/features/promotions/data/models/promotion_request_model.dart';
 
 class PromotionsProvider with ChangeNotifier {
@@ -38,7 +39,11 @@ class PromotionsProvider with ChangeNotifier {
       }
       notifyListeners();
     } on FirebaseException catch (e) {
-      debugPrint('Error loading verified promoters: \$e');
+      AppLogger.error(
+        'Error loading verified promoters',
+        error: e,
+        tag: 'PromotionsProvider',
+      );
     }
   }
 
@@ -60,7 +65,11 @@ class PromotionsProvider with ChangeNotifier {
       });
       return true;
     } on FirebaseException catch (e) {
-      debugPrint('Error requesting promoter status: \$e');
+      AppLogger.error(
+        'Error requesting promoter status',
+        error: e,
+        tag: 'PromotionsProvider',
+      );
       return false;
     }
   }
@@ -81,7 +90,11 @@ class PromotionsProvider with ChangeNotifier {
       });
       return true;
     } on FirebaseException catch (e) {
-      debugPrint('Error approving promoter: \$e');
+      AppLogger.error(
+        'Error approving promoter',
+        error: e,
+        tag: 'PromotionsProvider',
+      );
       return false;
     }
   }
@@ -94,7 +107,11 @@ class PromotionsProvider with ChangeNotifier {
       notifyListeners();
       return true;
     } on FirebaseException catch (e) {
-      debugPrint('Error revoking promoter: \$e');
+      AppLogger.error(
+        'Error revoking promoter',
+        error: e,
+        tag: 'PromotionsProvider',
+      );
       return false;
     }
   }
@@ -141,7 +158,11 @@ class PromotionsProvider with ChangeNotifier {
         notifyListeners();
       }
     } on FirebaseException catch (e) {
-      debugPrint('PromotionsProvider._saveRequest failed: \$e\n\$st');
+      AppLogger.error(
+        'PromotionsProvider._saveRequest failed',
+        error: e,
+        tag: 'PromotionsProvider',
+      );
     }
   }
 

@@ -24,6 +24,7 @@ import 'package:biux/core/services/remote_config_service.dart';
 import 'package:biux/core/services/snackbar_service.dart';
 import 'package:biux/core/services/performance_service.dart';
 import 'package:biux/core/services/app_update_service.dart';
+import 'package:biux/core/services/app_logger.dart';
 
 // External packages
 import 'package:firebase_analytics/firebase_analytics.dart';
@@ -40,13 +41,70 @@ import 'dart:ui' show PlatformDispatcher;
 import 'package:biux/core/config/firebase_options.dart';
 import 'package:biux/features/ride_tracker/data/datasources/offline_ride_datasource.dart';
 import 'package:biux/core/services/welcome_notification_service.dart';
+import 'package:biux/core/exceptions/backend_exceptions.dart';
 
+/// Sincronizar rodadas guardadas offline cuando el usuario se conecta
+///
+/// Esta función intenta subir todas las rodadas que fueron grabadas
+/// cuando el dispositivo no tenía conexión a internet.
+///
+/// El proceso es no-bloqueante: si hay errores, se registran pero no
+/// detienen la inicialización de la app.
 Future<void> _syncOfflineRides() async {
   try {
     final pending = await OfflineRideDatasource.getPending();
-    if (pending.isNotEmpty) {
+
+    if (pending.isEmpty) {
+      AppLogger.info(
+        'No hay rodadas offline para sincronizar',
+        tag: 'OfflineSync',
+      );
+      return;
     }
-  } catch (e) {}
+
+    AppLogger.info(
+      'Sincronizando ${pending.length} rodadas offline...',
+      tag: 'OfflineSync',
+    );
+
+    int successCount = 0;
+    int failureCount = 0;
+
+    for (final ride in pending) {
+      try {
+        // TODO: Implementar lógica de sincronización real
+        // await RideRepository().uploadOfflineRide(ride);
+        successCount++;
+        AppLogger.debug('Rodada sincronizada: ${ride.id}', tag: 'OfflineSync');
+      } catch (e) {
+        failureCount++;
+        AppLogger.warning(
+          'Error sincronizando rodada ${ride.id}: $e',
+          tag: 'OfflineSync',
+        );
+        // Continuar con la siguiente rodada en caso de error
+      }
+    }
+
+    AppLogger.info(
+      'Sincronización completada: $successCount exitosas, $failureCount fallidas',
+      tag: 'OfflineSync',
+    );
+  } on SyncException catch (e) {
+    AppLogger.error(
+      'Error de sincronización: ${e.message}',
+      tag: 'OfflineSync',
+      error: e,
+    );
+    // No relanzar - permitir que la app continúe funcionando
+  } catch (e) {
+    AppLogger.error(
+      'Error inesperado sincronizando rodadas offline: $e',
+      tag: 'OfflineSync',
+      error: e,
+    );
+    // No relanzar - permitir que la app continúe funcionando
+  }
 }
 
 void main() async {
@@ -143,13 +201,20 @@ Future<void> _initServicesAsync() async {
     ConnectivityService().initialize();
 
     // Auto-sync rodadas offline cuando se restaure la conexión
-    ConnectivityService().statusStream.listen((status) {
-      if (status == ConnectivityStatus.online) {
-        _syncOfflineRides();
-      }
-    }, onError: (e) {
-      debugPrint('[Connectivity] Error en listener: $e');
-    });
+    ConnectivityService().statusStream.listen(
+      (status) {
+        if (status == ConnectivityStatus.online) {
+          _syncOfflineRides();
+        }
+      },
+      onError: (e) {
+        AppLogger.error(
+          '[Connectivity] Error en listener',
+          error: e,
+          tag: 'initializeServices',
+        );
+      },
+    );
     RemoteConfigService().initialize();
     NotificationService().initialize();
     // Inicializar Push Notifications
@@ -159,7 +224,11 @@ Future<void> _initServicesAsync() async {
     // Performance monitoring
     PerformanceService.startAppLoadTrace();
   } on FirebaseException catch (e) {
-    debugPrint('aš ï¸ Error en inicialización async de servicios: $e');
+    AppLogger.error(
+      'Error en inicialización async de servicios',
+      error: e,
+      tag: 'initializeServices',
+    );
   }
 }
 

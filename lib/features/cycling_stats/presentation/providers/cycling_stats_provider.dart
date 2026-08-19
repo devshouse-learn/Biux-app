@@ -1,6 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:biux/features/cycling_stats/domain/entities/cycling_stats_entity.dart';
 import 'package:biux/features/cycling_stats/data/datasources/cycling_stats_datasource.dart';
+import 'package:biux/core/services/app_logger.dart';
 
 class CyclingStatsProvider with ChangeNotifier {
   final CyclingStatsDatasource _datasource = CyclingStatsDatasource();
@@ -195,7 +196,11 @@ class CyclingStatsProvider with ChangeNotifier {
       }
       notifyListeners();
     } on Exception catch (e) {
-      debugPrint('Error cargando heatmap: $e');
+      AppLogger.error(
+        'Error cargando heatmap',
+        error: e,
+        tag: 'CyclingStatsProvider',
+      );
     }
   }
 }

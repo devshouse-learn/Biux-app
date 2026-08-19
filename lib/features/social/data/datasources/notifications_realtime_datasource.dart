@@ -1,6 +1,7 @@
 import 'package:firebase_database/firebase_database.dart';
 import 'package:biux/features/social/data/models/notification_model.dart';
 import "package:flutter/foundation.dart";
+import 'package:biux/core/services/app_logger.dart';
 
 /// Datasource para notificaciones en Firebase Realtime Database
 class NotificationsRealtimeDatasource {
@@ -56,7 +57,11 @@ class NotificationsRealtimeDatasource {
         })
         .handleError(
           (error) {
-            debugPrint('Error en watchUnreadCount: $error');
+            AppLogger.error(
+              'Error en watchUnreadCount',
+              error: error,
+              tag: 'NotificationsRealtimeDatasource',
+            );
           },
           test: (error) => false, // No consumir el error, dejarlo pasar como 0
         );

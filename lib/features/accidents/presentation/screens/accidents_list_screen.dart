@@ -8,6 +8,7 @@ import 'package:biux/core/design_system/locale_notifier.dart';
 import 'package:biux/features/accidents/domain/entities/accident_entity.dart';
 import 'package:biux/features/accidents/presentation/screens/accident_detail_screen.dart';
 import 'package:biux/features/accidents/presentation/screens/accident_report_screen.dart';
+import 'package:biux/core/services/app_logger.dart';
 
 class AccidentsListScreen extends StatefulWidget {
   const AccidentsListScreen({Key? key}) : super(key: key);
@@ -45,7 +46,11 @@ class _AccidentsListScreenState extends State<AccidentsListScreen>
       );
       if (mounted) setState(() => _myPosition = pos);
     } on FirebaseException catch (e) {
-      debugPrint('Error: ' + e.toString());
+      AppLogger.error(
+        'Error getting location',
+        error: e,
+        tag: 'AccidentsListScreen',
+      );
     }
   }
 

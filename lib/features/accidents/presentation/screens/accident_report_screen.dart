@@ -8,6 +8,7 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:biux/shared/services/permission_service.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:biux/core/services/app_logger.dart';
 import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
 import 'package:biux/core/design_system/locale_notifier.dart';
@@ -90,7 +91,11 @@ class _AccidentReportScreenState extends State<AccidentReportScreen>
         setState(() => _loadingLocation = false);
       }
     } on FirebaseException catch (e) {
-      debugPrint('Error getting location: $e');
+      AppLogger.error(
+        'Error getting location',
+        error: e,
+        tag: 'AccidentReportScreen',
+      );
       setState(() => _loadingLocation = false);
     }
   }
@@ -177,7 +182,11 @@ class _AccidentReportScreenState extends State<AccidentReportScreen>
         setState(() => _photos.add(File(xfile.path)));
       }
     } on FirebaseException catch (e) {
-      debugPrint('Error picking image: $e');
+      AppLogger.error(
+        'Error picking image',
+        error: e,
+        tag: 'AccidentReportScreen',
+      );
     }
   }
 

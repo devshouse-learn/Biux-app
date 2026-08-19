@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_database/firebase_database.dart';
+import 'package:biux/core/services/app_logger.dart';
 import 'package:biux/features/social/data/models/attendee_model.dart';
 import "package:flutter/foundation.dart";
 
@@ -78,7 +79,11 @@ class AttendeesFirestoreAdapter {
         'maybeParticipants': maybe,
       });
     } on FirebaseException catch (e) {
-      debugPrint('Error actualizando Firestore: $e');
+      AppLogger.error(
+        'Error actualizando Firestore',
+        error: e,
+        tag: 'AttendeesFirestoreAdapter',
+      );
     }
   }
 
@@ -126,11 +131,16 @@ class AttendeesFirestoreAdapter {
             .set(attendee.toJson());
       }
 
-      debugPrint(
-        '✅ Migrados $rideId: ${participants.length} confirmados, ${maybeParticipants.length} tal vez',
+      AppLogger.debug(
+        'Migrados $rideId: ${participants.length} confirmados, ${maybeParticipants.length} tal vez',
+        tag: 'AttendeesFirestoreAdapter',
       );
     } on FirebaseException catch (e) {
-      debugPrint('aŒ Error migrando rodada $rideId: $e');
+      AppLogger.error(
+        'Error migrando rodada $rideId',
+        error: e,
+        tag: 'AttendeesFirestoreAdapter',
+      );
     }
   }
 
@@ -139,8 +149,9 @@ class AttendeesFirestoreAdapter {
     try {
       final ridesSnapshot = await _firestore.collection('rides').get();
 
-      debugPrint(
-        '🔗š€ Iniciando migración de ${ridesSnapshot.docs.length} rodadas...',
+      AppLogger.debug(
+        'Iniciando migración de ${ridesSnapshot.docs.length} rodadas...',
+        tag: 'AttendeesFirestoreAdapter',
       );
 
       for (final doc in ridesSnapshot.docs) {
@@ -149,9 +160,12 @@ class AttendeesFirestoreAdapter {
           Duration(milliseconds: 100),
         ); // Evitar rate limiting
       }
-
     } on FirebaseException catch (e) {
-      debugPrint('aŒ Error en migración masiva: $e');
+      AppLogger.error(
+        'Error en migración masiva',
+        error: e,
+        tag: 'AttendeesFirestoreAdapter',
+      );
     }
   }
 
@@ -180,8 +194,9 @@ class AttendeesFirestoreAdapter {
       await ref.child(userId).remove();
     }
 
-    debugPrint(
-      '🔗§¹ Limpiados $toRemove.length asistentes cancelados de $rideId',
+    AppLogger.debug(
+      'Limpiados ${toRemove.length} asistentes cancelados de $rideId',
+      tag: 'AttendeesFirestoreAdapter',
     );
   }
 }

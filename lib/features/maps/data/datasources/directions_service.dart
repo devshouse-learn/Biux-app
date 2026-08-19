@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:biux/core/config/env_config.dart';
+import 'package:biux/core/services/app_logger.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:http/http.dart' as http;
 import "package:flutter/foundation.dart";
@@ -40,7 +41,11 @@ class DirectionsService {
         }
       }
     } on SocketException catch (e) {
-      debugPrint('Error getting directions: $e');
+      AppLogger.error(
+        'Error getting directions',
+        error: e,
+        tag: 'DirectionsService',
+      );
     }
 
     return null;
@@ -58,7 +63,7 @@ class DirectionsService {
         'mode=$travelMode&'
         'key=$_apiKey';
 
-    debugPrint('URL: $url');
+    AppLogger.debug('URL: $url', tag: 'DirectionsService');
 
     try {
       final response = await http
@@ -66,11 +71,13 @@ class DirectionsService {
           .timeout(
             Duration(seconds: 10), // Timeout de 10 segundos
             onTimeout: () {
-              debugPrint('a° Timeout en la petición a Google Directions API');
+              AppLogger.warning(
+                'Timeout en la petición a Google Directions API',
+                tag: 'DirectionsService',
+              );
               throw Exception('Timeout');
             },
           );
-
 
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
@@ -97,17 +104,28 @@ class DirectionsService {
             durationValue: leg['duration']['value'],
           );
         } else {
-          debugPrint('aŒ API Error: ${data['status']}');
+          AppLogger.warning(
+            'API Error: ${data['status']}',
+            tag: 'DirectionsService',
+          );
           if (data['error_message'] != null) {
-            debugPrint('Error message: ${data['error_message']}');
+            AppLogger.warning(
+              'Error message: ${data['error_message']}',
+              tag: 'DirectionsService',
+            );
           }
         }
       } else {
-        debugPrint('aŒ HTTP Error: ${response.statusCode}');
-        debugPrint('Response body: ${response.body}');
+        AppLogger.error(
+          'HTTP Error: ${response.statusCode}',
+          tag: 'DirectionsService',
+        );
+        AppLogger.debug(
+          'Response body: ${response.body}',
+          tag: 'DirectionsService',
+        );
       }
-    } on SocketException catch (e) {
-    }
+    } on SocketException catch (e) {}
 
     return null;
   }

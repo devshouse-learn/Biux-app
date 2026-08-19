@@ -3,6 +3,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:video_player/video_player.dart';
 import "package:flutter/foundation.dart";
+import 'package:biux/core/services/app_logger.dart';
 
 /// Servicio optimizado para gestión de videos en experiencias
 /// Maneja compresión, subida y gestión de videos hasta 30 segundos
@@ -34,14 +35,19 @@ class VideoExperienceService {
           );
         }
 
-        debugPrint(
-          '🔗Ž¥ Video seleccionado: ${video.path}, Tamaño: ${fileSizeMB.toStringAsFixed(2)}MB',
+        AppLogger.debug(
+          'Video seleccionado: ${video.path}, Tamaño: ${fileSizeMB.toStringAsFixed(2)}MB',
+          tag: 'VideoExperienceService',
         );
       }
 
       return video;
     } on FirebaseException catch (e) {
-      debugPrint('aŒ Error seleccionando video: $e');
+      AppLogger.error(
+        'Error seleccionando video',
+        error: e,
+        tag: 'VideoExperienceService',
+      );
       rethrow;
     }
   }
@@ -54,12 +60,15 @@ class VideoExperienceService {
         maxDuration: const Duration(seconds: maxVideoDurationSeconds),
       );
 
-      if (video != null) {
-      }
+      if (video != null) {}
 
       return video;
     } on FirebaseException catch (e) {
-      debugPrint('aŒ Error grabando video: $e');
+      AppLogger.error(
+        'Error grabando video',
+        error: e,
+        tag: 'VideoExperienceService',
+      );
       rethrow;
     }
   }
@@ -72,7 +81,6 @@ class VideoExperienceService {
     Function(double)? onProgress,
   }) async {
     try {
-
       final fileName =
           '${DateTime.now().millisecondsSinceEpoch}_${videoFile.name}';
       final videosRef = _storage.ref().child(
@@ -86,8 +94,9 @@ class VideoExperienceService {
       uploadTask.snapshotEvents.listen((snapshot) {
         final progress = snapshot.bytesTransferred / snapshot.totalBytes;
         onProgress?.call(progress);
-        debugPrint(
-          '🔗“¤ Progreso subida: ${(progress * 100).toStringAsFixed(1)}%',
+        AppLogger.debug(
+          'Progreso subida: ${(progress * 100).toStringAsFixed(1)}%',
+          tag: 'VideoExperienceService',
         );
       });
 
@@ -95,14 +104,17 @@ class VideoExperienceService {
       final snapshot = await uploadTask;
       final downloadUrl = await snapshot.ref.getDownloadURL();
 
-
       return VideoUploadResult(
         videoUrl: downloadUrl,
         fileName: fileName,
         sizeBytes: snapshot.totalBytes,
       );
     } on FirebaseException catch (e) {
-      debugPrint('aŒ Error subiendo video: $e');
+      AppLogger.error(
+        'Error subiendo video',
+        error: e,
+        tag: 'VideoExperienceService',
+      );
       throw VideoUploadException('Error subiendo video: $e');
     }
   }
@@ -117,19 +129,23 @@ class VideoExperienceService {
   }) async {
     VideoPlayerController? controller;
     try {
-
       controller = VideoPlayerController.networkUrl(Uri.parse(videoUrl));
       await controller.initialize();
 
       // No existe API pura de video_player para capturar un frame
       // como archivo de imagen. Retornamos null hasta agregar
       // video_thumbnail u otro paquete nativo.
-      debugPrint(
-        'aš ï¸ Thumbnail: se requiere paquete video_thumbnail para captura de frame',
+      AppLogger.warning(
+        'Thumbnail: se requiere paquete video_thumbnail para captura de frame',
+        tag: 'VideoExperienceService',
       );
       return null;
     } on FirebaseException catch (e) {
-      debugPrint('aŒ Error generando thumbnail: $e');
+      AppLogger.error(
+        'Error generando thumbnail',
+        error: e,
+        tag: 'VideoExperienceService',
+      );
       return null;
     } finally {
       await controller?.dispose();
@@ -146,9 +162,9 @@ class VideoExperienceService {
       final duration = controller.value.duration;
       final isValid = duration.inSeconds <= maxVideoDurationSeconds;
 
-      debugPrint(
-        'a±ï¸ Duración del video: ${duration.inSeconds}s '
-        '(max: ${maxVideoDurationSeconds}s) a€“ ${isValid ? "✅ válido" : "aŒ excede"}',
+      AppLogger.debug(
+        'Duración del video: ${duration.inSeconds}s (max: ${maxVideoDurationSeconds}s)',
+        tag: 'VideoExperienceService',
       );
 
       if (!isValid) {
@@ -160,7 +176,11 @@ class VideoExperienceService {
       return true;
     } on FirebaseException catch (e) {
       if (e is VideoTooLongException) rethrow;
-      debugPrint('aŒ Error validando duración: $e');
+      AppLogger.error(
+        'Error validando duración',
+        error: e,
+        tag: 'VideoExperienceService',
+      );
       return false;
     } finally {
       await controller?.dispose();
@@ -189,7 +209,11 @@ class VideoExperienceService {
         height: size.height.toInt(),
       );
     } on FirebaseException catch (e) {
-      debugPrint('aŒ Error obteniendo info del video: $e');
+      AppLogger.error(
+        'Error obteniendo info del video',
+        error: e,
+        tag: 'VideoExperienceService',
+      );
       return null;
     } finally {
       await controller?.dispose();
@@ -205,7 +229,10 @@ class VideoExperienceService {
           await file.delete();
         }
       } on FirebaseException catch (e) {
-        debugPrint('aš ï¸ Error eliminando archivo temporal $path: $e');
+        AppLogger.warning(
+          'Error eliminando archivo temporal $path: $e',
+          tag: 'VideoExperienceService',
+        );
       }
     }
   }

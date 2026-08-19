@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:biux/features/users/data/models/user_model.dart';
 import 'package:biux/features/users/domain/entities/user_entity.dart';
 import "package:flutter/foundation.dart";
+import 'package:biux/core/services/app_logger.dart';
 
 // Remote Data Source Interface for Users
 abstract class UserRemoteDataSource {
@@ -42,7 +43,11 @@ class UserRemoteDataSourceImpl implements UserRemoteDataSource {
         'deletionRequestDate': data['deletionRequestDate'],
       });
     } on FirebaseException catch (e) {
-      debugPrint('Error getting user by id: $e');
+      AppLogger.error(
+        'Error getting user by id',
+        error: e,
+        tag: 'UserRemoteDatasource',
+      );
       return null;
     }
   }
@@ -65,7 +70,11 @@ class UserRemoteDataSourceImpl implements UserRemoteDataSource {
         });
       }).toList();
     } on FirebaseException catch (e) {
-      debugPrint('Error getting all users: $e');
+      AppLogger.error(
+        'Error getting all users',
+        error: e,
+        tag: 'UserRemoteDatasource',
+      );
       return [];
     }
   }
@@ -87,7 +96,11 @@ class UserRemoteDataSourceImpl implements UserRemoteDataSource {
         'deletionRequestDate': data['deletionRequestDate'],
       });
     } on FirebaseException catch (e) {
-      debugPrint('Error creating user: $e');
+      AppLogger.error(
+        'Error creating user',
+        error: e,
+        tag: 'UserRemoteDatasource',
+      );
       rethrow;
     }
   }
@@ -109,7 +122,11 @@ class UserRemoteDataSourceImpl implements UserRemoteDataSource {
         'deletionRequestDate': data['deletionRequestDate'],
       });
     } on FirebaseException catch (e) {
-      debugPrint('Error updating user: $e');
+      AppLogger.error(
+        'Error updating user',
+        error: e,
+        tag: 'UserRemoteDatasource',
+      );
       rethrow;
     }
   }
@@ -119,7 +136,11 @@ class UserRemoteDataSourceImpl implements UserRemoteDataSource {
     try {
       await _firestore.collection('usuarios').doc(id).delete();
     } on FirebaseException catch (e) {
-      debugPrint('Error deleting user: $e');
+      AppLogger.error(
+        'Error deleting user',
+        error: e,
+        tag: 'UserRemoteDatasource',
+      );
       rethrow;
     }
   }
@@ -132,7 +153,11 @@ class UserRemoteDataSourceImpl implements UserRemoteDataSource {
         'isAdmin': newRole == UserRole.admin,
       });
     } on FirebaseException catch (e) {
-      debugPrint('Error updating user role: $e');
+      AppLogger.error(
+        'Error updating user role',
+        error: e,
+        tag: 'UserRemoteDatasource',
+      );
       rethrow;
     }
   }
@@ -144,7 +169,11 @@ class UserRemoteDataSourceImpl implements UserRemoteDataSource {
         'autorizadoPorAdmin': autorizado,
       });
     } on FirebaseException catch (e) {
-      debugPrint('Error toggling admin authorization: $e');
+      AppLogger.error(
+        'Error toggling admin authorization',
+        error: e,
+        tag: 'UserRemoteDatasource',
+      );
       rethrow;
     }
   }

@@ -1,6 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:biux/features/accidents/data/datasources/accident_datasource.dart';
 import 'package:biux/features/accidents/domain/entities/accident_entity.dart';
+import 'package:biux/core/services/app_logger.dart';
 
 class AccidentProvider extends ChangeNotifier {
   final AccidentDatasource _ds = AccidentDatasource();
@@ -21,7 +22,11 @@ class AccidentProvider extends ChangeNotifier {
     try {
       await _ds.reportAccident(accident);
     } on Exception catch (e) {
-      debugPrint('Error reporting accident: $e');
+      AppLogger.error(
+        'Error reporting accident',
+        error: e,
+        tag: 'AccidentProvider',
+      );
     }
   }
 
@@ -34,7 +39,11 @@ class AccidentProvider extends ChangeNotifier {
       _loading = false;
       notifyListeners();
     } on Exception catch (e) {
-      debugPrint('Error deleting accidents: $e');
+      AppLogger.error(
+        'Error deleting accidents',
+        error: e,
+        tag: 'AccidentProvider',
+      );
       _loading = false;
       notifyListeners();
     }
@@ -49,7 +58,11 @@ class AccidentProvider extends ChangeNotifier {
       _loading = false;
       notifyListeners();
     } on Exception catch (e) {
-      debugPrint('Error deleting resolved accidents: $e');
+      AppLogger.error(
+        'Error deleting resolved accidents',
+        error: e,
+        tag: 'AccidentProvider',
+      );
       _loading = false;
       notifyListeners();
     }

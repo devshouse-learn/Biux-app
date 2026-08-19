@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 import 'package:biux/features/cities/data/models/city_model.dart';
+import 'package:biux/core/services/app_logger.dart';
 import "package:flutter/foundation.dart";
 
 class CityRepository {
@@ -20,7 +21,11 @@ class CityRepository {
           .map((doc) => CityModel.fromFirestore(doc.data(), doc.id))
           .toList();
     } on FirebaseException catch (e) {
-      debugPrint('Error obteniendo ciudades: $e');
+      AppLogger.error(
+        'Error obteniendo ciudades',
+        error: e,
+        tag: 'CityRepository',
+      );
       return [];
     }
   }
@@ -31,7 +36,7 @@ class CityRepository {
       await _firestore.collection(_collection).add(city.toFirestore());
       return true;
     } on FirebaseException catch (e) {
-      debugPrint('Error creando ciudad: $e');
+      AppLogger.error('Error creando ciudad', error: e, tag: 'CityRepository');
       return false;
     }
   }

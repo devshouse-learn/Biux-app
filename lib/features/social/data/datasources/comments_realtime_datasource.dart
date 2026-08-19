@@ -2,6 +2,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
+import 'package:biux/core/services/app_logger.dart';
 import 'package:biux/features/social/data/models/comment_model.dart';
 
 /// Datasource para comentarios en Firebase Realtime Database
@@ -134,15 +135,21 @@ class CommentsRealtimeDatasource {
       // Usuario verificado
     }
 
-    debugPrint('   Datos: $jsonData');
+    AppLogger.debug('Datos: $jsonData', tag: 'CommentsRealtimeDatasource');
     try {
       await ref.set(jsonData);
     } on FirebaseException catch (e) {
-      debugPrint('aŒ Error al crear comentario: $e');
-      debugPrint('aŒ Path: ${ref.path}');
+      AppLogger.error(
+        'Error al crear comentario',
+        error: e,
+        tag: 'CommentsRealtimeDatasource',
+      );
+      AppLogger.debug('Path: ${ref.path}', tag: 'CommentsRealtimeDatasource');
       if (e is PlatformException) {
-        debugPrint('aŒ Code: ${e.code}');
-        debugPrint('aŒ Message: ${e.message}');
+        AppLogger.debug(
+          'Code: ${e.code}, Message: ${e.message}',
+          tag: 'CommentsRealtimeDatasource',
+        );
       }
       rethrow;
     }
@@ -156,13 +163,15 @@ class CommentsRealtimeDatasource {
         final snapshot = await parentRef.get();
         final currentCount = snapshot.value as int? ?? 0;
         await parentRef.set(currentCount + 1);
-        debugPrint(
-          '✅ Contador actualizado: $currentCount -> ${currentCount + 1}',
+        AppLogger.debug(
+          'Contador actualizado: $currentCount -> ${currentCount + 1}',
+          tag: 'CommentsRealtimeDatasource',
         );
       } catch (counterError) {
         // No fallar si el contador no se puede actualizar
-        debugPrint(
-          'aš ï¸ No se pudo actualizar contador de respuestas: $counterError',
+        AppLogger.warning(
+          'No se pudo actualizar contador de respuestas: $counterError',
+          tag: 'CommentsRealtimeDatasource',
         );
         // El comentario ya fue creado exitosamente, esto es solo metadata
       }
@@ -192,8 +201,10 @@ class CommentsRealtimeDatasource {
   }) async {
     final ref = _database.ref('${_getBasePath(type)}/$targetId/$commentId');
 
-    debugPrint('   Path: ${ref.path}');
-    debugPrint('   CommentId: $commentId');
+    AppLogger.debug(
+      'Path: ${ref.path}, CommentId: $commentId',
+      tag: 'CommentsRealtimeDatasource',
+    );
 
     try {
       // Soft delete: marcar como eliminado en lugar de borrar
@@ -206,7 +217,11 @@ class CommentsRealtimeDatasource {
 
       await ref.update(updateData);
     } on FirebaseException catch (e) {
-      debugPrint('aŒ Error al actualizar en Firebase: $e');
+      AppLogger.error(
+        'Error al actualizar en Firebase',
+        error: e,
+        tag: 'CommentsRealtimeDatasource',
+      );
 
       // Si el error es de permisos, intentar eliminación alternativa
       if (e.toString().contains('Permission denied') ||
@@ -214,7 +229,11 @@ class CommentsRealtimeDatasource {
         try {
           await ref.remove();
         } catch (e2) {
-          debugPrint('aŒ Error en eliminación alternativa: $e2');
+          AppLogger.error(
+            'Error en eliminación alternativa',
+            error: e2,
+            tag: 'CommentsRealtimeDatasource',
+          );
           rethrow;
         }
       } else {
@@ -233,17 +252,26 @@ class CommentsRealtimeDatasource {
 
     final snapshot = await ref.get();
 
-    debugPrint('   Snapshot existe: ${snapshot.exists}');
+    AppLogger.debug(
+      'Snapshot existe: ${snapshot.exists}',
+      tag: 'CommentsRealtimeDatasource',
+    );
     if (!snapshot.exists) {
-      debugPrint('   aš ï¸ Comentario no encontrado en base de datos');
+      AppLogger.warning(
+        'Comentario no encontrado en base de datos',
+        tag: 'CommentsRealtimeDatasource',
+      );
       return null;
     }
 
     final data = snapshot.value as Map<dynamic, dynamic>;
-    debugPrint('   Datos: $data');
+    AppLogger.debug('Datos: $data', tag: 'CommentsRealtimeDatasource');
 
     final comment = CommentModel.fromJson(commentId, data);
-    debugPrint('   CommentModel creado - UserId: ${comment.userId}');
+    AppLogger.debug(
+      'CommentModel creado - UserId: ${comment.userId}',
+      tag: 'CommentsRealtimeDatasource',
+    );
 
     return comment;
   }

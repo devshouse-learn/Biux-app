@@ -12,6 +12,7 @@ import 'package:biux/features/bikes/data/models/bike_transfer_model.dart';
 import "package:flutter/foundation.dart";
 import 'package:biux/core/services/app_logger.dart';
 import 'package:biux/core/exceptions/authorization_exceptions.dart';
+import 'package:biux/core/exceptions/backend_exceptions.dart';
 
 /// Implementación del repositorio de bicicletas con Firebase Firestore
 class BikeRepositoryImpl implements BikeRepository {
@@ -44,7 +45,11 @@ class BikeRepositoryImpl implements BikeRepository {
         tag: 'BikeRepository',
         error: e,
       );
-      throw Exception('Failed to register bike');
+      throw RepositoryException(
+        'BikeRepository',
+        'registerBike',
+        'No se pudo registrar la bicicleta: ${e.code}',
+      );
     }
   }
 
@@ -57,8 +62,9 @@ class BikeRepositoryImpl implements BikeRepository {
           .orderBy('registrationDate', descending: true)
           .get();
 
-      debugPrint(
-        '🔗“¦ Repository: Query devolvió ${querySnapshot.docs.length} documentos',
+      AppLogger.debug(
+        'Repository: Query devolvió ${querySnapshot.docs.length} documentos',
+        tag: 'BikeRepositoryImpl',
       );
 
       // TEMPORAL: Verificar si hay bicis con ownerId "current-user-id"
@@ -67,8 +73,9 @@ class BikeRepositoryImpl implements BikeRepository {
           .limit(20)
           .get();
 
-      debugPrint(
-        '🔗“¦ Total de bicis en Firestore: ${allBikesSnapshot.docs.length}',
+      AppLogger.debug(
+        'Total de bicis en Firestore: ${allBikesSnapshot.docs.length}',
+        tag: 'BikeRepositoryImpl',
       );
 
       int placeholderCount = 0;
@@ -76,18 +83,21 @@ class BikeRepositoryImpl implements BikeRepository {
         final data = doc.data();
         if (data['ownerId'] == 'current-user-id') {
           placeholderCount++;
-          debugPrint(
-            'aš ï¸ Encontrada bici con placeholder - ID: ${doc.id}, Marca: ${data['brand']} ${data['model']}',
+          AppLogger.warning(
+            'Encontrada bici con placeholder - ID: ${doc.id}, Marca: ${data['brand']} ${data['model']}',
+            tag: 'BikeRepositoryImpl',
           );
         }
       }
 
       if (placeholderCount > 0) {
-        debugPrint(
-          'aš ï¸ TOTAL de bicis con placeholder "current-user-id": $placeholderCount',
+        AppLogger.warning(
+          'TOTAL de bicis con placeholder "current-user-id": $placeholderCount',
+          tag: 'BikeRepositoryImpl',
         );
-        debugPrint(
-          '🔗’¡ Estas bicis necesitan actualizar su ownerId a: "$userId"',
+        AppLogger.warning(
+          'Estas bicis necesitan actualizar su ownerId a: "$userId"',
+          tag: 'BikeRepositoryImpl',
         );
       }
 
@@ -95,8 +105,16 @@ class BikeRepositoryImpl implements BikeRepository {
           .map((doc) => BikeModel.fromJson(doc.data()).toEntity())
           .toList();
     } on FirebaseException catch (e) {
-      debugPrint('aŒ Repository: Error obteniendo bicicletas: $e');
-      throw Exception('Error al obtener bicicletas del usuario: $e');
+      AppLogger.error(
+        'Repository: Error obteniendo bicicletas',
+        error: e,
+        tag: 'BikeRepositoryImpl',
+      );
+      throw RepositoryException(
+        'BikeRepository',
+        'getUserBikes',
+        'No se pudo obtener las bicicletas: ${e.code}',
+      );
     }
   }
 
@@ -112,7 +130,7 @@ class BikeRepositoryImpl implements BikeRepository {
 
       return BikeModel.fromJson(doc.data()!).toEntity();
     } on FirebaseException catch (e) {
-      throw Exception('Error al obtener bicicleta: $e');
+      throw ResourceNotFoundException('Bicicleta');
     }
   }
 
@@ -129,7 +147,11 @@ class BikeRepositoryImpl implements BikeRepository {
 
       return BikeModel.fromJson(querySnapshot.docs.first.data()).toEntity();
     } on FirebaseException catch (e) {
-      throw Exception('Error al buscar bicicleta por QR: $e');
+      throw RepositoryException(
+        'BikeRepository',
+        'getBikeByQR',
+        'No se pudo buscar bicicleta por QR: ${e.code}',
+      );
     }
   }
 
@@ -144,7 +166,11 @@ class BikeRepositoryImpl implements BikeRepository {
 
       return bike;
     } on FirebaseException catch (e) {
-      throw Exception('Error al actualizar bicicleta: $e');
+      throw RepositoryException(
+        'BikeRepository',
+        'updateBike',
+        'No se pudo actualizar la bicicleta: ${e.code}',
+      );
     }
   }
 
@@ -153,7 +179,11 @@ class BikeRepositoryImpl implements BikeRepository {
     try {
       await _firestore.collection(_bikesCollection).doc(bikeId).delete();
     } on FirebaseException catch (e) {
-      throw Exception('Error al eliminar bicicleta: $e');
+      throw RepositoryException(
+        'BikeRepository',
+        'deleteBike',
+        'No se pudo eliminar la bicicleta: ${e.code}',
+      );
     }
   }
 

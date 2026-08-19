@@ -1,5 +1,6 @@
 import 'package:biux/core/design_system/color_tokens.dart';
 import 'package:biux/core/design_system/locale_notifier.dart';
+import 'package:biux/core/services/app_logger.dart';
 import 'package:biux/features/rides/data/models/ride_model.dart';
 import 'package:biux/shared/widgets/images/optimized_image_picker.dart';
 import 'package:flutter/material.dart';
@@ -546,19 +547,17 @@ class _ViewGroupScreenState extends State<ViewGroupScreen>
                       ),
                       onTap: () {
                         // Debug de datos del miembro
-                        debugPrint('=== MIEMBRO CLICKEADO ===');
-                        debugPrint('Datos completos del miembro: $member');
-                        debugPrint('User ID: ${member['userId']}');
-                        debugPrint('User Name: ${member['userName']}');
-                        debugPrint('User Photo: ${member['userPhoto']}');
-                        debugPrint('Is Admin: ${member['isAdmin']}');
-                        debugPrint('========================');
+                        AppLogger.debug(
+                          'MIEMBRO CLICKEADO - Datos completos: $member, User ID: ${member['userId']}, User Name: ${member['userName']}, User Photo: ${member['userPhoto']}, Is Admin: ${member['isAdmin']}',
+                          tag: 'ViewGroupScreen',
+                        );
 
                         // Verificar que el userId no esté vacío
                         final userId = member['userId'];
                         if (userId != null && userId.toString().isNotEmpty) {
-                          debugPrint(
-                            '🔄 Navegando al perfil: /user-profile/$userId',
+                          AppLogger.debug(
+                            'Navegando al perfil: /user-profile/$userId',
+                            tag: 'ViewGroupScreen',
                           );
                           context.push('/user-profile/$userId');
                         } else {

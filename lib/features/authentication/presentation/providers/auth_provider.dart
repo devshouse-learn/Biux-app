@@ -8,6 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:biux/core/services/notification_service.dart';
 import 'package:biux/core/services/welcome_notification_service.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:biux/core/validators/form_validators.dart';
 
 enum AuthState { initial, loading, codeSent, authenticated, error }
 
@@ -59,15 +60,17 @@ class AuthProvider extends ChangeNotifier {
   }
 
   Future<void> sendCode(String phoneNumber) async {
-    // Validar formato de teléfono
-    final phoneRegex = RegExp(r'^\+?[0-9]{10,15}$');
-    final cleanPhone = phoneNumber.trim().replaceAll(' ', '');
-    if (cleanPhone.isEmpty || !phoneRegex.hasMatch(cleanPhone)) {
-      _errorMessage = 'NÃºmero de teléfono inválido';
+    // Validar formato de teléfono colombiano
+    final validationError = FormValidators.validatePhoneNumber(phoneNumber);
+    if (validationError != null) {
+      _errorMessage = validationError;
       _state = AuthState.error;
       notifyListeners();
       return;
     }
+
+    // Normalizar el número
+    final normalizedPhone = FormValidators.normalizePhoneNumber(phoneNumber);
     try {
       AppLogger.debug(
         '🔗“² [AuthProvider] Iniciando proceso de envío de código',
@@ -77,16 +80,11 @@ class AuthProvider extends ChangeNotifier {
 
       _state = AuthState.loading;
       _errorMessage = null;
-      _phoneNumber = phoneNumber;
+      _phoneNumber = normalizedPhone;
       notifyListeners();
 
-      // Si es reintento, incrementar contador
-      if (_sendAttempts > 0) {
-        AppLogger.debug('   aš ï¸ Este es reintento #${_sendAttempts}');
-      }
-
-      AppLogger.debug('🔗“¤ Enviando request a N8N...');
-      await _authRepository.sendOTP(phoneNumber);
+      AppLogger.debug('Enviando OTP a: $_phoneNumber');
+      await _authRepository.sendOTP(_phoneNumber!);
 
       _sendAttempts = 0; // Reset en caso de éxito
       _state = AuthState.codeSent;

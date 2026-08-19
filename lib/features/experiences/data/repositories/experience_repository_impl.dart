@@ -10,6 +10,8 @@ import 'package:biux/features/experiences/data/models/experience_model.dart';
 import 'package:biux/features/users/domain/entities/user_entity.dart';
 import "package:flutter/foundation.dart";
 import 'package:biux/core/services/app_logger.dart';
+import 'package:biux/core/exceptions/authorization_exceptions.dart';
+import 'package:biux/core/exceptions/backend_exceptions.dart';
 
 /// Implementación del repository para experiencias usando Firebase
 class ExperienceRepositoryImpl implements ExperienceRepository {
@@ -89,7 +91,11 @@ class ExperienceRepositoryImpl implements ExperienceRepository {
           )
           .toList();
     } on FirebaseException catch (e) {
-      throw Exception('Error obteniendo experiencias del usuario: $e');
+      throw RepositoryException(
+        'ExperienceRepository',
+        'getUserExperiences',
+        'No se pudieron obtener las experiencias: ${e.code}',
+      );
     }
   }
 
@@ -129,7 +135,10 @@ class ExperienceRepositoryImpl implements ExperienceRepository {
           .get();
 
       if (!doc.exists) {
-        debugPrint('aš ï¸ REPO: Experiencia no encontrada: $experienceId');
+        AppLogger.warning(
+          'REPO: Experiencia no encontrada: $experienceId',
+          tag: 'ExperienceRepository',
+        );
         return null;
       }
 
@@ -138,8 +147,12 @@ class ExperienceRepositoryImpl implements ExperienceRepository {
         'id': doc.id,
       }).toEntity();
     } on FirebaseException catch (e) {
-      debugPrint('aŒ REPO: Error obteniendo experiencia por ID: $e');
-      throw Exception('Error obteniendo experiencia: $e');
+      AppLogger.error(
+        'REPO: Error obteniendo experiencia por ID',
+        error: e,
+        tag: 'ExperienceRepository',
+      );
+      throw ResourceNotFoundException('Experiencia');
     }
   }
 
@@ -161,7 +174,11 @@ class ExperienceRepositoryImpl implements ExperienceRepository {
           )
           .toList();
     } on FirebaseException catch (e) {
-      throw Exception('Error obteniendo experiencias de la rodada: $e');
+      throw RepositoryException(
+        'ExperienceRepository',
+        'getRideExperiences',
+        'No se pudieron obtener experiencias de la rodada: ${e.code}',
+      );
     }
   }
 
@@ -262,7 +279,7 @@ class ExperienceRepositoryImpl implements ExperienceRepository {
     try {
       final user = _auth.currentUser;
       if (user == null) {
-        throw Exception('Usuario no autenticado');
+        throw NotAuthenticatedException();
       }
 
       // Crear ID Ãºnico para la experiencia
@@ -339,7 +356,7 @@ class ExperienceRepositoryImpl implements ExperienceRepository {
     try {
       final user = _auth.currentUser;
       if (user == null) {
-        throw Exception('Usuario no autenticado');
+        throw NotAuthenticatedException();
       }
 
       // Intentar obtener el documento directamente por ID
@@ -361,14 +378,14 @@ class ExperienceRepositoryImpl implements ExperienceRepository {
       }
 
       if (!doc.exists) {
-        throw Exception('Experiencia no encontrada');
+        throw ResourceNotFoundException('Experiencia');
       }
 
       final data = doc.data()!;
       final actualDocId = doc.id;
 
       if (data['user']['id'] != user.uid) {
-        throw Exception('No tienes permisos para eliminar esta experiencia');
+        throw UnauthorizedException('eliminar esta experiencia');
       }
 
       // Eliminar documento de Firestore primero (para que desaparezca de la UI rápido)
@@ -387,7 +404,11 @@ class ExperienceRepositoryImpl implements ExperienceRepository {
       });
       await Future.wait(deleteFutures);
     } on FirebaseException catch (e) {
-      throw Exception('Error eliminando experiencia: $e');
+      throw RepositoryException(
+        'ExperienceRepository',
+        'deleteExperience',
+        'No se pudo eliminar la experiencia: ${e.code}',
+      );
     }
   }
 
@@ -398,13 +419,13 @@ class ExperienceRepositoryImpl implements ExperienceRepository {
   ) async {
     try {
       final user = _auth.currentUser;
-      if (user == null) throw Exception('Usuario no autenticado');
+      if (user == null) throw NotAuthenticatedException();
 
       final doc = await _firestore
           .collection('experiences')
           .doc(experienceId)
           .get();
-      if (!doc.exists) throw Exception('Experiencia no encontrada');
+      if (!doc.exists) throw ResourceNotFoundException('Experiencia');
 
       final data = doc.data()!;
       if (data['user']['id'] != user.uid) {

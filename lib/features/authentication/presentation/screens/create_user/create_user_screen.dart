@@ -17,6 +17,7 @@ import 'create_user_bloc.dart';
 import 'package:biux/shared/widgets/loading/loading_widget.dart';
 import 'package:biux/shared/widgets/form/text_field_widget.dart';
 import 'package:biux/core/utils/snackbar_utils.dart';
+import 'package:biux/core/validators/form_validators.dart';
 import 'package:flutter/material.dart';
 import 'package:biux/features/age_verification/domain/entities/age_verification_entity.dart';
 import 'package:biux/features/age_verification/presentation/widgets/birth_date_picker.dart';
@@ -176,10 +177,12 @@ class _CreateUserScreenState extends State<CreateUserScreen> {
                                       color: ColorTokens.neutral60,
                                     ),
                                     validator: (value) {
-                                      if (value!.isEmpty) {
-                                        return value;
-                                      }
-                                      return null;
+                                      // Validar nombre usando el validador centralizado
+                                      final error = FormValidators.validateName(
+                                        value,
+                                        fieldName: l.t('first_name'),
+                                      );
+                                      return error;
                                     },
                                   ),
                                   TexFieldWidget(
@@ -198,35 +201,33 @@ class _CreateUserScreenState extends State<CreateUserScreen> {
                                     ),
                                     onChanged: (String value) async {},
                                     validator: (value) {
-                                      if (value!.isEmpty) {
-                                        return value;
-                                      }
-                                      return null;
+                                      // Validar username usando el validador centralizado
+                                      final error =
+                                          FormValidators.validateUsername(
+                                            value,
+                                          );
+                                      return error;
                                     },
                                   ),
                                   TexFieldWidget(
                                     obscureText: false,
-                                    focusNode: FocusNode(),
-                                    nameController: emailController,
                                     color:
                                         bloc.validateColor2 ==
                                             AppStrings.validatedText
                                         ? ColorTokens.error50
                                         : ColorTokens.neutral0,
+                                    focusNode: FocusNode(),
+                                    nameController: emailController,
                                     text: l.t('email_label'),
                                     icon: Icon(
                                       Icons.email,
                                       color: ColorTokens.neutral60,
                                     ),
                                     validator: (value) {
-                                      if (value == null || value.isEmpty) {
-                                        return l.t('email_required');
-                                      }
-                                      final emailRegex = RegExp(r'^[^\s@]+@[^\s@]+\.[^\s@]+$');
-                                      if (!emailRegex.hasMatch(value)) {
-                                        return l.t('email_invalid_format');
-                                      }
-                                      return null;
+                                      // Validar email usando el validador centralizado
+                                      final error =
+                                          FormValidators.validateEmail(value);
+                                      return error;
                                     },
                                   ),
                                   TexFieldWidget(
@@ -240,14 +241,12 @@ class _CreateUserScreenState extends State<CreateUserScreen> {
                                       color: ColorTokens.neutral60,
                                     ),
                                     validator: (value) {
-                                      if (value == null || value.isEmpty) {
-                                        return l.t('phone_required');
-                                      }
-                                      final phoneRegex = RegExp(r'^[0-9]{10}$');
-                                      if (!phoneRegex.hasMatch(value)) {
-                                        return l.t('phone_invalid_format');
-                                      }
-                                      return null;
+                                      // Validar teléfono usando el validador centralizado (Colombia)
+                                      final error =
+                                          FormValidators.validatePhoneNumber(
+                                            value,
+                                          );
+                                      return error;
                                     },
                                   ),
                                   BirthDatePicker(
@@ -336,22 +335,14 @@ class _CreateUserScreenState extends State<CreateUserScreen> {
                                     ),
                                     obscureText: bloc.obscureText,
                                     validator: (value) {
-                                      if (value == null || value.isEmpty) {
-                                        return l.t('password_required');
-                                      }
-                                      if (value.length < 8) {
-                                        return l.t('password_min_8_chars');
-                                      }
-                                      if (!RegExp(r'[A-Z]').hasMatch(value)) {
-                                        return l.t('password_need_uppercase');
-                                      }
-                                      if (!RegExp(r'[0-9]').hasMatch(value)) {
-                                        return l.t('password_need_number');
-                                      }
-                                      if (!RegExp(r'[!@#$%^&*(),.?":{}|<>]').hasMatch(value)) {
-                                        return l.t('password_need_special');
-                                      }
-                                      return null;
+                                      // Usar el validador centralizado de contraseña
+                                      final error =
+                                          FormValidators.validatePassword(
+                                            value,
+                                          );
+                                      return error != null
+                                          ? l.t('password_invalid')
+                                          : null;
                                     },
                                   ),
                                   TexFieldWidget(
@@ -364,13 +355,15 @@ class _CreateUserScreenState extends State<CreateUserScreen> {
                                     ),
                                     obscureText: bloc.obscureText,
                                     validator: (value) {
-                                      if (value == null || value.isEmpty) {
-                                        return l.t('password_confirm_required');
-                                      }
-                                      if (value != passwordController.text) {
-                                        return l.t('password_not_match');
-                                      }
-                                      return null;
+                                      // Usar el validador centralizado para confirmación de contraseña
+                                      final error =
+                                          FormValidators.validatePasswordMatch(
+                                            value,
+                                            passwordController.text,
+                                          );
+                                      return error != null
+                                          ? l.t('password_not_match')
+                                          : null;
                                     },
                                   ),
                                   Theme(

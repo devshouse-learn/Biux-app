@@ -405,7 +405,11 @@ class ExperienceProvider extends ChangeNotifier {
       await _repository.markAsViewed(experienceId);
     } on FirebaseException catch (e) {
       // Error silencioso para las visualizaciones
-      debugPrint('Error marcando como vista: ${e.toString()}');
+      AppLogger.warning(
+        'Error marcando como vista',
+        error: e,
+        tag: 'ExperienceProvider',
+      );
     }
   }
 
@@ -414,7 +418,11 @@ class ExperienceProvider extends ChangeNotifier {
     try {
       await _repository.addViewer(experienceId, viewer);
     } on FirebaseException catch (e) {
-      debugPrint('Error registrando viewer: ${e.toString()}');
+      AppLogger.error(
+        'Error registrando viewer',
+        error: e,
+        tag: 'ExperienceProvider',
+      );
     }
   }
 

@@ -9,6 +9,7 @@ import 'package:biux/core/design_system/locale_notifier.dart';
 import 'package:biux/core/services/image_compression_service.dart';
 import 'package:biux/core/services/optimized_storage_service.dart';
 import 'package:biux/core/services/optimized_cache_manager.dart';
+import 'package:biux/core/services/app_logger.dart';
 
 /// Widget optimizado para selección y carga de imágenes
 /// Integra compresión automática y carga eficiente para reducir costos de Firebase
@@ -445,8 +446,9 @@ class OptimizedNetworkImage extends StatelessWidget {
         minSize,
         400.0,
       ); // 2x para calidad HD, máximo 400px
-      debugPrint(
+      AppLogger.debug(
         'OptimizedNetworkImage - Cache size para $imageType: display=${displaySize} -> cache=${result}',
+        tag: 'OptimizedNetworkImage',
       );
       return result.round();
     }
@@ -454,8 +456,9 @@ class OptimizedNetworkImage extends StatelessWidget {
     // Para thumbnails, usamos 1.5x el tamaño de display
     if (imageType == 'thumbnail') {
       final result = (displaySize * 1.5).clamp(100.0, 300.0);
-      debugPrint(
+      AppLogger.debug(
         'OptimizedNetworkImage - Cache size para thumbnail: display=${displaySize} -> cache=${result}',
+        tag: 'OptimizedNetworkImage',
       );
       return result.round();
     }
@@ -468,16 +471,18 @@ class OptimizedNetworkImage extends StatelessWidget {
         minSize,
         1200.0,
       ); // 3x para calidad ultra HD, máximo 1200px
-      debugPrint(
+      AppLogger.debug(
         'OptimizedNetworkImage - Cache size para cover: display=${displaySize} -> cache=${result}',
+        tag: 'OptimizedNetworkImage',
       );
       return result.round();
     }
 
     // Para otros tipos, usar el tamaño original si es finito
     final result = displaySize.round();
-    debugPrint(
+    AppLogger.debug(
       'OptimizedNetworkImage - Cache size para $imageType: display=${displaySize} -> cache=${result}',
+      tag: 'OptimizedNetworkImage',
     );
     return result;
   }
@@ -486,8 +491,9 @@ class OptimizedNetworkImage extends StatelessWidget {
   Widget build(BuildContext context) {
     // Validar que la URL no esté vacía
     if (imageUrl.isEmpty) {
-      debugPrint(
+      AppLogger.warning(
         'OptimizedNetworkImage - URL vacía, mostrando widget de error',
+        tag: 'OptimizedNetworkImage',
       );
       return errorWidget ??
           Container(
@@ -503,17 +509,20 @@ class OptimizedNetworkImage extends StatelessWidget {
     }
 
     // Debug: Imprimir información de la imagen
-    debugPrint(
+    AppLogger.debug(
       'OptimizedNetworkImage: ${imageUrl.isNotEmpty ? "Loading" : "Empty URL"} - URL: $imageUrl',
+      tag: 'OptimizedNetworkImage',
     );
-    debugPrint(
+    AppLogger.debug(
       'OptimizedNetworkImage: imageType: $imageType, width: $width, height: $height',
+      tag: 'OptimizedNetworkImage',
     );
 
     // Seleccionar el cache manager apropiado segúnn el tipo de imagen
     final cacheManager = OptimizedCacheManager.getCacheManager(imageType);
-    debugPrint(
+    AppLogger.debug(
       'OptimizedNetworkImage - Cache Manager para $imageType: ${cacheManager.runtimeType}',
+      tag: 'OptimizedNetworkImage',
     );
 
     return ClipRRect(
@@ -525,7 +534,10 @@ class OptimizedNetworkImage extends StatelessWidget {
         fit: fit,
         cacheManager: cacheManager,
         placeholder: (context, url) {
-          debugPrint('OptimizedNetworkImage - Placeholder mostrado para: $url');
+          AppLogger.debug(
+            'OptimizedNetworkImage - Placeholder mostrado para: $url',
+            tag: 'OptimizedNetworkImage',
+          );
           return placeholder ??
               Container(
                 width: width,
@@ -541,8 +553,10 @@ class OptimizedNetworkImage extends StatelessWidget {
               );
         },
         errorWidget: (context, url, error) {
-          debugPrint(
-            'OptimizedNetworkImage - Error cargando: $url, Error: $error',
+          AppLogger.error(
+            'OptimizedNetworkImage - Error cargando: $url',
+            error: error,
+            tag: 'OptimizedNetworkImage',
           );
           return errorWidget ??
               Container(

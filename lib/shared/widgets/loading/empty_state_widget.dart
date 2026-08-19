@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:biux/core/design_system/color_tokens.dart';
+import 'package:biux/core/design_system/empty_state_cta_button.dart';
 
 class EmptyStateWidget extends StatelessWidget {
   final String emoji;
@@ -40,17 +41,7 @@ class EmptyStateWidget extends StatelessWidget {
             ),
             if (actionLabel != null && onAction != null) ...[
               const SizedBox(height: 24),
-              ElevatedButton(
-                onPressed: onAction,
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: ColorTokens.primary30,
-                  foregroundColor: Colors.white,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                ),
-                child: Text(actionLabel!),
-              ),
+              EmptyStateCTAButton(text: actionLabel!, onPressed: onAction!),
             ],
           ],
         ),

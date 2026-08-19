@@ -5,6 +5,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:biux/features/cities/data/models/city_model.dart';
 import 'package:biux/features/cities/data/repositories/city_repository.dart';
+import 'package:biux/core/services/app_logger.dart';
 
 class CityProvider extends ChangeNotifier {
   final CityRepository _repository = CityRepository();
@@ -52,7 +53,7 @@ class CityProvider extends ChangeNotifier {
       }
     } on Exception catch (e) {
       _setError('Error al cargar ciudades: ${e.toString()}');
-      debugPrint('aŒ Error cargando ciudades: $e');
+      AppLogger.error('Error cargando ciudades', error: e, tag: 'CityProvider');
     }
 
     _setLoading(false);
@@ -70,7 +71,11 @@ class CityProvider extends ChangeNotifier {
       // Cargar ciudades
       await loadCities();
     } on Exception catch (e) {
-      debugPrint('aŒ Error inicializando ciudades: $e');
+      AppLogger.error(
+        'Error inicializando ciudades',
+        error: e,
+        tag: 'CityProvider',
+      );
       _setError('Error al inicializar ciudades');
     }
   }
@@ -197,7 +202,6 @@ class CityProvider extends ChangeNotifier {
 
       await prefs.setString(_cacheKey, json.encode(jsonList));
       await prefs.setInt(_cacheTimeKey, DateTime.now().millisecondsSinceEpoch);
-
     } on Exception catch (e) {
       debugPrint('aŒ Error guardando caché de ciudades: $e');
     }

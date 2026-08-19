@@ -11,6 +11,7 @@ import 'package:biux/features/bikes/domain/usecases/get_public_bike_info_usecase
 import 'package:biux/features/bikes/domain/usecases/delete_bike_usecase.dart';
 import 'package:biux/features/bikes/domain/usecases/mark_as_recovered_usecase.dart';
 import 'package:biux/core/services/optimized_storage_service.dart';
+import 'package:biux/core/services/app_logger.dart';
 
 /// Estados del provider de bicicletas
 enum BikeProviderState { initial, loading, loaded, error }
@@ -91,14 +92,18 @@ class BikeProvider extends ChangeNotifier {
     try {
       _setState(BikeProviderState.loading);
       _userBikes = await _getUserBikesUseCase(userId);
-      debugPrint(
-        '🔗š´ BikeProvider: Se encontraron ${_userBikes.length} bicicletas',
+      AppLogger.debug(
+        'BikeProvider: Se encontraron ${_userBikes.length} bicicletas',
+        tag: 'BikeProvider',
       );
-      if (_userBikes.isNotEmpty) {
-      }
+      if (_userBikes.isNotEmpty) {}
       _setState(BikeProviderState.loaded);
     } on Exception catch (e) {
-      debugPrint('aŒ BikeProvider: Error cargando bicicletas: $e');
+      AppLogger.error(
+        'BikeProvider: Error cargando bicicletas',
+        error: e,
+        tag: 'BikeProvider',
+      );
       _setState(BikeProviderState.error, error: e.toString());
     }
   }
@@ -505,7 +510,11 @@ class BikeProvider extends ChangeNotifier {
       _setState(BikeProviderState.loaded);
       return true;
     } on Exception catch (e) {
-      debugPrint('aŒ BikeProvider: Error eliminando bicicleta: $e');
+      AppLogger.error(
+        'BikeProvider: Error eliminando bicicleta',
+        error: e,
+        tag: 'BikeProvider',
+      );
       _setState(BikeProviderState.error, error: e.toString());
       return false;
     }

@@ -5,6 +5,7 @@ import 'package:biux/features/social/data/repositories/notifications_repository_
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import "package:flutter/foundation.dart";
+import 'package:biux/core/services/app_logger.dart';
 
 class UserProfileRepositoryImpl implements UserProfileRepository {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
@@ -102,7 +103,11 @@ class UserProfileRepositoryImpl implements UserProfileRepository {
             resultsWithScore.add(MapEntry(user, score));
           }
         } on FirebaseException catch (e) {
-          debugPrint('Error procesando usuario ${doc.id}: $e');
+          AppLogger.error(
+            'Error procesando usuario ${doc.id}',
+            error: e,
+            tag: 'UserProfileRepo',
+          );
           continue;
         }
       }
@@ -113,7 +118,11 @@ class UserProfileRepositoryImpl implements UserProfileRepository {
       // Retornar solo los usuarios (sin la puntuación)
       return resultsWithScore.map((e) => e.key).toList();
     } on FirebaseException catch (e) {
-      debugPrint('aŒ Error buscando usuarios: $e');
+      AppLogger.error(
+        'Error buscando usuarios',
+        error: e,
+        tag: 'UserProfileRepo',
+      );
       return [];
     }
   }
@@ -177,13 +186,20 @@ class UserProfileRepositoryImpl implements UserProfileRepository {
           fromUserPhoto: fromUserPhoto,
         );
       } catch (notifError) {
-        debugPrint('Error creando notificación de seguimiento: $notifError');
+        AppLogger.warning(
+          'Error creando notificación de seguimiento',
+          error: notifError,
+        );
         // No fallar la operación si la notificación falla
       }
 
       return true;
     } on FirebaseException catch (e) {
-      debugPrint('Error siguiendo usuario: $e');
+      AppLogger.error(
+        'Error siguiendo usuario',
+        error: e,
+        tag: 'UserProfileRepo',
+      );
       return false;
     }
   }
@@ -209,7 +225,11 @@ class UserProfileRepositoryImpl implements UserProfileRepository {
       await batch.commit();
       return true;
     } on FirebaseException catch (e) {
-      debugPrint('Error dejando de seguir usuario: $e');
+      AppLogger.error(
+        'Error dejando de seguir usuario',
+        error: e,
+        tag: 'UserProfileRepo',
+      );
       return false;
     }
   }
@@ -241,7 +261,11 @@ class UserProfileRepositoryImpl implements UserProfileRepository {
 
       return followersList;
     } on FirebaseException catch (e) {
-      debugPrint('Error obteniendo followers: $e');
+      AppLogger.error(
+        'Error obteniendo followers',
+        error: e,
+        tag: 'UserProfileRepo',
+      );
       return [];
     }
   }
@@ -273,7 +297,11 @@ class UserProfileRepositoryImpl implements UserProfileRepository {
 
       return followingList;
     } on FirebaseException catch (e) {
-      debugPrint('Error obteniendo following: $e');
+      AppLogger.error(
+        'Error obteniendo following',
+        error: e,
+        tag: 'UserProfileRepo',
+      );
       return [];
     }
   }
@@ -286,7 +314,11 @@ class UserProfileRepositoryImpl implements UserProfileRepository {
       // se manejan en otro feature
       return [];
     } on FirebaseException catch (e) {
-      debugPrint('Error obteniendo experiencias de usuario: $e');
+      AppLogger.error(
+        'Error obteniendo experiencias de usuario',
+        error: e,
+        tag: 'UserProfileRepo',
+      );
       return [];
     }
   }
@@ -307,7 +339,11 @@ class UserProfileRepositoryImpl implements UserProfileRepository {
       }
       return false;
     } on FirebaseException catch (e) {
-      debugPrint('Error verificando si sigue usuario: $e');
+      AppLogger.error(
+        'Error verificando si sigue usuario',
+        error: e,
+        tag: 'UserProfileRepo',
+      );
       return false;
     }
   }
@@ -319,15 +355,15 @@ class UserProfileRepositoryImpl implements UserProfileRepository {
     try {
       if (_currentUserId == null || _currentUserId == userId) return false;
 
-
       final currentUser = await _firestore
           .collection('users')
           .doc(_currentUserId)
           .get();
       final currentUserData = currentUser.data();
 
-      debugPrint(
-        '🔗“¨ currentUserData: fullName=${currentUserData?['fullName']}, userName=${currentUserData?['userName']}, photo=${currentUserData?['photo']}',
+      AppLogger.debug(
+        'currentUserData: fullName=${currentUserData?['fullName']}, userName=${currentUserData?['userName']}, photo=${currentUserData?['photo']}',
+        tag: 'UserProfileRepo',
       );
 
       // Create follow request document in the target user's subcollection
@@ -347,7 +383,6 @@ class UserProfileRepositoryImpl implements UserProfileRepository {
             'createdAt': FieldValue.serverTimestamp(),
           });
 
-
       // Create notification in Realtime Database (where the app reads from)
       try {
         final fromUserName =
@@ -356,8 +391,9 @@ class UserProfileRepositoryImpl implements UserProfileRepository {
             'Usuario';
         final fromUserPhoto = currentUserData?['photo'] as String?;
 
-        debugPrint(
-          '🔗“¨ Creando notificación en RTDB para userId: $userId, fromUserName: $fromUserName',
+        AppLogger.debug(
+          'Creando notificación en RTDB para userId: $userId, fromUserName: $fromUserName',
+          tag: 'UserProfileRepo',
         );
 
         final notificationsRepo = NotificationsRepositoryImpl();
@@ -369,16 +405,24 @@ class UserProfileRepositoryImpl implements UserProfileRepository {
           fromUserPhoto: fromUserPhoto,
           notificationId: 'follow_request_${_currentUserId}',
         );
-        debugPrint(
-          '✅ Notificación de follow_request creada en RTDB para $userId',
+        AppLogger.info(
+          'Notificación de follow_request creada en RTDB para $userId',
+          tag: 'UserProfileRepo',
         );
       } catch (notifError) {
-        debugPrint('aŒ Error creando notificación de solicitud: $notifError');
+        AppLogger.warning(
+          'Error creando notificación de solicitud',
+          error: notifError,
+        );
       }
 
       return true;
     } on FirebaseException catch (e) {
-      debugPrint('aŒ Error enviando solicitud de seguimiento: $e');
+      AppLogger.error(
+        'Error enviando solicitud de seguimiento',
+        error: e,
+        tag: 'UserProfileRepo',
+      );
       return false;
     }
   }
@@ -397,7 +441,11 @@ class UserProfileRepositoryImpl implements UserProfileRepository {
 
       return true;
     } on FirebaseException catch (e) {
-      debugPrint('Error cancelando solicitud de seguimiento: $e');
+      AppLogger.error(
+        'Error cancelando solicitud de seguimiento',
+        error: e,
+        tag: 'UserProfileRepo',
+      );
       return false;
     }
   }
@@ -452,7 +500,10 @@ class UserProfileRepositoryImpl implements UserProfileRepository {
           fromUserPhoto: fromUserPhoto,
         );
       } catch (notifError) {
-        debugPrint('Error creando notificación de aceptación: $notifError');
+        AppLogger.warning(
+          'Error creando notificación de aceptación',
+          error: notifError,
+        );
       }
 
       // Delete the follow_request notification from the current user
@@ -463,12 +514,20 @@ class UserProfileRepositoryImpl implements UserProfileRepository {
           'follow_request_$requesterId',
         );
       } on FirebaseException catch (e) {
-        debugPrint('Error eliminando notificación de solicitud: $e');
+        AppLogger.error(
+          'Error eliminando notificaci\u00f3n de solicitud',
+          error: e,
+          tag: 'UserProfileRepo',
+        );
       }
 
       return true;
     } on FirebaseException catch (e) {
-      debugPrint('Error aceptando solicitud de seguimiento: $e');
+      AppLogger.error(
+        'Error aceptando solicitud de seguimiento',
+        error: e,
+        tag: 'UserProfileRepo',
+      );
       return false;
     }
   }
@@ -493,12 +552,20 @@ class UserProfileRepositoryImpl implements UserProfileRepository {
           'follow_request_$requesterId',
         );
       } on FirebaseException catch (e) {
-        debugPrint('Error eliminando notificación de solicitud: $e');
+        AppLogger.error(
+          'Error eliminando notificación de solicitud',
+          error: e,
+          tag: 'UserProfileRepo',
+        );
       }
 
       return true;
     } on FirebaseException catch (e) {
-      debugPrint('Error rechazando solicitud de seguimiento: $e');
+      AppLogger.error(
+        'Error rechazando solicitud de seguimiento',
+        error: e,
+        tag: 'UserProfileRepo',
+      );
       return false;
     }
   }
@@ -517,7 +584,11 @@ class UserProfileRepositoryImpl implements UserProfileRepository {
 
       return doc.exists && (doc.data()?['status'] == 'pending');
     } on FirebaseException catch (e) {
-      debugPrint('Error verificando solicitud pendiente: $e');
+      AppLogger.error(
+        'Error verificando solicitud pendiente',
+        error: e,
+        tag: 'UserProfileRepo',
+      );
       return false;
     }
   }
@@ -550,7 +621,11 @@ class UserProfileRepositoryImpl implements UserProfileRepository {
 
       return requesters;
     } on FirebaseException catch (e) {
-      debugPrint('Error obteniendo solicitudes de seguimiento: $e');
+      AppLogger.error(
+        'Error obteniendo solicitudes de seguimiento',
+        error: e,
+        tag: 'UserProfileRepo',
+      );
       return [];
     }
   }
@@ -566,7 +641,11 @@ class UserProfileRepositoryImpl implements UserProfileRepository {
 
       return true;
     } on FirebaseException catch (e) {
-      debugPrint('Error actualizando visibilidad del perfil: $e');
+      AppLogger.error(
+        'Error actualizando visibilidad del perfil',
+        error: e,
+        tag: 'UserProfileRepo',
+      );
       return false;
     }
   }
