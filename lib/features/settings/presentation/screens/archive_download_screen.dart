@@ -51,9 +51,17 @@ class _ArchiveDownloadScreenState extends State<ArchiveDownloadScreen> {
 
     return Scaffold(
       appBar: AppBar(
+        leading: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: IconButton(
+            icon: const Icon(Icons.arrow_back, color: Colors.white, size: 28),
+            onPressed: () => Navigator.of(context).pop(),
+          ),
+        ),
         title: Text(l.t('archive_download')),
         backgroundColor: ColorTokens.primary30,
         foregroundColor: Colors.white,
+        iconTheme: const IconThemeData(color: Colors.white, size: 28),
       ),
       body: ListView(
         padding: const EdgeInsets.all(16),

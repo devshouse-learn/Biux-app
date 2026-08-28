@@ -14,9 +14,17 @@ class AppearanceDetailsScreen extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
+        leading: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: IconButton(
+            icon: const Icon(Icons.arrow_back, color: Colors.white, size: 28),
+            onPressed: () => Navigator.of(context).pop(),
+          ),
+        ),
         title: Text(l.t('appearance')),
         backgroundColor: ColorTokens.primary30,
         foregroundColor: Colors.white,
+        iconTheme: const IconThemeData(color: Colors.white, size: 28),
       ),
       body: Consumer<ThemeNotifier>(
         builder: (context, theme, _) {

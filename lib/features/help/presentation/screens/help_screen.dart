@@ -143,20 +143,23 @@ class HelpScreen extends StatelessWidget {
           _buildContactCard(
             icon: Icons.email,
             title: l.t('email_support'),
-            subtitle: 'soporte@biux.app',
-            onTap: () => _launchEmail('soporte@biux.app'),
+            subtitle: l.t('email_support_address'),
+            onTap: () => _launchEmail(l.t('email_support_address')),
           ),
           _buildContactCard(
             icon: Icons.phone,
-            title: 'WhatsApp',
-            subtitle: '+57 300 123 4567',
-            onTap: () => _launchWhatsApp('+573001234567'),
+            title: l.t('whatsapp'),
+            subtitle: l.t('whatsapp_number'),
+            onTap: () =>
+                _launchWhatsApp(l.t('whatsapp_number').replaceAll(' ', '')),
           ),
           _buildContactCard(
             icon: Icons.web,
             title: l.t('website'),
-            subtitle: 'www.biux.app',
-            onTap: () => _launchURL('https://biux.devshouse.org'),
+            subtitle: l.t('website_url'),
+            onTap: () => _launchURL(
+              'https://${l.t('website_url').replaceAll('www.', '')}',
+            ),
           ),
           _buildContactCard(
             icon: Icons.bug_report,
@@ -382,7 +385,7 @@ class HelpScreen extends StatelessWidget {
         ),
         title: Text(title, style: TextStyle(fontWeight: FontWeight.w600)),
         subtitle: Text(subtitle),
-        trailing: Icon(Icons.arrow_forward_ios, size: 16),
+        trailing: Icon(Icons.arrow_forward_ios, size: 16, color: Colors.white),
         onTap: onTap,
       ),
     );
@@ -394,7 +397,7 @@ class HelpScreen extends StatelessWidget {
       child: ListTile(
         leading: Icon(Icons.description, color: ColorTokens.neutral60),
         title: Text(title),
-        trailing: Icon(Icons.arrow_forward_ios, size: 16),
+        trailing: Icon(Icons.arrow_forward_ios, size: 16, color: Colors.white),
         onTap: onTap,
       ),
     );

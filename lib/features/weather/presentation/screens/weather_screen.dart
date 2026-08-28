@@ -199,7 +199,7 @@ class _WeatherScreenState extends State<WeatherScreen> {
                         ),
                       ),
                       Text(
-                        wp.description,
+                        wp.getTranslatedDescription(l.t),
                         style: const TextStyle(
                           fontSize: 18,
                           color: Colors.white70,
@@ -234,7 +234,7 @@ class _WeatherScreenState extends State<WeatherScreen> {
                         iconColor: _uvColor(wp.uvIndex),
                         title: l.t('uv_index'),
                         value: wp.uvIndex.toStringAsFixed(1),
-                        subtitle: wp.uvAdvice,
+                        subtitle: wp.getUvAdvice(l.t),
                       ),
                     ),
                     SizedBox(width: 12),
@@ -433,7 +433,7 @@ class _WeatherScreenState extends State<WeatherScreen> {
                             ),
                             const SizedBox(height: 4),
                             Text(
-                              wp.rideAdvice,
+                              wp.getRideAdvice(l.t),
                               style: TextStyle(
                                 color: isDark
                                     ? ColorTokens.neutral70

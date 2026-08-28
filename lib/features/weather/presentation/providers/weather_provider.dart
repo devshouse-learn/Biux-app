@@ -338,6 +338,14 @@ class WeatherProvider extends ChangeNotifier {
     return 'UV bajo - condiciones seguras';
   }
 
+  String getUvAdvice(String Function(String) t) {
+    if (uvIndex >= 11) return t('uv_extreme');
+    if (uvIndex >= 8) return t('uv_very_high');
+    if (uvIndex >= 6) return t('uv_high');
+    if (uvIndex >= 3) return t('uv_moderate');
+    return t('uv_low');
+  }
+
   String get rideAdvice {
     switch (cyclingCondition) {
       case 'ideal':
@@ -353,6 +361,47 @@ class WeatherProvider extends ChangeNotifier {
       default:
         return 'Cargando...';
     }
+  }
+
+  String getRideAdvice(String Function(String) t) {
+    switch (cyclingCondition) {
+      case 'ideal':
+        return t('cycling_perfect_conditions');
+      case 'bueno':
+        return t('cycling_good_conditions');
+      case 'regular':
+        return t('cycling_acceptable_conditions');
+      case 'malo':
+      case 'peligroso':
+        return t('cycling_bad_conditions');
+      default:
+        return 'Cargando...';
+    }
+  }
+
+  String getTranslatedDescription(String Function(String) t) {
+    final desc = description.toLowerCase();
+
+    if (desc.contains('clear') || desc.contains('despejado')) {
+      return t('weather_clear');
+    } else if (desc.contains('cloud') ||
+        desc.contains('nublado') ||
+        desc.contains('parcialmente')) {
+      return t('weather_cloudy');
+    } else if (desc.contains('rain') || desc.contains('lluvia')) {
+      return t('weather_rain');
+    } else if (desc.contains('drizzle') || desc.contains('llovizna')) {
+      return t('weather_drizzle');
+    } else if (desc.contains('snow') || desc.contains('nieve')) {
+      return t('weather_snow');
+    } else if (desc.contains('fog') || desc.contains('niebla')) {
+      return t('weather_fog');
+    } else if (desc.contains('thunderstorm') || desc.contains('tormenta')) {
+      return t('weather_thunderstorm');
+    } else if (desc.contains('heavy') || desc.contains('fuerte')) {
+      return t('weather_heavy_rain');
+    }
+    return description;
   }
 
   Map<String, String> _weatherCodeToInfo(int code) {

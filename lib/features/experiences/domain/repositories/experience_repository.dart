@@ -15,6 +15,9 @@ abstract class ExperienceRepository {
   /// Obtiene experiencias de usuarios que sigue el usuario actual
   Future<List<ExperienceEntity>> getFollowingExperiences(String userId);
 
+  /// Obtiene posts de descubrimiento (todos los posts públicos)
+  Future<List<ExperienceEntity>> getDiscoveryExperiences();
+
   /// Crea una nueva experiencia
   Future<ExperienceEntity> createExperience(CreateExperienceRequest request);
 

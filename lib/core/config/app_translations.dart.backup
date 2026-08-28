@@ -7250,10 +7250,37 @@ class AppTranslations {
     'activated': 'Enabled',
     'deactivated': 'Disabled',
 
-    // ─── PORTUGUÊS
+    // Profile image picker
+    'change_profile_photo': 'Change profile photo',
     'use_camera': 'Use camera',
     'choose_existing_photo': 'Choose existing photo',
     'use_default_avatar': 'Use default avatar',
+    'whatsapp_number': '+57 300 123 4567',
+    'website': 'Website',
+    'website_url': 'www.biux.app',
+    'report_bug': 'Report a Bug',
+    'report_bug_subtitle': 'Help us improve by reporting bugs',
+    'software_licenses': 'Software Licenses',
+    'all_rights_reserved': '© 2025 BiUX. All rights reserved.',
+    'biux_app_cyclists': 'BiUX - App for Cyclists',
+    'faq_create_story_q': 'How to create a story?',
+    'faq_create_story_a':
+        'Go to the Experiences section, tap the + button, add a photo or video (max. 30 seconds), write a short description and publish. Stories disappear in 24 hours.',
+    'faq_register_bike_q': 'How to register my bicycle?',
+    'faq_register_bike_a':
+        'Go to "My Bikes", tap the + button, fill in your bike information (brand, model, color, serial number). This will help you if you lose it or it is stolen.',
+    'faq_join_ride_q': 'How to join a ride?',
+    'faq_join_ride_a':
+        'Go to the Rides section, find one that interests you, tap on it and press "Join". You will receive notifications about ride updates.',
+    'faq_create_group_q': 'How to create a group?',
+    'faq_create_group_a':
+        'Go to Groups, tap "Create Group", fill in the information (name, description, photo) and decide if it will be public or private. Then invite other cyclists.',
+    'faq_media_space_q': 'Do photos and videos take up a lot of space?',
+    'faq_media_space_a':
+        'No. The app automatically compresses photos to 1080x1350px and videos are limited to 30 seconds to optimize storage.',
+    'faq_text_posts_q': 'Can I publish posts without photos?',
+    'faq_text_posts_a':
+        'Yes, but only text posts are permanent. If you add multimedia, it will automatically be published as a story (24 hours).',
     'feature_stories_title': 'Stories and Experiences',
     'feature_stories_desc':
         'Share moments from your rides with photos and videos. Stories last 24 hours.',
@@ -12167,6 +12194,28 @@ class AppTranslations {
     'use_camera': 'Usar camera',
     'choose_existing_photo': 'Escolher foto existente',
     'use_default_avatar': 'Usar avatar padrão',
+    'report_bug_subtitle': 'Ajude-nos a melhorar reportando bugs',
+    'software_licenses': 'Licenças de Software',
+    'all_rights_reserved': '© 2025 BiUX. Todos os direitos reservados.',
+    'biux_app_cyclists': 'BiUX - App para Ciclistas',
+    'faq_create_story_q': 'Como criar uma história?',
+    'faq_create_story_a':
+        'Vá para a seção de Experiências, toque no botão +, adicione uma foto ou vídeo (máx. 30 segundos), escreva uma descrição curta e publique. As histórias desaparecem em 24 horas.',
+    'faq_register_bike_q': 'Como registrar minha bicicleta?',
+    'faq_register_bike_a':
+        'Vá para "Minhas Bikes", toque no botão +, complete as informações da sua bike (marca, modelo, cor, número de série). Isso ajudará se você perder ou for roubada.',
+    'faq_join_ride_q': 'Como participar de um pedal?',
+    'faq_join_ride_a':
+        'Vá para a seção de Pedais, encontre um que te interesse, toque nele e pressione "Participar". Você receberá notificações sobre atualizações do pedal.',
+    'faq_create_group_q': 'Como criar um grupo?',
+    'faq_create_group_a':
+        'Vá para Grupos, toque em "Criar Grupo", complete as informações (nome, descrição, foto) e decida se será público ou privado. Depois convide outros ciclistas.',
+    'faq_media_space_q': 'Fotos e vídeos ocupam muito espaço?',
+    'faq_media_space_a':
+        'Não. O app comprime automaticamente as fotos para 1080x1350px e os vídeos são limitados a 30 segundos para otimizar o armazenamento.',
+    'faq_text_posts_q': 'Posso publicar posts sem fotos?',
+    'faq_text_posts_a':
+        'Sim, mas apenas os posts de texto são permanentes. Se adicionar multimídia, será publicado automaticamente como história (24 horas).',
     'feature_stories_title': 'Histórias e Experiências',
     'feature_stories_desc':
         'Compartilhe momentos dos seus pedais com fotos e vídeos. As histórias duram 24 horas.',
@@ -17120,6 +17169,29 @@ class AppTranslations {
     'use_camera': 'Utiliser l\'appareil photo',
     'choose_existing_photo': 'Choisir une photo existante',
     'use_default_avatar': 'Utiliser l\'avatar par défaut',
+    'report_bug_subtitle': 'Aidez-nous à nous améliorer en signalant des bugs',
+    'software_licenses': 'Licences de Logiciels',
+    'all_rights_reserved': '© 2025 BiUX. Tous droits réservés.',
+    'biux_app_cyclists': 'BiUX - App pour Cyclistes',
+    'faq_create_story_q': 'Comment créer une histoire ?',
+    'faq_create_story_a':
+        'Allez dans la section Expériences, appuyez sur le bouton +, ajoutez une photo ou vidéo (max. 30 secondes), écrivez une courte description et publiez. Les histoires disparaissent en 24 heures.',
+    'faq_register_bike_q': 'Comment enregistrer mon vélo ?',
+    'faq_register_bike_a':
+        'Allez dans "Mes Vélos", appuyez sur le bouton +, complétez les informations de votre vélo (marque, modèle, couleur, numéro de série). Cela vous aidera si vous le perdez ou s\'il est volé.',
+    'faq_join_ride_q': 'Comment rejoindre une sortie ?',
+    'faq_join_ride_a':
+        'Allez dans la section Sorties, trouvez-en une qui vous intéresse, appuyez dessus et cliquez sur "Rejoindre". Vous recevrez des notifications sur les mises à jour de la sortie.',
+    'faq_create_group_q': 'Comment créer un groupe ?',
+    'faq_create_group_a':
+        'Allez dans Groupes, appuyez sur "Créer un Groupe", complétez les informations (nom, description, photo) et décidez s\'il sera public ou privé. Ensuite invitez d\'autres cyclistes.',
+    'faq_media_space_q':
+        'Les photos et vidéos prennent-elles beaucoup d\'espace ?',
+    'faq_media_space_a':
+        'Non. L\'app compresse automatiquement les photos à 1080x1350px et les vidéos sont limitées à 30 secondes pour optimiser le stockage.',
+    'faq_text_posts_q': 'Puis-je publier des posts sans photos ?',
+    'faq_text_posts_a':
+        'Oui, mais seuls les posts texte sont permanents. Si vous ajoutez du multimédia, il sera automatiquement publié comme histoire (24 heures).',
     'feature_stories_title': 'Histoires et Expériences',
     'feature_stories_desc':
         'Partagez des moments de vos sorties avec des photos et vidéos. Les histoires durent 24 heures.',

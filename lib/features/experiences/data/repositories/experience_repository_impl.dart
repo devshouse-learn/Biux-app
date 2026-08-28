@@ -256,6 +256,45 @@ class ExperienceRepositoryImpl implements ExperienceRepository {
     }
   }
 
+  /// Obtiene posts de descubrimiento (todos los posts)
+  Future<List<ExperienceEntity>> getDiscoveryExperiences() async {
+    try {
+      AppLogger.info(
+        'Cargando posts de descubrimiento...',
+        tag: 'ExperienceRepository',
+      );
+
+      final snapshot = await _firestore
+          .collection('experiences')
+          .orderBy('createdAt', descending: true)
+          .limit(100)
+          .get();
+
+      final experiences = snapshot.docs
+          .map(
+            (doc) => ExperienceModel.fromJson({
+              ...doc.data(),
+              'id': doc.id,
+            }).toEntity(),
+          )
+          .toList();
+
+      AppLogger.info(
+        '✅ Posts de descubrimiento cargados: ${experiences.length}',
+        tag: 'ExperienceRepository',
+      );
+
+      return experiences;
+    } on FirebaseException catch (e) {
+      AppLogger.error(
+        'Error cargando descubrimiento: $e',
+        tag: 'ExperienceRepository',
+        error: e,
+      );
+      return [];
+    }
+  }
+
   @override
   Stream<DateTime?> watchLatestExperienceTimestamp() {
     return _firestore
@@ -887,7 +926,7 @@ class ExperienceRepositoryImpl implements ExperienceRepository {
       final compressionRatio = (1 - (optimizedSize / originalSize)) * 100;
 
       debugPrint(
-        'Imagen optimizada: ${originalSize ~/ 1024}KB a†’ ${optimizedSize ~/ 1024}KB (${compressionRatio.toStringAsFixed(1)}% reducción)',
+        'Imagen optimizada: ${originalSize ~/ 1024}KB a ${optimizedSize ~/ 1024}KB (${compressionRatio.toStringAsFixed(1)}% reducción)',
       );
 
       // Si la compresión redujo menos del 10%, usar original
@@ -897,7 +936,7 @@ class ExperienceRepositoryImpl implements ExperienceRepository {
       }
 
       return optimizedFile;
-    } on FirebaseException catch (e) {
+    } catch (e) {
       debugPrint('Error optimizando imagen: $e');
       // En caso de error, usar archivo original
       return originalFile;

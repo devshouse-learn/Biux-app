@@ -114,12 +114,18 @@ class _ExperiencesListScreenState extends State<ExperiencesListScreen>
         // Cargar grupos (no espera, usa streams)
         groupProvider.loadUserGroups();
 
-        // Cargar reposts sin esperar
-        provider.loadMyReposts(userId);
+        // ⭐ IMPORTANTE: Esperar a que se carguen los reposts del usuario
+        // Esto es crítico para que hasRepostedPost() funcione correctamente
+        debugPrint(
+          '[ExperiencesListScreen] Cargando reposts del usuario: $userId',
+        );
+        await provider.loadMyReposts(userId);
+        debugPrint('[ExperiencesListScreen] Reposts cargados exitosamente');
 
         // Esperar un poco para que los streams se actualicen
         await Future.delayed(const Duration(milliseconds: 300));
       } catch (e) {
+        debugPrint('[ExperiencesListScreen] Error al cargar feed: $e');
         AppLogger.error(
           'Error al cargar feed',
           error: e,
@@ -802,16 +808,15 @@ class _ExperienceCard extends StatelessWidget {
     final l = Provider.of<LocaleNotifier>(context, listen: false);
     final theme = Theme.of(context);
     final captionController = TextEditingController();
+
+    debugPrint('[_repostPost] Iniciando diálogo de repost');
+
     final confirmed = await showDialog<bool>(
       context: context,
+      barrierDismissible: false,
       builder: (ctx) => AlertDialog(
         backgroundColor: theme.dialogTheme.backgroundColor ?? theme.cardColor,
-        title: Text(
-          Provider.of<LocaleNotifier>(
-            context,
-            listen: false,
-          ).t('repost_publication'),
-        ),
+        title: Text(l.t('repost_publication')),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -843,57 +848,80 @@ class _ExperienceCard extends StatelessWidget {
         ),
         actions: [
           TextButton(
-            onPressed: () => Navigator.pop(ctx, false),
-            child: Text(
-              Provider.of<LocaleNotifier>(context, listen: false).t('cancel'),
-            ),
+            onPressed: () {
+              debugPrint('[_repostPost] Cancelar repost');
+              Navigator.pop(ctx, false);
+            },
+            child: Text(l.t('cancel')),
           ),
           ElevatedButton(
-            onPressed: () => Navigator.pop(ctx, true),
-            child: Text(
-              Provider.of<LocaleNotifier>(context, listen: false).t('repost'),
-            ),
+            onPressed: () {
+              debugPrint('[_repostPost] Confirmar repost');
+              Navigator.pop(ctx, true);
+            },
+            child: Text(l.t('repost')),
           ),
         ],
       ),
     );
-    if (confirmed != true) return;
-    if (!context.mounted) return;
+
+    debugPrint('[_repostPost] Confirmación recibida: $confirmed');
+
+    if (confirmed != true) {
+      debugPrint('[_repostPost] Usuario canceló el repost');
+      captionController.dispose();
+      return;
+    }
+
+    if (!context.mounted) {
+      debugPrint('[_repostPost] Context no mounted después de dialog');
+      captionController.dispose();
+      return;
+    }
+
     try {
+      debugPrint('[_repostPost] Iniciando repost...');
       final provider = context.read<ExperienceProvider>();
+
       await provider.repostStory(
         experience,
         caption: captionController.text.trim(),
       );
+
+      debugPrint('[_repostPost] Repost exitoso');
+
       // Recargar mapa de reposts para que el botón refleje estado actual
       final uid = FirebaseAuth.instance.currentUser?.uid;
       if (uid != null && context.mounted) {
-        provider.loadMyReposts(uid);
+        debugPrint('[_repostPost] Recargando reposts del usuario $uid');
+        await provider.loadMyReposts(uid);
+        debugPrint(
+          '[_repostPost] Reposts recargados, notificando listeners...',
+        );
       }
+
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(
-              Provider.of<LocaleNotifier>(
-                context,
-                listen: false,
-              ).t('post_reposted'),
-            ),
+            content: Text(l.t('post_reposted')),
             behavior: SnackBarBehavior.floating,
           ),
         );
       }
-    } on FirebaseException catch (e) {
+    } catch (e, st) {
+      debugPrint('[_repostPost] Error reposteando: $e');
+      debugPrint('[_repostPost] Stack trace: $st');
+
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(
-              '${Provider.of<LocaleNotifier>(context, listen: false).t('error_reposting')}: $e',
-            ),
+            content: Text('${l.t('error_reposting')}: ${e.toString()}'),
             behavior: SnackBarBehavior.floating,
           ),
         );
       }
+    } finally {
+      captionController.dispose();
     }
   }
 

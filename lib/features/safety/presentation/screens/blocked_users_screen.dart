@@ -30,6 +30,13 @@ class _BlockedUsersScreenState extends State<BlockedUsersScreen> {
     return Scaffold(
       backgroundColor: isDark ? ColorTokens.primary10 : Colors.grey.shade50,
       appBar: AppBar(
+        leading: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: IconButton(
+            icon: const Icon(Icons.arrow_back, color: Colors.white, size: 28),
+            onPressed: () => Navigator.of(context).pop(),
+          ),
+        ),
         title: Text(
           Provider.of<LocaleNotifier>(
             context,
@@ -38,6 +45,7 @@ class _BlockedUsersScreenState extends State<BlockedUsersScreen> {
         ),
         backgroundColor: ColorTokens.primary30,
         foregroundColor: Colors.white,
+        iconTheme: const IconThemeData(color: Colors.white, size: 28),
       ),
       body: Consumer<SafetyProvider>(
         builder: (context, safetyProvider, _) {

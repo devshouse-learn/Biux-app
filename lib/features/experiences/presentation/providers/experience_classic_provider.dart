@@ -50,6 +50,9 @@ class ExperienceProvider extends ChangeNotifier {
   bool get hasMorePosts => _hasMorePosts;
   String? get error => _error;
 
+  /// Verifica si los reposts del usuario ya se han cargado
+  bool get repostsLoaded => _myReposts.containsKey('_loaded');
+
   /// Limpia la caché de experiencias para forzar recarga
   Future<void> clearCache() async {
     _experiences.clear();
@@ -151,7 +154,7 @@ class ExperienceProvider extends ChangeNotifier {
       // Cargar experiencias del usuario actual (mis publicaciones)
       final myExperiences = await _repository.getUserExperiences(userId);
 
-      // Cargar experiencias de usuarios seguidos
+      // Cargar experiencias de usuarios seguidos (o descubrimiento si no hay seguidos)
       final followingExperiences = await _repository.getFollowingExperiences(
         userId,
       );
@@ -160,11 +163,18 @@ class ExperienceProvider extends ChangeNotifier {
       final allExperiences = [...myExperiences, ...followingExperiences];
       allExperiences.sort((a, b) => b.createdAt.compareTo(a.createdAt));
 
-      // ✅ FILTRO TEMPORAL: Solo publicaciones de las Ãºltimas 72 horas
-      final cutoff = DateTime.now().subtract(const Duration(hours: 72));
-      allExperiences.removeWhere((exp) => exp.createdAt.isBefore(cutoff));
+      // 🎯 LÓGICA: Si followingExperiences tiene posts, probablemente sea descubrimiento
+      // (porque el usuario tiene 0 seguidos). En ese caso, no aplicar filtros tan estrictos
+      final isDiscovery =
+          followingExperiences.isNotEmpty && myExperiences.isEmpty;
 
-      // ✅ FILTRADO: Solo posts con media realmente válida (imágenes y videos)
+      // ✅ FILTRO TEMPORAL: Solo publicaciones de las Ãºltimas 72 horas (excepto descubrimiento)
+      if (!isDiscovery) {
+        final cutoff = DateTime.now().subtract(const Duration(hours: 72));
+        allExperiences.removeWhere((exp) => exp.createdAt.isBefore(cutoff));
+      }
+
+      // ✅ FILTRADO: Solo posts con media válida
       final validExperiences = <ExperienceEntity>[];
       for (var exp in allExperiences) {
         // ignore: unnecessary_null_comparison
@@ -173,49 +183,29 @@ class ExperienceProvider extends ChangeNotifier {
         bool allUrlsValid = true;
         for (final media in exp.media) {
           final url = media.url.trim();
+          // Validación básica: URL debe ser HTTP/HTTPS y no estar vacía
           if (url.isEmpty ||
               (!url.startsWith('http://') && !url.startsWith('https://'))) {
             allUrlsValid = false;
             break;
           }
-          // Validaciones de contenido corrupto
-          if (url.contains('placeholder') ||
-              url.contains('null') ||
-              url.toLowerCase().contains('error') ||
-              url.toLowerCase().contains('broken') ||
-              url.toLowerCase().contains('404') ||
-              url.length < 20) {
-            allUrlsValid = false;
-            break;
-          }
-          // Para imágenes: validar extensiones de imagen
-          if (media.mediaType == MediaType.image) {
-            if (!url.contains('alt=') &&
-                !url.contains('.jpg') &&
-                !url.contains('.jpeg') &&
-                !url.contains('.png') &&
-                !url.contains('.gif') &&
-                !url.contains('.webp')) {
+
+          // En descubrimiento, solo validar que no sea URL corrupta
+          if (isDiscovery) {
+            if (url.contains('placeholder') ||
+                url.contains('null') ||
+                url.toLowerCase().contains('error')) {
               allUrlsValid = false;
               break;
             }
-          }
-          // Para videos: validar que tenga URL de video o thumbnail válido
-          if (media.mediaType == MediaType.video) {
-            final thumb = media.thumbnailUrl?.trim() ?? '';
-            final hasValidVideo =
-                url.contains('.mp4') ||
-                url.contains('.mov') ||
-                url.contains('.avi') ||
-                url.contains('.webm') ||
-                url.contains('.3gp') ||
-                url.contains('alt=') ||
-                url.contains('firebasestorage');
-            final hasValidThumb =
-                thumb.isNotEmpty &&
-                thumb.startsWith('http') &&
-                thumb.length >= 20;
-            if (!hasValidVideo && !hasValidThumb) {
+          } else {
+            // En feed personalizado, aplicar validaciones estrictas
+            if (url.contains('placeholder') ||
+                url.contains('null') ||
+                url.toLowerCase().contains('error') ||
+                url.toLowerCase().contains('broken') ||
+                url.toLowerCase().contains('404') ||
+                url.length < 20) {
               allUrlsValid = false;
               break;
             }
@@ -234,9 +224,16 @@ class ExperienceProvider extends ChangeNotifier {
       // Guardar todos los posts disponibles para paginación
       _allExperiences = validExperiences;
 
-      // Cargar posts iniciales (suficientes para llenar pantalla)
-      final initialPosts = validExperiences.take(_initialPostsCount).toList();
-      _hasMorePosts = validExperiences.length > _initialPostsCount;
+      // 🎯 SI EL FEED ESTÁ VACÍO, CARGAR POSTS DE DESCUBRIMIENTO
+      if (_allExperiences.isEmpty) {
+        debugPrint(
+          '[ExperienceProvider] Feed vacío después de filtrar, usando lo disponible',
+        );
+      }
+
+      // Cargar posts iniciales
+      final initialPosts = _allExperiences.take(_initialPostsCount).toList();
+      _hasMorePosts = _allExperiences.length > _initialPostsCount;
 
       _setExperiences(initialPosts);
     } on FirebaseException catch (e) {
@@ -371,6 +368,11 @@ class ExperienceProvider extends ChangeNotifier {
       return true;
     } on FirebaseException catch (e) {
       _setError(ErrorHandler.getUserMessage(e));
+      debugPrint('Firebase error updating experience: ${e.toString()}');
+      return false;
+    } catch (e) {
+      _setError('exp_create_error_updating');
+      debugPrint('Error updating experience: ${e.toString()}');
       return false;
     } finally {
       _setLoading(false);
@@ -440,25 +442,50 @@ class ExperienceProvider extends ChangeNotifier {
       await _repository.repostExperience(original, caption: caption);
       // Invalidar cache de reposts para que se recargue la próxima vez
       _myReposts.remove('_loaded');
-    } on FirebaseException catch (e) {
+    } catch (e) {
       debugPrint('Error reposteando historia: ${e.toString()}');
+      _setError('error_reposting');
       rethrow;
     }
   }
 
-  /// Carga los reposts del usuario actual desde Firestore (una sola vez)
+  /// Carga los reposts del usuario actual desde Firestore
   Future<void> loadMyReposts(String userId) async {
     try {
+      debugPrint('[ExperienceProvider] Cargando reposts del usuario: $userId');
+
       _myReposts = await _repository.getUserReposts(userId);
       _myReposts['_loaded'] = 'true'; // marca para no recargar
+
+      debugPrint(
+        '[ExperienceProvider] ✅ Reposts cargados: ${_myReposts.length - 1} reposts',
+      );
+      debugPrint('[ExperienceProvider] Reposts del usuario: $_myReposts');
+
       notifyListeners();
     } on FirebaseException catch (e) {
-      debugPrint('Error cargando reposts: $e');
+      debugPrint(
+        '[ExperienceProvider] ❌ FirebaseException cargando reposts: $e',
+      );
+      _setError('error_loading_reposts');
+    } catch (e, st) {
+      debugPrint('[ExperienceProvider] ❌ Error cargando reposts: $e');
+      debugPrint('[ExperienceProvider] Stack trace: $st');
+      _setError('error_loading_reposts');
     }
   }
 
   /// Verifica si el usuario ya reposteó el post con ese ID
-  bool hasRepostedPost(String postId) => _myReposts.containsKey(postId);
+  bool hasRepostedPost(String postId) {
+    final result = _myReposts.containsKey(postId);
+    debugPrint('[ExperienceProvider] hasRepostedPost($postId) = $result');
+    if (!result) {
+      debugPrint(
+        '[ExperienceProvider] Claves en _myReposts: ${_myReposts.keys.toList()}',
+      );
+    }
+    return result;
+  }
 
   /// Elimina el repost del usuario actual para un post original
   Future<void> removeRepost(String originalPostId) async {
@@ -468,7 +495,7 @@ class ExperienceProvider extends ChangeNotifier {
       await deleteExperience(repostId);
       _myReposts.remove(originalPostId);
       notifyListeners();
-    } on FirebaseException catch (e) {
+    } catch (e) {
       debugPrint('Error eliminando repost: $e');
       rethrow;
     }

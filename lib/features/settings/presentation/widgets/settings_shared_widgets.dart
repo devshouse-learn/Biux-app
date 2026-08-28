@@ -22,9 +22,12 @@ class SettingsWidgets {
       backgroundColor: ColorTokens.primary30,
       elevation: 0,
       automaticallyImplyLeading: false,
-      leading: IconButton(
-        icon: const Icon(Icons.arrow_back, color: Colors.white),
-        onPressed: () => Navigator.of(context).pop(),
+      leading: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: IconButton(
+          icon: const Icon(Icons.arrow_back, color: Colors.white, size: 28),
+          onPressed: () => Navigator.of(context).pop(),
+        ),
       ),
       title: Text(
         title,
@@ -34,7 +37,7 @@ class SettingsWidgets {
           fontWeight: FontWeight.w600,
         ),
       ),
-      iconTheme: const IconThemeData(color: Colors.white),
+      iconTheme: const IconThemeData(color: Colors.white, size: 28),
     );
   }
 

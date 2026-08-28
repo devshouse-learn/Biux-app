@@ -15,6 +15,13 @@ class ActivityHubScreen extends StatelessWidget {
     return Scaffold(
       backgroundColor: SettingsWidgets.scaffoldBackground(isDark),
       appBar: AppBar(
+        leading: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: IconButton(
+            icon: const Icon(Icons.arrow_back, color: Colors.white, size: 28),
+            onPressed: () => Navigator.of(context).pop(),
+          ),
+        ),
         title: Text(
           Provider.of<LocaleNotifier>(
             context,
@@ -23,17 +30,30 @@ class ActivityHubScreen extends StatelessWidget {
         ),
         backgroundColor: ColorTokens.primary30,
         foregroundColor: Colors.white,
+        iconTheme: const IconThemeData(color: Colors.white, size: 28),
       ),
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [
-          SettingsWidgets.buildSectionTitle(Provider.of<LocaleNotifier>(context, listen: false).t('interactions'), isDark),
+          SettingsWidgets.buildSectionTitle(
+            Provider.of<LocaleNotifier>(
+              context,
+              listen: false,
+            ).t('interactions'),
+            isDark,
+          ),
           const SizedBox(height: 12),
           SettingsWidgets.buildMenuCard(
             context,
             icon: Icons.favorite_outline,
-            title: Provider.of<LocaleNotifier>(context, listen: false).t('likes'),
-            subtitle: Provider.of<LocaleNotifier>(context, listen: false).t('posts_you_liked'),
+            title: Provider.of<LocaleNotifier>(
+              context,
+              listen: false,
+            ).t('likes'),
+            subtitle: Provider.of<LocaleNotifier>(
+              context,
+              listen: false,
+            ).t('posts_you_liked'),
             isDark: isDark,
             onTap: () => context.push('/activity/likes'),
           ),
@@ -41,19 +61,37 @@ class ActivityHubScreen extends StatelessWidget {
           SettingsWidgets.buildMenuCard(
             context,
             icon: Icons.chat_bubble_outline,
-            title: Provider.of<LocaleNotifier>(context, listen: false).t('comments'),
-            subtitle: Provider.of<LocaleNotifier>(context, listen: false).t('your_comments_on_posts'),
+            title: Provider.of<LocaleNotifier>(
+              context,
+              listen: false,
+            ).t('comments'),
+            subtitle: Provider.of<LocaleNotifier>(
+              context,
+              listen: false,
+            ).t('your_comments_on_posts'),
             isDark: isDark,
             onTap: () => context.push('/activity/comments'),
           ),
           const SizedBox(height: 24),
-          SettingsWidgets.buildSectionTitle(Provider.of<LocaleNotifier>(context, listen: false).t('your_content'), isDark),
+          SettingsWidgets.buildSectionTitle(
+            Provider.of<LocaleNotifier>(
+              context,
+              listen: false,
+            ).t('your_content'),
+            isDark,
+          ),
           const SizedBox(height: 12),
           SettingsWidgets.buildMenuCard(
             context,
             icon: Icons.grid_on_outlined,
-            title: Provider.of<LocaleNotifier>(context, listen: false).t('posts'),
-            subtitle: Provider.of<LocaleNotifier>(context, listen: false).t('your_shared_posts'),
+            title: Provider.of<LocaleNotifier>(
+              context,
+              listen: false,
+            ).t('posts'),
+            subtitle: Provider.of<LocaleNotifier>(
+              context,
+              listen: false,
+            ).t('your_shared_posts'),
             isDark: isDark,
             onTap: () => context.push('/activity/posts'),
           ),
@@ -61,8 +99,14 @@ class ActivityHubScreen extends StatelessWidget {
           SettingsWidgets.buildMenuCard(
             context,
             icon: Icons.auto_stories_outlined,
-            title: Provider.of<LocaleNotifier>(context, listen: false).t('stories'),
-            subtitle: Provider.of<LocaleNotifier>(context, listen: false).t('your_recent_stories'),
+            title: Provider.of<LocaleNotifier>(
+              context,
+              listen: false,
+            ).t('stories'),
+            subtitle: Provider.of<LocaleNotifier>(
+              context,
+              listen: false,
+            ).t('your_recent_stories'),
             isDark: isDark,
             onTap: () => context.push('/activity/stories'),
           ),

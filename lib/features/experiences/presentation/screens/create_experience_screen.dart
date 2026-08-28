@@ -104,11 +104,10 @@ class _CreateExperienceScreenState extends State<CreateExperienceScreen> {
   Widget build(BuildContext context) {
     return Consumer<ExperienceCreatorProvider>(
       builder: (context, provider, child) {
-        return PopScope(
-          canPop: false,
-          onPopInvokedWithResult: (didPop, result) {
-            if (didPop) return;
+        return WillPopScope(
+          onWillPop: () async {
             _showDeleteDialog(context);
+            return false; // Prevent default back button behavior
           },
           child: Scaffold(
             backgroundColor: ColorTokens.neutral10,
@@ -128,30 +127,9 @@ class _CreateExperienceScreenState extends State<CreateExperienceScreen> {
               backgroundColor: ColorTokens.primary30,
               elevation: 0,
               iconTheme: const IconThemeData(color: Colors.white),
-              leading: PopupMenuButton<String>(
-                icon: Icon(Icons.more_vert, color: Colors.white),
-                onSelected: (value) {
-                  if (value == 'delete') {
-                    _showDeleteDialog(context);
-                  }
-                },
-                itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
-                  PopupMenuItem<String>(
-                    value: 'delete',
-                    child: Row(
-                      children: [
-                        Icon(Icons.delete_outline, color: Colors.red),
-                        SizedBox(width: 8),
-                        Text(
-                          widget.isPostMode
-                              ? l.t('discard_post')
-                              : l.t('discard_story'),
-                          style: TextStyle(color: Colors.red),
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
+              leading: IconButton(
+                icon: Icon(Icons.more_vert, color: Colors.white, size: 28),
+                onPressed: () => _showDeleteDialog(context),
               ),
               actions: [
                 if (provider.isUploading)
@@ -867,34 +845,42 @@ class _CreateExperienceScreenState extends State<CreateExperienceScreen> {
   }
 
   void _showDeleteDialog(BuildContext context) {
+    if (!context.mounted) return;
+
+    final localeNotifier = Provider.of<LocaleNotifier>(context, listen: false);
     final title = widget.isPostMode
-        ? l.t('discard_post')
-        : l.t('discard_story');
+        ? localeNotifier.t('discard_post')
+        : localeNotifier.t('discard_story');
     final content = widget.isPostMode
-        ? l.t('discard_post_confirm')
-        : l.t('discard_story_confirm');
+        ? localeNotifier.t('discard_post_confirm')
+        : localeNotifier.t('discard_story_confirm');
+
     showDialog(
       context: context,
-      builder: (dialogContext) => AlertDialog(
+      barrierDismissible: false,
+      builder: (BuildContext dialogContext) => AlertDialog(
         title: Text(title),
         content: Text(content),
         actions: [
           TextButton(
-            onPressed: () => Navigator.of(dialogContext).pop(),
-            child: Text(
-              Provider.of<LocaleNotifier>(context, listen: false).t('cancel'),
-            ),
+            onPressed: () {
+              Navigator.of(dialogContext).pop();
+            },
+            child: Text(localeNotifier.t('cancel')),
           ),
           TextButton(
             onPressed: () {
               Navigator.of(dialogContext).pop();
-              // Limpiar el estado del provider antes de salir
-              final provider = context.read<ExperienceCreatorProvider>();
-              provider.reset();
-              Navigator.of(context).pop(false);
+              // Limpiar provider y salir
+              if (context.mounted) {
+                final provider = context.read<ExperienceCreatorProvider>();
+                provider.reset();
+                Navigator.of(context).pop();
+              }
             },
             child: Text(
-              Provider.of<LocaleNotifier>(context, listen: false).t('discard'),
+              localeNotifier.t('discard'),
+              style: const TextStyle(color: Colors.red),
             ),
           ),
         ],

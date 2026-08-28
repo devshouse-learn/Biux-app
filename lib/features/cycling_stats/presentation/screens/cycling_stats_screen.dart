@@ -1709,7 +1709,7 @@ class _CyclingStatsScreenState extends State<CyclingStatsScreen>
                 ),
                 const SizedBox(height: 2),
                 Text(
-                  '${km.toStringAsFixed(1)} km · $totalRides rodadas',
+                  '${km.toStringAsFixed(1)} km · $totalRides ${l.t('rides')}',
                   style: TextStyle(
                     fontSize: 12,
                     color: isDark ? Colors.white70 : Colors.grey[500],
@@ -1849,14 +1849,14 @@ class _CyclingStatsScreenState extends State<CyclingStatsScreen>
         : 0.0;
     final streakH = _computeStreak(allRides);
     final text =
-        '🚴 Mis estadísticas en Biux:\n\n'
-        '📏 ${totalKmH.toStringAsFixed(1)} km recorridos\n'
-        '🏁 ${allRides.length} rodadas completadas\n'
-        '⚡ ${avgSpdH.toStringAsFixed(1)} km/h promedio\n'
-        '🚀 ${maxSpdH.toStringAsFixed(1)} km/h velocidad máxima\n'
-        '🔥 Racha de $streakH días\n'
-        '${stats.levelEmoji} Nivel: ${stats.level.toUpperCase()}\n\n'
-        '¡Descarga Biux y pedalea conmigo!';
+        '${l.t('share_stats_title')}\n\n'
+        '📏 ${totalKmH.toStringAsFixed(1)} km ${l.t('total_km')}\n'
+        '🏁 ${allRides.length} ${l.t('rides')}\n'
+        '⚡ ${avgSpdH.toStringAsFixed(1)} km/h ${l.t('average_speed')}\n'
+        '🚀 ${maxSpdH.toStringAsFixed(1)} km/h ${l.t('max_speed')}\n'
+        '🔥 ${streakH} ${l.t('days')}\n'
+        '${stats.levelEmoji} ${l.t('level')}: ${stats.level.toUpperCase()}\n\n'
+        '${l.t('share_download_cta')}';
     SharePlus.instance.share(ShareParams(text: text));
   }
 }

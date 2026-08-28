@@ -1,4 +1,5 @@
 import 'package:flutter/foundation.dart';
+import 'package:flutter/widgets.dart';
 import 'package:biux/features/experiences/domain/entities/user_story_group_entity.dart';
 import 'package:biux/features/experiences/domain/entities/experience_entity.dart';
 import 'package:biux/features/experiences/domain/usecases/group_stories_by_user_usecase.dart';
@@ -65,7 +66,10 @@ class StoryGroupsProvider with ChangeNotifier {
   /// Ãštil para agrupar experiencias que ya están en memoria
   Future<void> groupExistingStories(List<ExperienceEntity> experiences) async {
     _isLoading = true;
-    notifyListeners();
+    // Usar addPostFrameCallback para evitar llamar notifyListeners() durante construcción
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      notifyListeners();
+    });
 
     try {
       // Filtrar y agrupar historias recientes (Ãºltimas 24 horas)
